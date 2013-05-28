@@ -1,0 +1,53 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <includeDependencies package="." />
+  <!-- <include package="plone.app.openid" /> -->
+  <include package=".content" />
+
+    <genericsetup:registerProfile
+        name="default"
+        title="BCCVL Site"
+        directory="profiles/default"
+        description="Setup BCCVL Site."
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+    />
+
+    <utility factory=".utilities.RDFTypeMapper"
+             name="Content type to RDF type" />
+
+    <utility factory=".UserAdder"
+             provides="Products.membrane.interfaces.IUserAdder"
+             name="BCCVL User Adder" />
+
+    <subscriber 
+        for="Products.membrane.interfaces.user.IMembraneUser
+             Products.PlonePAS.interfaces.events.IUserInitialLoginInEvent"
+        handler=".subscribers.InitaliseUser"
+        />
+
+    <!-- Standard add view and form - invoked from ++add++ traverser -->
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        name="gu.repository.content.RepositoryItem"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory="gu.plone.rdf.browser.metadata.RDFAddView"
+        />
+    <class class="gu.plone.rdf.browser.metadata.RDFAddView">
+        <require
+            permission="cmf.AddPortalContent"
+            interface="zope.publisher.interfaces.browser.IBrowserPage"
+            />
+    </class>
+
+    <!-- make all dexterity based content geo-locatable with collective.geo.* -->
+    <class class="plone.dexterity.content.DexterityContent">
+      <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
+    </class>
+
+</configure>

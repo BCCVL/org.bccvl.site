@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="org.bccvl">
+
+    <genericsetup:registerProfile
+        name="content"
+        title="BCCVL User / Group content"
+        description="BCCVL User and Group content types"
+        directory="../profiles/content"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+
+</configure>
