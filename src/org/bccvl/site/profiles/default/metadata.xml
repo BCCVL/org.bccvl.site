@@ -7,7 +7,7 @@
         <dependency>profile-collective.quickupload:default</dependency>
         <dependency>profile-collective.z3cform.colorpicker:default</dependency>
         <dependency>profile-collective.z3cform.widgets:default</dependency>
-        <dependency>profile-dexterity.membrane:behavior</dependency>
+        <dependency>profile-dexterity.membrane:default</dependency>
 
         <!-- <dependency>profile-atreal.richfile.metadata:default</dependency> -->
         <!-- <dependency>profile-atreal.richfile.qualifier:default</dependency> -->
