@@ -1,8 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    xmlns:cmf="http://namespaces.zope.org/cmf"
-    xmlns:browser="http://namespaces.zope.org/browser">
+  >
 
   <includeDependencies package="." />
   <!-- <include package="plone.app.openid" /> -->
@@ -14,6 +13,13 @@
         directory="profiles/default"
         description="Setup BCCVL Site."
         provides="Products.GenericSetup.interfaces.EXTENSION"
+    />
+
+    <genericsetup:importStep
+        name="org.bccvl.site"
+        title="BCCVL Site setup handlers"
+        description="BCCVL site installation setup"
+        handler="org.bccvl.site.setuphandlers.setupVarious"
     />
 
     <utility factory=".utilities.RDFTypeMapper"
