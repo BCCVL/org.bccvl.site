@@ -1,11 +1,10 @@
 <configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-  >
+        xmlns="http://namespaces.zope.org/zope"
+        xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+        >
 
-  <includeDependencies package="." />
-  <!-- <include package="plone.app.openid" /> -->
-  <include package=".content" />
+    <includeDependencies package="."/>
+    <include package=".content"/>
 
     <genericsetup:registerProfile
         name="default"
@@ -22,19 +21,30 @@
         handler="org.bccvl.site.setuphandlers.setupVarious"
     />
 
-    <utility factory=".utilities.RDFTypeMapper"
-             name="Content type to RDF type" />
+    <utility 
+        factory=".utilities.RDFTypeMapper"
+        name="Content type to RDF type"
+    />
 
-    <utility factory=".UserAdder"
-             provides="Products.membrane.interfaces.IUserAdder"
-             name="BCCVL User Adder" />
+    <utility
+        factory=".UserAdder"
+        provides="Products.membrane.interfaces.IUserAdder"
+        name="BCCVL User Adder"
+    />
 
-    <subscriber 
+    <subscriber
         for="Products.membrane.interfaces.user.IMembraneUser
              Products.PlonePAS.interfaces.events.IUserInitialLoginInEvent"
         handler=".subscribers.InitaliseUser"
-        />
+    />
 
+    <!-- TODO: remove ASAP - see handler comments for info -->
+    <subscriber
+        for="gu.repository.content.interfaces.IRepositoryItem
+             zope.lifecycleevent.interfaces.IObjectAddedEvent"
+        handler=".subscribers.publishRepositoryItem"
+    />
+        
     <!-- Standard add view and form - invoked from ++add++ traverser -->
     <adapter
         for="Products.CMFCore.interfaces.IFolderish
@@ -42,18 +52,38 @@
              plone.dexterity.interfaces.IDexterityFTI"
         name="gu.repository.content.RepositoryItem"
         provides="zope.publisher.interfaces.browser.IBrowserPage"
-        factory="gu.plone.rdf.browser.metadata.RDFAddView"
-        />
+        factory="gu.plone.rdf.browser.metadata.RDFAddView"       
+    />
     <class class="gu.plone.rdf.browser.metadata.RDFAddView">
         <require
             permission="cmf.AddPortalContent"
             interface="zope.publisher.interfaces.browser.IBrowserPage"
-            />
+        />
     </class>
+    <!--<adapter-->
+        <!--for="Products.CMFCore.interfaces.IFolderish-->
+             <!--Products.CMFDefault.interfaces.ICMFDefaultSkin-->
+             <!--plone.dexterity.interfaces.IDexterityFTI"-->
+        <!--name="gu.repository.content.RepositoryItem"-->
+        <!--provides="zope.publisher.interfaces.browser.IBrowserPage"-->
+        <!--factory="org.bccvl.site.browser.add.TypeFromRequestAddView"       -->
+    <!--/> -->
+    <!--<class class="org.bccvl.site.browser.add.TypeFromRequestAddView">-->
+        <!--<require-->
+            <!--permission="cmf.AddPortalContent"-->
+            <!--interface="zope.publisher.interfaces.browser.IBrowserPage"-->
+        <!--/>-->
+    <!--</class>-->
 
     <!-- make all dexterity based content geo-locatable with collective.geo.* -->
     <class class="plone.dexterity.content.DexterityContent">
-      <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
+        <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
     </class>
+
+    <!-- index relevant RDF properties -->
+    <adapter
+        factory=".indexers.repositoryItem_BCCDataGenre"
+        name="BCCDataGenre"
+    />
 
 </configure>

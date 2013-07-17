@@ -45,6 +45,7 @@ setup(
         'collective.quickupload',
         'collective.onlogin',
         'collective.z3cform.widgets',
+        'collective.z3cform.chosen',
         'gu.plone.rdf',
         'plone.app.folderui',
         'dexterity.membrane',

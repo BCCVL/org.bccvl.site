@@ -14,6 +14,8 @@ def setupVarious(context):
     createFunctionsFolder(portal)
     createKnowledgeBaseFolder(portal)
 
+    createExperimentsFolder(portal)
+
 def _createFolder(context, folder_id, folder_title, workflow_state='publish', log_msg=None):
     # helper function for adding structural locations
     if not folder_id in context:
@@ -57,5 +59,14 @@ def createKnowledgeBaseFolder(site):
         folder_id = defaults.KNOWLEDGEBASE_FOLDER_ID, 
         folder_title = 'Knowledge Base',
     )
-
     
+def createExperimentsFolder(site):
+    # TODO: make this per-user rather than global
+    _createFolder(site,
+        folder_id = 'experiments',
+        folder_title = 'Experiments',
+    )
+    # TODO: DEFINITELY do NOT use this in production!!
+    site.experiments.manage_permission('Add portal content', ('Authenticated',), acquire=False)
+    site.experiments.manage_permission('Modify portal content', ('Authenticated',), acquire=False)
+

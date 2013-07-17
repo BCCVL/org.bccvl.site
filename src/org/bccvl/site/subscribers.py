@@ -43,8 +43,10 @@ def InitaliseUser(user, event):
     
     # don't forget to reindex     
     userobj.reindexObject()    
-    
 
 
-# there is also: UserLoggedInEvent for existing users... good point to update info?
-#    ... e.g. if data is not consistent then redirect to homepage :)
+# TODO: remove after initial testing phases are done
+# This is just an early convenience to auto-publish RepoItems to
+# minimise the amount of setup needed for testing
+def publishRepositoryItem(object, even):
+    object.portal_workflow.doActionFor(object, 'publish')
