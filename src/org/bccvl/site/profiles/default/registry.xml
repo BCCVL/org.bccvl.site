@@ -61,23 +61,6 @@
     </field>
     <value>http://namespaces.gu.edu.au/z3cform/fresnel#</value>
   </record>
-  <record name="gu.plone.rdf.interfaces.IRDFSettings.base_uri" interface="gu.plone.rdf.interfaces.IRDFSettings" field="base_uri">
-    <field type="plone.registry.field.URI">
-      <title>Base URI</title>
-    </field>
-    <value>http://bccvl.org.au/bccvl/</value>
-  </record>
-  <record name="gu.plone.rdf.interfaces.IRDFSettings.ordf_configuration" interface="gu.plone.rdf.interfaces.IRDFSettings" field="ordf_configuration">
-    <field type="plone.registry.field.Text">
-      <description>See ORDF for details. This text field is parsed as standard INI file.</description>
-      <title>ORDF configuration</title>
-    </field>
-    <value>ordf.handler = gu.z3cform.rdf.ordfhandler:TransactionAwareHandler&#13;
-ordf.readers = httpfourstore&#13;
-ordf.writers = httpfourstore&#13;
-httpfourstore.url = http://localhost/bccvl&#13;
-</value>
-  </record>
 
 
   <!-- <record name="plone.app.folderui.facet.Creator.description" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="description"> -->
