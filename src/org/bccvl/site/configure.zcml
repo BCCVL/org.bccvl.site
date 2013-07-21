@@ -5,6 +5,7 @@
 
     <includeDependencies package="."/>
     <include package=".content"/>
+    <include package=".browser"/>
 
     <genericsetup:registerProfile
         name="default"
