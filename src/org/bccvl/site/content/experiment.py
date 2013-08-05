@@ -21,7 +21,14 @@ class IExperiment(form.Schema):
     
     species_occurrence_dataset = schema.Choice(
         title=u'Species Occurrence Datasets',
-        source=vocabularies.species_occurrence_datasets_source,
+        source=vocabularies.species_presence_datasets_source,
+        default=None,
+        required=False,
+    )
+    
+    species_absence_dataset = schema.Choice(
+        title=u'Species Absence Datasets',
+        source=vocabularies.species_absence_datasets_source,
         default=None,
         required=False,
     )

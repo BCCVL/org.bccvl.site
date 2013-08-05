@@ -45,7 +45,7 @@
              zope.lifecycleevent.interfaces.IObjectAddedEvent"
         handler=".subscribers.publishRepositoryItem"
     />
-        
+
     <!-- Standard add view and form - invoked from ++add++ traverser -->
     <adapter
         for="Products.CMFCore.interfaces.IFolderish
@@ -86,5 +86,9 @@
         factory=".indexers.repositoryItem_BCCDataGenre"
         name="BCCDataGenre"
     />
-
+    
+    <adapter
+        factory=".indexers.repositoryItem_BCCSpeciesLayer"
+        name="BCCSpeciesLayer"
+    />
 </configure>
