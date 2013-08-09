@@ -50,6 +50,7 @@ setup(
         'plone.app.folderui',
         'dexterity.membrane',
         'borg.localrole',
+        'plone.app.contenttypes',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
