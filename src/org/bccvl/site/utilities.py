@@ -75,7 +75,7 @@ class JobTracker(object):
         else:
             return 'error', u'Unkown job function {}'.format(func.id)
         # TODO: current job status
-        if self.get_job_status() in ((None, None), COMPLETED):
+        if self.get_job_status() in (None, COMPLETED):
             job = async.wrapJob(jobinfo)
             queue = async.getQueues()['']
             job = queue.put(job)
@@ -85,7 +85,7 @@ class JobTracker(object):
             self.context.current_job = job
             return 'info', u'Job submitted {}'.format(job.status)
         else:
-            return 'error' u'Current Job is still running'
+            return 'error', u'Current Job is still running'
 
     def get_job_status(self):
         """
