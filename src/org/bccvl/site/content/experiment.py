@@ -1,8 +1,9 @@
 from plone.directives import form
 from zope import schema
-from plone.namedfile import field
 from plone.dexterity.content import Container
 from org.bccvl.site import vocabularies
+from zope.interface import implementer
+
 
 class IExperiment(form.Schema):
     """Base Experiment Class"""
@@ -18,14 +19,14 @@ class IExperiment(form.Schema):
         source=vocabularies.functions_source,
         default=None,
     )
-    
+
     species_occurrence_dataset = schema.Choice(
         title=u'Species Occurrence Datasets',
         source=vocabularies.species_presence_datasets_source,
         default=None,
         required=False,
     )
-    
+
     species_absence_dataset = schema.Choice(
         title=u'Species Absence Datasets',
         source=vocabularies.species_absence_datasets_source,
@@ -49,5 +50,6 @@ class IExperiment(form.Schema):
 
 # TODO: validate input choices against function selected
 
+@implementer(IExperiment)
 class Experiment(Container):
     pass

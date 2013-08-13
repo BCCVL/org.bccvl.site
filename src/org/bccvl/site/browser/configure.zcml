@@ -18,4 +18,14 @@
         for="org.bccvl.site.content.experiment.IExperiment"
         permission="cmf.ModifyPortalContent"
     />
+
+    <adapter
+        factory=".experiment.JobStatus"/>
+
+    <browser:page
+        name="view"
+        for="..content.experiment.IExperiment"
+        class=".experiment.View"
+        permission="cmf.ModifyPortalContent"/>
+
 </configure>
