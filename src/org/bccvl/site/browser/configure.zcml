@@ -19,6 +19,38 @@
         permission="cmf.ModifyPortalContent"
     />
 
+    <!-- Basic View:
+            for, permission, class, allowed_interface,
+            allowed_attributes
+         Pages:
+            Basic View, for, permission
+         View:
+            Pages, for, name, menu, title, provides
+         ViewPage:
+            name, attribute, template
+         ViewDefault:
+            name
+         PagesPage:
+            menu, title
+         Page:
+            Pages, PagesPage -->
+
+    <!-- named view with pages -->
+    <browser:view
+        name="dm"
+        class=".xmlrpc.DataSetManager"
+        allowed_attributes="getDetails getPath"
+        for="*"
+        permission="zope2.View" >
+        <browser:page
+            name="getDetails"
+            attribute="getDetails"/>
+        <browser:page
+            name="getPath"
+            attribute="getPath"/>
+
+    </browser:view>
+
     <adapter
         factory=".experiment.JobStatus"/>
 
