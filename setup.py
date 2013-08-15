@@ -51,6 +51,7 @@ setup(
         'dexterity.membrane',
         'borg.localrole',
         'plone.app.contenttypes',
+        'decorator',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
