@@ -37,7 +37,7 @@ class RDFTypeMapper(object):
             graph.add((graph.identifier, RDF['type'], FOAF['Group']))  # foaf:Organization
 
         graph.add((graph.identifier, RDF['type'], OWL['Thing']))
-        # FIXME: use only noe way to describ ethings ....
+        # FIXME: use only one way to describe things ....
         #        see dc - rdf mapping at http://dublincore.org/documents/dcq-rdf-xml/
         #        maybe dc app profile not as good as it might sound, but translated to RDF is better (or even owl)
         # FIXME: maybe move the next part into a separate utility
@@ -63,7 +63,7 @@ class JobTracker(object):
 
         async = getUtility(IAsyncService)
         # TODO: default queue quota is 1. either set it to a defined value (see: plone.app.asnc.subscriber)
-        #       or create and oubmit job manually
+        #       or create and submit job manually
         #job = async.queueJob(execute, self.context, envfile, specfile)
         jobinfo = None
         if func is None:
@@ -94,6 +94,6 @@ class JobTracker(object):
         """
         job = getattr(self.context, 'current_job', None)
         if job is not None:
-            # job.result contais possibel error message (e.g. twisted.Failure)
+            # job.result contains possible error message (e.g. twisted.Failure)
             return job.status
         return None

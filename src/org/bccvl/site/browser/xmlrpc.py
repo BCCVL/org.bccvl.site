@@ -8,7 +8,7 @@ from plone.app.uuid.utils import uuidToObject
 
 
 # self passed in as *args
-@decorator # well behaved decorator that preserves signature so tha mapply can inspecit it
+@decorator # well behaved decorator that preserves signature so that apply can inspect it
 def returnwrapper(f, *args,  **kw):
     # self.request.get['HTTP_ACCEPT']
     # self.request.get['CONTENT_TYPE']
@@ -41,7 +41,7 @@ class DataSetManager(BrowserView):
         return {'path': ob.absolute_url_path()}
 
     @returnwrapper
-    def getMetadat(self, datasetid):
+    def getMetadata(self, datasetid):
         return {'a': 'test3',
                 'id': datasetid}
 

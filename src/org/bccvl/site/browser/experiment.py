@@ -42,7 +42,7 @@ class JobStatus(object):
 # DefaultEditView = layout.wrap_form(DefaultEditForm)
 # from plone.z3cform import layout
 class View(edit.DefaultEditForm):
-    """The view. May will a template from <modulename>_templates/view.pt,
+    """The view. Will be a template from <modulename>_templates/view.pt,
     and will be called 'view' unless otherwise stated.
     """
     # id = 'view'
@@ -84,7 +84,7 @@ class View(edit.DefaultEditForm):
     #         return template(self)
     #     return self.template()
 
-       # super does not work... ekpcts different kind of template
+       # super does not work... expects different kind of template
         # return super(View,  self).render()
     #     template = getattr(self, 'template', None)
     #     if template is not None:
