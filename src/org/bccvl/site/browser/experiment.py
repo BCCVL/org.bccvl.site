@@ -53,7 +53,8 @@ class View(edit.DefaultEditForm):
 
     additionalSchemata = (IJobStatus, )
 
-    #template = ViewPageTemplateFile('view.pt')
+    # provide a specific css ID to allow easier diazo targetting
+    template = ViewPageTemplateFile('experiment_view.pt')
 
     #@button.handler(IJobStatus.apply
     # condition=lambda form: form.showApply)
