@@ -1,6 +1,6 @@
 from Products.Five.browser import BrowserView
 from zope.publisher.browser import BrowserView as Z3BrowserView
-from zope.publisher.browser import BrowserPage as Z3BrowserPage #+ publishTraverse
+from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
 from zope.publisher.interfaces import IPublishTraverse,  NotFound
 from functools import wraps
 from decorator import decorator
@@ -8,8 +8,9 @@ from plone.app.uuid.utils import uuidToObject
 
 
 # self passed in as *args
-@decorator # well behaved decorator that preserves signature so that apply can inspect it
+@decorator  # well behaved decorator that preserves signature so that apply can inspect it
 def returnwrapper(f, *args,  **kw):
+    # see http://code.google.com/p/mimeparse/
     # self.request.get['HTTP_ACCEPT']
     # self.request.get['CONTENT_TYPE']
     # self.request.get['method'']
@@ -21,7 +22,8 @@ def returnwrapper(f, *args,  **kw):
     ret = f(*args, **kw)
     # return ACCEPT encoding here or IStreamIterator, that encodes stuff on the fly
     # could handle response encoding via request.setBody ... would need to replace response
-    #   instance of request.response. (see ZPublisher.xmlprc.response, which wraps a default Response)
+    # instance of request.response. (see ZPublisher.xmlprc.response, which
+    # wraps a default Response)
     return ret
 
 
