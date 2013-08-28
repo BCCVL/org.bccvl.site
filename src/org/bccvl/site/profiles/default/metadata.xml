@@ -34,13 +34,10 @@
     </dependencies>
 </metadata>
 <!-- stuff todo on install:
-  - setup facultystaffdir
   - setup shibboleth login ... can't enable via genericsetup
   - setup pas (correct plugin order)
-  - setup upload folder
   - setup geo stuff -->
 
 <!-- 2ndoray todo's:
   - edit events to keep plone metadata in sync with rdf metadat
-  ... esp. for facultystaff stuff
 -->
