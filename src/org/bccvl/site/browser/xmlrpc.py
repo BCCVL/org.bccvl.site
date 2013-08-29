@@ -1,15 +1,18 @@
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
-from zope.publisher.browser import BrowserView as Z3BrowserView
-from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
-from zope.publisher.interfaces import IPublishTraverse,  NotFound
-from functools import wraps
+#from zope.publisher.browser import BrowserView as Z3BrowserView
+#from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
+#from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import NotFound
+#from functools import wraps
 from decorator import decorator
+from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject
-
+from plone.uuid.interfaces import IUUID
 
 # self passed in as *args
 @decorator  # well behaved decorator that preserves signature so that apply can inspect it
-def returnwrapper(f, *args,  **kw):
+def returnwrapper(f, *args, **kw):
     # see http://code.google.com/p/mimeparse/
     # self.request.get['HTTP_ACCEPT']
     # self.request.get['CONTENT_TYPE']
@@ -27,25 +30,40 @@ def returnwrapper(f, *args,  **kw):
     return ret
 
 
+def getdsmetadata(ds):
+    # extract info about files
+    pc = getToolByName(ds, 'portal_catalog')
+    files = pc.searchResults(path='/'.join(ds.getPhysicalPath()),
+                             object_provides=IFile.__identifier__)
+    return {'url': ds.absolute_url(),
+            'id': IUUID(ds),
+            'files': [br.getURL() for br in files]}
+
+
 class DataSetManager(BrowserView):
 
     @returnwrapper
-    def getDetails(self, datasetid):
-        return {'a': "test1",
-                'id': datasetid}
+    def getMetadata(self, datasetid):
+        ds = uuidToObject(datasetid)
+        if ds is None:
+            raise NotFound(self.context,  datasetid,  self.request)
+        return getdsmetadata(ds)
+
     # return: type, id, format, source, path, metadata dict
 
     @returnwrapper
     def getPath(self, datasetid):
-        ob = uuidToObject(datasetid)
-        if ob is None:
+        ds = uuidToObject(datasetid)
+        if ds is None:
             raise NotFound(self.context,  datasetid,  self.request)
-        return {'path': ob.absolute_url_path()}
+        return {'url': ds.absolute_url()}
+
+
+class DataSetAPI(BrowserView):
 
     @returnwrapper
-    def getMetadata(self, datasetid):
-        return {'a': 'test3',
-                'id': datasetid}
+    def getMetadata(self):
+        return getdsmetadata(self.context)
 
 
 class JobManager(BrowserView):

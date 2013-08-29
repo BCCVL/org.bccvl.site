@@ -39,15 +39,29 @@
     <browser:view
         name="dm"
         class=".xmlrpc.DataSetManager"
-        allowed_attributes="getDetails getPath"
-        for="*"
+        allowed_attributes="getMetadata getPath"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="zope2.View" >
+
         <browser:page
-            name="getDetails"
-            attribute="getDetails"/>
+            name="getMetadata"
+            attribute="getMetadata"/>
         <browser:page
             name="getPath"
             attribute="getPath"/>
+
+    </browser:view>
+
+    <browser:view
+        class=".xmlrpc.DataSetAPI"
+        name="dm"
+        allowed_attributes="getMetadata"
+        for="gu.repository.content.interfaces.IRepositoryItem"
+        permission="zope2.View" >
+
+        <browser:page
+            name="getMetadata"
+            attribute="getMetadata"/>
 
     </browser:view>
 
