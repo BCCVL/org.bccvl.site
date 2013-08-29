@@ -1,6 +1,8 @@
 <configure
         xmlns="http://namespaces.zope.org/zope"
+        xmlns:plone="http://namespaces.plone.org/plone"
         xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+        i18n_domain="org.bccvl"
         >
 
     <includeDependencies package="."/>
@@ -19,8 +21,9 @@
         name="org.bccvl.site"
         title="BCCVL Site setup handlers"
         description="BCCVL site installation setup"
-        handler="org.bccvl.site.setuphandlers.setupVarious"
-    />
+        handler="org.bccvl.site.setuphandlers.setupVarious">
+        <depends name="content"/>
+    </genericsetup:importStep>
 
     <utility
         factory=".utilities.RDFTypeMapper"
@@ -94,4 +97,5 @@
 
     <adapter
         factory=".utilities.JobTracker"/>
+
 </configure>
