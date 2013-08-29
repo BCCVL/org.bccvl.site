@@ -1,0 +1,41 @@
+
+First import some necessary stuff.
+
+    >>> import xmlrpclib
+    >>> from pprint import pprint
+    >>> from org.bccvl.site import defaults
+    >>> from plone.uuid.interfaces import IUUID
+    >>> portal = layer['portal']
+
+Get our dataset object set up in the test fixture.
+
+    >>> abt = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']
+    >>> abtuid = IUUID(abt)
+
+
+Now we can call some methods on the dataset object. We can access the
+API at the absolute url of the object + '/dm' appended to it.
+Once we have a XMLRPC proxy we can just call the available methods.
+
+    >>> proxy = xmlrpclib.ServerProxy(abt.absolute_url() + '/dm')
+    >>> res = proxy.getMetadata()
+    >>> pprint(res)
+    {'files': ['http://localhost:55001/plone/datasets/species/ABT/bkgd.csv'],
+     'id': '...',
+     'url': 'http://localhost:55001/plone/datasets/species/ABT'}
+    >>> res['id'] == abtuid
+    True
+
+There is a context less dataset manager API available as well. It is
+located at the site root url + '/dm' appended to it.
+As this dataset manager has no other context than the site object, we
+have to pass in a parameter to tell it in which object we are interested.
+
+    >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
+    >>> res = proxy.getMetadata(abtuid)
+    >>> pprint(res)
+    {'files': ['http://localhost:55001/plone/datasets/species/ABT/bkgd.csv'],
+     'id': '...',
+     'url': 'http://localhost:55001/plone/datasets/species/ABT'}
+    >>> res['id'] == abtuid
+    True

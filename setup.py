@@ -69,7 +69,8 @@ setup(
         #'plone.app.relationfield',
     ],
     extras_require={
-        'test': ['plone.app.testing']
+        'test': ['plone.app.testing',
+                 'unittest2']
     },
 
     entry_points="""
