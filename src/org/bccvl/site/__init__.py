@@ -39,7 +39,7 @@ class UserAdder(Explicit):  # need Explicit Acquisition, because membrane assume
         portal = getToolByName(site, 'portal_url').getPortalObject()
         # FIXME: create this folder if it is not there?
         directory = portal.get('directory')
-        
+
         ## The current user is usually not allowed to create new user objects.
         ## temporarily change the security context to use a temporary
         ## user with manager role.
@@ -49,7 +49,7 @@ class UserAdder(Explicit):  # need Explicit Acquisition, because membrane assume
             '', ['Manager'],
             ''
         )
-        
+
         tmp_user = tmp_user.__of__(portal.acl_users)
         newSecurityManager(None, tmp_user)
 
@@ -62,7 +62,7 @@ class UserAdder(Explicit):  # need Explicit Acquisition, because membrane assume
         # approve new user
         wf_tool = getToolByName(portal, 'portal_workflow')
         wf_tool.doActionFor(newuser, 'approve')
-        
+
         ## Reset security manager
         setSecurityManager(old_sm)
 
@@ -72,5 +72,3 @@ class UserAdder(Explicit):  # need Explicit Acquisition, because membrane assume
 
         # _createObjectByType('SimpleMember', portal, login, password=password,
         #                     userName=login)
-
-

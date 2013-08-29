@@ -8,7 +8,7 @@ def setupVarious(context):
     # only run for this product
     if context.readDataFile('org.bccvl.site.marker.txt') is None:
         return
-    
+
     portal = context.getSite()
     createDatasetsFolder(portal)
     createFunctionsFolder(portal)
@@ -27,8 +27,8 @@ def _createFolder(context, folder_id, folder_title, workflow_state='publish', lo
 
 def createDatasetsFolder(site):
     # Add a root level container to hold dataset objects
-    _createFolder(site, 
-        folder_id = defaults.DATASETS_FOLDER_ID, 
+    _createFolder(site,
+        folder_id = defaults.DATASETS_FOLDER_ID,
         folder_title = 'Reference Data Sets',
     )
     # Add sub-folders for various set types
@@ -55,11 +55,11 @@ def createFunctionsFolder(site):
 
 def createKnowledgeBaseFolder(site):
     # Add a root level container to hold knowledge base articles
-    _createFolder(site, 
-        folder_id = defaults.KNOWLEDGEBASE_FOLDER_ID, 
+    _createFolder(site,
+        folder_id = defaults.KNOWLEDGEBASE_FOLDER_ID,
         folder_title = 'Knowledge Base',
     )
-    
+
 def createExperimentsFolder(site):
     # TODO: make this per-user rather than global
     _createFolder(site,
@@ -69,4 +69,3 @@ def createExperimentsFolder(site):
     # TODO: DEFINITELY do NOT use this in production!!
     site.experiments.manage_permission('Add portal content', ('Authenticated',), acquire=False)
     site.experiments.manage_permission('Modify portal content', ('Authenticated',), acquire=False)
-
