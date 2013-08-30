@@ -63,7 +63,7 @@ def createKnowledgeBaseFolder(site):
 def createExperimentsFolder(site):
     # TODO: make this per-user rather than global
     _createFolder(site,
-        folder_id = 'experiments',
+        folder_id = defaults.EXPERIMENTS_FOLDER_ID,
         folder_title = 'Experiments',
     )
     # TODO: DEFINITELY do NOT use this in production!!

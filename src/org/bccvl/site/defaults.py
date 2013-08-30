@@ -6,3 +6,5 @@ DATASETS_CLIMATE_FOLDER_ID = 'climate'
 FUNCTIONS_FOLDER_ID = 'functions'
 
 KNOWLEDGEBASE_FOLDER_ID = 'knowledgebase'
+
+EXPERIMENTS_FOLDER_ID = 'experiments'
