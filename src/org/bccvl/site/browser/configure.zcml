@@ -72,6 +72,7 @@
         name="view"
         for="..content.experiment.IExperiment"
         class=".experiment.View"
+        template="experiment_view.pt"
         permission="cmf.ModifyPortalContent"/>
 
 </configure>

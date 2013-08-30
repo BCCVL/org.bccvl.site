@@ -7,8 +7,6 @@ from org.bccvl.site.interfaces import IJobTracker
 from zope.component import adapter
 from zope.interface import implementer
 from Products.statusmessages.interfaces import IStatusMessage
-#from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from plone.dexterity.browser import add, edit, view
 from zope.i18n import translate
 
@@ -23,6 +21,7 @@ class IJobStatus(form.Schema):
 
 
 from z3c.form.interfaces import DISPLAY_MODE
+
 
 @adapter(IExperiment)
 @implementer(IJobStatus)
@@ -52,9 +51,6 @@ class View(edit.DefaultEditForm):
     extends(dexterity.DisplayForm)
 
     additionalSchemata = (IJobStatus, )
-
-    # provide a specific css ID to allow easier diazo targetting
-    template = ViewPageTemplateFile('experiment_view.pt')
 
     #@button.handler(IJobStatus.apply
     # condition=lambda form: form.showApply)
