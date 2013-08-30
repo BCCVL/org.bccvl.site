@@ -3,7 +3,6 @@
     <version>1001</version>
     <dependencies>
         <!-- <dependency>profile-Products.AutoUserMakerPASPlugin:default</dependency> -->
-        <dependency>profile-org.bccvl.theme:default</dependency>
         <dependency>profile-collective.onlogin:default</dependency>
         <dependency>profile-collective.quickupload:default</dependency>
         <!-- <dependency>profile-collective.z3cform.colorpicker:default</dependency> -->
@@ -19,12 +18,6 @@
         <dependency>profile-plone.app.collection:default</dependency>
         <dependency>profile-plone.formwidget.autocomplete:default</dependency>
 
-        <!-- <dependency>profile-collective.geo.settings:default</dependency> -->
-        <!-- <dependency>profile-collective.geo.openlayers:default</dependency> -->
-        <!-- \! <dependency>profile-collective.geo.kml:default</dependency> -\-> -->
-        <!-- <dependency>profile-collective.geo.mapwidget:default</dependency> -->
-        <!-- <dependency>profile-collective.geo.geographer:default</dependency> -->
-        <!-- <dependency>profile-collective.geo.contentlocations:default</dependency> -->
         <dependency>profile-plone.app.folderui:default</dependency>
         <dependency>profile-gu.plone.rdf:default</dependency>
         <dependency>profile-gu.repository.content:default</dependency>
@@ -33,11 +26,3 @@
 
     </dependencies>
 </metadata>
-<!-- stuff todo on install:
-  - setup shibboleth login ... can't enable via genericsetup
-  - setup pas (correct plugin order)
-  - setup geo stuff -->
-
-<!-- 2ndoray todo's:
-  - edit events to keep plone metadata in sync with rdf metadat
--->

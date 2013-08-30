@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<object name="portal_catalog" meta_type="Plone Catalog Tool">
+    <index name="BCCDataGenre" meta_type="FieldIndex">
+        <indexed_attr value="BCCDataGenre"/>
+    </index>
+    <index name="BCCSpeciesLayer" meta_type="FieldIndex">
+        <indexed_attr value="BCCSpeciesLayer"/>
+    </index>
+</object>

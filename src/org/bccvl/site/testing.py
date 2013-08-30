@@ -1,12 +1,20 @@
-from plone.app.testing import PloneSandboxLayer
+#from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
 from plone.app.testing import PLONE_FIXTURE
+from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
 from plone.testing import z2
 from org.bccvl.site import defaults
+import os.path
 
 TESTCSV = '\n'.join(['%s, %d, %d' % ('Name', x, x + 1) for x in range(1, 10)])
+
+
+def getFile(filename):
+    """ return contents of the file with the given name """
+    filename = os.path.join(os.path.dirname(__file__), filename)
+    return open(filename, 'r')
 
 
 class BCCVLFixture(PloneSandboxLayer):
@@ -15,14 +23,11 @@ class BCCVLFixture(PloneSandboxLayer):
 
     def setUpZope(self, app, configurationContext):
         # load ZCML and use z2.installProduct here
+        import org.bccvl.site.tests
+        self.loadZCML('testing.zcml', package=org.bccvl.site.tests)
+        #self.loadZCML(os.path.join(os.path.dirname(__file__), 'tests/testing.zcml'))
         z2.installProduct(app, 'Products.membrane')
-
-        import plone.app.folderui
-        self.loadZCML(package=plone.app.folderui)
         z2.installProduct(app, 'plone.app.folderui')
-
-        import org.bccvl.site
-        self.loadZCML(package=org.bccvl.site)
 
         # FIXME: hack a config together...
         from App.config import getConfiguration
@@ -34,7 +39,8 @@ class BCCVLFixture(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         # base test fixture sets default chain to nothing
         portal['portal_workflow'].setDefaultChain('simple_publication_workflow')
-        self.applyProfile(portal, 'org.bccvl.site:default')
+        # use testing profile, to avoid trubles with collective.geo.mapwidget
+        self.applyProfile(portal, 'org.bccvl.site.tests:testing')
         self.addTestContent(portal)
 
     def tearDownZope(self, app):
@@ -66,6 +72,7 @@ class BCCVLFixture(PloneSandboxLayer):
                                     file=TESTCSV)
         finally:
             setSecurityManager(sm)
+            pass
 
 
 

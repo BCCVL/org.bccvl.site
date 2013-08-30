@@ -1,0 +1,451 @@
+<registry>
+  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_enabled" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_enabled">
+    <field type="plone.registry.field.Bool">
+      <default>True</default>
+      <description>First login redirect is of higher priority than redirect on every login. If disabled, then every login redirect will be executed even for first time login.</description>
+      <required>False</required>
+      <title>Enable redirect on first login</title>
+    </field>
+    <value>True</value>
+  </record>
+  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_expr">
+    <field type="plone.registry.field.TextLine">
+      <default>string:${portal_url}/@@personal-information</default>
+      <description>TAL Expression evaluating to url for first time redirect.</description>
+      <required>False</required>
+      <title>First login redirect expression</title>
+    </field>
+    <value>string:${portal_url}/@@personal-information</value>
+  </record>
+  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_ignore_came_from" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_ignore_came_from">
+    <field type="plone.registry.field.Bool">
+      <default>True</default>
+      <description>By default Plone redirects user to last visited page after login. Here you can disable this behavior and always redirect to above entered url.</description>
+      <required>False</required>
+      <title>Ignore came_from parameter on first login</title>
+    </field>
+    <value>True</value>
+  </record>
+  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_enabled" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_enabled">
+    <field type="plone.registry.field.Bool">
+      <default>True</default>
+      <description>Login redirect is happening on every user login and does not happen on user first login in case First Login Redirect is enabled on this form above.</description>
+      <required>False</required>
+      <title>Enable redirect on login</title>
+    </field>
+    <value>False</value>
+  </record>
+  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_expr">
+    <field type="plone.registry.field.TextLine">
+      <default>string:${portal_url}/dashboard</default>
+      <description>TAL Expression evaluating to url for redirect.</description>
+      <required>False</required>
+      <title>Login redirect expression</title>
+    </field>
+    <value>string:${portal_url}/dashboard</value>
+  </record>
+  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_ignore_came_from" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_ignore_came_from">
+    <field type="plone.registry.field.Bool">
+      <default>False</default>
+      <description>By default Plone redirects user to last visited page after login. Here you can disable this behavior and always redirect to above entered url.</description>
+      <required>False</required>
+      <title>Ignore came_from parameter on login</title>
+    </field>
+    <value>False</value>
+  </record>
+
+
+  <record name="gu.plone.rdf.interfaces.IRDFSettings.fresnel_graph_uri" interface="gu.plone.rdf.interfaces.IRDFSettings" field="fresnel_graph_uri">
+    <field type="plone.registry.field.URI">
+      <title>Fresnel Graph URI</title>
+    </field>
+    <value>http://namespaces.gu.edu.au/z3cform/fresnel#</value>
+  </record>
+
+
+  <!-- <record name="plone.app.folderui.facet.Creator.description" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="description"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Description</title> -->
+  <!--   </field> -->
+  <!--   <value>Content created by</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Creator.enabled" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="enabled"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>enabled</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Creator.index" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="index"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <required>False</required> -->
+  <!--     <title>Index</title> -->
+  <!--   </field> -->
+  <!--   <value/> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Creator.multiset" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="multiset"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>multiset</title> -->
+  <!--   </field> -->
+  <!--   <value>False</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Creator.name" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="name"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Facet name</title> -->
+  <!--   </field> -->
+  <!--   <value>Creator</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Creator.order" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="order"> -->
+  <!--   <field type="plone.registry.field.Int"> -->
+  <!--     <title>order</title> -->
+  <!--   </field> -->
+  <!--   <value>1</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Creator.query_vocabulary" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="query_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>Query vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Creator.title" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="title"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Title</title> -->
+  <!--   </field> -->
+  <!--   <value>Creator</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Creator.use_vocabulary" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="use_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>Use vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.description" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="description"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Description</title> -->
+  <!--   </field> -->
+  <!--   <value>Categories/tags/subjects</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.enabled" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="enabled"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>enabled</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.index" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="index"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <required>False</required> -->
+  <!--     <title>Index</title> -->
+  <!--   </field> -->
+  <!--   <value/> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.multiset" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="multiset"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>multiset</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.name" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="name"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Facet name</title> -->
+  <!--   </field> -->
+  <!--   <value>Subject</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.order" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="order"> -->
+  <!--   <field type="plone.registry.field.Int"> -->
+  <!--     <title>order</title> -->
+  <!--   </field> -->
+  <!--   <value>3</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.query_vocabulary" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="query_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>Query vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.title" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="title"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Title</title> -->
+  <!--   </field> -->
+  <!--   <value>Subject</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Subject.use_vocabulary" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="use_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>Use vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.description" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="description"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Description</title> -->
+  <!--   </field> -->
+  <!--   <value>Content type</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.enabled" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="enabled"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>enabled</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.index" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="index"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <required>False</required> -->
+  <!--     <title>Index</title> -->
+  <!--   </field> -->
+  <!--   <value/> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.multiset" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="multiset"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>multiset</title> -->
+  <!--   </field> -->
+  <!--   <value>False</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.name" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="name"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Facet name</title> -->
+  <!--   </field> -->
+  <!--   <value>Type</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.order" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="order"> -->
+  <!--   <field type="plone.registry.field.Int"> -->
+  <!--     <title>order</title> -->
+  <!--   </field> -->
+  <!--   <value>2</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.query_vocabulary" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="query_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>Query vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.title" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="title"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Title</title> -->
+  <!--   </field> -->
+  <!--   <value>Type</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.Type.use_vocabulary" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="use_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>Use vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.description" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="description"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Description</title> -->
+  <!--   </field> -->
+  <!--   <value>Date item was modified</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.enabled" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="enabled"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>enabled</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.index" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="index"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <required>False</required> -->
+  <!--     <title>Index</title> -->
+  <!--   </field> -->
+  <!--   <value>modified</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.multiset" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="multiset"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>multiset</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.name" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="name"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Facet name</title> -->
+  <!--   </field> -->
+  <!--   <value>modified</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.order" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="order"> -->
+  <!--   <field type="plone.registry.field.Int"> -->
+  <!--     <title>order</title> -->
+  <!--   </field> -->
+  <!--   <value>4</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.query_vocabulary" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="query_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>Query vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>False</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.ranges" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="ranges"> -->
+  <!--   <field type="plone.registry.field.List"> -->
+  <!--     <title>Ranges</title> -->
+  <!--     <value_type type="plone.registry.field.TextLine"/> -->
+  <!--   </field> -->
+  <!--   <value> -->
+  <!--     <element>This month</element> -->
+  <!--     <element>This week</element> -->
+  <!--     <element>Today</element> -->
+  <!--     <element>Past</element> -->
+  <!--   </value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.title" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="title"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Title</title> -->
+  <!--   </field> -->
+  <!--   <value>Modification date</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.modified.use_vocabulary" interface="plone.app.folderui.interfaces.IDateRangeConfig" field="use_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>Use vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.description" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="description"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Description</title> -->
+  <!--   </field> -->
+  <!--   <value>Searchable full text</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.enabled" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="enabled"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>enabled</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.index" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="index"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <required>False</required> -->
+  <!--     <title>Index</title> -->
+  <!--   </field> -->
+  <!--   <value>SearchableText</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.multiset" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="multiset"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>multiset</title> -->
+  <!--   </field> -->
+  <!--   <value>True</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.name" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="name"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Facet name</title> -->
+  <!--   </field> -->
+  <!--   <value>text</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.order" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="order"> -->
+  <!--   <field type="plone.registry.field.Int"> -->
+  <!--     <title>order</title> -->
+  <!--   </field> -->
+  <!--   <value>0</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.query_vocabulary" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="query_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <title>Query vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>False</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.title" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="title"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <title>Title</title> -->
+  <!--   </field> -->
+  <!--   <value>Text search</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.folderui.facet.text.use_vocabulary" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="use_vocabulary"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>True</default> -->
+  <!--     <title>Use vocabulary</title> -->
+  <!--   </field> -->
+  <!--   <value>False</value> -->
+  <!-- </record> -->
+
+
+
+  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.absolutePrefix" interface="plone.app.theming.interfaces.IThemeSettings" field="absolutePrefix"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <description>convert_relative_url</description> -->
+  <!--     <required>False</required> -->
+  <!--     <title>absolute_url_prefix</title> -->
+  <!--   </field> -->
+  <!--   <value/> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.currentTheme" interface="plone.app.theming.interfaces.IThemeSettings" field="currentTheme"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <description>current_theme_description</description> -->
+  <!--     <title>current_theme</title> -->
+  <!--   </field> -->
+  <!--   <value/> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.doctype" interface="plone.app.theming.interfaces.IThemeSettings" field="doctype"> -->
+  <!--   <field type="plone.registry.field.ASCIILine"> -->
+  <!--     <default></default> -->
+  <!--     <description>doctype_description</description> -->
+  <!--     <required>False</required> -->
+  <!--     <title>doctype</title> -->
+  <!--   </field> -->
+  <!--   <value></value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.enabled" interface="plone.app.theming.interfaces.IThemeSettings" field="enabled"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <description>enable_theme_globally</description> -->
+  <!--     <title>enabled</title> -->
+  <!--   </field> -->
+  <!--   <value>False</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.hostnameBlacklist" interface="plone.app.theming.interfaces.IThemeSettings" field="hostnameBlacklist"> -->
+  <!--   <field type="plone.registry.field.List"> -->
+  <!--     <default> -->
+  <!--       <element>127.0.0.1</element> -->
+  <!--     </default> -->
+  <!--     <description>hostname_blacklist_description</description> -->
+  <!--     <required>False</required> -->
+  <!--     <title>hostname_blacklist</title> -->
+  <!--     <value_type type="plone.registry.field.TextLine"/> -->
+  <!--   </field> -->
+  <!--   <value> -->
+  <!--     <element>127.0.0.1</element> -->
+  <!--   </value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.parameterExpressions" interface="plone.app.theming.interfaces.IThemeSettings" field="parameterExpressions"> -->
+  <!--   <field type="plone.registry.field.Dict"> -->
+  <!--     <default/> -->
+  <!--     <description>parameter_expressions_description</description> -->
+  <!--     <key_type type="plone.registry.field.ASCIILine"/> -->
+  <!--     <required>False</required> -->
+  <!--     <title>parameter_expressions</title> -->
+  <!--     <value_type type="plone.registry.field.ASCIILine"/> -->
+  <!--   </field> -->
+  <!--   <value/> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.readNetwork" interface="plone.app.theming.interfaces.IThemeSettings" field="readNetwork"> -->
+  <!--   <field type="plone.registry.field.Bool"> -->
+  <!--     <default>False</default> -->
+  <!--     <description>network_urls_allowed</description> -->
+  <!--     <title>readNetwork</title> -->
+  <!--   </field> -->
+  <!--   <value>False</value> -->
+  <!-- </record> -->
+  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.rules" interface="plone.app.theming.interfaces.IThemeSettings" field="rules"> -->
+  <!--   <field type="plone.registry.field.TextLine"> -->
+  <!--     <description>rules_file_path</description> -->
+  <!--     <required>False</required> -->
+  <!--     <title>rules_file</title> -->
+  <!--   </field> -->
+  <!--   <value/> -->
+  <!-- </record> -->
+
+
+</registry>
