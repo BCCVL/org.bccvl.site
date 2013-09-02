@@ -1,4 +1,5 @@
 import unittest2 as unittest
+from urlparse import urljoin
 
 from zope.component import createObject
 from zope.component import queryUtility
@@ -18,7 +19,7 @@ from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 # - check view page for elements
 # - see plone.app.contenttypes browser tests for how to
 
-class ExperimentFunctionalTest(unittest.TestCase):
+class ExperimentAddTest(unittest.TestCase):
 
     layer = BCCVL_FUNCTIONAL_TESTING
 
@@ -39,11 +40,13 @@ class ExperimentFunctionalTest(unittest.TestCase):
             'Basic %s:%s' % (SITE_OWNER_NAME, SITE_OWNER_PASSWORD,)
         )
 
-    def test_add_experiment(self):
+    def test_add_experiment_missing_input(self):
         self.browser.open(self.experiments_url)
         self.browser.getLink(url=self.experiments_add_url).click()
-        self.browser.getControl(name='form.widgets.IDublinCore.title')\
-            .value = "My Experiment"
+        # uncomment set title as long as I don't know how to send any
+        # other field without value
+        #self.browser.getControl(name='form.widgets.IDublinCore.title')\
+        #    .value = "My Experiment"
         self.browser.getControl(name='form.widgets.IDublinCore.description')\
             .value = "This is my experiment description."
         # form.widgets.functions:list
@@ -58,7 +61,7 @@ class ExperimentFunctionalTest(unittest.TestCase):
         # control.controls/ control.getControls
         # itemcontrol.selected (get/set selcted state)
         # form.widgets.species_climate_dataset:list
-        self.browser.getControl('Save').click()
+        self.browser.getControl('Create and start').click()
         self.assertTrue('Required input is missing' in self.browser.contents)
         self.assertEquals(self.browser.url, self.experiments_add_url)
 
@@ -66,6 +69,43 @@ class ExperimentFunctionalTest(unittest.TestCase):
         # self.assertTrue('My Experiment' in self.browser.contents)
         # self.assertTrue('This is my experiment' in self.browser.contents)
         # check for submit button
+
+    def test_add_experiment(self):
+        self.browser.open(self.experiments_url)
+        self.browser.getLink(url=self.experiments_add_url).click()
+        self.browser.getControl(name='form.widgets.IDublinCore.title')\
+            .value = "My Experiment"
+        self.browser.getControl(name='form.widgets.IDublinCore.description')\
+            .value = "This is my experiment description."
+        self.browser.getControl(name='form.widgets.functions:list')\
+            .displayValue = ["Bioclim"]
+        self.browser.getControl(name='form.widgets.species_occurrence_dataset:list')\
+            .displayValue = ["ABT"]
+        self.browser.getControl(name='form.widgets.environmental_dataset:list')\
+            .displayValue = ["Current"]
+        # form.widgets.functions:list
+        # form.widgets.species_occurrence_dataset:list
+        # form.widgets.species_absence_dataset:list
+        # form.widgets.species_environmental_dataset:list
+        # get listcontrol options and get/set value
+        # control.options/ control.value
+        # get listcontrol display options and get/set display value
+        #  control.displayOptions/ control.displayValue
+        # get sub controls (items)
+        # control.controls/ control.getControls
+        # itemcontrol.selected (get/set selcted state)
+        # form.widgets.species_climate_dataset:list
+        self.browser.getControl('Create and start').click()
+        self.assertTrue('Item created' in self.browser.contents)
+        self.assertTrue('Job submitted' in self.browser.contents)
+        new_exp_url = urljoin(self.experiments_add_url, 'my-experiment/view')
+        self.assertEquals(self.browser.url, new_exp_url)
+        self.assertTrue('My Experiment' in self.browser.contents)
+        self.assertTrue('This is my experiment description' in self.browser.contents)
+        self.assertTrue('Job submitted pending-status' in self.browser.contents)
+        self.assertTrue('Pending' in self.browser.contents)
+        # TODO:
+        # check for submit button; should be grayed?
 
 
 class ExperimentsViewFunctionalTest(unittest.TestCase):
