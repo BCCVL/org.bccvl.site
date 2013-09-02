@@ -1,0 +1,11 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="org.bccvl"
+    >
+
+  <permission
+      id="org.bccvl.AddExperiment"
+      title="org.bccvl: Add Experiment"
+      />
+
+</configure>

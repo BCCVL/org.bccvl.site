@@ -23,7 +23,7 @@
 <property name="product">dexterity.membrane</property>
 <property name="factory">addMember</property>
 -->
- <property name="add_permission">cmf.AddPortalContent</property>
+ <property name="add_permission">org.bccvl.AddExperiment</property>
  <property name="behaviors">
      <element value="plone.app.dexterity.behaviors.metadata.IDublinCore" />
      <!-- element value="plone.app.dexterity.behaviors.metadata.IBasic" /-->

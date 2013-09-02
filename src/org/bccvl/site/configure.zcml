@@ -6,24 +6,10 @@
         >
 
     <includeDependencies package="."/>
+    <include file="permissions.zcml"/>
+    <include file="profiles.zcml"/>
     <include package=".content"/>
     <include package=".browser"/>
-
-    <genericsetup:registerProfile
-        name="default"
-        title="BCCVL Site"
-        directory="profiles/default"
-        description="Setup BCCVL Site."
-        provides="Products.GenericSetup.interfaces.EXTENSION"
-    />
-
-    <genericsetup:importStep
-        name="org.bccvl.site"
-        title="BCCVL Site setup handlers"
-        description="BCCVL site installation setup"
-        handler="org.bccvl.site.setuphandlers.setupVarious">
-        <depends name="content"/>
-    </genericsetup:importStep>
 
     <utility
         factory=".utilities.RDFTypeMapper"
