@@ -4,13 +4,15 @@ from Products.membrane.interfaces import IUserAdder
 from zope.interface import implements
 from zope.component.hooks import getSite
 from Acquisition import Explicit
-
-
+from zope.i18nmessageid import MessageFactory
 from AccessControl.SecurityManagement import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
 from AccessControl.User import UnrestrictedUser as BaseUnrestrictedUser
 from plone.dexterity.utils import createContent, addContentToContainer
+
+
+MessageFactory = MessageFactory('org.bccvl.site')
 
 
 class UnrestrictedUser(BaseUnrestrictedUser):
