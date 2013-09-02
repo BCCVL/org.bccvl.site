@@ -135,3 +135,5 @@ class ExperimentsViewFunctionalTest(unittest.TestCase):
         self.browser.open(self.exp_url + '/view')
         self.assertTrue('My Experiment' in self.browser.contents)
         self.assertTrue('Start Job' in self.browser.contents)
+        # check for themeing target
+        self.assertTrue('<div id="bccvl-experiment-view">' in self.browser.contents)

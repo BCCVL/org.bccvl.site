@@ -6,6 +6,7 @@ from org.bccvl.site.content.experiment import IExperiment
 from org.bccvl.site.interfaces import IJobTracker
 from zope.component import adapter
 from zope.interface import implementer
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit, view
 from zope.i18n import translate
@@ -52,6 +53,8 @@ class View(edit.DefaultEditForm):
     extends(dexterity.DisplayForm)
 
     additionalSchemata = (IJobStatus, )
+
+    template = ViewPageTemplateFile("experiment_view.pt")
 
     #@button.handler(IJobStatus.apply
     # condition=lambda form: form.showApply)
