@@ -9,6 +9,7 @@ from zope.interface import implementer
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit, view
 from zope.i18n import translate
+from org.bccvl.site import MessageFactory as _
 
 
 class IJobStatus(form.Schema):
@@ -97,3 +98,38 @@ class View(edit.DefaultEditForm):
 #     def updateWidgets(self):
 #         super(Edit, self).updateWidgets()
 #         self.widgets['title'].mode = 'hidden'
+
+
+class Add(add.DefaultAddForm):
+
+    extends(dexterity.DisplayForm,
+            ignoreButtons=True)
+
+    buttons = button.Buttons(add.DefaultAddForm.buttons['cancel'])
+
+    @button.buttonAndHandler(_('Create and start'), name='save')
+    def handleAdd(self, action):
+        data, errors = self.extractData()
+        if errors:
+            self.status = self.formErrorsMessage
+            return
+        obj = self.createAndAdd(data)
+        if obj is None:
+            # TODO: this is probably an error here?
+            return
+        # mark only as finished if we get the new object
+        self._finishedAdd = True
+        IStatusMessage(self.request).addStatusMessage(_(u"Item created"), "info")
+        # auto start job here
+        jt = IJobTracker(obj)
+        msgtype, msg = jt.start_job()
+        if msgtype is not None:
+            IStatusMessage(self.request).add(msg, type=msgtype)
+
+
+class AddView(add.DefaultAddView):
+    """
+    The formwrapper wrapping Add form above
+    """
+
+    form = Add

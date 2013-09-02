@@ -75,4 +75,21 @@
         template="experiment_view.pt"
         permission="cmf.ModifyPortalContent"/>
 
+
+    <!-- Standard add view and form - invoked from ++add++ traverser -->
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.AddView"
+        />
+    <class class=".experiment.AddView">
+        <require
+            permission="org.bccvl.AddExperiment"
+            interface="zope.publisher.interfaces.browser.IBrowserPage"
+            />
+    </class>
+
+
 </configure>
