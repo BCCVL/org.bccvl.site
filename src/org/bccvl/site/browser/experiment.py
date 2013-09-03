@@ -116,14 +116,20 @@ class Add(add.DefaultAddForm):
         if errors:
             self.status = self.formErrorsMessage
             return
+        # TODO: this is prob. a bug in base form, because createAndAdd does not return
+        #       the wrapped object.
         obj = self.createAndAdd(data)
         if obj is None:
             # TODO: this is probably an error here?
+            #       object creation/add failed for some reason
             return
+        # get wrapped instance fo new object (see above)
+        obj = self.context[obj.id]
         # mark only as finished if we get the new object
         self._finishedAdd = True
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"), "info")
         # auto start job here
+
         jt = IJobTracker(obj)
         msgtype, msg = jt.start_job()
         if msgtype is not None:
