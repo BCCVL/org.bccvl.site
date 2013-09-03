@@ -92,6 +92,10 @@
     </class>
 
     <browser:resource
+        name="experiment.png"
+        image="experiment.png"/>
+
+    <browser:resource
         name="function.png"
         image="function.png"/>
 

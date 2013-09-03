@@ -11,3 +11,8 @@ CONTACT: everaldo@everaldo.com
 
 Copyright (c) 2006-2007 Everaldo Coelho.
 
+
+experiment.png GPL
+==============
+
+Gnome Project - http://art.gnome.org/themes/icon
