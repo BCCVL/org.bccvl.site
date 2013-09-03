@@ -8,4 +8,9 @@
       title="org.bccvl: Add Experiment"
       />
 
+  <permission
+      id="org.bccvl.AddFunction"
+      title="org.bccvl: Add Function"
+      />
+
 </configure>

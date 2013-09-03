@@ -3,5 +3,8 @@
         <permission name="org.bccvl: Add Experiment" acquire="False">
             <role name="Manager" />
         </permission>
+        <permission name="org.bccvl: Add Function" acquire="False">
+            <role name="Manager" />
+        </permission>
     </permissions>
 </rolemap>

@@ -100,9 +100,13 @@ class BCCVLFixture(PloneSandboxLayer):
         # TODO: add files?
         # Functions
         funcf = portal[defaults.FUNCTIONS_FOLDER_ID]
-        funcid = funcf.invokeFactory('gu.repository.content.RepositoryItem',
+        funcid = funcf.invokeFactory('org.bccvl.content.function',
                                      title=u"Bioclim",
-                                     id="bioclim")
+                                     id="bioclim",
+                                     schema=u"empty",
+                                     method='org.bccvl.site.tests.compute.testalgorithm')
+        func = funcf[funcid]
+        print func.title
         # TODO: add func metadata here
 
 

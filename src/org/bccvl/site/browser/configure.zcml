@@ -91,5 +91,8 @@
             />
     </class>
 
+    <browser:resource
+        name="function.png"
+        image="function.png"/>
 
 </configure>

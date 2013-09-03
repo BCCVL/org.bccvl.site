@@ -1,10 +1,11 @@
 from org.bccvl.site import defaults
 from org.bccvl.site.namespace import BCCVOCAB
-from gu.repository.content.interfaces import IRepositoryItem
+from org.bccvl.site.content.function import IFunction
+
 
 class QueryAPI(object):
     """
-    Provides API for common queries 
+    Provides API for common queries
     """
     def __init__(self, context):
         site = context.portal_url.getPortalObject()
@@ -13,10 +14,10 @@ class QueryAPI(object):
         self.site = site
         self.site_physical_path = '/'.join(site.getPhysicalPath())
         self.portal_catalog = site.portal_catalog
-        
+
 #    def getDatasets(self, genre):
     def getDatasets(self, **query_params):
-        
+
         datasets_physical_path = '/'.join(
             [self.site_physical_path, defaults.DATASETS_FOLDER_ID]
         )
@@ -29,7 +30,7 @@ class QueryAPI(object):
 
     def getSpeciesOccurrenceDatasets(self):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSO'])
-        
+
     def getSpeciesPresenceDatasets(self):
         return self.getDatasets(
             BCCDataGenre=BCCVOCAB['DataGenreSO'],
@@ -41,7 +42,7 @@ class QueryAPI(object):
             BCCDataGenre=BCCVOCAB['DataGenreSO'],
             BCCSpeciesLayer=BCCVOCAB['SpeciesLayerX']
         )
-    
+
     def getSpeciesAbundanceDatasets(self):
         return self.getDatasets(
             BCCDataGenre=BCCVOCAB['DataGenreSO'],
@@ -63,6 +64,6 @@ class QueryAPI(object):
         )
         brains = self.portal_catalog(
             path = {'query': functions_physical_path},
-            object_provides = IRepositoryItem.__identifier__
+            object_provides = IFunction.__identifier__
         )
         return brains
