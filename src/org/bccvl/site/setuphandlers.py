@@ -1,6 +1,8 @@
 from org.bccvl.site import defaults
 from plone.app.dexterity.behaviors import constrains
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
+from collective.setuphelpers.structure import setupStructure
+from collective.setuphelpers import setupNavigation
 
 import logging
 logger = logging.getLogger(__name__)
@@ -8,17 +10,22 @@ logger = logging.getLogger(__name__)
 
 def setupVarious(context):
     logger.info('BCCVL site package setup handler')
+
     # only run for this product
     if context.readDataFile('org.bccvl.site.marker.txt') is None:
         return
 
     portal = context.getSite()
+
     createDatasetsFolder(portal)
     createFunctionsFolder(portal)
     createKnowledgeBaseFolder(portal)
 
     createExperimentsFolder(portal)
 
+# TODO: fix up collective.setuphelpers
+#    setupStructure(portal, SITE_STRUCTURE)
+#    setupStructure(portal, DATASETS_STRUCTURE)
 
 def _createFolder(context, folder_id, folder_title, workflow_state='publish', log_msg=None):
     # helper function for adding structural locations
@@ -56,8 +63,8 @@ def createDatasetsFolder(site):
 def createFunctionsFolder(site):
     # Add a root level container to hold functions
     folder = _createFolder(site,
-        folder_id = defaults.FUNCTIONS_FOLDER_ID,
-        folder_title = 'Functions',
+        folder_id = defaults.TOOLKITS_FOLDER_ID,
+        folder_title = defaults.TOOLKITS_FOLDER_TITLE,
     )
     constr = ISelectableConstrainTypes(folder)
     constr.setConstrainTypesMode(constrains.ENABLED)
@@ -84,3 +91,24 @@ def createExperimentsFolder(site):
     # TODO: DEFINITELY do NOT use this in production!!
     site.experiments.manage_permission('Add portal content', ('Authenticated',), acquire=False)
     site.experiments.manage_permission('Modify portal content', ('Authenticated',), acquire=False)
+
+
+#def _folder(title, id):
+#    return dict(
+#        title = title,
+#        id = id,
+#        type = 'Folder'
+#    )
+#
+#SITE_STRUCTURE = [
+#    _folder(defaults.DATASETS_FOLDER_TITLE, defaults.DATASETS_FOLDER_ID),
+#    _folder(defaults.TOOLKITS_FOLDER_TITLE, defaults.TOOLKITS_FOLDER_ID),
+#    _folder(defaults.KNOWLEDGEBASE_FOLDER_TITLE, defaults.KNOWLEDGEBASE_FOLDER_ID),
+#    _folder(defaults.EXPERIMENTS_FOLDER_TITLE, defaults.EXPERIMENTS_FOLDER_ID),
+#]
+#
+#DATASETS_STRUCTURE = [
+#    _folder(defaults.DATASETS_SPECIES_FOLDER_TITLE, defaults.DATASETS_SPECIES_FOLDER_ID),
+#    _folder(defaults.DATASETS_ENVIRONMENTAL_FOLDER_TITLE, defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID),
+#    _folder(defaults.DATASETS_CLIMATE_FOLDER_ID, defaults.DATASETS_CLIMATE_FOLDER_ID),
+#]

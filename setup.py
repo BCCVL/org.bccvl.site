@@ -52,6 +52,7 @@ setup(
         'borg.localrole',
         'plone.app.contenttypes',
         'decorator',
+        'collective.setuphelpers',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
