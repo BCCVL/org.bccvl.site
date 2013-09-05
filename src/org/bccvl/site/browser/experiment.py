@@ -56,6 +56,8 @@ class View(edit.DefaultEditForm):
 
     template = ViewPageTemplateFile("experiment_view.pt")
 
+    label = ''
+
     #@button.handler(IJobStatus.apply
     # condition=lambda form: form.showApply)
     @button.buttonAndHandler(u'Start Job')
@@ -129,11 +131,11 @@ class Add(add.DefaultAddForm):
         self._finishedAdd = True
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"), "info")
         # auto start job here
-
-        jt = IJobTracker(obj)
-        msgtype, msg = jt.start_job()
-        if msgtype is not None:
-            IStatusMessage(self.request).add(msg, type=msgtype)
+#
+#        jt = IJobTracker(obj)
+#        msgtype, msg = jt.start_job()
+#        if msgtype is not None:
+#            IStatusMessage(self.request).add(msg, type=msgtype)
 
 
 class AddView(add.DefaultAddView):

@@ -53,6 +53,7 @@ setup(
         'plone.app.contenttypes',
         'decorator',
         'collective.setuphelpers',
+        'plone.app.contentlisting',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
