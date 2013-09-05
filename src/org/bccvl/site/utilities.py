@@ -15,6 +15,7 @@ from plone.app.async import service
 from zc.async.interfaces import COMPLETED
 from zope.component import adapter
 from zope.interface import implementer
+from zope.dottedname.resolve import resolve
 
 
 # FIXME: move these to central place
@@ -65,15 +66,21 @@ class JobTracker(object):
         # TODO: default queue quota is 1. either set it to a defined value (see: plone.app.asnc.subscriber)
         #       or create and submit job manually
         #job = async.queueJob(execute, self.context, envfile, specfile)
-        jobinfo = None
+        method = None
         if func is None:
             return 'error', u"Can't find function {}".format(self.context.functions)
-        elif func.id == 'bioclim':
-            jobinfo = (bioclim.execute, self.context, (), {})
-        elif func.id == 'brt':
-            jobinfo = (brt.execute, self.context, (), {})
         else:
-            return 'error', u'Unkown job function {}'.format(func.id)
+            if not func.method.startswith('org.bccvl.compute'):
+                return 'error', u"Method '{}' not in compute package".format(func.method)
+            try:
+                method = resolve(func.method)
+            except ImportError:
+                return 'error', u"Can't resolve method '{}'".format(func.method)
+        if method is None:
+            return 'error', u"Unknown error, method is None"
+        # TODO: add some more checks, whether we have a valid function
+        #      e.g. interface provided, registered in tool, etc...
+        jobinfo = (method, self.context, (), {})
         # TODO: current job status
         if self.get_job_status() in (None, COMPLETED):
             job = async.wrapJob(jobinfo)
