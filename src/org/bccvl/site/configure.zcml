@@ -1,7 +1,7 @@
 <configure
         xmlns="http://namespaces.zope.org/zope"
         xmlns:plone="http://namespaces.plone.org/plone"
-        xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+        xmlns:transmogrifier="http://namespaces.plone.org/transmogrifier"
         i18n_domain="org.bccvl"
         >
 
@@ -83,5 +83,19 @@
 
     <adapter
         factory=".utilities.JobTracker"/>
+
+    <transmogrifier:registerConfig
+        name="exportknowledgebase"
+        title="Export Knowledgebase pipeline configuration"
+        description="This exports BCCVL Knowledge base section."
+        configuration="exportknowledgebase.cfg"
+        />
+
+    <transmogrifier:registerConfig
+        name="importknowledgebase"
+        title="Import Knowledgebase pipeline configuration"
+        description="This imports BCCVL Knowledge base section."
+        configuration="importknowledgbase.cfg"
+        />
 
 </configure>
