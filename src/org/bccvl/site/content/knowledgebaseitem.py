@@ -18,7 +18,7 @@ class IKnowledgebaseItem(form.Schema):
 
     related_information = RichText(
         title=u'Related information',
-        input_format='text/html',
+        default_mime_type='text/html',
         required=False)
 
 
