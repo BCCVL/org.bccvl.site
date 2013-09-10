@@ -12,6 +12,13 @@ CONTACT: everaldo@everaldo.com
 Copyright (c) 2006-2007 Everaldo Coelho.
 
 
+knowledgebaseitem.png  GPL
+=====================
+
+AUTHOR:	Everaldo Coelho
+SITE: http://www.everaldo.com
+
+
 experiment.png GPL
 ==============
 

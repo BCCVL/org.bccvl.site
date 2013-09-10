@@ -99,4 +99,8 @@
         name="function.png"
         image="function.png"/>
 
+    <browser:resource
+        name="knowlegdgebaseitem.png"
+        image="knowledgebaseitem.png"/>
+
 </configure>
