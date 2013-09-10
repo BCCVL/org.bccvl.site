@@ -55,6 +55,7 @@ setup(
         'collective.setuphelpers',
         'plone.app.contentlisting',
         'quintagroup.transmogrifier',
+        'transmogrify.dexterity',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
