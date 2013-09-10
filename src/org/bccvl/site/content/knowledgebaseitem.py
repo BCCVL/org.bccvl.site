@@ -23,6 +23,6 @@ class IKnowledgebaseItem(form.Schema):
 
 
 @implementer(IKnowledgebaseItem)
-class KnowledgebaseItem(Item)
+class KnowledgebaseItem(Item):
 
     pass
