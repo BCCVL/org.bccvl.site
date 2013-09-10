@@ -1,5 +1,5 @@
 from plone.directives import form
-from plone.app.textfield import RichTextField
+from plone.app.textfield import RichText
 from zope import schema
 from plone.dexterity.content import Item
 from org.bccvl.site import vocabularies
@@ -16,7 +16,7 @@ class IKnowledgebaseItem(form.Schema):
         default='Functional Response',
         values=('Functional Response', 'Climate Model', 'Species Distribution', 'Article'))
 
-    related_information = RichTextField(
+    related_information = RichText(
         title=u'Related information',
         input_format='text/html',
         required=False)
