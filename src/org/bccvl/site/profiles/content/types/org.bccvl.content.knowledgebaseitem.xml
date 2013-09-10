@@ -30,7 +30,7 @@
   <element value="plone.app.versioningbehavior.behaviors.IVersionable" />
   <element value="plone.app.contenttypes.behaviors.tableofcontents.ITableOfContents"/>
  </property>
- <property name="schema"></property>
+ <property name="schema">org.bccvl.site.content.knowledgebaseitem.IKnowledgebaseItem</property>
  <property name="model_source"></property>
  <property name="schema_policy">dexterity</property>
  <alias from="(Default)" to="(dynamic view)"/>
