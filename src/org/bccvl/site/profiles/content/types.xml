@@ -4,4 +4,5 @@
   <object name="org.bccvl.content.group" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.experiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.function" meta_type="Dexterity FTI"/>
+  <object name="org.bccvl.content.knowledgebaseitem" meta_type="Dexterity FTI"/>
 </object>
