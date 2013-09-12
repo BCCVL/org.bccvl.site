@@ -5,15 +5,15 @@ def InitaliseUser(user, event):
     #         clashes with manually created users.
     # FIXME: auto user maker places stuff into mutable_properties ...
     #        we need them here on the content object itself....
-    
+
     # on first login we fix up auto user creation.
     # AutoUserMaker put's information like fullname and email into 'mutable_properties'
     # we want them also in mebrane_properties and on the object itself
     #
     # object is a Products.membrane.plugins.userfactory.MembraneUser
     # event is a Products.PlonePAS.events.UserInitialLoginInEvent
-    
-    #poperty sheets are on user, 
+
+    #poperty sheets are on user,
     mutprops = user.getPropertysheet('mutable_properties')
 
     newprops  = {}
@@ -40,9 +40,9 @@ def InitaliseUser(user, event):
         # e.g. use userid, or extract email, etc...
         pass
 
-    
-    # don't forget to reindex     
-    userobj.reindexObject()    
+
+    # don't forget to reindex
+    userobj.reindexObject()
 
 # TODO: remove after initial testing phases are done
 # This is just an early convenience to auto-publish RepoItems to
