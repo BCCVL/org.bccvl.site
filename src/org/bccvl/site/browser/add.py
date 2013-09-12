@@ -1,5 +1,4 @@
-from gu.plone.rdf.browser.metadata import RDFAddForm, RDFAddView
-from gu.plone.rdf.browser.metadata import CVOCAB
+from gu.plone.rdf.namespace import CVOCAB
 from org.bccvl.site.namespace import BCCVOCAB
 from ordf.namespace import RDF
 from ordf.graph import Graph
@@ -30,7 +29,7 @@ TYPE_DEFAULT = CVOCAB['Item']
 ##                _graph.add((_graph.identifier, RDF['DataGenre'], self._rdfType))
 #            self._graph = _graph
 #        return self._graph
-#    
+#
 #    def update(self):
 #        if self._rdfType is None:
 #            query = parse_qs(self.request.QUERY_STRING)
@@ -38,7 +37,7 @@ TYPE_DEFAULT = CVOCAB['Item']
 #                self._rdfType = TYPE_MAP[query['type'][0]]
 #            else:
 #                self._rdfType = TYPE_DEFAULT
-#        super(TypeFromRequestAddForm, self).update()        
+#        super(TypeFromRequestAddForm, self).update()
 
 #class TypeFromRequestAddView(RDFAddView):
 #    form = TypeFromRequestAddForm
