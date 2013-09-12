@@ -1,6 +1,6 @@
 from gu.plone.rdf.interfaces import IRDFContentTransform
 from zope.interface import implements
-from rdflib import RDF, RDFS, Namespace, Literal, OWL
+from rdflib import RDF, RDFS, Literal, OWL
 from ordf.namespace import FOAF
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.content.group import IBCCVLGroup
@@ -16,11 +16,8 @@ from zc.async.interfaces import COMPLETED
 from zope.component import adapter
 from zope.interface import implementer
 from zope.dottedname.resolve import resolve
-
-
-# FIXME: move these to central place
-DCTERMS = Namespace(u"http://purl.org/dc/terms/")
-CVOCAB = Namespace(u"http://namespaces.griffith.edu.au/collection_vocab#")
+from gu.plone.rdf.namespace import CVOCAB
+from ordf.namespace import DC as DCTERMS
 
 
 class RDFTypeMapper(object):
