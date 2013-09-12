@@ -11,8 +11,7 @@ from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
 from org.bccvl.site.namespace import BCCVOCAB, BCCPROP
 from org.bccvl.site import defaults
-from gu.z3cform.rdf.interfaces import IORDF
-from gu.repository.content.interfaces import IRepositoryMetadata
+from gu.z3cform.rdf.interfaces import IORDF, IGraph
 
 
 TESTCSV = '\n'.join(['%s, %d, %d' % ('Name', x, x + 1) for x in range(1, 10)])
@@ -78,7 +77,7 @@ class BCCVLFixture(PloneSandboxLayer):
                                 title=u"ABT",
                                 id="ABT")
         abt = spf[abtid]
-        abtmd = IRepositoryMetadata(abt)
+        abtmd = IGraph(abt)
         abtmd.add((abtmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
         abtmd.add((abtmd.identifier, BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP']))
         self.updateMetadata(abt, abtmd)
@@ -94,7 +93,7 @@ class BCCVLFixture(PloneSandboxLayer):
                                   title=u'Current',
                                   id='current')
         cur = edf[curid]
-        curmd = IRepositoryMetadata(cur)
+        curmd = IGraph(cur)
         curmd.add((curmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreE']))
         self.updateMetadata(cur, curmd)
         # TODO: add files?
