@@ -8,7 +8,7 @@ from .namespace import BCCPROP
 @indexer(IRepositoryItem)
 def repositoryItem_BCCDataGenre(object, *kw):
     graph = IGraph(object)
-    return graph.value(graph.identifier, BCCPROP['datagenre'])
+    return tuple(graph.objects(graph.identifier, BCCPROP['datagenre']))
 
 
 @indexer(IRepositoryItem)
