@@ -98,14 +98,18 @@ class BCCVLFixture(PloneSandboxLayer):
         self.updateMetadata(cur, curmd)
         # TODO: add files?
         # Functions
+        # FIXME: currently func executor verifies functions based on module
+        #        so put testalgorithm into this module for now
+        from org.bccvl import compute
+        from org.bccvl.site.tests.compute import testalgorithm
+        compute.testalgorithm = testalgorithm
         funcf = portal[defaults.FUNCTIONS_FOLDER_ID]
         funcid = funcf.invokeFactory('org.bccvl.content.function',
                                      title=u"Bioclim",
                                      id="bioclim",
                                      schema=u"empty",
-                                     method='org.bccvl.site.tests.compute.testalgorithm')
+                                     method='org.bccvl.compute.testalgorithm')
         func = funcf[funcid]
-        print func.title
         # TODO: add func metadata here
 
 
