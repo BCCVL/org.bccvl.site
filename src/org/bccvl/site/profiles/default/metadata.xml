@@ -30,6 +30,8 @@
         <dependency>profile-gu.repository.content:default</dependency>
 
         <dependency>profile-org.bccvl.site.content:content</dependency>
+        <dependency>profile-plone.app.caching:default</dependency>
+        <dependency>profile-plone.app.caching:with-caching-proxy-splitviews</dependency>
 
     </dependencies>
 </metadata>
