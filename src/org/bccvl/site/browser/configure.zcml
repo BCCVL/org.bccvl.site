@@ -100,7 +100,7 @@
         image="function.png"/>
 
     <browser:resource
-        name="knowlegdgebaseitem.png"
+        name="knowlegdebaseitem.png"
         image="knowledgebaseitem.png"/>
 
 </configure>
