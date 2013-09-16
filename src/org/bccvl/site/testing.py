@@ -63,6 +63,8 @@ class BCCVLFixture(PloneSandboxLayer):
 
     def updateMetadata(self, context, mdgraph):
         rdfhandler = getUtility(IORDF).getHandler()
+        # TODO: the transaction should take care of
+        #       donig the diff
         cc = rdfhandler.context(user='Importer',
                                 reason='Test data')
         cc.add(mdgraph)
@@ -124,7 +126,7 @@ if not TEST_ASYNC:
 
     BCCVL_FUNCTIONAL_TESTING = FunctionalTesting(
         bases=(BCCVL_FIXTURE, z2.ZSERVER_FIXTURE),
-        name="BCCVLFixutre:Functional")
+        name="BCCVLFixture:Functional")
 
 else:
 
@@ -145,7 +147,7 @@ else:
 
     BCCVL_FUNCTIONAL_TESTING = AsyncFunctionalTesting(
         bases=(BCCVL_ASYNC_FIXTURE, z2.ZSERVER_FIXTURE),
-        name="BCCVLFixutre:Functional")
+        name="BCCVLFixture:Functional")
 
     registerAsyncLayers([BCCVL_ASYNC_FIXTURE,
                          BCCVL_FUNCTIONAL_TESTING])
