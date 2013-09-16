@@ -96,8 +96,11 @@ class JobTracker(object):
 
         return status-id, status-msg
         """
-        job = getattr(self.context, 'current_job', None)
+        job = self.get_job()
         if job is not None:
             # job.result contains possible error message (e.g. twisted.Failure)
             return job.status
         return None
+
+    def get_job(self):
+        return getattr(self.context, 'current_job', None)

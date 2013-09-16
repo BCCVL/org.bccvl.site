@@ -11,3 +11,8 @@ class IJobTracker(Interface):
         """
         return current status job
         """
+
+    def get_job():
+        """
+        return the job instance
+        """
