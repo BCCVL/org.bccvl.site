@@ -1,5 +1,6 @@
 import unittest2 as unittest
 from urlparse import urljoin
+import re
 
 from zope.component import createObject
 from zope.component import queryUtility
@@ -10,7 +11,10 @@ from plone.app.testing import TEST_USER_ID, setRoles
 from plone.testing.z2 import Browser
 
 from org.bccvl.site import defaults
+from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
+
+from zc.async.testing import wait_for_result
 
 
 # do somebrowser testing here:
@@ -106,6 +110,55 @@ class ExperimentAddTest(unittest.TestCase):
         self.assertTrue('Pending' in self.browser.contents)
         # TODO:
         # check for submit button; should be grayed?
+
+    def test_run_experiment_twice(self):
+        # create experiment
+        self.browser.open(self.experiments_url)
+        self.browser.getLink(url=self.experiments_add_url).click()
+        self.browser.getControl(name='form.widgets.IDublinCore.title')\
+            .value = "My Experiment"
+        self.browser.getControl(name='form.widgets.IDublinCore.description')\
+            .value = "This is my experiment description."
+        self.browser.getControl(name='form.widgets.functions:list')\
+            .displayValue = ["Bioclim"]
+        self.browser.getControl(name='form.widgets.species_occurrence_dataset:list')\
+            .displayValue = ["ABT"]
+        self.browser.getControl(name='form.widgets.environmental_dataset:list')\
+            .displayValue = ["Current"]
+        # start
+        self.browser.getControl('Create and start').click()
+        self.assertTrue('Item created' in self.browser.contents)
+        self.assertTrue('Job submitted' in self.browser.contents)
+        new_exp_url = urljoin(self.experiments_add_url, 'my-experiment/view')
+        self.assertEquals(self.browser.url, new_exp_url)
+        self.assertTrue('Job submitted pending-status' in self.browser.contents)
+        self.assertTrue('Pending' in self.browser.contents)
+        # wait for result
+        self._wait_for_job('my-experiment')
+        # reload exp page and check for status on page
+        self.browser.open(new_exp_url)
+        self.assertTrue('Completed' in self.browser.contents)
+        # TODO: check Result list
+        results = re.findall(r'<a href=.*My Experiment - result.*</a>', self.browser.contents)
+        self.assertEqual(len(results), 1)
+        # start again
+        self.browser.getControl('Start Job').click()
+        self.assertTrue('Job submitted' in self.browser.contents)
+        self._wait_for_job('my-experiment')
+        # reload experiment page
+        self.browser.open(new_exp_url)
+        self.assertTrue('Completed' in self.browser.contents)
+        # We should have two results now
+        results = re.findall(r'<a href=.*My Experiment - result.*</a>', self.browser.contents)
+        self.assertEqual(len(results), 2)
+
+    def _wait_for_job(self, expid):
+        exp = self.portal[defaults.EXPERIMENTS_FOLDER_ID][expid]
+        job = IJobTracker(exp).get_job()
+        wait_for_result(job)
+        # TODO: check if we only have error messages if at all?
+        if job.result is not None:
+            job.result.raiseException()
 
 
 class ExperimentsViewFunctionalTest(unittest.TestCase):
