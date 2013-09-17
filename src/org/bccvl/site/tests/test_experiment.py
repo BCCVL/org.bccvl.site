@@ -13,6 +13,7 @@ from plone.testing.z2 import Browser
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
+from org.bccvl.site.testing import BCCVL_ASYNC_FUNCTIONAL_TESTING
 
 from zc.async.testing import wait_for_result
 
@@ -25,7 +26,7 @@ from zc.async.testing import wait_for_result
 
 class ExperimentAddTest(unittest.TestCase):
 
-    layer = BCCVL_FUNCTIONAL_TESTING
+    layer = BCCVL_ASYNC_FUNCTIONAL_TESTING
 
     def setUp(self):
         app = self.layer['app']
@@ -108,6 +109,10 @@ class ExperimentAddTest(unittest.TestCase):
         self.assertTrue('This is my experiment description' in self.browser.contents)
         self.assertTrue('Job submitted pending-status' in self.browser.contents)
         self.assertTrue('Pending' in self.browser.contents)
+        # wait for job to finish
+        self._wait_for_job('my-experiment')
+        self.browser.open(new_exp_url)
+        self.assertTrue('Completed' in self.browser.contents)
         # TODO:
         # check for submit button; should be grayed?
 
