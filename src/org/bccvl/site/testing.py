@@ -5,10 +5,15 @@ from plone.testing import z2
 from plone.app.testing import login
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import PLONE_SITE_ID
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
+# from plone.app.async.testing import AsyncLayer
+# from plone.app.async.testing import AsyncFunctionalTesting
+from plone.app.async.testing import registerAsyncLayers
+# from plone.app.async.testing import PLONE_APP_ASYNC_FIXTURE
 from org.bccvl.site.namespace import BCCVOCAB, BCCPROP
 from org.bccvl.site import defaults
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
@@ -24,7 +29,7 @@ def getFile(filename):
     return open(filename, 'r')
 
 
-class BCCVLFixture(PloneSandboxLayer):
+class BCCVLLayer(PloneSandboxLayer):
 
     defaultBases = (PLONE_FIXTURE, )
 
@@ -115,39 +120,128 @@ class BCCVLFixture(PloneSandboxLayer):
         # TODO: add func metadata here
 
 
-BCCVL_FIXTURE = BCCVLFixture()
+BCCVL_FIXTURE = BCCVLLayer()
 
 BCCVL_INTEGRATION_TESTING = IntegrationTesting(
     bases=(BCCVL_FIXTURE, ),
     name="BCCVLFixutre:Integration")
 
-TEST_ASYNC = True
-if not TEST_ASYNC:
+BCCVL_FUNCTIONAL_TESTING = FunctionalTesting(
+    bases=(BCCVL_FIXTURE, z2.ZSERVER_FIXTURE),
+    name="BCCVLFixture:Functional")
 
-    BCCVL_FUNCTIONAL_TESTING = FunctionalTesting(
-        bases=(BCCVL_FIXTURE, z2.ZSERVER_FIXTURE),
-        name="BCCVLFixture:Functional")
 
-else:
+# Async Layers
 
-    from plone.app.async.testing import AsyncLayer
-    from plone.app.async.testing import AsyncFunctionalTesting
-    from plone.app.async.testing import registerAsyncLayers
+# don't name this class to anything that might appear in ASYNC_LAYERS list
+# otherwise the plone.app.async db monkey patch might kick in
+class BCCVLAsyncLayer(PloneSandboxLayer):
+    # install and set up plone.app.async
 
-    class BCCVLAsyncLayer(AsyncLayer):
+    defaultBases = (BCCVL_FIXTURE, )
+    #need a layer hear, ... teardown orders them wrong
 
-        defaultBases = (BCCVL_FIXTURE, )
+    def setUpZope(self, app, configurationContext):
+        #self._stuff = Zope2.bobo_application._stuff
+        z2.installProduct(app, 'Products.PythonScripts')
+        import plone.app.async
+        self.loadZCML('configure.zcml', package=plone.app.async)
 
-        def setUpPloneSite(self,  portal):
-            # do nothing here, all the setup already done in
-            # base layers
+    def tearDownZope(self, app):
+        z2.uninstallProduct(app, 'Products.PythonScripts')
+
+
+class BCCVLAsyncFunctionalTesting(FunctionalTesting):
+
+    def testSetUp(self):
+        # do proper db stacking and async db setup
+        from plone.testing import zodb
+        from ZODB import DB
+        from ZODB.DemoStorage import DemoStorage
+        db = zodb.stackDemoStorage(self.get('zodbDB'), name="BCCVLAsyncFunctionalTesting")
+        async_db = DB(DemoStorage(name='async'), database_name='async')
+        db = DB(db.storage,
+                databases={'async': async_db})
+        self['zodbDB'] = db
+
+        # do z2.FunctionalTesting stuff here
+        import Zope2
+        import transaction
+
+        # Save the app
+
+        environ = {
+            'SERVER_NAME': self['host'],
+            'SERVER_PORT': str(self['port']),
+        }
+
+        app = z2.addRequestContainer(Zope2.app(), environ=environ)
+        request = app.REQUEST
+        request['PARENTS'] = [app]
+
+        # Make sure we have a zope.globalrequest request
+        try:
+            from zope.globalrequest import setRequest
+            setRequest(request)
+        except ImportError:
             pass
 
-    BCCVL_ASYNC_FIXTURE = BCCVLAsyncLayer()
+        # Start a transaction
+        transaction.begin()
 
-    BCCVL_FUNCTIONAL_TESTING = AsyncFunctionalTesting(
-        bases=(BCCVL_ASYNC_FIXTURE, z2.ZSERVER_FIXTURE),
-        name="BCCVLFixture:Functional")
+        # Save resources for the test
+        self['app'] = app
+        self['request'] = request
 
-    registerAsyncLayers([BCCVL_ASYNC_FIXTURE,
-                         BCCVL_FUNCTIONAL_TESTING])
+        # also do PloneTestLifeCycle stuff here
+        self['portal'] = portal = self['app'][PLONE_SITE_ID]
+        self.setUpEnvironment(portal)
+
+        from zope import component
+        from plone.app.async.testing import cleanUpDispatcher
+        from plone.app.async.testing import _dispatcher_uuid
+        from plone.app.async.testing import setUpQueue
+        from plone.app.async.testing import setUpDispatcher
+        from zc.async.subscribers import agent_installer
+        from zc.async.interfaces import IDispatcherActivated
+        from plone.app.async.subscribers import notifyQueueReady, configureQueue
+        from plone.app.async.interfaces import IAsyncDatabase, IQueueReady
+        component.provideUtility(async_db, IAsyncDatabase)
+        component.provideHandler(agent_installer, [IDispatcherActivated])
+        component.provideHandler(notifyQueueReady, [IDispatcherActivated])
+        component.provideHandler(configureQueue, [IQueueReady])
+        setUpQueue(db)
+        setUpDispatcher(db, _dispatcher_uuid)
+        #transaction.commit()
+
+    def testTearDown(self):
+        # first tear down async stuff
+        import transaction
+        from zope import component
+        from plone.app.async.testing import cleanUpDispatcher
+        from plone.app.async.testing import _dispatcher_uuid
+        from zc.async.subscribers import agent_installer
+        from zc.async.interfaces import IDispatcherActivated
+        from plone.app.async.interfaces import IAsyncDatabase, IQueueReady
+        from plone.app.async.subscribers import notifyQueueReady, configureQueue
+        cleanUpDispatcher(_dispatcher_uuid)
+        gsm = component.getGlobalSiteManager()
+        gsm.unregisterHandler(agent_installer, [IDispatcherActivated])
+        gsm.unregisterHandler(notifyQueueReady, [IDispatcherActivated])
+        gsm.unregisterHandler(configureQueue, [IQueueReady])
+        db = gsm.getUtility(IAsyncDatabase)
+        gsm.unregisterUtility(db, IAsyncDatabase)
+        #transaction.commit()
+
+        # then tear down z2.FunctionalTesting things
+        super(BCCVLAsyncFunctionalTesting, self).testTearDown()
+
+# use this one to setup async in current test instance
+BCCVL_ASYNC_FIXTURE = BCCVLAsyncLayer()
+
+# put only one layer that does zodb stacking in bases list, otherwise tearDown
+# may be called in wrong order, and zodb will be unstacked in the wrong order
+# causes AttributeError: 'DB' object has no attribute 'storage'
+BCCVL_ASYNC_FUNCTIONAL_TESTING = BCCVLAsyncFunctionalTesting(
+    bases=(BCCVL_ASYNC_FIXTURE, z2.ZSERVER_FIXTURE),
+    name="BCCVLAsyncFixture:Functional")
