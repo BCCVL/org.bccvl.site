@@ -29,7 +29,7 @@ class SiteSetupTest(unittest.TestCase):
         self.assertTrue(defaults.KNOWLEDGEBASE_FOLDER_ID in portal)
 
     def test_allowed_contenttypes(self):
-        portal =  self.layer['portal']
+        portal = self.layer['portal']
         ff = ISelectableConstrainTypes(portal[defaults.FUNCTIONS_FOLDER_ID])
         # not possible as test user
         self.assertEqual(len(ff.allowedContentTypes()), 0)
