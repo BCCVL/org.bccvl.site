@@ -16,13 +16,21 @@
             <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
             <div id="bccvl-experiment-results">
                 <h2>Results</h2>
-                <ul>
-                  <li tal:repeat="item context/@@folderListing">
-                    <a tal:content="item/Title"
-                       tal:attributes="href python: item.getURL() + '/view'"
-                    />
-                  </li>
-                </ul>
+                <div class="bccvl-experiment-result-set" 
+                     tal:repeat="result context/contentValues">
+                    <h3>
+                        <a tal:content="result/Title" 
+                           tal:attributes="href result/absolute_url_path" 
+                        />
+                    </h3>
+                    <ul>
+                        <li tal:repeat="item result/contentValues">
+                            <a tal:content="item/Title"
+                               tal:attributes="href string:${item/absolute_url_path}/view"
+                            />
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </metal:main>
