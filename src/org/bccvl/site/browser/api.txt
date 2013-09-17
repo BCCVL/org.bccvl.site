@@ -17,12 +17,14 @@ Now we can call some methods on the dataset object. We can access the
 API at the absolute url of the object + '/dm' appended to it.
 Once we have a XMLRPC proxy we can just call the available methods.
 
+    >>> abt.absolute_url()
+    'http://localhost:.../plone/datasets/species/ABT'
     >>> proxy = xmlrpclib.ServerProxy(abt.absolute_url() + '/dm')
     >>> res = proxy.getMetadata()
     >>> pprint(res)
-    {'files': ['http://localhost:55001/plone/datasets/species/ABT/bkgd.csv'],
+    {'files': ['http://localhost:.../plone/datasets/species/ABT/bkgd.csv'],
      'id': '...',
-     'url': 'http://localhost:55001/plone/datasets/species/ABT'}
+     'url': 'http://localhost:.../plone/datasets/species/ABT'}
     >>> res['id'] == abtuid
     True
 
@@ -34,8 +36,8 @@ have to pass in a parameter to tell it in which object we are interested.
     >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
     >>> res = proxy.getMetadata(abtuid)
     >>> pprint(res)
-    {'files': ['http://localhost:55001/plone/datasets/species/ABT/bkgd.csv'],
+    {'files': ['http://localhost:.../plone/datasets/species/ABT/bkgd.csv'],
      'id': '...',
-     'url': 'http://localhost:55001/plone/datasets/species/ABT'}
+     'url': 'http://localhost:.../plone/datasets/species/ABT'}
     >>> res['id'] == abtuid
     True
