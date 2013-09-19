@@ -1,5 +1,4 @@
 from gu.plone.rdf.interfaces import IRDFContentTransform
-from zope.interface import implements
 from rdflib import RDF, RDFS, Literal, OWL
 from ordf.namespace import FOAF
 from org.bccvl.site.content.user import IBCCVLUser
@@ -7,7 +6,6 @@ from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.experiment import IExperiment
 from org.bccvl.site.interfaces import IJobTracker
 from gu.repository.content.interfaces import IRepositoryContainer, IRepositoryItem
-from org.bccvl.compute import bioclim,  brt
 from plone.app.uuid.utils import uuidToObject
 from zope.component import getUtility
 from plone.app.async.interfaces import IAsyncService
@@ -18,13 +16,34 @@ from zope.interface import implementer
 from zope.dottedname.resolve import resolve
 from gu.plone.rdf.namespace import CVOCAB
 from ordf.namespace import DC as DCTERMS
+from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 
 
+@implementer(IRDFTypeMapper)
 class RDFTypeMapper(object):
 
-    implements(IRDFContentTransform)
+    def __init__(self, context, request, form):
+        self.context = context
+        self.request = request
+        self.form = form
+
+    def applyTypes(self, graph):
+        pt = self.form.portal_type
+        typemap = {'org.bccvl.content.user': FOAF['Person'],
+                   'org.bccvl.content.group': FOAF['Group'],
+                   'gu.repository.content.RepositoryItem': CVOCAB['Item'],
+                   'gu.repository.content.RepositoryContainer': CVOCAB['Collection']}
+        rdftype = typemap.get(pt, OWL['Thing'])
+        graph.add((graph.identifier, RDF['type'], rdftype))
+
+
+@implementer(IRDFContentTransform)
+class RDFDataMapper(object):
 
     def tordf(self, content, graph):
+        # TODO: adding rdf:type should not be necessary here
+        #       done in AddForm with IRDFTypeMapper, but might be useful
+        #       to update/fix other content
         if IRepositoryItem.providedBy(content):
             graph.add((graph.identifier, RDF['type'], CVOCAB['Item']))
         elif IRepositoryContainer.providedBy(content):
@@ -35,6 +54,7 @@ class RDFTypeMapper(object):
             graph.add((graph.identifier, RDF['type'], FOAF['Group']))  # foaf:Organization
 
         graph.add((graph.identifier, RDF['type'], OWL['Thing']))
+
         # FIXME: use only one way to describe things ....
         #        see dc - rdf mapping at http://dublincore.org/documents/dcq-rdf-xml/
         #        maybe dc app profile not as good as it might sound, but translated to RDF is better (or even owl)

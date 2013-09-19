@@ -11,9 +11,16 @@
     <include package=".content"/>
     <include package=".browser"/>
 
-    <utility
+    <adapter
+        for="zope.interface.Interface
+             plone.app.z3cform.interfaces.IPloneFormLayer
+             z3c.form.interfaces.IAddForm"
         factory=".utilities.RDFTypeMapper"
-        name="Content type to RDF type"
+    />
+
+    <utility
+        factory=".utilities.RDFDataMapper"
+        name="Content data to RDF Mapper"
     />
 
     <utility
