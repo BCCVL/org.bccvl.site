@@ -32,7 +32,8 @@ class RDFTypeMapper(object):
         typemap = {'org.bccvl.content.user': FOAF['Person'],
                    'org.bccvl.content.group': FOAF['Group'],
                    'gu.repository.content.RepositoryItem': CVOCAB['Item'],
-                   'gu.repository.content.RepositoryContainer': CVOCAB['Collection']}
+                   'gu.repository.content.RepositoryContainer': CVOCAB['Collection'],
+                   'File': CVOCAB['File']}
         rdftype = typemap.get(pt, OWL['Thing'])
         graph.add((graph.identifier, RDF['type'], rdftype))
 
