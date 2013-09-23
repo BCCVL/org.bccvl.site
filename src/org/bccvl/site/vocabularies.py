@@ -5,6 +5,7 @@ from five import grok
 from org.bccvl.site import defaults
 from org.bccvl.site.api import QueryAPI
 
+# FIXME: get rid of grok :)
 # TODO: sort by title
 
 def _source_factory(name, apiFunc):
@@ -13,7 +14,7 @@ def _source_factory(name, apiFunc):
         api = QueryAPI(context)
         brains = getattr(api, apiFunc)()
         terms = [
-            SimpleTerm(value=brain['UID'], token=brain['UID'], title=brain['Title']) 
+            SimpleTerm(value=brain['UID'], token=brain['UID'], title=brain['Title'])
             for brain in brains
         ]
         return SimpleVocabulary(terms)

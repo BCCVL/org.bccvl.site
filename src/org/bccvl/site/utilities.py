@@ -4,8 +4,12 @@ from ordf.namespace import FOAF
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.experiment import IExperiment
+from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.interfaces import IJobTracker
-from gu.repository.content.interfaces import IRepositoryContainer, IRepositoryItem
+from gu.repository.content.interfaces import (
+    IRepositoryContainer,
+    IRepositoryItem,
+    )
 from plone.app.uuid.utils import uuidToObject
 from zope.component import getUtility
 from plone.app.async.interfaces import IAsyncService
@@ -17,6 +21,7 @@ from zope.dottedname.resolve import resolve
 from gu.plone.rdf.namespace import CVOCAB
 from ordf.namespace import DC as DCTERMS
 from gu.z3cform.rdf.interfaces import IRDFTypeMapper
+from plone.app.contenttypes.interfaces import IFile
 
 
 @implementer(IRDFTypeMapper)
@@ -31,6 +36,8 @@ class RDFTypeMapper(object):
         pt = self.form.portal_type
         typemap = {'org.bccvl.content.user': FOAF['Person'],
                    'org.bccvl.content.group': FOAF['Group'],
+                   'org.bccvl.content.dataset': CVOCAB['Dataset'],
+                   # TODO: remove types below someday
                    'gu.repository.content.RepositoryItem': CVOCAB['Item'],
                    'gu.repository.content.RepositoryContainer': CVOCAB['Collection'],
                    'File': CVOCAB['File']}
@@ -39,23 +46,32 @@ class RDFTypeMapper(object):
 
 
 @implementer(IRDFContentTransform)
-class RDFDataMapper(object):
+class RDFContentBasedTypeMapper(object):
 
     def tordf(self, content, graph):
-        # TODO: adding rdf:type should not be necessary here
-        #       done in AddForm with IRDFTypeMapper, but might be useful
-        #       to update/fix other content
-        if IRepositoryItem.providedBy(content):
-            graph.add((graph.identifier, RDF['type'], CVOCAB['Item']))
-        elif IRepositoryContainer.providedBy(content):
-            graph.add((graph.identifier, RDF['type'], CVOCAB['Collection']))
+        # We might have a newly generated empty graph here, so let's apply the
+        # all IRDFTypeMappers as well
+        if IDataset.providedBy(content):
+            graph.add((graph.identifier, RDF['type'], CVOCAB['Dataset']))
         elif IBCCVLUser.providedBy(content):
             graph.add((graph.identifier, RDF['type'], FOAF['Person']))
         elif IBCCVLGroup.providedBy(content):
             graph.add((graph.identifier, RDF['type'], FOAF['Group']))  # foaf:Organization
+        # TODO: remove types below some day
+        elif IRepositoryItem.providedBy(content):
+            graph.add((graph.identifier, RDF['type'], CVOCAB['Item']))
+        elif IRepositoryContainer.providedBy(content):
+            graph.add((graph.identifier, RDF['type'], CVOCAB['Collection']))
+        elif IFile.providedBy(content):
+            graph.add((graph.identifier, RDF['type'], FOAF['File']))
 
         graph.add((graph.identifier, RDF['type'], OWL['Thing']))
 
+
+@implementer(IRDFContentTransform)
+class RDFDataMapper(object):
+
+    def tordf(self, content, graph):
         # FIXME: use only one way to describe things ....
         #        see dc - rdf mapping at http://dublincore.org/documents/dcq-rdf-xml/
         #        maybe dc app profile not as good as it might sound, but translated to RDF is better (or even owl)

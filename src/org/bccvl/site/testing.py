@@ -17,6 +17,7 @@ from plone.app.async.testing import registerAsyncLayers
 from org.bccvl.site.namespace import BCCVOCAB, BCCPROP
 from org.bccvl.site import defaults
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
+from plone.namedfile.file import NamedBlobFile
 
 
 TESTCSV = '\n'.join(['%s, %d, %d' % ('Name', x, x + 1) for x in range(1, 10)])
@@ -76,7 +77,25 @@ class BCCVLLayer(PloneSandboxLayer):
         cc.commit()
         context.reindexObject()
 
+    def publish(self, context):
+        context.portal_workflow.doActionFor(context, 'publish')
+
+    def addDataset(self, container, id, title, file):
+        fileid = container.invokeFactory('org.bccvl.content.dataset',
+                                         title=title,
+                                         id=id)
+        fileob = container[fileid]
+        fileob.file = NamedBlobFile(contentType=file['mimetype'], filename=file['filename'])
+        fileob.file.data = file['data']
+        return fileob
+
     def addTestContent(self, portal):
+        self.addSpeciesData(portal)
+        self.addEnvironmentalData(portal)
+        self.addFutureClimateData(portal)
+        self.addToolkits(portal)
+
+    def addSpeciesData(self, portal):
         dsf = portal[defaults.DATASETS_FOLDER_ID]
         # Species Observation data
         spf = dsf[defaults.DATASETS_SPECIES_FOLDER_ID]
@@ -84,26 +103,57 @@ class BCCVLLayer(PloneSandboxLayer):
                                 title=u"ABT",
                                 id="ABT")
         abt = spf[abtid]
-        abtmd = IGraph(abt)
-        abtmd.add((abtmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
-        abtmd.add((abtmd.identifier, BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP']))
-        self.updateMetadata(abt, abtmd)
-        spf.invokeFactory('File', title="occurence.csv",
-                                id="occurence.csv",
-                                file=TESTCSV)
-        abt.invokeFactory('File', title="bkgd.csv",
-                          id="bkgd.csv",
-                          file=TESTCSV)
+        # TODO: there is still autopublish for items
+        # self.publish(abt)
+        # Occurence
+        occ = self.addDataset(abt, title=u"ABT", id="occurence.csv",
+                              file={'filename': u'occurence.csv',
+                                    'mimetype': 'text/csv',
+                                    'data': TESTCSV})
+        self.publish(occ)
+        occmd = IGraph(occ)
+        occmd.add((occmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
+        occmd.add((occmd.identifier, BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP']))
+        self.updateMetadata(occ, occmd)
+        abs = self.addDataset(abt, title=u"ABT", id="bkgd.csv",
+                              file={'filename': u'bkgd.csv',
+                                    'mimetype': 'text/csv',
+                                    'data': TESTCSV})
+        self.publish(abs)
+        absmd = IGraph(abs)
+        absmd.add((absmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
+        absmd.add((absmd.identifier, BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerX']))
+        self.updateMetadata(abs, absmd)
+
+    def addEnvironmentalData(self, portal):
+        dsf = portal[defaults.DATASETS_FOLDER_ID]
         # Environmental Data
         edf = dsf[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
-        curid = edf.invokeFactory('gu.repository.content.RepositoryItem',
+        # TODO: add files?
+        curid = edf.invokeFactory('org.bccvl.content.dataset',
                                   title=u'Current',
                                   id='current')
         cur = edf[curid]
+        self.publish(cur)
         curmd = IGraph(cur)
         curmd.add((curmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreE']))
         self.updateMetadata(cur, curmd)
+
+    def addFutureClimateData(self, portal):
+        dsf = portal[defaults.DATASETS_FOLDER_ID]
+        # Environmental Data
+        edf = dsf[defaults.DATASETS_CLIMATE_FOLDER_ID]
         # TODO: add files?
+        curid = edf.invokeFactory('org.bccvl.content.dataset',
+                                  title=u'Future',
+                                  id='future')
+        cur = edf[curid]
+        self.publish(cur)
+        curmd = IGraph(cur)
+        curmd.add((curmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreFC']))
+        self.updateMetadata(cur, curmd)
+
+    def addToolkits(self, portal):
         # Functions
         # FIXME: currently func executor verifies functions based on module
         #        so put testalgorithm into this module for now
@@ -117,6 +167,7 @@ class BCCVLLayer(PloneSandboxLayer):
                                      schema=u"empty",
                                      method='org.bccvl.compute.testalgorithm')
         func = funcf[funcid]
+        self.publish(func)
         # TODO: add func metadata here
 
 
@@ -124,7 +175,7 @@ BCCVL_FIXTURE = BCCVLLayer()
 
 BCCVL_INTEGRATION_TESTING = IntegrationTesting(
     bases=(BCCVL_FIXTURE, ),
-    name="BCCVLFixutre:Integration")
+    name="BCCVLFixture:Integration")
 
 BCCVL_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(BCCVL_FIXTURE, z2.ZSERVER_FIXTURE),
