@@ -64,12 +64,12 @@
 
     <!-- index relevant RDF properties -->
     <adapter
-        factory=".indexers.repositoryItem_BCCDataGenre"
+        factory=".indexers.dataset_BCCDataGenre"
         name="BCCDataGenre"
     />
 
     <adapter
-        factory=".indexers.repositoryItem_BCCSpeciesLayer"
+        factory=".indexers.dataset_BCCSpeciesLayer"
         name="BCCSpeciesLayer"
     />
 
