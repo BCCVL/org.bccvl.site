@@ -32,12 +32,12 @@ def returnwrapper(f, *args, **kw):
 
 def getdsmetadata(ds):
     # extract info about files
-    pc = getToolByName(ds, 'portal_catalog')
-    files = pc.searchResults(path='/'.join(ds.getPhysicalPath()),
-                             object_provides=IFile.__identifier__)
     return {'url': ds.absolute_url(),
             'id': IUUID(ds),
-            'files': [br.getURL() for br in files]}
+            'mimetype': ds.file.contentType,
+            'filename': ds.file.filename,
+            'file': '{}/@@download/file/{}'.format(ds.absolute_url(),
+                                                   ds.file.filename)}
 
 
 class DataSetManager(BrowserView):

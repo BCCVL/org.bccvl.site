@@ -56,7 +56,7 @@
         class=".xmlrpc.DataSetAPI"
         name="dm"
         allowed_attributes="getMetadata"
-        for="gu.repository.content.interfaces.IRepositoryItem"
+        for="org.bccvl.site.content.dataset.IDataset"
         permission="zope2.View" >
 
         <browser:page

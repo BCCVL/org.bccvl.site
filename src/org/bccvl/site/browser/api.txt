@@ -9,7 +9,7 @@ First import some necessary stuff.
 
 Get our dataset object set up in the test fixture.
 
-    >>> abt = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']
+    >>> abt = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']['occurence.csv']
     >>> abtuid = IUUID(abt)
 
 
@@ -18,13 +18,15 @@ API at the absolute url of the object + '/dm' appended to it.
 Once we have a XMLRPC proxy we can just call the available methods.
 
     >>> abt.absolute_url()
-    'http://localhost:.../plone/datasets/species/ABT'
+    'http://localhost:.../plone/datasets/species/ABT/occurence.csv'
     >>> proxy = xmlrpclib.ServerProxy(abt.absolute_url() + '/dm')
     >>> res = proxy.getMetadata()
     >>> pprint(res)
-    {'files': ['http://localhost:.../plone/datasets/species/ABT/bkgd.csv'],
+    {'file': 'http://localhost:.../plone/datasets/species/ABT/occurence.csv/@@download/file/occurence.csv',
+     'filename': 'occurence.csv',
      'id': '...',
-     'url': 'http://localhost:.../plone/datasets/species/ABT'}
+     'mimetype': 'text/csv',
+     'url': 'http://localhost:.../plone/datasets/species/ABT/occurence.csv'}
     >>> res['id'] == abtuid
     True
 
@@ -36,8 +38,10 @@ have to pass in a parameter to tell it in which object we are interested.
     >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
     >>> res = proxy.getMetadata(abtuid)
     >>> pprint(res)
-    {'files': ['http://localhost:.../plone/datasets/species/ABT/bkgd.csv'],
+    {'file': 'http://localhost:.../plone/datasets/species/ABT/occurence.csv/@@download/file/occurence.csv',
+     'filename': 'occurence.csv',
      'id': '...',
-     'url': 'http://localhost:.../plone/datasets/species/ABT'}
+     'mimetype': 'text/csv',
+     'url': 'http://localhost:.../plone/datasets/species/ABT/occurence.csv'}
     >>> res['id'] == abtuid
     True
