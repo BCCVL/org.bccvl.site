@@ -52,11 +52,20 @@ class SiteSetupTest(unittest.TestCase):
         fti = pt['org.bccvl.content.function']
         self.assertEqual(fti.add_permission, 'org.bccvl.AddFunction')
 
+    def test_add_dataset_permission(self):
+        portal = self.layer['portal']
+        pt = portal['portal_types']
+        fti = pt['org.bccvl.content.dataset']
+        self.assertEqual(fti.add_permission, 'org.bccvl.AddDataset')
+
     def test_roles(self):
         portal = self.layer['portal']
         roles = tuple(selectedRoles(portal, "org.bccvl: Add Experiment"))
         self.assertEqual(roles,
                          ('Manager', ))
         roles = tuple(selectedRoles(portal, "org.bccvl: Add Function"))
+        self.assertEqual(roles,
+                         ('Manager', ))
+        roles = tuple(selectedRoles(portal, "org.bccvl: Add Dataset"))
         self.assertEqual(roles,
                          ('Manager', ))

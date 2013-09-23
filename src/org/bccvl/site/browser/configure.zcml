@@ -103,4 +103,8 @@
         name="knowlegdebaseitem.png"
         image="knowledgebaseitem.png"/>
 
+    <browser:resource
+        name="dataset.png"
+        image="dataset.png"/>
+
 </configure>

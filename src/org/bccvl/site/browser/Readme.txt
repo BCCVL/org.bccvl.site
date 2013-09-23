@@ -23,3 +23,10 @@ experiment.png GPL
 ==============
 
 Gnome Project - http://art.gnome.org/themes/icon
+
+
+dataset.png LGPL
+===========
+
+
+DESIGNER: Alexandre Moore - http://sa-ki.deviantart.com/

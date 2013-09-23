@@ -13,4 +13,9 @@
       title="org.bccvl: Add Function"
       />
 
+  <permission
+      id="org.bccvl.AddDataset"
+      title="org.bccvl: Add Dataset"
+      />
+
 </configure>
