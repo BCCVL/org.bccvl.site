@@ -109,7 +109,7 @@ class Add(add.DefaultAddForm):
 
     extends(dexterity.DisplayForm,
             ignoreButtons=True)
-
+  
     buttons = button.Buttons(add.DefaultAddForm.buttons['cancel'])
 
     @button.buttonAndHandler(_('Create and start'), name='save')
@@ -135,7 +135,28 @@ class Add(add.DefaultAddForm):
         jt = IJobTracker(obj)
         msgtype, msg = jt.start_job()
         if msgtype is not None:
-            IStatusMessage(self.request).add(msg, type=msgtype)
+            IStatusMessage(self.request).add(msg, type=msgtype)   
+
+    # TODO: deprecate once data mover/manager API is finished
+    template = ViewPageTemplateFile("experiment_add.pt")
+    def occurrences_mapping(self):
+        # expects the occurrence file to be called 'occur.csv'
+        import json
+        from org.bccvl.site.api import QueryAPI
+        api = QueryAPI(self.context)
+        mapping = dict()
+        for brain in api.getSpeciesOccurrenceDatasets():
+            dataset = brain.getObject()
+            dataset_url = dataset.absolute_url_path()
+            mapping[dataset.UID()] = {
+                'object': dataset_url,
+                'file': '/'.join([dataset_url, 'occur.csv']),
+            }
+        js_tmpl = """
+            var OCCURRENCES_MAP = %s;
+        """
+        return js_tmpl % json.dumps(mapping)        
+
 
 
 class AddView(add.DefaultAddView):
