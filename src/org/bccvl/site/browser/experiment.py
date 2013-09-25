@@ -141,7 +141,6 @@ class Add(add.DefaultAddForm):
     # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
     def occurrences_mapping(self):
-        # expects the occurrence file to be called 'occur.csv'
         import json
         from org.bccvl.site.api import QueryAPI
         api = QueryAPI(self.context)
