@@ -29,7 +29,7 @@ class PresenceSourceTest(unittest.TestCase):
     def test_elements(self):
         source = self._make_one()
         ds = self.layer['portal'][defaults.DATASETS_FOLDER_ID]
-        spec = ds[defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']['occurence.csv']
+        spec = ds[defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']['occurrence.csv']
         spec_occ_uuid = IUUID(spec)
         self.assertIn(spec_occ_uuid, source)
         self.assertEqual(len(source), 1)
@@ -52,7 +52,7 @@ class AbsenceSourceTest(unittest.TestCase):
     def test_elements(self):
         source = self._make_one()
         ds = self.layer['portal'][defaults.DATASETS_FOLDER_ID]
-        spec = ds[defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']['bkgd.csv']
+        spec = ds[defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']['absence.csv']
         spec_abs_uuid = IUUID(spec)
         self.assertIn(spec_abs_uuid, source)
         self.assertEqual(len(source), 1)

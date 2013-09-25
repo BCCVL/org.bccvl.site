@@ -18,6 +18,7 @@ from org.bccvl.site.namespace import BCCVOCAB, BCCPROP
 from org.bccvl.site import defaults
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from plone.namedfile.file import NamedBlobFile
+from collective.transmogrifier.transmogrifier import Transmogrifier
 
 
 TESTCSV = '\n'.join(['%s, %d, %d' % ('Name', x, x + 1) for x in range(1, 10)])
@@ -90,85 +91,13 @@ class BCCVLLayer(PloneSandboxLayer):
         return fileob
 
     def addTestContent(self, portal):
-        self.addSpeciesData(portal)
-        self.addEnvironmentalData(portal)
-        self.addFutureClimateData(portal)
-        self.addToolkits(portal)
-
-    def addSpeciesData(self, portal):
-        dsf = portal[defaults.DATASETS_FOLDER_ID]
-        # Species Observation data
-        spf = dsf[defaults.DATASETS_SPECIES_FOLDER_ID]
-        abtid = spf.invokeFactory('gu.repository.content.RepositoryItem',
-                                title=u"ABT",
-                                id="ABT")
-        abt = spf[abtid]
-        # TODO: there is still autopublish for items
-        # self.publish(abt)
-        # Occurence
-        occ = self.addDataset(abt, title=u"ABT", id="occurence.csv",
-                              file={'filename': u'occurence.csv',
-                                    'mimetype': 'text/csv',
-                                    'data': TESTCSV})
-        self.publish(occ)
-        occmd = IGraph(occ)
-        occmd.add((occmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
-        occmd.add((occmd.identifier, BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP']))
-        self.updateMetadata(occ, occmd)
-        abs = self.addDataset(abt, title=u"ABT", id="bkgd.csv",
-                              file={'filename': u'bkgd.csv',
-                                    'mimetype': 'text/csv',
-                                    'data': TESTCSV})
-        self.publish(abs)
-        absmd = IGraph(abs)
-        absmd.add((absmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
-        absmd.add((absmd.identifier, BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerX']))
-        self.updateMetadata(abs, absmd)
-
-    def addEnvironmentalData(self, portal):
-        dsf = portal[defaults.DATASETS_FOLDER_ID]
-        # Environmental Data
-        edf = dsf[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
-        # TODO: add files?
-        curid = edf.invokeFactory('org.bccvl.content.dataset',
-                                  title=u'Current',
-                                  id='current')
-        cur = edf[curid]
-        self.publish(cur)
-        curmd = IGraph(cur)
-        curmd.add((curmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreE']))
-        self.updateMetadata(cur, curmd)
-
-    def addFutureClimateData(self, portal):
-        dsf = portal[defaults.DATASETS_FOLDER_ID]
-        # Environmental Data
-        edf = dsf[defaults.DATASETS_CLIMATE_FOLDER_ID]
-        # TODO: add files?
-        curid = edf.invokeFactory('org.bccvl.content.dataset',
-                                  title=u'Future',
-                                  id='future')
-        cur = edf[curid]
-        self.publish(cur)
-        curmd = IGraph(cur)
-        curmd.add((curmd.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreFC']))
-        self.updateMetadata(cur, curmd)
-
-    def addToolkits(self, portal):
-        # Functions
-        # FIXME: currently func executor verifies functions based on module
-        #        so put testalgorithm into this module for now
+        # TODO get rid of this modue hack
         from org.bccvl import compute
         from org.bccvl.site.tests.compute import testalgorithm
         compute.testalgorithm = testalgorithm
-        funcf = portal[defaults.FUNCTIONS_FOLDER_ID]
-        funcid = funcf.invokeFactory('org.bccvl.content.function',
-                                     title=u"Bioclim",
-                                     id="bioclim",
-                                     schema=u"empty",
-                                     method='org.bccvl.compute.testalgorithm')
-        func = funcf[funcid]
-        self.publish(func)
-        # TODO: add func metadata here
+
+        transmogrifier = Transmogrifier(portal)
+        transmogrifier(u'org.bccvl.site.tests.testdataimport')
 
 
 BCCVL_FIXTURE = BCCVLLayer()
