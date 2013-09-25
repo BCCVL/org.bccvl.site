@@ -29,6 +29,7 @@
   <property name="default_view">view</property>
   <property name="default_view_fallback">False</property>
   <property name="view_methods">
+    <element value="file_view" />
     <element value="view" />
     <element value="display-file" />
   </property>
