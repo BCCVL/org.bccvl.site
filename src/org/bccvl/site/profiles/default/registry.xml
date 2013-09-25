@@ -54,6 +54,55 @@
     <value>False</value>
   </record>
 
+  <record name="plone.caching.interfaces.ICacheSettings.enabled" interface="plone.caching.interfaces.ICacheSettings" field="enabled">
+    <field type="plone.registry.field.Bool">
+      <default>False</default>
+      <description>If not set, no caching operations will be attempted</description>
+      <title>Globally enabled</title>
+    </field>
+    <value>True</value>
+  </record>
+
+  <record name="plone.cachepurging.interfaces.ICachePurgingSettings.cachingProxies" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="cachingProxies">
+    <field type="plone.registry.field.Tuple">
+      <description>Provide the URLs of each proxy to which PURGE requests shoudl be sent.</description>
+      <title>Caching proxies</title>
+      <value_type type="plone.registry.field.URI"/>
+    </field>
+    <value>
+      <element>http://localhost:8101</element>
+    </value>
+  </record>
+  <!-- <record name="plone.cachepurging.interfaces.ICachePurgingSettings.domains" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="domains"> -->
+  <!--   <field type="plone.registry.field.Tuple"> -->
+  <!--     <default/> -->
+  <!--     <description>This option is only relevant if you are using virtual hosting and you have enabled the option to send PURGE requests with virtual hosting URLs above. If you your site is served on multiple domains e.g. http://example.org and http://www.example.org you may wish to purge both. If so, list all your domains here</description> -->
+  <!--     <missing_value/> -->
+  <!--     <required>False</required> -->
+  <!--     <title>Domains</title> -->
+  <!--     <value_type type="plone.registry.field.URI"/> -->
+  <!--   </field> -->
+  <!--   <value> -->
+  <!--     <element>http://compute.bccvl.org.au:80</element> -->
+  <!--     <element>https://compute.bccvl.org.au:443</element> -->
+  <!--   </value> -->
+  <!-- </record> -->
+  <record name="plone.cachepurging.interfaces.ICachePurgingSettings.enabled" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="enabled">
+    <field type="plone.registry.field.Bool">
+      <default>True</default>
+      <description>If disabled, no purging will take place</description>
+      <title>Enable purging</title>
+    </field>
+    <value>True</value>
+  </record>
+  <record name="plone.cachepurging.interfaces.ICachePurgingSettings.virtualHosting" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="virtualHosting">
+    <field type="plone.registry.field.Bool">
+      <default>False</default>
+      <description>This option is only relevant if you are using virtual hosting with Zope's VirtualHostMonster. This relies on special tokens (VirtualHostBase and VirtualHostRoot) in the URL to instruct Zope about the types of URLs that the user sees. If virtual host URLs are in use and this option is set, PURGE requests will be sent to the caching proxy with the virtual hosting tokens in place. This makes sense if there is a web server in front of your caching proxy performing the rewrites necessary to translate a user-facing URL into a virtual hosting URL, so that the requests the caching proxy sees have the rewrite information in them. Conversely, if the rewrite is done in or behind the caching proxy, you want to disable this option, so that the PURGE requests use URLs that match those seen by the caching proxy as they come from the client.</description>
+      <title>Send PURGE requests with virtual hosting paths</title>
+    </field>
+    <value>True</value>
+  </record>
 
   <record name="gu.plone.rdf.interfaces.IRDFSettings.fresnel_graph_uri" interface="gu.plone.rdf.interfaces.IRDFSettings" field="fresnel_graph_uri">
     <field type="plone.registry.field.URI">
@@ -371,81 +420,6 @@
   <!--   <value>False</value> -->
   <!-- </record> -->
 
-
-
-  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.absolutePrefix" interface="plone.app.theming.interfaces.IThemeSettings" field="absolutePrefix"> -->
-  <!--   <field type="plone.registry.field.TextLine"> -->
-  <!--     <description>convert_relative_url</description> -->
-  <!--     <required>False</required> -->
-  <!--     <title>absolute_url_prefix</title> -->
-  <!--   </field> -->
-  <!--   <value/> -->
-  <!-- </record> -->
-  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.currentTheme" interface="plone.app.theming.interfaces.IThemeSettings" field="currentTheme"> -->
-  <!--   <field type="plone.registry.field.TextLine"> -->
-  <!--     <description>current_theme_description</description> -->
-  <!--     <title>current_theme</title> -->
-  <!--   </field> -->
-  <!--   <value/> -->
-  <!-- </record> -->
-  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.doctype" interface="plone.app.theming.interfaces.IThemeSettings" field="doctype"> -->
-  <!--   <field type="plone.registry.field.ASCIILine"> -->
-  <!--     <default></default> -->
-  <!--     <description>doctype_description</description> -->
-  <!--     <required>False</required> -->
-  <!--     <title>doctype</title> -->
-  <!--   </field> -->
-  <!--   <value></value> -->
-  <!-- </record> -->
-  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.enabled" interface="plone.app.theming.interfaces.IThemeSettings" field="enabled"> -->
-  <!--   <field type="plone.registry.field.Bool"> -->
-  <!--     <default>False</default> -->
-  <!--     <description>enable_theme_globally</description> -->
-  <!--     <title>enabled</title> -->
-  <!--   </field> -->
-  <!--   <value>False</value> -->
-  <!-- </record> -->
-  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.hostnameBlacklist" interface="plone.app.theming.interfaces.IThemeSettings" field="hostnameBlacklist"> -->
-  <!--   <field type="plone.registry.field.List"> -->
-  <!--     <default> -->
-  <!--       <element>127.0.0.1</element> -->
-  <!--     </default> -->
-  <!--     <description>hostname_blacklist_description</description> -->
-  <!--     <required>False</required> -->
-  <!--     <title>hostname_blacklist</title> -->
-  <!--     <value_type type="plone.registry.field.TextLine"/> -->
-  <!--   </field> -->
-  <!--   <value> -->
-  <!--     <element>127.0.0.1</element> -->
-  <!--   </value> -->
-  <!-- </record> -->
-  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.parameterExpressions" interface="plone.app.theming.interfaces.IThemeSettings" field="parameterExpressions"> -->
-  <!--   <field type="plone.registry.field.Dict"> -->
-  <!--     <default/> -->
-  <!--     <description>parameter_expressions_description</description> -->
-  <!--     <key_type type="plone.registry.field.ASCIILine"/> -->
-  <!--     <required>False</required> -->
-  <!--     <title>parameter_expressions</title> -->
-  <!--     <value_type type="plone.registry.field.ASCIILine"/> -->
-  <!--   </field> -->
-  <!--   <value/> -->
-  <!-- </record> -->
-  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.readNetwork" interface="plone.app.theming.interfaces.IThemeSettings" field="readNetwork"> -->
-  <!--   <field type="plone.registry.field.Bool"> -->
-  <!--     <default>False</default> -->
-  <!--     <description>network_urls_allowed</description> -->
-  <!--     <title>readNetwork</title> -->
-  <!--   </field> -->
-  <!--   <value>False</value> -->
-  <!-- </record> -->
-  <!-- <record name="plone.app.theming.interfaces.IThemeSettings.rules" interface="plone.app.theming.interfaces.IThemeSettings" field="rules"> -->
-  <!--   <field type="plone.registry.field.TextLine"> -->
-  <!--     <description>rules_file_path</description> -->
-  <!--     <required>False</required> -->
-  <!--     <title>rules_file</title> -->
-  <!--   </field> -->
-  <!--   <value/> -->
-  <!-- </record> -->
 
 
 </registry>
