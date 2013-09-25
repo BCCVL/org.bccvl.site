@@ -11,6 +11,7 @@ from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit, view
 from zope.i18n import translate
 from org.bccvl.site import MessageFactory as _
+from org.bccvl.site.browser.xmlrpc import getdsmetadata
 
 
 class IJobStatus(form.Schema):
@@ -109,7 +110,7 @@ class Add(add.DefaultAddForm):
 
     extends(dexterity.DisplayForm,
             ignoreButtons=True)
-  
+
     buttons = button.Buttons(add.DefaultAddForm.buttons['cancel'])
 
     @button.buttonAndHandler(_('Create and start'), name='save')
@@ -135,7 +136,7 @@ class Add(add.DefaultAddForm):
         jt = IJobTracker(obj)
         msgtype, msg = jt.start_job()
         if msgtype is not None:
-            IStatusMessage(self.request).add(msg, type=msgtype)   
+            IStatusMessage(self.request).add(msg, type=msgtype)
 
     # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
@@ -146,18 +147,17 @@ class Add(add.DefaultAddForm):
         api = QueryAPI(self.context)
         mapping = dict()
         for brain in api.getSpeciesOccurrenceDatasets():
-            dataset = brain.getObject()
-            dataset_url = dataset.absolute_url_path()
-            mapping[dataset.UID()] = {
-                'object': dataset_url,
-                'file': '/'.join([dataset_url, 'occur.csv']),
+            dataset_info = getdsmetadata(brain.getObject())
+            mapping[dataset_info['id']] = {
+                'object': dataset_info['url'],
+                'file': dataset_info['file'],
             }
         js_tmpl = """
             window.bccvl || (window.bccvl = {});
             window.bccvl.lookups || (window.bccvl.lookups = {});
             window.bccvl.lookups.occurrencesMap = %s;
         """
-        return js_tmpl % json.dumps(mapping)        
+        return js_tmpl % json.dumps(mapping)
 
 
 
