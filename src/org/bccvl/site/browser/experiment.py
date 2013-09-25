@@ -137,7 +137,7 @@ class Add(add.DefaultAddForm):
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)   
 
-    # TODO: deprecate once data mover/manager API is finished
+    # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
     def occurrences_mapping(self):
         # expects the occurrence file to be called 'occur.csv'
@@ -153,7 +153,9 @@ class Add(add.DefaultAddForm):
                 'file': '/'.join([dataset_url, 'occur.csv']),
             }
         js_tmpl = """
-            var OCCURRENCES_MAP = %s;
+            window.bccvl || (window.bccvl = {});
+            window.bccvl.lookups || (window.bccvl.lookups = {});
+            window.bccvl.lookups.occurrencesMap = %s;
         """
         return js_tmpl % json.dumps(mapping)        
 
