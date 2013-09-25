@@ -1,0 +1,7 @@
+{
+  "_path": "/toolkit/bioclim",
+  "_type": "org.bccvl.content.function",
+  "title": "Bioclim",
+  "schema": "empty",
+  "method": "org.bccvl.compute.testalgorithm"
+}

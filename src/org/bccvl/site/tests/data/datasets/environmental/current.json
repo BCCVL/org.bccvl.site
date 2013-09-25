@@ -1,0 +1,7 @@
+{
+  "_type": "org.bccvl.content.dataset",
+  "title": "Current",
+  "_rdf": {
+          "file": "current.ttl",
+          "contenttype": "text/turtle"}
+}
