@@ -2,8 +2,8 @@ from plone.directives import form
 from zope import schema
 from plone.dexterity.content import Container
 from org.bccvl.site import vocabularies
+from org.bccvl.site.browser import parameter
 from zope.interface import implementer
-
 
 class IExperiment(form.Schema):
     """Base Experiment Class"""
@@ -48,8 +48,20 @@ class IExperiment(form.Schema):
         required=False,
     )
 
+    parameters_brt = schema.Object(
+        title=u'BRT Configuration',
+        schema=parameter.IParametersBRT, 
+        required=False,
+    )
+    
+    parameters_bioclim = schema.Object(
+        title=u'Bioclim Configuration',
+        schema=parameter.IParametersBioclim,
+        required=False,
+    ) 
 
 # TODO: validate input choices against function selected
+
 
 @implementer(IExperiment)
 class Experiment(Container):
