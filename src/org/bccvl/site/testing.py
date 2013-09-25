@@ -192,7 +192,7 @@ class BCCVLAsyncFunctionalTesting(FunctionalTesting):
         component.provideHandler(configureQueue, [IQueueReady])
         setUpQueue(db)
         setUpDispatcher(db, _dispatcher_uuid)
-        #transaction.commit()
+        transaction.commit()
 
     def testTearDown(self):
         # first tear down async stuff
@@ -211,7 +211,7 @@ class BCCVLAsyncFunctionalTesting(FunctionalTesting):
         gsm.unregisterHandler(configureQueue, [IQueueReady])
         db = gsm.getUtility(IAsyncDatabase)
         gsm.unregisterUtility(db, IAsyncDatabase)
-        #transaction.commit()
+        transaction.commit()
 
         # then tear down z2.FunctionalTesting things
         super(BCCVLAsyncFunctionalTesting, self).testTearDown()
