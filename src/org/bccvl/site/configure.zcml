@@ -76,6 +76,17 @@
     <adapter
         factory=".utilities.JobTracker"/>
 
+  <utility
+     component=".transmogrify.JSONSource"
+     name="org.bccvl.site.transmogrify.jsonsource"
+     />
+
+  <utility
+     component=".transmogrify.RDFMetadataUpdater"
+     name="org.bccvl.site.transmogrify.rdfmetadata"
+     />
+
+
     <transmogrifier:registerConfig
         name="exportknowledgebase"
         title="Export Knowledgebase pipeline configuration"
