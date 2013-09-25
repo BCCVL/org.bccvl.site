@@ -4,6 +4,7 @@ from plone.dexterity.content import Container
 from org.bccvl.site import vocabularies
 from org.bccvl.site.browser import parameter
 from zope.interface import implementer
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
 
 class IExperiment(form.Schema):
     """Base Experiment Class"""
@@ -14,6 +15,7 @@ class IExperiment(form.Schema):
 #        default=None,
 #    )
 
+    form.widget(functions=CheckBoxFieldWidget)
     functions = schema.Choice(
         title=u'Algorithm',
         source=vocabularies.functions_source,
