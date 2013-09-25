@@ -7,6 +7,8 @@ from org.bccvl.site import MessageFactory as _
 
 class IDataset(form.Schema):
 
+    # TODO: a primary field should not be required. possible bug in plone core
+    form.primary('file')
     file = NamedBlobFile(
         title=_(u"File"),
         description=_(u"Data content"),
