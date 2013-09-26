@@ -6,6 +6,7 @@ from org.bccvl.site.browser import parameter
 from zope.interface import implementer
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 
+
 class IExperiment(form.Schema):
     """Base Experiment Class"""
 
@@ -52,15 +53,15 @@ class IExperiment(form.Schema):
 
     parameters_brt = schema.Object(
         title=u'BRT Configuration',
-        schema=parameter.IParametersBRT, 
+        schema=parameter.IParametersBRT,
         required=False,
     )
-    
+
     parameters_bioclim = schema.Object(
         title=u'Bioclim Configuration',
         schema=parameter.IParametersBioclim,
         required=False,
-    ) 
+    )
 
 # TODO: validate input choices against function selected
 
