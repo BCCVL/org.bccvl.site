@@ -44,10 +44,10 @@ def InitaliseUser(user, event):
     # don't forget to reindex
     userobj.reindexObject()
 
-# TODO: remove after initial testing phases are done
-# This is just an early convenience to auto-publish RepoItems to
+# FIXME: remove after initial testing phases are done
+# This is just an early convenience to auto-publish Content to
 # minimise the amount of setup needed for testing
-def publishRepositoryItem(object, event):
+def publishOnAdd(object, event):
     object.portal_workflow.doActionFor(object, 'publish')
 
 
