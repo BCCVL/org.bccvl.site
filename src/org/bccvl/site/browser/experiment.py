@@ -138,6 +138,26 @@ class Add(add.DefaultAddForm):
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
 
+    @button.buttonAndHandler(_('Create'), name='create')
+    def handleCreate(self, action):
+        data, errors = self.extractData()
+        if errors:
+            self.status = self.formErrorsMessage
+            return
+        # TODO: this is prob. a bug in base form, because createAndAdd does not return
+        #       the wrapped object.
+        obj = self.createAndAdd(data)
+        if obj is None:
+            # TODO: this is probably an error here?
+            #       object creation/add failed for some reason
+            return
+        # get wrapped instance fo new object (see above)
+        obj = self.context[obj.id]
+        # mark only as finished if we get the new object
+        self._finishedAdd = True
+        IStatusMessage(self.request).addStatusMessage(_(u"Item created"), "info")
+
+
     # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
     def occurrences_mapping(self):
@@ -157,7 +177,6 @@ class Add(add.DefaultAddForm):
             window.bccvl.lookups.occurrencesMap = %s;
         """
         return js_tmpl % json.dumps(mapping)
-
 
 
 class AddView(add.DefaultAddView):
