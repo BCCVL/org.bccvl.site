@@ -9,6 +9,9 @@ from decorator import decorator
 from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
+from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site import defaults
+
 
 # self passed in as *args
 @decorator  # well behaved decorator that preserves signature so that apply can inspect it
@@ -41,6 +44,7 @@ def getdsmetadata(ds):
 
 
 class DataSetManager(BrowserView):
+    # DS Manager API on Site Root
 
     @returnwrapper
     def getMetadata(self, datasetid):
@@ -60,6 +64,7 @@ class DataSetManager(BrowserView):
 
 
 class DataSetAPI(BrowserView):
+    # DS Manager API on Dataset
 
     @returnwrapper
     def getMetadata(self):
@@ -67,6 +72,7 @@ class DataSetAPI(BrowserView):
 
 
 class JobManager(BrowserView):
+    # job manager on Site Root
 
     @returnwrapper
     def getJobs(self):
@@ -77,8 +83,60 @@ class JobManager(BrowserView):
         return {'status': 'running'}
 
 
+class JobManagerAPI(BrowserView):
+    # job manager on experiment
+
+    @returnwrapper
+    def getJobStatus(self):
+        return IJobTracker(self.context).status()
+
+
 class ExperimentManager(BrowserView):
 
     @returnwrapper
     def getExperiments(self, id):
         return {'data': 'experimentmetadata+datasetids+jobid'}
+
+
+class DataMover(BrowserView):
+
+    @returnwrapper
+    def pullOccurrenceFromALA(self, lsid):
+        from xmlrpclib import ServerProxy
+        s = ServerProxy('http://127.0.0.1:6543/data_mover')
+        ret = s.pullOccurrenceFromALA(lsid)
+        from zope.component import getUtility
+        from plone.app.async.interfaces import IAsyncService
+        from plone.app.async import service
+        async = getUtility(IAsyncService)
+        jobinfo = (alaimport, self.context, (ret, ), {})
+        job = async.wrapJob(jobinfo)
+        queue = async.getQueues()['']
+        job = queue.put(job)
+        job.addCallbacks(success=service.job_success_callback,
+                         failure=service.job_failure_callback)
+        return ret
+
+    @returnwrapper
+    def checkALAJobStatus(self, job_id):
+        from xmlrpclib import ServerProxy
+        s = ServerProxy('http://127.0.0.1:6543/data_mover')
+        ret = s.checkALAJobStatus(self, job_id)
+        return ret
+
+    @returnwrapper
+    def importOccurenceFromALA(self, path, lsid):
+        # portal_url = getToolByName(self.context, "portal_url")
+        # portal = portal_url.getPortalObject()
+        portal = self.context
+        ds = portal[defaults.DATASETS_FOLDER_ID]
+        from collective.transmogrifier.transmogrifier import Transmogrifier
+        transmogrifier = Transmogrifier(ds)
+        transmogrifier(u'org.bccvl.site.alaimport',
+                       alasource={'path': path,
+                                  'lsid': lsid})
+
+
+def alaimport(context, jobstatus):
+    # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
+    pass

@@ -68,6 +68,44 @@
     <adapter
         factory=".experiment.JobStatus"/>
 
+    <browser:view
+        class=".xmlrpc.JobManagerAPI"
+        name="jm"
+        allowed_attributes="getJobStatus"
+        for="org.bccvl.site.content.experiment.IExperiment"
+        permission="zope2.View" >
+
+        <browser:page
+            name="getJobStatus"
+            attribute="getJobStatus"/>
+
+    </browser:view>
+
+    <browser:view
+        name="dv"
+        class=".xmlrpc.DataMover"
+        allowed_attributes="pullOccurrenceFromALA checkALAJobStatus importOccurenceFromALA"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        permission="org.bccvl.AddDataset" >
+
+        <browser:page
+            name="pullOccurrenceFromALA"
+            attribute="pullOccurrenceFromALA"/>
+        <browser:page
+            name="checkALAJobStatus"
+            attribute="checkALAJobStatus"/>
+
+    </browser:view>
+
+    <!-- FIXME: wrong permission here
+                and should be part of dv view -->
+    <browser:page
+        name="importOccurenceFromALA"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        class=".xmlrpc.DataMover"
+        attribute="importOccurenceFromALA"
+        permission="zope2.View"/>
+
     <browser:page
         name="view"
         for="..content.experiment.IExperiment"
