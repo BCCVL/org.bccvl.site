@@ -7,6 +7,10 @@ from collective.transmogrifier.utils import resolvePackageReferenceOrFile
 from collective.transmogrifier.utils import defaultMatcher
 import simplejson
 from ordf.graph import Graph
+from ordf.namespace import DC
+from rdflib import RDF, URIRef, Literal
+from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
+from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 
@@ -76,6 +80,84 @@ class JSONSource(object):
                             'data': open(_absfilename).read()
                             }
                 yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class ALASource(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.name = name
+        self.options = options
+        self.previous = previous
+
+        self.path = options['path']
+        if self.path is None or not os.path.isdir(self.path):
+            raise Exception('Path ({}) does not exists.'.format(str(self.path)))
+        self.path = self.path.rstrip(os.sep)
+        self.lsid = options['lsid']
+
+
+        # add path prefix to imported content
+        self.prefix = options.get('prefix', '').strip().strip(os.sep)
+        # keys for sections further down the chain
+        self.pathkey = options.get('path-key', '_path').strip()
+        self.fileskey = options.get('files-key', '_files').strip()
+
+    def __iter__(self):
+        # exhaust previous iterator
+        for item in self.previous:
+            yield item
+
+        # start our own source
+        # 1. read meatada from json
+        csv = os.path.join(self.path, '{}.csv'.format(self.lsid))
+        json = os.path.join(self.path, '{}.json'.format(self.lsid))
+
+        # read json
+        json = simplejson.load(open(json, 'r'))
+        # extract metadata
+        rdf = Graph()
+        # rdf.add((rdf.identifier, DC['source'], URIRef(json['taxonConcept']['dcterms_source'])))
+        # rdf.add((rdf.identifier, DC['title'], URIRef(json['taxonConcept']['dcterms_title'])))
+        # rdf.add((rdf.identifier, DC['modified'], URIRef(json['taxonConcept']['dcterms_modified'])))
+        # rdf.add((rdf.identifier, DC['available'], URIRef(json['taxonConcept']['dcterms_available'])))
+        # URIRef(json['taxonConcept']['lsid'])
+        # json['taxonConcept']['RankCode'] == 'sp'
+        # json['taxonConcept']['rankString'] == 'species'
+        # json['taxonConcept']['']
+        rdf.add((rdf.identifier, DC['title'], Literal(json['taxonConcept']['nameString'])))
+        rdf.add((rdf.identifier, DC['identifier'], URIRef(json['taxonConcept']['guid'])))
+        rdf.add((rdf.identifier, DC['description'], Literal(json['commonNames'][0]['nameString'])))
+        rdf.add((rdf.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
+        rdf.add((rdf.identifier, BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP']))
+        rdf.add((rdf.identifier, RDF['type'], CVOCAB['Dataset']))
+
+        # FIXME: important of the same guid changes current existing dataset
+        _, id = json['taxonConcept']['guid'].rsplit(':', 1)
+        item = {'_path': id,
+                '_type': 'org.bccvl.content.dataset',
+                'title': '{} ({})'.format(json['taxonConcept']['nameString'], json['commonNames'][0]['nameString']),
+                'file': {
+                    'file': 'data.csv',
+                    'contentype': 'text/csv',
+                    'filename': '{}.csv'.format(self.lsid),
+                    },
+                '_rdf': {
+                    'file': 'rdf.ttl',
+                    'contenttype': 'text/turtle',
+                    },
+                '_files': {
+                    'data.csv': {
+                        'data': open(csv).read()
+                        },
+                    'rdf.ttl': {
+                        'data': rdf.serialize(format='turtle')
+                        }
+                    }
+                }
+        yield item
 
 
 @provider(ISectionBlueprint)

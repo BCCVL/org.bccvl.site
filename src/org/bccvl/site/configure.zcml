@@ -95,6 +95,11 @@
      />
 
   <utility
+     component=".transmogrify.ALASource"
+     name="org.bccvl.site.transmogrify.alasource"
+     />
+
+  <utility
      component=".transmogrify.RDFMetadataUpdater"
      name="org.bccvl.site.transmogrify.rdfmetadata"
      />
@@ -113,5 +118,13 @@
         description="This imports BCCVL Knowledge base section."
         configuration="importknowledgbase.cfg"
         />
+
+    <transmogrifier:registerConfig
+      name="org.bccvl.site.alaimport"
+      title="Import ALA data"
+      description="Import data form ALA put onto filesystem"
+      configuration="import_ala.cfg"
+      />
+
 
 </configure>
