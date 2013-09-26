@@ -29,16 +29,14 @@ from z3c.form.interfaces import DISPLAY_MODE
 @adapter(IExperiment)
 @implementer(IJobStatus)
 class JobStatus(object):
+    # implement additional fields for form schema
 
     def __init__(self, context):
         self.context = context
 
     @property
     def status(self):
-        js = IJobTracker(self.context).get_job_status()
-        if js is not None:
-            return translate(js)
-        return None
+        return IJobTracker(self.context).status()
 
 
 # DefaultEditView = layout.wrap_form(DefaultEditForm)

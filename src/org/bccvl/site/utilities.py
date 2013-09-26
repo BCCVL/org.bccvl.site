@@ -139,5 +139,12 @@ class JobTracker(object):
             return job.status
         return None
 
+    def status(self):
+        from zope.i18n import translate
+        status = self.get_job_status()
+        if status is not None:
+            return translate(status)
+        return None
+
     def get_job(self):
         return getattr(self.context, 'current_job', None)
