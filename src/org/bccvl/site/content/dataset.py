@@ -3,6 +3,7 @@ from plone.namedfile.field import NamedBlobFile
 from plone.dexterity.content import Item
 from zope.interface import implementer
 from org.bccvl.site import MessageFactory as _
+from plone.app.contenttypes.interfaces import IFile
 
 
 class IDataset(form.Schema):
@@ -15,7 +16,7 @@ class IDataset(form.Schema):
         required=True)
 
 
-@implementer(IDataset)
+@implementer(IDataset, IFile)
 class Dataset(Item):
 
     pass

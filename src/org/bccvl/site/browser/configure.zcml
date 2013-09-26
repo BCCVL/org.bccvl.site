@@ -118,18 +118,4 @@
         factory=".parameter.ParametersBioclimFactory"
     />
 
-   <configure package="plone.app.contenttypes">
-   <!-- re-register file_view for DataSets
-        TODO: alternatively dataset could also provide IFile interface -->
-       <browser:page
-           name="file_view"
-           for="org.bccvr.site.content.dataset.IDataset"
-           layer="plone.app.contenttypes.interfaces.IPloneAppContenttypesLayer"
-           template="templates/file.pt"
-           permission="zope2.View"
-           menu="plone_displayviews"
-           title="View File"
-           />
-   </configure>
-
 </configure>
