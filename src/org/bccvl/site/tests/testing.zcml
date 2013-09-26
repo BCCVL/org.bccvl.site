@@ -10,7 +10,12 @@
 collective.geo.mapwidget.browser.widgets.MapWidgets which
 overrides anything else in a stacked component registry scenario -->
     <exclude package="collective.geo.mapwidget"/>
+    <!-- also exclude mapwidget dependencies -->
+    <exclude package="collective.geo.contentlocations"/>
+    <exclude package="collective.z3cform.mapwidget"/>
+    <exclude package="collective.geo.kml"/>
 
+    <include package="plone.app.caching"/>
     <include package="plone.app.folderui"/>
     <include package="org.bccvl.site"/>
 
