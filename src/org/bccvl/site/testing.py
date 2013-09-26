@@ -78,18 +78,6 @@ class BCCVLLayer(PloneSandboxLayer):
         cc.commit()
         context.reindexObject()
 
-    def publish(self, context):
-        context.portal_workflow.doActionFor(context, 'publish')
-
-    def addDataset(self, container, id, title, file):
-        fileid = container.invokeFactory('org.bccvl.content.dataset',
-                                         title=title,
-                                         id=id)
-        fileob = container[fileid]
-        fileob.file = NamedBlobFile(contentType=file['mimetype'], filename=file['filename'])
-        fileob.file.data = file['data']
-        return fileob
-
     def addTestContent(self, portal):
         # TODO get rid of this modue hack
         from org.bccvl import compute
