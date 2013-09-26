@@ -24,6 +24,12 @@
     />
 
     <utility
+        factory=".utilities.RDFContentBasedTypeMapper"
+        name="Content type to RDF type Mapper"
+    />
+
+
+    <utility
         factory=".UserAdder"
         provides="Products.membrane.interfaces.IUserAdder"
         name="BCCVL User Adder"
