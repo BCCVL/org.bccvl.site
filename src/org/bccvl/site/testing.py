@@ -199,10 +199,9 @@ class BCCVLAsyncFunctionalTesting(FunctionalTesting):
         gsm.unregisterHandler(configureQueue, [IQueueReady])
         db = gsm.getUtility(IAsyncDatabase)
         gsm.unregisterUtility(db, IAsyncDatabase)
-        transaction.commit()
-
         # then tear down z2.FunctionalTesting things
         super(BCCVLAsyncFunctionalTesting, self).testTearDown()
+
 
 # use this one to setup async in current test instance
 BCCVL_ASYNC_FIXTURE = BCCVLAsyncLayer()
