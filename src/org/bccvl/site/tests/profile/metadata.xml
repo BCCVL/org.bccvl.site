@@ -8,14 +8,13 @@
         <!-- <dependency>profile-collective.z3cform.colorpicker:default</dependency> -->
         <dependency>profile-collective.z3cform.widgets:default</dependency>
         <dependency>profile-dexterity.membrane:default</dependency>
-        <dependency>profile-plone.app.contenttypes:default</dependency>
-
         <!-- <dependency>profile-atreal.richfile.metadata:default</dependency> -->
         <!-- <dependency>profile-atreal.richfile.qualifier:default</dependency> -->
-
         <dependency>profile-plone.app.theming:default</dependency>
         <dependency>profile-plone.app.dexterity:default</dependency>
         <dependency>profile-plone.app.collection:default</dependency>
+        <dependency>profile-plone.app.contenttypes:default</dependency>
+        <!-- <dependency>profile-plone.app.contenttypes:plone-content</dependency> -->
         <dependency>profile-plone.formwidget.autocomplete:default</dependency>
 
         <dependency>profile-plone.app.folderui:default</dependency>
