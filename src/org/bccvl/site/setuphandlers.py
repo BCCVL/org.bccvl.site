@@ -3,6 +3,8 @@ from plone.app.dexterity.behaviors import constrains
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
 from collective.setuphelpers.structure import setupStructure
 from collective.setuphelpers import setupNavigation
+from plone.dexterity.utils import createContent,  addContentToContainer
+from Products.CMFCore.utils import getToolByName
 
 import logging
 logger = logging.getLogger(__name__)
@@ -22,6 +24,7 @@ def setupVarious(context):
     createKnowledgeBaseFolder(portal)
 
     createExperimentsFolder(portal)
+    createFrontPage(portal)
 
 # TODO: fix up collective.setuphelpers
 #    setupStructure(portal, SITE_STRUCTURE)
@@ -91,6 +94,18 @@ def createExperimentsFolder(site):
     # TODO: DEFINITELY do NOT use this in production!!
     site.experiments.manage_permission('Add portal content', ('Authenticated',), acquire=False)
     site.experiments.manage_permission('Modify portal content', ('Authenticated',), acquire=False)
+
+
+def createFrontPage(site):
+    if 'front-page' not in site.keys():
+        page = createContent('Document', id='front-page',
+                             title=u'Welcome to BCCVL',
+                             description=u'Congratulations! You have successfully installed BCCVL')
+        page = addContentToContainer(site, page)
+        wftool = getToolByName(site, "portal_workflow")
+        site.setDefaultPage('front-page')
+        wftool.doActionFor(page, 'publish')
+
 
 
 #def _folder(title, id):
