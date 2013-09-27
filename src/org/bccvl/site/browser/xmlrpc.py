@@ -144,7 +144,6 @@ def alaimport(context, jobstatus, lsid):
     from collective.transmogrifier.transmogrifier import Transmogrifier
     import os
     portal_properties = getToolByName(context, 'portal_properties')
-    import ipdb; ipdb.set_trace()
     path = portal_properties.site_properties.getProperty('datamover')
     s = ServerProxy('http://127.0.0.1:6543/data_mover')
     while jobstatus['status'] in ('PENDING', "DOWNLOADING"):
