@@ -3,7 +3,8 @@ from plone.app.dexterity.behaviors import constrains
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
 from collective.setuphelpers.structure import setupStructure
 from collective.setuphelpers import setupNavigation
-from plone.dexterity.utils import createContent,  addContentToContainer
+from plone.dexterity.utils import createContent
+from plone.app.contenttypes.setuphandlers import  addContentToContainer
 from Products.CMFCore.utils import getToolByName
 
 import logging
@@ -102,8 +103,8 @@ def createFrontPage(site):
                              title=u'Welcome to BCCVL',
                              description=u'Congratulations! You have successfully installed BCCVL')
         page = addContentToContainer(site, page)
-        wftool = getToolByName(site, "portal_workflow")
         site.setDefaultPage('front-page')
+        wftool = getToolByName(site, "portal_workflow")
         wftool.doActionFor(page, 'publish')
 
 
