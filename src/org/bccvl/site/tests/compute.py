@@ -2,6 +2,7 @@ from org.bccvl.compute import utils
 from tempfile import mkdtemp
 import os.path
 import shutil
+import time
 
 
 def testalgorithm(experiment):
@@ -16,6 +17,7 @@ def testalgorithm(experiment):
             f = open(os.path.join(tmpdir, fname), 'w')
             f.write(str(range(1, 10)))
             f.close()
+            time.sleep(1)
         # 3. store results
         utils.store_results(experiment, tmpdir)
     finally:
