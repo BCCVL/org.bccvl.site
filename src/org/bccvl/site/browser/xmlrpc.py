@@ -109,7 +109,7 @@ class DataMover(BrowserView):
         from plone.app.async.interfaces import IAsyncService
         from plone.app.async import service
         async = getUtility(IAsyncService)
-        jobinfo = (alaimport, self.context, (ret, ), {})
+        jobinfo = (alaimport, self.context, (ret, lsid), {})
         job = async.wrapJob(jobinfo)
         queue = async.getQueues()['']
         job = queue.put(job)
@@ -121,7 +121,7 @@ class DataMover(BrowserView):
     def checkALAJobStatus(self, job_id):
         from xmlrpclib import ServerProxy
         s = ServerProxy('http://127.0.0.1:6543/data_mover')
-        ret = s.checkALAJobStatus(self, job_id)
+        ret = s.checkALAJobStatus(job_id)
         return ret
 
     @returnwrapper
@@ -137,6 +137,44 @@ class DataMover(BrowserView):
                                   'lsid': lsid})
 
 
-def alaimport(context, jobstatus):
+def alaimport(context, jobstatus, lsid):
     # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
-    pass
+    import time
+    from xmlrpclib import ServerProxy
+    from collective.transmogrifier.transmogrifier import Transmogrifier
+    import os
+    portal_properties = getToolByName(context, 'portal_properties')
+    import ipdb; ipdb.set_trace()
+    path = portal_properties.site_properties.getProperty('datamover')
+    s = ServerProxy('http://127.0.0.1:6543/data_mover')
+    while jobstatus['status'] in ('PENDING', "DOWNLOADING"):
+        time.sleep(1)
+        jobstatus = s.checkALAJobStatus(jobstatus['id'])
+    # TODO: check status for errors?
+    #       for now assume it always works ;)
+
+    #transmogrify.dexterity.schemaupdater needs a REQUEST on context????
+    from ZPublisher.HTTPResponse import HTTPResponse
+    from ZPublisher.HTTPRequest import HTTPRequest
+    import sys
+    response = HTTPResponse(stdout=sys.stdout)
+    env = {'SERVER_NAME':'fake_server',
+           'SERVER_PORT':'80',
+           'REQUEST_METHOD':'GET'}
+    request = HTTPRequest(sys.stdin, env, response)
+
+    # Set values from original request
+    # original_request = kwargs.get('original_request')
+    # if original_request:
+    #     for k,v in original_request.items():
+    #       request.set(k, v)
+    context.REQUEST = request
+
+    ds = context[defaults.DATASETS_FOLDER_ID]
+    transmogrifier = Transmogrifier(ds)
+    transmogrifier(u'org.bccvl.site.alaimport',
+                   alasource={'path': path,
+                              'lsid': lsid})
+
+    # cleanup fake request
+    del context.REQUEST
