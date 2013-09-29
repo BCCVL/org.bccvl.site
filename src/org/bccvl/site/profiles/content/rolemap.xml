@@ -2,12 +2,20 @@
     <permissions>
         <permission name="org.bccvl: Add Experiment" acquire="False">
             <role name="Manager" />
+            <role name="Member" />
         </permission>
         <permission name="org.bccvl: Add Function" acquire="False">
             <role name="Manager" />
         </permission>
         <permission name="org.bccvl: Add Dataset" acquire="False">
             <role name="Manager" />
+            <role name="Member" />
+        </permission>
+        <permission name="gu.repository.content: Add Repository Item">
+            <role name="Member" />
+        </permission>
+        <permission name="Review portal content">
+            <role name="Owner" />
         </permission>
     </permissions>
 </rolemap>
