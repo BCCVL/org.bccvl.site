@@ -1,0 +1,90 @@
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix bccprop: <http://namespaces.bccvl.org.au/prop#> .
+@prefix bccvocab: <http://namespaces.bccvl.org.au/vocab#> .
+
+
+# class definitions
+
+bccvocab:DataGenre a owl:Class ;
+    rdfs:label "Data Genre" ;
+    .
+
+bccvocab:DataSetType a owl:Class ;
+    rdfs:label "Dataset Type" ;
+    .
+
+bccvocab:SpeciesLayer a owl:Class ;
+    rdfs:label "Species Layer" ;
+    .
+
+bccvocab:DataSetFormat a owl:Class ;
+    rdfs:label "Dataset Format" ;
+    .
+
+bccvocab:Resolution a owl:Class ;
+    rdfs:label "Resolution" ;
+    .
+
+# instances
+
+bccvocab:DataGenreFC a bccvocab:DataGenre ;
+    rdfs:label "Future Climate" ;
+    .
+
+bccvocab:DataGenreE a bccvocab:DataGenre ;
+    rdfs:label "Environmental" ;
+    .
+
+bccvocab:DataGenreSD a bccvocab:DataGenre ;
+    rdfs:label "Species Distribution" ;
+    .
+
+bccvocab:DataGenreSO a bccvocab:DataGenre ;
+    rdfs:label "Species Occurrence" ;
+    .
+
+bccvocab:DataSetTypeC a bccvocab:DataSetType ;
+    rdfs:label "continuous" ;
+    .
+
+bccvocab:DataSetTypeD a bccvocab:DataSetType ;
+    rdfs:label "discrete" ;
+    .
+
+bccvocab:SpeciesLayerP a bccvocab:SpeciesLayer ;
+    rdfs:label "Presence" ;
+    .   
+
+bccvocab:SpeciesLayerA a bccvocab:SpeciesLayer ;
+    rdfs:label "Abundance (Presence/Absence)" ;
+    .
+
+bccvocab:SpeciesLayerX a bccvocab:SpeciesLayer ;
+    rdfs:label "Absence" ;
+    .
+
+bccvocab:DataSetFormatCSV a bccvocab:DataSetFormat ;
+    rdfs:label "CSV" ;
+    .
+
+bccvocab:DataSetFormatExcel a bccvocab:DataSetFormat ;
+    rdfs:label "Excel" ;
+    .
+
+bccvocab:DataSetFormatNetCDF a bccvocab:DataSetFormat ;
+    rdfs:label "NetCDF" ;
+    .
+
+bccvocab:Resolution5k a bccvocab:Resolution ;
+    rdfs:label "5 km" ;
+    .
+
+bccvocab:Resolution1k a bccvocab:Resolution ;
+    rdfs:label "1 km" ;
+    .
+
+bccvocab:Resolution250m a bccvocab:Resolution ;
+    rdfs:label "250 m" ;
+    .

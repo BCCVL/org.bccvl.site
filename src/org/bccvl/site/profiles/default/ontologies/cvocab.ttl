@@ -1,0 +1,14 @@
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cvocab: <http://namespaces.griffith.edu.au/collection_vocab#> .
+
+cvocab:Dataset a owl:class ;
+  rdfs:label "Dataset" ;
+  .
+
+cvocab:Item a owl:class ;
+  rdfs:label "Item" ;
+  .
+
+cvocab:Collection a owl:class ;
+  rdfs:label "Collection" ;
+  .

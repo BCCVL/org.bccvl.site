@@ -1,0 +1,48 @@
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix bccprop: <http://namespaces.bccvl.org.au/prop#> .
+@prefix bccvocab: <http://namespaces.bccvl.org.au/vocab#> .
+
+
+bccprop:location a owl:DataProperty ;
+    rdfs:label "Location" ;
+    rdfs:comment "free text field for location." ;
+#    rdfs:range xsd:string ;
+    .
+
+bccprop:attribution a owl:DataProperty ;
+    rdfs:label "Attribution" ;
+    rdfs:comment "free text field to enter attribution."
+#    rdfs:range xsd:string ;
+    .
+
+bccprop:datagenre a owl:ObjectProperty ;
+    rdfs:label "Data Genre" ;
+    rdfs:comment "BCCVL Data Genre" ;
+    rdfs:range bccvocab:DataGenre ;
+    .
+
+bccprop:datatype a owl:ObjectProperty ;
+    rdfs:label "Dataset Type" ;
+    rdfs:comment "BCCVL Dataset Type" ;
+    rdfs:range bccvocab:DataSetType ;
+    .
+
+bccprop:specieslayer a owl:ObjectProperty ;
+    rdfs:label "Species Layer" ;
+    rdfs:comment "Species Layer type" ;
+    rdfs:range bccvocab:SpeciesLayer ;
+    .
+
+bccprop:format a owl:ObjectProperty ;
+    rdfs:label "Dataset Format" ;
+    rdfs:comment "Dataset file format" ;
+    rdfs:range bccvocab:DataSetFormat ;
+    .
+
+bccprop:resolution a owl:ObjectProperty ;
+    rdfs:label "Resolution" ;
+    rdfs:comment "Resolution for grid data" ;
+    rdfs:range bccvocab:Resolution ;
+    .
