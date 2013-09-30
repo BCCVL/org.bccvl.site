@@ -11,10 +11,10 @@
             <role name="Manager" />
             <role name="Member" />
         </permission>
-        <permission name="gu.repository.content: Add Repository Item">
+        <permission name="gu.repository.content: Add Repository Item" acquire="False">
             <role name="Member" />
         </permission>
-        <permission name="Review portal content">
+        <permission name="Review portal content" acquire="False">
             <role name="Owner" />
         </permission>
     </permissions>
