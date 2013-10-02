@@ -62,10 +62,10 @@ class SiteSetupTest(unittest.TestCase):
         portal = self.layer['portal']
         roles = tuple(selectedRoles(portal, "org.bccvl: Add Experiment"))
         self.assertEqual(roles,
-                         ('Manager', ))
+                         ('Manager', 'Member'))
         roles = tuple(selectedRoles(portal, "org.bccvl: Add Function"))
         self.assertEqual(roles,
                          ('Manager', ))
         roles = tuple(selectedRoles(portal, "org.bccvl: Add Dataset"))
         self.assertEqual(roles,
-                         ('Manager', ))
+                         ('Manager', 'Member'))
