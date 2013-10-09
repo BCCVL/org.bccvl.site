@@ -97,7 +97,6 @@ class JobTracker(object):
         if self.get_job_status() in (None, COMPLETED):
             async = getUtility(IAsyncService)
             queue = async.getQueues()['']
-            import pdb; pdb.set_trace()
             for func in (uuidToObject(f) for f in self.context.functions):
                 # TODO: default queue quota is 1. either set it to a defined value (see: plone.app.asnc.subscriber)
                 #       or create and submit job manually
