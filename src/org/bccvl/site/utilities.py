@@ -94,36 +94,36 @@ class JobTracker(object):
         self.context = context
 
     def start_job(self):
-        func = uuidToObject(self.context.functions)
-
-        async = getUtility(IAsyncService)
-        # TODO: default queue quota is 1. either set it to a defined value (see: plone.app.asnc.subscriber)
-        #       or create and submit job manually
-        #job = async.queueJob(execute, self.context, envfile, specfile)
-        method = None
-        if func is None:
-            return 'error', u"Can't find function {}".format(self.context.functions)
-        else:
-            if not func.method.startswith('org.bccvl.compute'):
-                return 'error', u"Method '{}' not in compute package".format(func.method)
-            try:
-                method = resolve(func.method)
-            except ImportError:
-                return 'error', u"Can't resolve method '{}'".format(func.method)
-        if method is None:
-            return 'error', u"Unknown error, method is None"
-        # TODO: add some more checks, whether we have a valid function
-        #      e.g. interface provided, registered in tool, etc...
-        jobinfo = (method, self.context, (), {})
-        # TODO: current job status
         if self.get_job_status() in (None, COMPLETED):
-            job = async.wrapJob(jobinfo)
+            async = getUtility(IAsyncService)
             queue = async.getQueues()['']
-            job = queue.put(job)
-            # don't forget the plone.app.async notification callbacks
-            job.addCallbacks(success=service.job_success_callback,
-                            failure=service.job_failure_callback)
-            self.context.current_job = job
+            import pdb; pdb.set_trace()
+            for func in (uuidToObject(f) for f in self.context.functions):
+                # TODO: default queue quota is 1. either set it to a defined value (see: plone.app.asnc.subscriber)
+                #       or create and submit job manually
+                #job = async.queueJob(execute, self.context, envfile, specfile)
+                method = None
+                if func is None:
+                    return 'error', u"Can't find function {}".format(self.context.functions)
+                else:
+                    if not func.method.startswith('org.bccvl.compute'):
+                        return 'error', u"Method '{}' not in compute package".format(func.method)
+                    try:
+                        method = resolve(func.method)
+                    except ImportError:
+                        return 'error', u"Can't resolve method '{}'".format(func.method)
+                if method is None:
+                    return 'error', u"Unknown error, method is None"
+                # TODO: add some more checks, whether we have a valid function
+                #      e.g. interface provided, registered in tool, etc...
+                jobinfo = (method, self.context, (), {})
+                # TODO: current job status
+                job = async.wrapJob(jobinfo)
+                job = queue.put(job)
+                # don't forget the plone.app.async notification callbacks
+                job.addCallbacks(success=service.job_success_callback,
+                                failure=service.job_failure_callback)
+                self.context.current_job = job
             return 'info', u'Job submitted {}'.format(job.status)
         else:
             return 'error', u'Current Job is still running'

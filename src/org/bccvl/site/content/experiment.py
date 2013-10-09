@@ -17,10 +17,13 @@ class IExperiment(form.Schema):
 #    )
 
     form.widget(functions=CheckBoxFieldWidget)
-    functions = schema.Choice(
+    functions = schema.List(
         title=u'Algorithm',
-        source=vocabularies.functions_source,
+        value_type=schema.Choice(
+            source=vocabularies.functions_source
+        ),
         default=None,
+        required=True,
     )
 
     species_occurrence_dataset = schema.Choice(
