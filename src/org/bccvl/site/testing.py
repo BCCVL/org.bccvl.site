@@ -85,7 +85,8 @@ class BCCVLLayer(PloneSandboxLayer):
         compute.testalgorithm = testalgorithm
 
         transmogrifier = Transmogrifier(portal)
-        transmogrifier(u'org.bccvl.site.tests.testdataimport')
+        transmogrifier(u'org.bccvl.site.dataimport',
+                       source={'path': 'org.bccvl.site.tests:data'})
 
 
 BCCVL_FIXTURE = BCCVLLayer()

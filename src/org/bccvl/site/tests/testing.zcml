@@ -27,11 +27,4 @@ overrides anything else in a stacked component registry scenario -->
         provides="Products.GenericSetup.interfaces.EXTENSION"
     />
 
-    <transmogrifier:registerConfig
-      name="org.bccvl.site.tests.testdataimport"
-      title="Import test data"
-      description="Import data structure for test setup"
-      configuration="import.cfg"
-      />
-
 </configure>

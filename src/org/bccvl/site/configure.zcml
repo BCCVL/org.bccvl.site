@@ -124,6 +124,13 @@
         />
 
     <transmogrifier:registerConfig
+      name="org.bccvl.site.dataimport"
+      title="Import data"
+      description="Import data structure"
+      configuration="dataimport.cfg"
+      />
+
+    <transmogrifier:registerConfig
       name="org.bccvl.site.alaimport"
       title="Import ALA data"
       description="Import data form ALA put onto filesystem"
