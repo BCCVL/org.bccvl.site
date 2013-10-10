@@ -1,0 +1,9 @@
+{
+  "_type": "Folder",
+  "title": "Toolkits",
+  "_constraintypes": {
+    "mode": 1,
+    "locallyallowedtypes": ["Document", "org.bccvl.content.function"],
+    "immediatelyaddabletypes": ["Document", "org.bccvl.content.function"]
+  }
+}

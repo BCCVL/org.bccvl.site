@@ -1,0 +1,7 @@
+{
+  "_type": "Folder",
+  "title": "Experiments",
+  "_permission_mapping": {
+    "Add portal content": {"acquire": true, "roles": ["Manager", "Member"]}
+  }
+}
