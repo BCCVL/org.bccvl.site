@@ -25,7 +25,7 @@ class SiteSetupTest(unittest.TestCase):
         self.assertTrue(defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID in dsf)
         self.assertTrue(defaults.DATASETS_CLIMATE_FOLDER_ID in dsf)
 
-        self.assertTrue(defaults.FUNCTIONS_FOLDER_ID in portal)
+        self.assertTrue(defaults.TOOLKITS_FOLDER_ID in portal)
         self.assertTrue(defaults.KNOWLEDGEBASE_FOLDER_ID in portal)
 
     def test_allowed_contenttypes(self):
@@ -69,3 +69,13 @@ class SiteSetupTest(unittest.TestCase):
         roles = tuple(selectedRoles(portal, "org.bccvl: Add Dataset"))
         self.assertEqual(roles,
                          ('Manager', 'Member'))
+
+    def test_permission_mapping(self):
+        # FIXME: this tests our easy testing permissions and should change to harden the system
+        portal = self.layer['portal']
+        experiments = portal[defaults.EXPERIMENTS_FOLDER_ID]
+        # FIXME: Allow ever Member to add anything within expermiments
+        result = experiments.permission_settings(permission='Add portal content')[0]
+        self.assertEqual(result['acquire'], 'CHECKED')
+        roles = sorted(selectedRoles(experiments, 'Add portal content'))
+        self.assertEqual(roles, ['Manager', 'Member'])
