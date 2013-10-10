@@ -104,6 +104,10 @@
      name="org.bccvl.site.transmogrify.rdfmetadata"
      />
 
+  <utility
+     component=".transmogrify.SelectableConstainTypes"
+     name="org.bccvl.site.transmogrify.selectableconstaintypes"
+     />
 
     <transmogrifier:registerConfig
         name="exportknowledgebase"
