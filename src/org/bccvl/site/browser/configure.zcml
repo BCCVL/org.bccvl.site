@@ -84,7 +84,7 @@
     <browser:view
         name="dv"
         class=".xmlrpc.DataMover"
-        allowed_attributes="pullOccurrenceFromALA checkALAJobStatus importOccurenceFromALA"
+        allowed_attributes="pullOccurrenceFromALA checkALAJobStatus"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="org.bccvl.AddDataset" >
 
@@ -96,15 +96,6 @@
             attribute="checkALAJobStatus"/>
 
     </browser:view>
-
-    <!-- FIXME: wrong permission here
-                and should be part of dv view -->
-    <browser:page
-        name="importOccurenceFromALA"
-        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-        class=".xmlrpc.DataMover"
-        attribute="importOccurenceFromALA"
-        permission="zope2.View"/>
 
     <browser:page
         name="view"

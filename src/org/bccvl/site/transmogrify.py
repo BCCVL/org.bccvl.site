@@ -94,10 +94,9 @@ class ALASource(object):
         self.options = options
         self.previous = previous
 
-        self.path = options['path']
-        if self.path is None or not os.path.isdir(self.path):
-            raise Exception('Path ({}) does not exists.'.format(str(self.path)))
-        self.path = self.path.rstrip(os.sep)
+        self.file = options['file'].strip()
+        if self.file is None or not os.path.isfile(self.file):
+            raise Exception('File ({}) does not exists.'.format(str(self.file)))
         self.lsid = options['lsid']
 
 
@@ -114,12 +113,27 @@ class ALASource(object):
 
         # start our own source
         # 1. read meatada from json
-        csv = os.path.join(self.path, '{}.csv'.format(self.lsid))
-        json = os.path.join(self.path, '{}.json'.format(self.lsid))
-
-        # read json
-        json = simplejson.load(open(json, 'r'))
+        json = simplejson.load(open(self.file, 'r'))
         # extract metadata
+        files = {}
+        for file in json['files']:
+            # FIXME: data_mover put's wrong file path into dataset.json
+            # files[file['dataset_type']] = file['url']
+            url = self.file
+            if file['dataset_type'] == 'occurrences':
+                url = url.replace('_dataset.json', '_occurrence.csv')
+            elif file['dataset_type'] == 'attribution':
+                url = url.replace('_dataset.json', '_metadata.json')
+            else:
+                url = file['url']
+            files[file['dataset_type']] = url
+        title = json['title']
+        description = json['description']
+
+        # 2. read ala metadata form json
+        json = simplejson.load(open(files['attribution'], 'r'))
+        csv = files['occurrences']
+
         rdf = Graph()
         # rdf.add((rdf.identifier, DC['source'], URIRef(json['taxonConcept']['dcterms_source'])))
         # rdf.add((rdf.identifier, DC['title'], URIRef(json['taxonConcept']['dcterms_title'])))
@@ -140,7 +154,9 @@ class ALASource(object):
         _, id = json['taxonConcept']['guid'].rsplit(':', 1)
         item = {'_path': id,
                 '_type': 'org.bccvl.content.dataset',
-                'title': '{} ({})'.format(json['taxonConcept']['nameString'], json['commonNames'][0]['nameString']),
+                #'title': '{} ({})'.format(json['taxonConcept']['nameString'], json['commonNames'][0]['nameString']),
+                'title': title,
+                'description': description,
                 'file': {
                     'file': 'data.csv',
                     'contentype': 'text/csv',

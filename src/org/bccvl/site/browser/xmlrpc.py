@@ -102,78 +102,85 @@ class DataMover(BrowserView):
 
     @returnwrapper
     def pullOccurrenceFromALA(self, lsid):
-        from xmlrpclib import ServerProxy
-        s = ServerProxy('http://127.0.0.1:6543/data_mover')
-        ret = s.pullOccurrenceFromALA(lsid)
+        # TODO: check permisions?
         from zope.component import getUtility
         from plone.app.async.interfaces import IAsyncService
         from plone.app.async import service
         async = getUtility(IAsyncService)
-        jobinfo = (alaimport, self.context, (ret, lsid), {})
+        jobinfo = (alaimport, self.context, (lsid, ), {})
         job = async.wrapJob(jobinfo)
         queue = async.getQueues()['']
         job = queue.put(job)
-        job.addCallbacks(success=service.job_success_callback,
+        ret = job.addCallbacks(success=service.job_success_callback,
                          failure=service.job_failure_callback)
-        return ret
+        # TODO: create job, and return inital status here
+        return ret.status
 
     @returnwrapper
     def checkALAJobStatus(self, job_id):
+        # TODO: check permissions? or maybe git rid of this here and
+        #       use job tracking for status. (needs job annotations)
         from xmlrpclib import ServerProxy
-        s = ServerProxy('http://127.0.0.1:6543/data_mover')
-        ret = s.checkALAJobStatus(job_id)
+        s = ServerProxy(DATA_MOVER)
+        ret = s.check_move_status(job_id)
         return ret
 
-    @returnwrapper
-    def importOccurenceFromALA(self, path, lsid):
-        # portal_url = getToolByName(self.context, "portal_url")
-        # portal = portal_url.getPortalObject()
-        portal = self.context
-        ds = portal[defaults.DATASETS_FOLDER_ID]
-        from collective.transmogrifier.transmogrifier import Transmogrifier
-        transmogrifier = Transmogrifier(ds)
-        transmogrifier(u'org.bccvl.site.alaimport',
-                       alasource={'path': path,
-                                  'lsid': lsid})
+
+# TODO: get data mover location from config
+DATA_MOVER = u'http://127.0.0.1:6543/data_mover'
+FILE_NAME_TEMPLATE = u'move_job_{id:d}_ala_dataset.json'
 
 
-def alaimport(context, jobstatus, lsid):
+def alaimport(context, lsid):
     # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
     import time
     from xmlrpclib import ServerProxy
     from collective.transmogrifier.transmogrifier import Transmogrifier
     import os
-    portal_properties = getToolByName(context, 'portal_properties')
-    path = portal_properties.site_properties.getProperty('datamover')
-    s = ServerProxy('http://127.0.0.1:6543/data_mover')
-    while jobstatus['status'] in ('PENDING', "DOWNLOADING"):
-        time.sleep(1)
-        jobstatus = s.checkALAJobStatus(jobstatus['id'])
-    # TODO: check status for errors?
-    #       for now assume it always works ;)
+    from tempfile import mkdtemp
+    path = mkdtemp()
+    try:
+        # TODO: get data movel location from config
+        s = ServerProxy(DATA_MOVER)
+        # TODO: fix up params
+        jobstatus = s.move({'type': 'ala', 'lsid': lsid},
+                     {'host': 'plone',
+                      'path': path})
+        # TODO: check return status
+        while jobstatus['status'] in ('PENDING', "IN_PROGRESS"):
+            time.sleep(1)
+            jobstatus = s.check_move_status(jobstatus['id'])
+        # TODO: call to xmlrpc server might also throw socket errors. (e.g. socket.error: [Errno 61] Connection refused)
+        if jobstatus['status'] == "FAILED":
+            # Do something useful here; how to notify user about failure?
+            return
 
-    #transmogrify.dexterity.schemaupdater needs a REQUEST on context????
-    from ZPublisher.HTTPResponse import HTTPResponse
-    from ZPublisher.HTTPRequest import HTTPRequest
-    import sys
-    response = HTTPResponse(stdout=sys.stdout)
-    env = {'SERVER_NAME':'fake_server',
-           'SERVER_PORT':'80',
-           'REQUEST_METHOD':'GET'}
-    request = HTTPRequest(sys.stdin, env, response)
+        #transmogrify.dexterity.schemaupdater needs a REQUEST on context????
+        from ZPublisher.HTTPResponse import HTTPResponse
+        from ZPublisher.HTTPRequest import HTTPRequest
+        import sys
+        response = HTTPResponse(stdout=sys.stdout)
+        env = {'SERVER_NAME':'fake_server',
+               'SERVER_PORT':'80',
+               'REQUEST_METHOD':'GET'}
+        request = HTTPRequest(sys.stdin, env, response)
 
-    # Set values from original request
-    # original_request = kwargs.get('original_request')
-    # if original_request:
-    #     for k,v in original_request.items():
-    #       request.set(k, v)
-    context.REQUEST = request
+        # Set values from original request
+        # original_request = kwargs.get('original_request')
+        # if original_request:
+        #     for k,v in original_request.items():
+        #       request.set(k, v)
+        context.REQUEST = request
 
-    ds = context[defaults.DATASETS_FOLDER_ID]
-    transmogrifier = Transmogrifier(ds)
-    transmogrifier(u'org.bccvl.site.alaimport',
-                   alasource={'path': path,
-                              'lsid': lsid})
+        ds = context[defaults.DATASETS_FOLDER_ID]
+        metadata_file = FILE_NAME_TEMPLATE.format(**jobstatus)
+        transmogrifier = Transmogrifier(ds)
+        transmogrifier(u'org.bccvl.site.alaimport',
+                       alasource={'file': os.path.join(path, metadata_file),
+                                  'lsid': lsid})
 
-    # cleanup fake request
-    del context.REQUEST
+        # cleanup fake request
+        del context.REQUEST
+    finally:
+        import shutil
+        shutil.rmtree(path)
