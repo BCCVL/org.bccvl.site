@@ -58,6 +58,7 @@ setup(
         'collective.blueprint.jsonmigrator',
         'transmogrify.dexterity',
         'quintagroup.transmogrifier',
+        'org.bccvl.compute',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
