@@ -55,15 +55,38 @@ class IExperiment(form.Schema):
     )
 
     parameters_brt = schema.Object(
-        title=u'BRT Configuration',
+        title=u'configuration for BRT',
         schema=parameter.IParametersBRT,
         required=False,
     )
 
     parameters_bioclim = schema.Object(
-        title=u'Bioclim Configuration',
+        title=u'configuration for bioclim',
+        description=u'no configuration is required for the bioclim algorithm.',
         schema=parameter.IParametersBioclim,
         required=False,
+    )
+    
+    parameters_ann = schema.Object(
+        title=u'configuration for ANN',
+        schema=parameter.IParametersAnn,
+        required=False,
+    )
+    
+    parameters_rf = schema.Object(
+        title=u'configuration for random forest',
+        schema=parameter.IParametersRandomForest,
+        required=False,
+    )
+    
+    form.fieldset('parameters',
+        label=u'Configuration',
+        fields=[
+            'parameters_brt',
+            'parameters_bioclim',
+            'parameters_ann',
+            'parameters_rf',
+        ]
     )
 
 # TODO: validate input choices against function selected

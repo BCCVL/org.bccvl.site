@@ -155,5 +155,5 @@
         name="org.bccvl.site.browser.parameter.IParametersBioclim"
         factory=".parameter.ParametersBioclimFactory"
     />
-
+   
 </configure>

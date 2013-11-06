@@ -110,7 +110,7 @@ class Add(add.DefaultAddForm):
             ignoreButtons=True)
 
     buttons = button.Buttons(add.DefaultAddForm.buttons['cancel'])
-
+        
     @button.buttonAndHandler(_('Create and start'), name='save')
     def handleAdd(self, action):
         data, errors = self.extractData()
@@ -176,6 +176,9 @@ class Add(add.DefaultAddForm):
         """
         return js_tmpl % json.dumps(mapping)
 
+#    def update(self):
+#        super(Add, self).update()
+#        import pdb; pdb.set_trace()
 
 class AddView(add.DefaultAddView):
     """

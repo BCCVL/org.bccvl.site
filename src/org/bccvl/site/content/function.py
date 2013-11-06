@@ -23,7 +23,7 @@ class IFunction(form.Schema):
 #    other option:
 #       let method provide specific interface ... register via name as utility
 #       this way only system wide supplied code can be used
-
+ 
 @implementer(IFunction)
 class Function(Item):
 

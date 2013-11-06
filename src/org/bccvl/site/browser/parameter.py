@@ -4,7 +4,7 @@ from z3c.form.browser.radio import RadioFieldWidget
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from zope.schema.fieldproperty import FieldProperty
 from decimal import Decimal
-from zope.interface import implementer
+from zope.interface import implementer, Interface
 from z3c.form.object import FactoryAdapter
 from persistent import Persistent
 
@@ -13,7 +13,7 @@ from org.bccvl.site import MessageFactory as _
 ## Base classes for Parameter types
 
 
-class IParameters(form.Schema):
+class IParameters(Interface):
     pass
 
 
@@ -71,7 +71,7 @@ class IParametersBRT(IParameters):
         required=False,
     )
 
-    form.widget(var_monotone=RadioFieldWidget)
+    form.widget(var_monotone=RadioFieldWidget) # TODO: get rid of form hints
     var_monotone = schema.Choice(
         title=_(u'var monotone'),
         default=-1,
@@ -165,3 +165,82 @@ class ParametersBioclim(Parameters):
 class ParametersBioclimFactory(FactoryAdapter):
 
     factory = ParametersBioclim
+
+
+## ANN
+
+class IParametersAnn(IParameters):
+    nbcv = schema.Int(
+        title=_(u'NbCV'),
+        description=_(u'nb of cross validation to find best size and decay parameters'),
+        default=5,
+        required=False,
+    )
+    
+    rang = schema.Decimal(
+        title=_(u'rang'),
+        description=_(u'Initial random weights'),
+        default=Decimal('0.1'),
+        required=False,
+    )
+    
+    maxit = schema.Int(
+        title=_(u'maxit'),
+        description=_(u'Maximum number of iterations'),
+        default=100,
+        required=False,
+    )
+    
+    
+@implementer(IParametersAnn)
+class ParametersAnn(Parameters):
+    nbcv = FieldProperty(IParametersAnn['nbcv'])
+    rang = FieldProperty(IParametersAnn['rang'])
+    maxit = FieldProperty(IParametersAnn['maxit'])
+
+
+class ParametersAnnFactory(FactoryAdapter):
+    
+    factory = ParametersAnn
+
+
+## random forest
+
+rf_classification_vocab = SimpleVocabulary([
+    SimpleTerm(True, 'classif', u'classification'),
+    SimpleTerm(False, 'regress', u'regression'),
+])
+
+class IParametersRandomForest(IParameters):
+    do_classif = schema.Choice(
+        title=_(u''),
+        default=True,
+        vocabulary=rf_classification_vocab,
+#        required=False,
+    )
+    
+    ntree = schema.Int(
+        title=_(u'Number of trees to grow'),
+        description=_(u'This should not be set too small, to ensure that every input row gets predicted at least a few times'),
+        default=50,
+        required=False,
+    )
+    
+    mtry = schema.Int(
+        title=_(u'mtry'),
+        description=_(u'Number of variables randomly sampled as candidates at each split. Leave empty for default.'),
+        required=False,
+        # default='default' ... TODO,
+    ) 
+
+@implementer(IParametersRandomForest)
+class ParametersRandomForest(Parameters):
+    do_classif = FieldProperty(IParametersRandomForest['do_classif'])
+    ntree = FieldProperty(IParametersRandomForest['ntree'])
+    mtry = FieldProperty(IParametersRandomForest['mtry'])
+
+
+class ParametersRandomForestFactory(FactoryAdapter):
+
+    factory = ParametersRandomForest
+
