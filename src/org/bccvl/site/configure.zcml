@@ -105,8 +105,8 @@
      />
 
   <utility
-     component=".transmogrify.SelectableConstainTypes"
-     name="org.bccvl.site.transmogrify.selectableconstaintypes"
+     component=".transmogrify.SelectableConstrainTypes"
+     name="org.bccvl.site.transmogrify.selectableconstraintypes"
      />
 
     <transmogrifier:registerConfig

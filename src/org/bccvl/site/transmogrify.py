@@ -258,7 +258,7 @@ class RDFMetadataUpdater(object):
 
 @provider(ISectionBlueprint)
 @implementer(ISection)
-class SelectableConstainTypes(object):
+class SelectableConstrainTypes(object):
     """ """
 
     def __init__(self, transmogrifier, name, options, previous):
