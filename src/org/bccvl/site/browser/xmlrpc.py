@@ -11,6 +11,9 @@ from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site import defaults
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 # self passed in as *args
@@ -151,8 +154,9 @@ def alaimport(context, lsid):
             time.sleep(1)
             jobstatus = s.check_move_status(jobstatus['id'])
         # TODO: call to xmlrpc server might also throw socket errors. (e.g. socket.error: [Errno 61] Connection refused)
-        if jobstatus['status'] == "FAILED":
+        if jobstatus['status'] in ("FAILED",  "REJECTED"):
             # Do something useful here; how to notify user about failure?
+            LOG.fatal("ALA import failed %s: %s", jobstatus['status'], jobstatus['reason'])
             return
 
         #transmogrify.dexterity.schemaupdater needs a REQUEST on context????
