@@ -45,6 +45,19 @@ bccvocab:DataGenreSO a bccvocab:DataGenre ;
     rdfs:label "Species Occurrence" ;
     .
 
+bccvocab:DataGenreSDMEval a bccvocab:DataGenre ;
+    rdfs:label "Species Distribution Model Evaluation" ;
+    .
+
+bccvocab:DataGenreFP a bccvocab:DataGenre ;
+    rdfs:label "Future Projection" ;
+    .
+
+bccvocab:DataGenreLog a bccvocab:DataGenre ;
+    rdfs:label "Output log file" ;
+    .
+
+
 bccvocab:DataSetTypeC a bccvocab:DataSetType ;
     rdfs:label "continuous" ;
     .
@@ -55,7 +68,7 @@ bccvocab:DataSetTypeD a bccvocab:DataSetType ;
 
 bccvocab:SpeciesLayerP a bccvocab:SpeciesLayer ;
     rdfs:label "Presence" ;
-    .   
+    .
 
 bccvocab:SpeciesLayerA a bccvocab:SpeciesLayer ;
     rdfs:label "Abundance (Presence/Absence)" ;
@@ -75,6 +88,22 @@ bccvocab:DataSetFormatExcel a bccvocab:DataSetFormat ;
 
 bccvocab:DataSetFormatNetCDF a bccvocab:DataSetFormat ;
     rdfs:label "NetCDF" ;
+    .
+
+bccvocab:DataSetFormatRDATA a bccvocab:DataSetFormat ;
+    rdfs:label "R Data Frame" ;
+    .
+
+bccvocab:DataSetFormatGTiff a bccvocab:DataSetFormat ;
+    rdfs:label "GeoTiff" ;
+    .
+
+bccvocab:DataSetFormatText a bccvocab:DataSetFormat ;
+    rdfs:label "Plain text" ;
+    .
+
+bccvocab:DataSetFormatPNG a bccvocab:DataSetFormat ;
+    rdfs:label "PNG" ;
     .
 
 bccvocab:Resolution5k a bccvocab:Resolution ;

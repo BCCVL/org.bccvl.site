@@ -14,7 +14,6 @@ def setupVarious(context):
 
     portal.setDefaultPage('front-page')
 
-
     transmogrifier = Transmogrifier(portal)
     transmogrifier(u'org.bccvl.site.dataimport',
                    source={'path': 'org.bccvl.site:initial_content'})

@@ -105,8 +105,8 @@
      />
 
   <utility
-     component=".transmogrify.SelectableConstainTypes"
-     name="org.bccvl.site.transmogrify.selectableconstaintypes"
+     component=".transmogrify.SelectableConstrainTypes"
+     name="org.bccvl.site.transmogrify.selectableconstraintypes"
      />
 
     <transmogrifier:registerConfig
@@ -136,6 +136,5 @@
       description="Import data form ALA put onto filesystem"
       configuration="import_ala.cfg"
       />
-
 
 </configure>

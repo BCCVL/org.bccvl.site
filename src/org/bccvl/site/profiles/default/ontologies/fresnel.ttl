@@ -338,7 +338,7 @@
 #  ... need to get the Lens in somehow and still stay as compatible as possible to the Fresnel sublens approach
 z3c:RelatedInformationField a z3c:Field ;
     z3c:fieldName "gu.z3cform.rdf.schema.RDFMultiValueField" ;
-    z3c:valueType "gu.z3cform.rdf.schema.RDFObjectField" ;
+    z3c:valueType "gu.z3cform.rdf.schema.RDFObjectPropertyField" ;
     .
 
 
@@ -421,7 +421,7 @@ z3c:widgetFactory a owl:DataProporty ;
     .
 
 z3c:vocabulary a owl:ObjectProperty ;
-    rdfs:label "Vocabuly" ;
+    rdfs:label "Vocabulary" ;
     rdfs:comment "Vocabulary to use for allowed values. " ;
     rdfs:isDefinedBy <http://namespaces.zope.org/z3c/form#> ;
     rdfs:Domain z3c:Field ;

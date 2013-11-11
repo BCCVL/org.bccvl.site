@@ -10,13 +10,13 @@ from z3c.form.interfaces import ISubformFactory
 from org.bccvl.site.utilities import RDFDataMapper, RDFTypeMapper
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from zope.interface import Interface
-from gu.z3cform.rdf.interfaces import IRDFObjectField
-from gu.z3cform.rdf.widgets.interfaces import IRDFObjectWidget
+from gu.z3cform.rdf.interfaces import IRDFObjectPropertyField
+from gu.z3cform.rdf.widgets.interfaces import IRDFObjectPropertyWidget
 
 
 # TODO: test this one in gu.plone.rdf
 from gu.plone.rdf.component import ORDFUtility
-from gu.z3cform.rdf.object import SubformAdapter
+# TODO: add tests for Subform lookup
 
 
 class RDFTypeMapperTest(unittest.TestCase):
@@ -52,18 +52,6 @@ class RDFDataMapperTest(unittest.TestCase):
 class ComponentLookupTest(unittest.TestCase):
 
     layer = BCCVL_INTEGRATION_TESTING
-
-    # TODO: test this one in gu.plone.rdf
-    def test_subformadapter(self):
-        gar = getGlobalSiteManager().adapters
-        sa = gar.registered((Interface,
-                             IPloneFormLayer,
-                             Interface,
-                             Interface,
-                             IRDFObjectWidget,
-                             IRDFObjectField,
-                             Interface), ISubformFactory)
-        self.assertIs(sa, SubformAdapter)
 
     # TODO: test this one in gu.plone.rdf
     def test_iordf(self):

@@ -11,6 +11,7 @@ from AccessControl.SecurityManagement import setSecurityManager
 from AccessControl.User import UnrestrictedUser as BaseUnrestrictedUser
 from plone.dexterity.utils import createContent, addContentToContainer
 
+import org.bccvl.site.patch
 
 MessageFactory = MessageFactory('org.bccvl.site')
 
