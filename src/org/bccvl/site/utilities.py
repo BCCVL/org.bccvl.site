@@ -105,12 +105,19 @@ class JobTracker(object):
                 if func is None:
                     return 'error', u"Can't find function {}".format(self.context.functions)
                 else:
-                    if not func.method.startswith('org.bccvl.compute'):
-                        return 'error', u"Method '{}' not in compute package".format(func.method)
+#                    if not func.method.startswith('org.bccvl.compute'):
+#                        return 'error', u"Method '{}' not in compute package".format(func.method)
+#                    try:
+#                        method = resolve(func.method)
+#                    except ImportError:
+#                        return 'error', u"Can't resolve method '{}'".format(func.method)
+                    if not func.compute_function.startswith('org.bccvl.compute'):
+                        return 'error', u"ComputeFunction '{}' not in compute package".format(func.compute_function)
                     try:
-                        method = resolve(func.method)
+                        # TODO: check interface?
+                        method = resolve(func.compute_function).execute
                     except ImportError:
-                        return 'error', u"Can't resolve method '{}'".format(func.method)
+                        return 'error', u"Can't resolve ComputeFunction '{}'".format(func.compute_function)
                 if method is None:
                     return 'error', u"Unknown error, method is None"
                 # TODO: add some more checks, whether we have a valid function

@@ -13,6 +13,13 @@ from zope.i18n import translate
 from org.bccvl.site import MessageFactory as _
 from org.bccvl.site.browser.xmlrpc import getdsmetadata
 
+from z3c.form.field import Fields
+from zope import schema
+from zope.dottedname.resolve import resolve
+from plone.z3cform.fieldsets.group import GroupFactory
+from org.bccvl.compute.brt import parameters
+from org.bccvl.site.api import QueryAPI
+
 
 class IJobStatus(form.Schema):
 
@@ -176,9 +183,25 @@ class Add(add.DefaultAddForm):
         """
         return js_tmpl % json.dumps(mapping)
 
-#    def update(self):
-#        super(Add, self).update()
-#        import pdb; pdb.set_trace()
+    def updateFields(self):
+        super(Add, self).updateFields()
+        api = QueryAPI(self.context)
+        fields = []
+        for toolkit in (brain.getObject() for brain in api.getFunctions()):
+            compute_function = resolve(toolkit.compute_function)
+            field_schema = schema.Object(
+                __name__ = 'parameters_%s' % toolkit.id,
+                title=u'configuration for %s' % toolkit.title,
+                schema=compute_function.parameters,
+                required=False,
+            )
+            fields.append(field_schema)
+        config_group = GroupFactory('parameters', Fields(*fields), 'Configuration', None)
+        # make it the first fieldset so it always has the same ID for diazo
+        # ...there must be a better way to do that
+        self.groups.insert(0, config_group)
+
+
 
 class AddView(add.DefaultAddView):
     """

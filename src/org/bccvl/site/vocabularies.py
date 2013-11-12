@@ -8,13 +8,13 @@ from org.bccvl.site.api import QueryAPI
 # FIXME: get rid of grok :)
 # TODO: sort by title
 
-def _source_factory(name, apiFunc):
+def _source_factory(name, apiFunc, token_key='UID'):
     @grok.provider(IContextSourceBinder)
     def _datasets_source(context):
         api = QueryAPI(context)
         brains = getattr(api, apiFunc)()
         terms = [
-            SimpleTerm(value=brain['UID'], token=brain['UID'], title=brain['Title'])
+            SimpleTerm(value=brain['UID'], token=brain[token_key], title=brain['Title'])
             for brain in brains
         ]
         return SimpleVocabulary(terms)
@@ -43,5 +43,5 @@ future_climate_datasets_source = _source_factory(
 )
 
 functions_source = _source_factory(
-    'functions_source', 'getFunctions'
+    'functions_source', 'getFunctions', 'id'
 )
