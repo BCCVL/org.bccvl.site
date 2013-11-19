@@ -1,0 +1,84 @@
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix bv: <http://namespaces.bccvl.org.au/bioclim#> .
+
+bv:BioclimaticVariable a owl:Class ;
+    rdfs:label "Bioclimatic Variable" ;
+    .
+
+bv:B01 a bv:BioclimaticVariable ;
+    rdfs:label "B01 - Annual Mean Temperature" ;
+    .
+
+bv:B02 a bv:BioclimaticVariable ;
+    rdfs:label "B02 - Mean Diurnal Range (Mean of monthly (max temp - min temp))" ;
+    .
+
+bv:B03 a bv:BioclimaticVariable ;
+    rdfs:label "B03 - Isothermality (BIO2/BIO7) (* 100)";
+    .
+
+bv:B04 a bv:BioclimaticVariable ;
+    rdfs:label "B04 - Temperature Seasonality (standard deviation *100)" ;
+    .
+
+bv:B05 a bv:BioclimaticVariable ;
+    rdfs:label "B05 - Max Temperature of Warmest Month" ;
+    .
+
+bv:B06 a bv:BioclimaticVariable ;
+    rdfs:label "B06 - Min Temperature of Coldest Month" ;
+    .
+
+bv:B07 a bv:BioclimaticVariable ;
+    rdfs:label "B07 - Temperature Annual Range (BIO5-BIO6)" ;
+    .
+
+bv:B08 a bv:BioclimaticVariable ;
+    rdfs:label "B08 - Mean Temperature of Wettest Quarter" ;
+    .
+
+bv:B09 a bv:BioclimaticVariable ;
+    rdfs:label "B09 - Mean Temperature of Driest Quarter" ;
+    .
+
+bv:B10 a bv:BioclimaticVariable ;
+    rdfs:label "B10 - Mean Temperature of Warmest Quarter" ;
+    .
+
+bv:B11 a bv:BioclimaticVariable ;
+    rdfs:label "B11 - Mean Temperature of Coldest Quarter" ;
+    .
+
+bv:B12 a bv:BioclimaticVariable ;
+    rdfs:label "B12 - Annual Precipitation" ;
+    .
+
+bv:B13 a bv:BioclimaticVariable ;
+    rdfs:label "B13 - Precipitation of Wettest Month" ;
+    .
+
+bv:B14 a bv:BioclimaticVariable ;
+    rdfs:label "B14 - Precipitation of Driest Month" ;
+    .
+
+bv:B15 a bv:BioclimaticVariable ;
+    rdfs:label "B15 - Precipitation Seasonality (Coefficient of Variation)";
+    .
+
+bv:B16 a bv:BioclimaticVariable ;
+    rdfs:label "B16 - Precipitation of Wettest Quarter" ;
+    .
+
+bv:B17 a bv:BioclimaticVariable ;
+    rdfs:label "B17 - Precipitation of Driest Quarter" ;
+    .
+
+bv:B18 a bv:BioclimaticVariable ;
+    rdfs:label "B18 - Precipitation of Warmest Quarter" ;
+    .
+
+bv:B19 a bv:BioclimaticVariable ;
+    rdfs:label "B19 - Precipitation of Coldest Quarter" ;
+    .

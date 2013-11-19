@@ -3,7 +3,8 @@
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix bccprop: <http://namespaces.bccvl.org.au/prop#> .
 @prefix bccvocab: <http://namespaces.bccvl.org.au/vocab#> .
-
+@prefix be: <http://namespaces.bccvl.org.au/emsc#> .
+@prefix bg: <http://namespaces.bccvl.org.au/gcm#> .
 
 bccprop:location a owl:DataProperty ;
     rdfs:label "Location" ;
@@ -45,4 +46,22 @@ bccprop:resolution a owl:ObjectProperty ;
     rdfs:label "Resolution" ;
     rdfs:comment "Resolution for grid data" ;
     rdfs:range bccvocab:Resolution ;
+    .
+
+bccprop:emmissionscenario a owl:ObjectProperty ;
+    rdfs:label "Emmission Scenario" ;
+    rdfs:comment "Emmission Scenario for future climate data" ;
+    rdfs:range be:EMSC ;
+    .
+
+bccprop:gcm a owl:ObjectProperty ;
+    rdfs:label "Global Climate Model" ;
+    rdfs:comment "Global Climate Model for future climate data" ;
+    rdfs:range bg:GCM ;
+    .
+
+bccprop:hasArchiveItem a owl:ObjectProperty ;
+    rdfs:label "File within Archive" ;
+    rdfs:comment "Links to information about a file contained within a zip archive."
+#    rdfs:range nfo:ArchiveItem ;
     .

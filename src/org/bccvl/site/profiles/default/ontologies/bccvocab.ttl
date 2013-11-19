@@ -106,14 +106,22 @@ bccvocab:DataSetFormatPNG a bccvocab:DataSetFormat ;
     rdfs:label "PNG" ;
     .
 
-bccvocab:Resolution5k a bccvocab:Resolution ;
-    rdfs:label "5 km" ;
+bccvocab:Resolution30s a bccvocab:Resolution ;
+    rdfs:label "30\" (~1km)" ;
     .
 
-bccvocab:Resolution1k a bccvocab:Resolution ;
-    rdfs:label "1 km" ;
+bccvocab:Resolution2_5m a bccvocab:Resolution ;
+    rdfs:label "2.5' (~5km)" ;
     .
 
-bccvocab:Resolution250m a bccvocab:Resolution ;
-    rdfs:label "250 m" ;
+bccvocab:Resolution5m a bccvocab:Resolution ;
+    rdfs:label "5' (~10km)" ;
+    .
+
+bccvocab:Resolution10m a bccvocab:Resolution ;
+    rdfs:label "10' (~20km)" ;
+    .
+
+bccvocab:Resolution30m a bccvocab:Resolution ;
+    rdfs:label "30' (~50km)" ;
     .

@@ -1,0 +1,44 @@
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix be: <http://namespaces.bccvl.org.au/emsc#> .
+
+be:EMSC a owl:Class ;
+    rdfs:label "Emmission Scenario" ;
+    .
+
+be:RCP3D a be:EMSC ;
+    rdfs:label "RCP3D" ;
+    .
+
+be:RCP45 a be:EMSC ;
+    rdfs:label "RCP45" ;
+    .
+
+be:RCP6 a be:EMSC ;
+    rdfs:label "RCP6" ;
+    .
+
+be:RCP85 a be:EMSC ;
+    rdfs:label "RCP85" ;
+    .
+
+be:SRESA1B a be:EMSC ;
+    rdfs:label "SRESA1B" ;
+    .
+
+be:SRESA1FI a be:EMSC ;
+    rdfs:label "SRESA1FI" ;
+    .
+
+be:SRESA2 a be:EMSC ;
+    rdfs:label "SRESA2" ;
+    .
+
+be:SRESB1 a be:EMSC ;
+    rdfs:label "SRESB1" ;
+    .
+
+be:SRESB2 a be:EMSC ;
+    rdfs:label "SRESB2" ;
+    .
