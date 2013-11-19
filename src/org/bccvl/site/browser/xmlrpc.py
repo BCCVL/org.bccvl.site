@@ -12,6 +12,12 @@ from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site import defaults
 import logging
+from gu.z3cform.rdf.interfaces import IGraph, IORDF
+from zope.component import getUtility
+from rdflib import Namespace
+from org.bccvl.site.namespace import BCCPROP
+NFO = Namespace(u'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#')
+BIOCLIM = Namespace(u'http://namespaces.bccvl.org.au/bioclim#')
 
 LOG = logging.getLogger(__name__)
 
@@ -45,6 +51,14 @@ def getdsmetadata(ds):
             'file': '{}/@@download/file/{}'.format(ds.absolute_url(),
                                                    ds.file.filename)}
 
+def getbiolayermetadata(ds):
+    graph = IGraph(ds)
+    ret = {}
+    handler = getUtility(IORDF).getHandler()
+    for archiveitem in graph.objects(graph.identifier, BCCPROP['hasArchiveItem']):
+        item = handler.get(archiveitem)
+        ret[item.value(item.identifier, BIOCLIM['bioclimVariable'])] = item.value(item.identifier, NFO['fileName'])
+    return ret
 
 class DataSetManager(BrowserView):
     # DS Manager API on Site Root
