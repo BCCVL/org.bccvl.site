@@ -10,6 +10,41 @@
     i18n_domain="org.bccvl.site"
     >
 
+    <browser:page
+        for="..content.dataset.IDataset"
+        name="edit"
+        class=".dataset.DatasetEditView"
+        permission="cmf.ModifyPortalContent"
+        />
+
+    <browser:page
+        for="..content.dataset.IDataset"
+        name="editfilemetadata"
+        class=".dataset.CrudFileMetadataForm"
+        permission="cmf.ModifyPortalContent"
+        />
+
+    <utility
+        name="org.bccvl.site.GCMVocabulary"
+        component=".dataset.GCMVocabularyFactory"
+        />
+
+    <utility
+        name="org.bccvl.site.EMSCVocabulary"
+        component=".dataset.EMSCVocabularyFactory"
+        />
+
+    <utility
+        name="org.bccvl.site.BioclimVocabulary"
+        component=".dataset.BioclimVocabularyFactory"
+        />
+
+    <adapter
+        for="persistent.dict.PersistentDict
+             zope.schema.interfaces.IField"
+        factory="z3c.form.datamanager.DictionaryField"
+        />
+
     <!-- permissions: zope2.View, zope.Public, cmf.ModifyPortalContent
     -->
     <browser:view
