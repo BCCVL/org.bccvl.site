@@ -16,6 +16,7 @@ from gu.z3cform.rdf.interfaces import IGraph, IORDF
 from zope.component import getUtility
 from rdflib import Namespace
 from org.bccvl.site.namespace import BCCPROP
+from zope.i18n import translate
 NFO = Namespace(u'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#')
 BIOCLIM = Namespace(u'http://namespaces.bccvl.org.au/bioclim#')
 
@@ -129,9 +130,9 @@ class DataMover(BrowserView):
         queue = async.getQueues()['']
         job = queue.put(job)
         ret = job.addCallbacks(success=service.job_success_callback,
-                         failure=service.job_failure_callback)
-        # TODO: create job, and return inital status here
-        return ret.status
+                               failure=service.job_failure_callback)
+        # return message id and localized message
+        return (str(ret.status), translate(ret.status))
 
     @returnwrapper
     def checkALAJobStatus(self, job_id):
