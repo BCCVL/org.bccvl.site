@@ -117,7 +117,7 @@ class Add(add.DefaultAddForm):
             ignoreButtons=True)
 
     buttons = button.Buttons(add.DefaultAddForm.buttons['cancel'])
-        
+
     @button.buttonAndHandler(_('Create and start'), name='save')
     def handleAdd(self, action):
         data, errors = self.extractData()
@@ -200,7 +200,6 @@ class Add(add.DefaultAddForm):
         # make it the first fieldset so it always has the same ID for diazo
         # ...there must be a better way to do that
         self.groups.insert(0, config_group)
-
 
 
 class AddView(add.DefaultAddView):
