@@ -206,25 +206,26 @@ class CrudFileMetadataForm(crud.CrudForm):
         return sorted(self._items.items(), key=lambda x: x[1].value(x[1].identifier, NFO['fileName']))
 
     def add(self, data):
-        import ipdb; ipdb.set_trace()
-        super(CrudFileMetadataForm, self).add(data)
+        #import ipdb; ipdb.set_trace()
+        #super(CrudFileMetadataForm, self).add(data)
+        # TODO: implement this someday
+        pass
 
     def remove(self, (id, item)):
-        import ipdb; ipdb.set_trace()
-        super(CrudFileMetadataForm, self).remove((id, item))
+        # import ipdb; ipdb.set_trace()
+        # super(CrudFileMetadataForm, self).remove((id, item))
+        # TODO: implement this someday
+        pass
 
     # def before_update(self, item, data):
     #     import ipdb; ipdb.set_trace()
     #     super(CrudFileMetadataForm, self).before_update(item, data)
 
 
-
-
-
-
 #TODO: Move to dataset layer:
 GCMVocabularyFactory = SparqlInstanceVocabularyFactory(BCCGCM['GCM'])
 EMSCVocabularyFactory = SparqlInstanceVocabularyFactory(BCCEMSC['EMSC'])
+
 
 #TODO: Move to dataset layer:
 class ICurrentClimateMetadata(Interface):
