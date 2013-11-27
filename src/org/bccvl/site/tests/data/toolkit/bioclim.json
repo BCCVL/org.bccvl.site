@@ -3,5 +3,5 @@
   "_type": "org.bccvl.content.function",
   "title": "Bioclim",
   "schema": "empty",
-  "method": "org.bccvl.compute.testalgorithm"
+  "compute_function": "org.bccvl.compute.testalgorithm"
 }
