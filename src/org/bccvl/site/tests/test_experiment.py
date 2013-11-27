@@ -159,11 +159,12 @@ class ExperimentAddTest(unittest.TestCase):
 
     def _wait_for_job(self, expid):
         exp = self.portal[defaults.EXPERIMENTS_FOLDER_ID][expid]
-        job = IJobTracker(exp).get_job()
-        wait_for_result(job)
+        jobs = IJobTracker(exp).get_jobs()
+        for job in jobs:
+            wait_for_result(job)
         # TODO: check if we only have error messages if at all?
-        if job.result is not None:
-            job.result.raiseException()
+        # if job.result is not None:
+        #     job.result.raiseException()
 
 
 class ExperimentsViewFunctionalTest(unittest.TestCase):

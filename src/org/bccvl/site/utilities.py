@@ -11,9 +11,6 @@ from gu.repository.content.interfaces import (
     IRepositoryItem,
     )
 from plone.app.uuid.utils import uuidToObject
-from zope.component import getUtility
-from plone.app.async.interfaces import IAsyncService
-from plone.app.async import service
 from zc.async.interfaces import COMPLETED
 from zope.component import adapter
 from zope.interface import implementer
@@ -94,63 +91,50 @@ class JobTracker(object):
         self.context = context
 
     def start_job(self):
-        if self.get_job_status() in (None, COMPLETED):
-            async = getUtility(IAsyncService)
-            queue = async.getQueues()['']
+        if not self.has_active_jobs():
+            self.context.current_jobs = []
             for func in (uuidToObject(f) for f in self.context.functions):
                 # TODO: default queue quota is 1. either set it to a defined value (see: plone.app.asnc.subscriber)
                 #       or create and submit job manually
                 #job = async.queueJob(execute, self.context, envfile, specfile)
                 method = None
                 if func is None:
-                    return 'error', u"Can't find function {}".format(self.context.functions)
+                    return ('error',
+                            u"Can't find function {}".format(self.context.functions))
                 else:
-#                    if not func.method.startswith('org.bccvl.compute'):
-#                        return 'error', u"Method '{}' not in compute package".format(func.method)
-#                    try:
-#                        method = resolve(func.method)
-#                    except ImportError:
-#                        return 'error', u"Can't resolve method '{}'".format(func.method)
                     if not func.compute_function.startswith('org.bccvl.compute'):
-                        return 'error', u"ComputeFunction '{}' not in compute package".format(func.compute_function)
+                        return ('error',
+                                u"ComputeFunction '{}' not in compute package".format(func.compute_function))
                     try:
                         # TODO: check interface?
                         method = resolve(func.compute_function).execute
                     except ImportError:
-                        return 'error', u"Can't resolve ComputeFunction '{}'".format(func.compute_function)
+                        return ('error',
+                                u"Can't resolve ComputeFunction '{}'".format(func.compute_function))
                 if method is None:
                     return 'error', u"Unknown error, method is None"
-                # TODO: add some more checks, whether we have a valid function
-                #      e.g. interface provided, registered in tool, etc...
-                jobinfo = (method, self.context, (), {})
-                # TODO: current job status
-                job = async.wrapJob(jobinfo)
-                job = queue.put(job)
-                # don't forget the plone.app.async notification callbacks
-                job.addCallbacks(success=service.job_success_callback,
-                                failure=service.job_failure_callback)
-                self.context.current_job = job
-            return 'info', u'Job submitted {}'.format(job.status)
+
+                # submit job to queue
+                job = method(self.context)
+                self.context.current_jobs.append(job)
+            return 'info', u'Job submitted {}'.format(self.status())
         else:
             return 'error', u'Current Job is still running'
 
-    def get_job_status(self):
-        """
-
-        return status-id, status-msg
-        """
-        job = self.get_job()
-        if job is not None:
-            # job.result contains possible error message (e.g. twisted.Failure)
-            return job.status
-        return None
-
     def status(self):
         from zope.i18n import translate
-        status = self.get_job_status()
-        if status is not None:
-            return translate(status)
-        return None
+        status = []
+        for job in self.get_jobs():
+            status.append((job.jobid, job.annotations['bccvl.status']['task']))
+        return status
 
-    def get_job(self):
-        return getattr(self.context, 'current_job', None)
+    def get_jobs(self):
+        return getattr(self.context, 'current_jobs', [])
+
+    def has_active_jobs(self):
+        active = False
+        for job in self.get_jobs():
+            if job.status not in (None, COMPLETED):
+                active = True
+                break
+        return active
