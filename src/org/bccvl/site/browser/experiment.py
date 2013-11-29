@@ -188,11 +188,11 @@ class Add(add.DefaultAddForm):
         api = QueryAPI(self.context)
         fields = []
         for toolkit in (brain.getObject() for brain in api.getFunctions()):
-            compute_function = resolve(toolkit.compute_function)
+            parameters_schema = resolve(toolkit.schema)
             field_schema = schema.Object(
                 __name__ = 'parameters_%s' % toolkit.id,
                 title=u'configuration for %s' % toolkit.title,
-                schema=compute_function.parameters,
+                schema=parameters_schema,
                 required=False,
             )
             fields.append(field_schema)
