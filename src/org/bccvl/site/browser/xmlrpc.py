@@ -147,7 +147,7 @@ class DataMover(BrowserView):
 
 # TODO: get data mover location from config
 DATA_MOVER = u'http://127.0.0.1:10700/data_mover'
-FILE_NAME_TEMPLATE = u'move_job_{id:d}_ala_dataset.json'
+FILE_NAME_TEMPLATE = u'move_job_{id:d}_1_ala_dataset.json'
 
 
 def alaimport(context, lsid):
