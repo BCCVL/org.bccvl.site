@@ -2,4 +2,5 @@
     <reindex name="subjecturi" />
     <reindex name="BCCDataGenre" />
     <reindex name="BCCSpeciesLayer" />
+    <reindex name="BCCEnviroLayer" />
 </root>

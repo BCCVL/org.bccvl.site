@@ -87,6 +87,11 @@
     />
 
     <adapter
+        factory=".indexers.dataset_environmental_layer"
+        name="BCCEnviroLayer"
+    />
+
+    <adapter
         factory=".utilities.JobTracker"/>
 
   <utility
