@@ -90,7 +90,7 @@ class JobTracker(object):
     def __init__(self, context):
         self.context = context
 
-    def start_job(self):
+    def start_job(self, request):
         if not self.has_active_jobs():
             self.context.current_jobs = []
             for func in (uuidToObject(f) for f in self.context.functions):
@@ -112,7 +112,7 @@ class JobTracker(object):
                     return 'error', u"Unknown error, method is None"
 
                 # submit job to queue
-                job = method(self.context)
+                job = method(self.context, request)
                 self.context.current_jobs.append(job)
             return 'info', u'Job submitted {}'.format(self.status())
         else:

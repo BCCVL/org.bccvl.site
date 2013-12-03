@@ -75,7 +75,7 @@ class View(edit.DefaultEditForm):
             return
 
         #msgtype, msg = IJobStatus(self.context)
-        msgtype, msg = IJobTracker(self.context).start_job()
+        msgtype, msg = IJobTracker(self.context).start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
         self.request.response.redirect(self.context.absolute_url())
@@ -139,7 +139,7 @@ class Add(add.DefaultAddForm):
         # auto start job here
 
         jt = IJobTracker(obj)
-        msgtype, msg = jt.start_job()
+        msgtype, msg = jt.start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
 
