@@ -109,6 +109,36 @@
      name="org.bccvl.site.transmogrify.selectableconstraintypes"
      />
 
+    <utility
+      component=".vocabularies.species_presence_datasets_source"
+      name="species_presence_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.species_absence_datasets_source"
+      name="species_absence_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.species_abundance_datasets_source"
+      name="species_abundance_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.environmental_datasets_source"
+      name="environmental_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.future_climate_datasets_source"
+      name="future_climate_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.functions_source"
+      name="functions_source"
+    />
+
     <transmogrifier:registerConfig
         name="exportknowledgebase"
         title="Export Knowledgebase pipeline configuration"
