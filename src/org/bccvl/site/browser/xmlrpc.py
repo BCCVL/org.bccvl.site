@@ -14,15 +14,13 @@ from org.bccvl.site import defaults
 import logging
 from gu.z3cform.rdf.interfaces import IGraph, IORDF
 from zope.component import getUtility, queryUtility
-from rdflib import Namespace
-from org.bccvl.site.namespace import BCCPROP
+from org.bccvl.site.namespace import BCCPROP, BIOCLIM, NFO
 from zope.i18n import translate
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
 from rdflib import URIRef
 import json
-NFO = Namespace(u'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#')
-BIOCLIM = Namespace(u'http://namespaces.bccvl.org.au/bioclim#')
+
 
 LOG = logging.getLogger(__name__)
 
