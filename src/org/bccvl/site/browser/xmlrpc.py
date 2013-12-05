@@ -1,4 +1,5 @@
 from Products.Five.browser import BrowserView
+from Products.CMFCore.utils import getToolByName
 #from zope.publisher.browser import BrowserView as Z3BrowserView
 #from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
 #from zope.publisher.interfaces import IPublishTraverse
@@ -8,13 +9,17 @@ from decorator import decorator
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site import defaults
 import logging
 from gu.z3cform.rdf.interfaces import IGraph, IORDF
-from zope.component import getUtility
+from zope.component import getUtility, queryUtility
 from rdflib import Namespace
 from org.bccvl.site.namespace import BCCPROP
 from zope.i18n import translate
+from zope.schema.vocabulary import getVocabularyRegistry
+from zope.schema.interfaces import IContextSourceBinder
+from rdflib import URIRef
 import json
 NFO = Namespace(u'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#')
 BIOCLIM = Namespace(u'http://namespaces.bccvl.org.au/bioclim#')
@@ -93,14 +98,47 @@ class DataSetManager(BrowserView):
             raise NotFound(self.context,  datasetid,  self.request)
         return getdsmetadata(ds)
 
-    # return: type, id, format, source, path, metadata dict
+    @returnwrapper
+    def queryDataset(self, genre=None, layers=None):
+        pc = getToolByName(self.context, 'portal_catalog')
+        params = {'object_provides': IDataset.__identifier__}
+        if genre:
+            if not isinstance(genre, (tuple, list)):
+                genre = (genre, )
+            params['BCCDataGenre'] = {'query': [URIRef(g) for g in genre],
+                                      'operator': 'or'}
+        if layers:
+            if not isinstance(layers, (tuple, list)):
+                layers = (layers, )
+            params['BCCEnviroLayer'] = {'query': [URIRef(l) for l in layers],
+                                        'operator': 'and'}
+        result = []
+        for brain in pc.searchResults(**params):
+            result.append({'uuid': brain.UID,
+                           'title': brain.Title})
+        return result
 
     @returnwrapper
-    def getPath(self, datasetid):
-        ds = uuidToObject(datasetid)
-        if ds is None:
-            raise NotFound(self.context,  datasetid,  self.request)
-        return {'url': ds.absolute_url()}
+    def getVocabulary(self, name):
+        # TODO: check if there are vocabularies that need to be protected
+        vocab = ()
+        try:
+            vr = getVocabularyRegistry()
+            vocab = vr.get(self.context, name)
+        except:
+            # eat all exceptions
+            pass
+        if not vocab:
+            # try IContextSourceBinder
+            vocab = queryUtility(IContextSourceBinder, name=name)
+            if vocab is None:
+                return []
+            vocab = vocab(self.context)
+        result = []
+        for term in vocab:
+            result.append({'token': term.token,
+                           'title': term.title})
+        return result
 
 
 class DataSetAPI(BrowserView):

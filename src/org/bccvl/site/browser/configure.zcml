@@ -74,16 +74,21 @@
     <browser:view
         name="dm"
         class=".xmlrpc.DataSetManager"
-        allowed_attributes="getMetadata getPath"
+        allowed_attributes="getMetadata queryDataset getVocabulary"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="zope2.View" >
 
         <browser:page
             name="getMetadata"
             attribute="getMetadata"/>
+
         <browser:page
-            name="getPath"
-            attribute="getPath"/>
+            name="queryDataset"
+            attribute="queryDataset"/>
+
+        <browser:page
+            name="getVocabulary"
+            attribute="getVocabulary"/>
 
     </browser:view>
 
@@ -170,5 +175,5 @@
     <browser:resource
         name="dataset.png"
         image="dataset.png"/>
-  
+
 </configure>
