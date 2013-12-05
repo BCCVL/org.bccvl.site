@@ -144,6 +144,11 @@
       name="functions_source"
     />
 
+    <utility
+      component=".vocabularies.envirolayer_source"
+      name="envirolayer_source"
+    />
+
     <transmogrifier:registerConfig
         name="exportknowledgebase"
         title="Export Knowledgebase pipeline configuration"

@@ -6,10 +6,12 @@ from org.bccvl.site.vocabularies import (
     species_abundance_datasets_source,
     environmental_datasets_source,
     future_climate_datasets_source,
-    functions_source)
+    functions_source,
+    envirolayer_source)
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site import defaults
+from zope.component import getUtility
 
 
 class PresenceSourceTest(unittest.TestCase):
@@ -145,3 +147,31 @@ class FunctionsSourceTest(unittest.TestCase):
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
         self.assertEqual(len(source), 1)
+
+
+class EnviroLayerSourceTest(unittest.TestCase):
+
+    layer = BCCVL_INTEGRATION_TESTING
+
+    def _get_class(self):
+        return envirolayer_source
+
+    def _make_one(self):
+        return self._get_class()(self.layer['portal'])
+
+    def test_interfaces(self):
+        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
+        self.assertTrue(ISource.providedBy(self._make_one()))
+
+    def test_registration(self):
+        one = self._get_class()
+        tool = getUtility(IContextSourceBinder, name='envirolayer_source')
+        self.assertIs(one, tool)
+
+    def test_elements(self):
+        source = self._make_one()
+        ds = self.layer['portal'][defaults.DATASETS_FOLDER_ID]
+        data = ds[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
+        data_uuid = IUUID(data)
+        # FIXME: need to add some asserts regarding expected contained data
+        #        URIRef's of layers
