@@ -185,21 +185,7 @@ class Add(add.DefaultAddForm):
 
     def updateFields(self):
         super(Add, self).updateFields()
-        api = QueryAPI(self.context)
-        fields = []
-        for toolkit in (brain.getObject() for brain in api.getFunctions()):
-            parameters_schema = resolve(toolkit.schema)
-            field_schema = schema.Object(
-                __name__ = 'parameters_%s' % toolkit.id,
-                title=u'configuration for %s' % toolkit.title,
-                schema=parameters_schema,
-                required=False,
-            )
-            fields.append(field_schema)
-        config_group = GroupFactory('parameters', Fields(*fields), 'Configuration', None)
-        # make it the first fieldset so it always has the same ID for diazo
-        # ...there must be a better way to do that
-        self.groups.insert(0, config_group)
+        addToolkitFields(self)
 
 
 class AddView(add.DefaultAddView):
