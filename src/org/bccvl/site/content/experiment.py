@@ -40,6 +40,7 @@ class IExperiment(form.Schema):
         required=False,
     )
 
+    # TODO: remove this in favor of environmental layers
     environmental_dataset = schema.Choice(
         title=u'Environmental Datasets',
         source=vocabularies.environmental_datasets_source,
@@ -47,6 +48,13 @@ class IExperiment(form.Schema):
         required=False,
     )
 
+    environmental_layers = schema.Dict(
+        title=u'Environmental Layers',
+        key_type=schema.Choice(source=vocabularies.envirolayer_source),
+        value_type=schema.Choice(source=vocabularies.environmental_datasets_source),
+        )
+
+    # TODO: remove this. only needed for future projection
     climate_dataset = schema.Choice(
         title=u'Climate Datasets',
         source=vocabularies.future_climate_datasets_source,
