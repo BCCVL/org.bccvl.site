@@ -34,6 +34,8 @@
 @prefix cvocab: <http://namespaces.griffith.edu.au/collection_vocab#> .
 @prefix bccprop: <http://namespaces.bccvl.org.au/prop#> .
 @prefix bccvocab: <http://namespaces.bccvl.org.au/vocab#> .
+@prefix be: <http://namespaces.bccvl.org.au/emsc#> .
+@prefix bg: <http://namespaces.bccvl.org.au/gcm#> .
 
 # Lenses:
 #    classLensDomain    ... 0..n
@@ -301,6 +303,9 @@
         dcterms:format
         bccprop:resolution
         bccprop:resolutionother
+        dcterms:temporal
+        bccprop:emissionscenario
+        bccprop:gcm
     ) ;
     .
 
@@ -535,6 +540,16 @@ z3c:SpeciesLayerField a z3c:Field ;
     z3c:vocabulary z3c:SpeciesLayerVocabulary ;
     .
 
+z3c:EmissionScenarioField a z3c:Field ;
+    z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
+    z3c:vocabulary z3c:EmissionScenarioVocabulary ;
+    .
+
+z3c:GlobalClimateModelField a z3c:Field ;
+    z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
+    z3c:vocabulary z3c:GlobalClimateModelVocabulary ;
+    .
+
 z3c:DataSetFormatField a z3c:Field ;
     z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
     z3c:vocabulary z3c:DataSetFormatVocabulary ;
@@ -555,6 +570,14 @@ z3c:DataSetTypeVocabulary a z3c:Vocabulary ;
 
 z3c:SpeciesLayerVocabulary a z3c:Vocabulary ;
     z3c:valueClass bccvocab:SpeciesLayer ;
+    .
+
+z3c:EmissionScenarioVocabulary a z3c:Vocabulary ;
+    z3c:valueClass be:EMSC ;
+    .
+
+z3c:GlobalClimateModelVocabulary a z3c:Vocabulary ;
+    z3c:valueClass bg:GCM ;
     .
 
 z3c:DataSetFormatVocabulary a z3c:Vocabulary ;
@@ -1085,6 +1108,21 @@ z3c:FORVocabulary a z3c:Vocabulary ;
     fresnel:group :DefaultGroup ;
     .
 
+:bccpropSpeciesLayer a fresnel:Format ;
+    fresnel:propertyFormatDomain bccprop:emissionscenario ;
+    fresnel:label "Emission Scenario" ;
+    z3c:fieldDescription "Emission Scenario for future climate data" ;
+    z3c:field z3c:EmissionScenarioField ;
+    fresnel:group :DefaultGroup ;
+    .
+    
+:bccpropGlobalClimateModel a fresnel:Format ;
+    fresnel:propertyFormatDomain bccprop:gcm ;
+    fresnel:label "Global Climate Model" ;
+    z3c:fieldDescription "Global Climate Model" ;
+    z3c:field z3c:GlobalClimateModelField ;
+    fresnel:group :DefaultGroup ;
+    .    
 
 
 

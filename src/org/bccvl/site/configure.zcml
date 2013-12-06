@@ -92,6 +92,22 @@
     />
 
     <adapter
+        factory=".indexers.dataset_BCCEmissionScenario"
+        name="BCCEmissionScenario"
+    />
+
+    <adapter
+        factory=".indexers.dataset_BCCGlobalClimateModel"
+        name="BCCGlobalClimateModel"
+    />
+    
+    <adapter
+        factory=".indexers.dataset_DCTemporal"
+        name="DCTemporal"
+    />
+
+
+    <adapter
         factory=".utilities.JobTracker"/>
 
   <utility

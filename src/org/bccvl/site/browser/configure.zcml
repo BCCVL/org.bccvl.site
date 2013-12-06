@@ -112,7 +112,7 @@
         class=".xmlrpc.JobManagerAPI"
         name="jm"
         allowed_attributes="getJobStatus"
-        for="org.bccvl.site.content.experiment.IExperiment"
+        for="org.bccvl.site.content.experiment.ISDMExperiment"
         permission="zope2.View" >
 
         <browser:page

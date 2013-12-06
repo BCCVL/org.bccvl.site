@@ -1,6 +1,7 @@
 from org.bccvl.site import defaults
-from org.bccvl.site.namespace import BCCVOCAB
 from org.bccvl.site.content.function import IFunction
+from org.bccvl.site.namespace import BCCVOCAB
+from ordf.namespace import DCES
 
 class QueryAPI(object):
     """
@@ -51,11 +52,22 @@ class QueryAPI(object):
     def getSpeciesDistributionDatasets(self):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSD'])
 
+    def getSpeciesDistributionModelEvaluationDatasets(self):
+        return self.getDatasets(BCCDateGenre=BCCVOCAB['DataGenreSDMEval'])
+    
     def getEnvironmentalDatasets(self):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreE'])
 
-    def getFutureClimateDatasets(self):
-        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreFC'])
+    def getFutureClimateDatasets(self, year=None, emission_scenario=None, climate_model=None):
+        query = dict(BCCDataGenre=BCCVOCAB['DataGenreFC'])
+        # TODO: optional param selection goes here
+        return self.getDatasets(**query)
+
+    def getFutureProjectionDatasets(self):
+        # use context to restrict to only ones that match layers?
+        return self.getDatasets(
+            BCCDataGenre=BCCVOCAB['DataGenreFP'],
+        )
 
     def getFunctions(self):
         functions_physical_path = '/'.join(

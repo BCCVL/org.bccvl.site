@@ -53,6 +53,10 @@ future_climate_datasets_source = DataSetSourceBinder(
     'future_climate_datasets_source', 'getFutureClimateDatasets'
 )
 
+species_distributions_models_source = DataSetSourceBinder(
+    'species_distributions_models_source', 'getSpeciesDistributionModelEvaluationDatasets'
+)
+
 functions_source = DataSetSourceBinder(
     'functions_source', 'getFunctions', 'id'
 )
@@ -93,3 +97,62 @@ class SparqlDataSetSourceBinder(object):
 
 envirolayer_source = SparqlDataSetSourceBinder(
     'envirolayer_source', 'getEnviroLayers')
+
+@implementer(IContextSourceBinder)
+class SparqlValuesSourceBinder(object):
+    # TODO: only return values relevant to the sdm?
+   
+    def __init__(self, name, query):
+        self.__name__ = name
+        self._query = query
+
+    def __call__(self, context):
+        if context is None:
+            # some widgets don't provide a context so let's fall back to site root
+            context = queryUtility(IPloneSiteRoot)
+        if context is None:
+            return SimpleVocabulary()
+        handler = getUtility(IORDF).getHandler()
+        result = handler.query(self._query)
+        terms = [
+            SimpleTerm(
+                value=item['uri'],
+                token=str(item['uri']),
+                title=unicode(item['label']),
+            )
+            for item in result
+        ]
+        terms = sorted(terms, key=lambda o: o.title)
+        return SimpleVocabulary(terms)
+
+projection_emission_scenarios_source = SparqlValuesSourceBinder(
+    'projection_emission_scenarios_source',
+    """
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
+        PREFIX bccvocab: <http://namespaces.bccvl.org.au/vocab#>
+
+        SELECT DISTINCT ?uri, ?label WHERE {
+         ?s bccprop:datagenre bccvocab:DataGenreFP .
+         ?s bccprop:emissionscenario ?uri .
+         ?uri rdfs:label ?label .
+        }
+    """
+)
+
+projection_climate_models_source = SparqlValuesSourceBinder(
+    'projection_emission_scenarios_source',
+    """
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
+        PREFIX bccvocab: <http://namespaces.bccvl.org.au/vocab#>
+
+        SELECT DISTINCT ?uri, ?label WHERE {
+         ?s bccprop:datagenre bccvocab:DataGenreFP .
+         ?s bccprop:gcm ?uri .
+         ?uri rdfs:label ?label .
+        }
+    """
+)

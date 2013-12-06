@@ -10,12 +10,9 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 class IExperiment(form.Schema):
     """Base Experiment Class"""
 
-#    experiment_type = schema.Choice(
-#        title=u'Experiment Type',
-#        vocabulary=vocabularies.experiments_vocabulary,
-#        default=None,
-#    )
 
+
+class ISDMExperiment(IExperiment):
     form.widget(functions=CheckBoxFieldWidget)
     functions = schema.List(
         title=u'Algorithm',
@@ -47,6 +44,44 @@ class IExperiment(form.Schema):
         )
 
 
-@implementer(IExperiment)
-class Experiment(Container):
+class IProjectionExperiment(IExperiment):
+    species_distribution_models = schema.Choice(
+        title=u'Species Distribution Models',
+        source=vocabularies.species_distributions_models_source,
+        default=None,
+        required=False,
+    )
+
+#    years = schema.Choice(
+#        title=u'Projection Point: Years',
+#        source=vocabularies.projection_years_source,
+#        default=None,
+#        required=False,
+#    )
+#    
+    emission_scenarios = schema.Choice(
+        title=u'Projection Point: Emission Scenarios',
+        source=vocabularies.projection_emission_scenarios_source,
+        default=None,
+        required=False,
+    )
+    
+    climate_models = schema.Choice(
+        title=u'Projection Point: Climate Models',
+        source=vocabularies.projection_climate_models_source,
+        default=None,
+        required=False,
+    )
+    
+#
+
+@implementer(ISDMExperiment)
+class SDMExperiment(Container):
     pass
+
+@implementer(IProjectionExperiment)
+class ProjectionExperiment(Container):
+
+    def projections(self):
+        """compile points into list of datasets"""
+

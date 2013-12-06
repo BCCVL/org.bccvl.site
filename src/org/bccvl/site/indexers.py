@@ -4,7 +4,7 @@ from gu.z3cform.rdf.interfaces import IGraph
 from org.bccvl.site.browser.xmlrpc import getbiolayermetadata
 
 from .namespace import BCCPROP
-
+from ordf.namespace import DCES
 
 @indexer(IDataset)
 def dataset_BCCDataGenre(object, *kw):
@@ -16,6 +16,24 @@ def dataset_BCCDataGenre(object, *kw):
 def dataset_BCCSpeciesLayer(object, *kw):
     graph = IGraph(object)
     return tuple(graph.objects(graph.identifier, BCCPROP['specieslayer']))
+
+
+@indexer(IDataset)
+def dataset_BCCEmissionScenario(object, *kw):
+    graph = IGraph(object)
+    return tuple(graph.objects(graph.identifier, BCCPROP['emissionscenario']))
+
+
+@indexer(IDataset)
+def dataset_BCCGlobalClimateModel(object, *kw):
+    graph = IGraph(object)
+    return tuple(graph.objects(graph.identifier, BCCPROP['gcm']))
+
+
+@indexer(IDataset)
+def dataset_DCTemporal(object, *kw):
+    graph = IGraph(object)
+    return tuple(graph.objects(graph.identifier, DCES['temporal']))
 
 
 @indexer(IDataset)
