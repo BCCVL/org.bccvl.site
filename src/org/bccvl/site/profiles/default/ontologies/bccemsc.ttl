@@ -4,7 +4,7 @@
 @prefix be: <http://namespaces.bccvl.org.au/emsc#> .
 
 be:EMSC a owl:Class ;
-    rdfs:label "Emmission Scenario" ;
+    rdfs:label "Emission Scenario" ;
     .
 
 be:RCP3D a be:EMSC ;
