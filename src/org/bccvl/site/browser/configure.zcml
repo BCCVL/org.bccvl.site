@@ -112,7 +112,7 @@
         class=".xmlrpc.JobManagerAPI"
         name="jm"
         allowed_attributes="getJobStatus"
-        for="org.bccvl.site.content.experiment.ISDMExperiment"
+        for="org.bccvl.site.content.experiment.IExperiment"
         permission="zope2.View" >
 
         <browser:page
@@ -157,7 +157,16 @@
              plone.dexterity.interfaces.IDexterityFTI"
         provides="zope.publisher.interfaces.browser.IBrowserPage"
         factory=".experiment.AddView"
-        name="org.bccvl.content.experiment"
+        name="org.bccvl.content.sdmexperiment"
+        />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.AddView"
+        name="org.bccvl.content.projectionexperiment"
         />
     <class class=".experiment.AddView">
         <require

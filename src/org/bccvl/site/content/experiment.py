@@ -2,14 +2,12 @@ from plone.directives import form
 from zope import schema
 from plone.dexterity.content import Container
 from org.bccvl.site import vocabularies
-from org.bccvl.site.browser import parameter
 from zope.interface import implementer
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 
 
 class IExperiment(form.Schema):
     """Base Experiment Class"""
-
 
 
 class ISDMExperiment(IExperiment):
@@ -49,39 +47,43 @@ class IProjectionExperiment(IExperiment):
         title=u'Species Distribution Models',
         source=vocabularies.species_distributions_models_source,
         default=None,
-        required=False,
+        required=True,
     )
 
-#    years = schema.Choice(
-#        title=u'Projection Point: Years',
-#        source=vocabularies.projection_years_source,
-#        default=None,
-#        required=False,
-#    )
-#    
-    emission_scenarios = schema.Choice(
+    years = schema.List(
+        title=u'Projection Point: Years',
+        value_type=schema.Choice(
+            source=vocabularies.fc_years_source),
+        default=None,
+        required=True,
+    )
+
+    emission_scenarios = schema.List(
         title=u'Projection Point: Emission Scenarios',
-        source=vocabularies.projection_emission_scenarios_source,
+        value_type=schema.Choice(
+            source=vocabularies.emission_scenarios_source),
         default=None,
-        required=False,
+        required=True,
     )
-    
-    climate_models = schema.Choice(
+
+    climate_models = schema.List(
         title=u'Projection Point: Climate Models',
-        source=vocabularies.projection_climate_models_source,
+        value_type=schema.Choice(
+            source=vocabularies.global_climate_models_source),
         default=None,
-        required=False,
+        required=True,
     )
-    
+
 #
+
 
 @implementer(ISDMExperiment)
 class SDMExperiment(Container):
     pass
+
 
 @implementer(IProjectionExperiment)
 class ProjectionExperiment(Container):
 
     def projections(self):
         """compile points into list of datasets"""
-
