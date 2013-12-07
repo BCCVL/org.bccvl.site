@@ -54,7 +54,7 @@ future_climate_datasets_source = DataSetSourceBinder(
 )
 
 species_distributions_models_source = DataSetSourceBinder(
-    'species_distributions_models_source', 'getSpeciesDistributionModelEvaluationDatasets'
+    'species_distributions_models_source', 'getSpeciesDistributionModelDatasets'
 )
 
 functions_source = DataSetSourceBinder(
@@ -98,10 +98,11 @@ class SparqlDataSetSourceBinder(object):
 envirolayer_source = SparqlDataSetSourceBinder(
     'envirolayer_source', 'getEnviroLayers')
 
+
 @implementer(IContextSourceBinder)
 class SparqlValuesSourceBinder(object):
     # TODO: only return values relevant to the sdm?
-   
+
     def __init__(self, name, query):
         self.__name__ = name
         self._query = query
@@ -125,8 +126,8 @@ class SparqlValuesSourceBinder(object):
         terms = sorted(terms, key=lambda o: o.title)
         return SimpleVocabulary(terms)
 
-projection_emission_scenarios_source = SparqlValuesSourceBinder(
-    'projection_emission_scenarios_source',
+emission_scenarios_source = SparqlValuesSourceBinder(
+    'emission_scenarios_source',
     """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -134,15 +135,18 @@ projection_emission_scenarios_source = SparqlValuesSourceBinder(
         PREFIX bccvocab: <http://namespaces.bccvl.org.au/vocab#>
 
         SELECT DISTINCT ?uri, ?label WHERE {
-         ?s bccprop:datagenre bccvocab:DataGenreFP .
-         ?s bccprop:emissionscenario ?uri .
-         ?uri rdfs:label ?label .
+         Graph ?a {
+           ?s bccprop:datagenre bccvocab:DataGenreFC .
+           ?s bccprop:emissionscenario ?uri .
+         } Graph ?b {
+           ?uri rdfs:label ?label .
+          }
         }
     """
 )
 
-projection_climate_models_source = SparqlValuesSourceBinder(
-    'projection_emission_scenarios_source',
+global_climate_models_source = SparqlValuesSourceBinder(
+    'global_climate_models_source',
     """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -150,9 +154,31 @@ projection_climate_models_source = SparqlValuesSourceBinder(
         PREFIX bccvocab: <http://namespaces.bccvl.org.au/vocab#>
 
         SELECT DISTINCT ?uri, ?label WHERE {
-         ?s bccprop:datagenre bccvocab:DataGenreFP .
-         ?s bccprop:gcm ?uri .
-         ?uri rdfs:label ?label .
+          Graph ?a {
+            ?s bccprop:datagenre bccvocab:DataGenreFC .
+            ?s bccprop:gcm ?uri .
+          } Graph ?b {
+            ?uri rdfs:label ?label .
+          }
+        }
+    """
+)
+
+fc_years_source = SparqlValuesSourceBinder(
+    'fc_years_source',
+    """
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
+        PREFIX bccvocab: <http://namespaces.bccvl.org.au/vocab#>
+        PREFIX dcterms: <http://purl.org/dc/terms/>
+
+        SELECT DISTINCT ?uri, ?label WHERE {
+          Graph ?a {
+            ?s bccprop:datagenre bccvocab:DataGenreFC .
+            ?s dcterms:temporal?uri .
+            BIND(?uri as ?label) .
+          }
         }
     """
 )
