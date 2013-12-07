@@ -1,7 +1,9 @@
 from org.bccvl.site import defaults
 from org.bccvl.site.content.function import IFunction
+from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.namespace import BCCVOCAB
 from ordf.namespace import DCES
+
 
 class QueryAPI(object):
     """
@@ -18,14 +20,18 @@ class QueryAPI(object):
     # def getDatasets(self, genre):
     def getDatasets(self, **query_params):
 
-        datasets_physical_path = '/'.join(
-            [self.site_physical_path, defaults.DATASETS_FOLDER_ID]
-        )
+        # datasets_physical_path = '/'.join(
+        #     [self.site_physical_path, defaults.DATASETS_FOLDER_ID]
+        # )
+        # brains = self.portal_catalog(
+        #     path={'query': datasets_physical_path},
+        #     # BCCDataGenre = genre,
+        #     **query_params
+        # )
+        # path query won't find result datasets
         brains = self.portal_catalog(
-            path={'query': datasets_physical_path},
-            # BCCDataGenre = genre,
-            **query_params
-        )
+            object_provides=IDataset.__identifier__,
+            ** query_params)
         return brains
 
     def getSpeciesOccurrenceDatasets(self):
@@ -49,12 +55,12 @@ class QueryAPI(object):
             BCCSpeciesLayer=BCCVOCAB['SpeciesLayerA']
         )
 
-    def getSpeciesDistributionDatasets(self):
+    def getSpeciesDistributionModelDatasets(self):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSD'])
 
     def getSpeciesDistributionModelEvaluationDatasets(self):
         return self.getDatasets(BCCDateGenre=BCCVOCAB['DataGenreSDMEval'])
-    
+
     def getEnvironmentalDatasets(self):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreE'])
 
