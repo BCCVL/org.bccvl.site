@@ -3,8 +3,9 @@ from org.bccvl.site.content.dataset import IDataset
 from gu.z3cform.rdf.interfaces import IGraph
 from org.bccvl.site.browser.xmlrpc import getbiolayermetadata
 
-from .namespace import BCCPROP
 from ordf.namespace import DCES
+from .namespace import BCCPROP, BCCVOCAB, BIOCLIM
+
 
 @indexer(IDataset)
 def dataset_BCCDataGenre(object, *kw):
@@ -30,14 +31,18 @@ def dataset_BCCGlobalClimateModel(object, *kw):
     return tuple(graph.objects(graph.identifier, BCCPROP['gcm']))
 
 
-@indexer(IDataset)
-def dataset_DCTemporal(object, *kw):
-    graph = IGraph(object)
-    return tuple(graph.objects(graph.identifier, DCES['temporal']))
+# TODO: should be a DateRangeIndex (resolve partial dates to 1stday (start) and last day (end))
+# @indexer(IDataset)
+# def dataset_DCTemporal(object, *kw):
+#     graph = IGraph(object)
+#     return tuple(graph.objects(graph.identifier, DCES['temporal']))
 
 
 @indexer(IDataset)
 def dataset_environmental_layer(object, **kw):
+    # graph = IGraph(object)
+    # if (graph.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSD']) in graph:
+    #     return tuple(graph.objects(graph.identifier, BIOCLIM['bioclimVariable']))
     layers = getbiolayermetadata(object)
     if layers:
         return tuple(layers.keys())

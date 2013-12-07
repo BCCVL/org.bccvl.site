@@ -15,7 +15,7 @@
     <index name="BCCGlobalClimateModel" meta_type="KeywordIndex">
         <indexed_attr value="BCCGlobalClimateModel"/>
     </index>
-    <index name="DCTemporal" meta_type="KeywordIndex">
+    <index name="DCTemporal" meta_type="DateRangeIndex">
         <indexed_attr value="DCTemporal"/>
-    </index>  
+    </index>
 </object>
