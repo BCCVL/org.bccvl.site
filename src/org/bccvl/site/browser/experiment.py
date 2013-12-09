@@ -64,6 +64,11 @@ class View(edit.DefaultEditForm):
 
     label = ''
 
+    def updateFields(self):
+        super(View, self).updateFields()
+        addToolkitFields(self)
+
+
     #@button.handler(IJobStatus.apply
     # condition=lambda form: form.showApply)
     @button.buttonAndHandler(u'Start Job')
@@ -75,7 +80,7 @@ class View(edit.DefaultEditForm):
             return
 
         #msgtype, msg = IJobStatus(self.context)
-        msgtype, msg = IJobTracker(self.context).start_job()
+        msgtype, msg = IJobTracker(self.context).start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
         self.request.response.redirect(self.context.absolute_url())
@@ -101,14 +106,29 @@ class View(edit.DefaultEditForm):
     #     return zope.publisher.publish.mapply(self.render, (), self.request)
     # render.base_method = True
 
-# class Edit(dexterity.EditForm):
-#     """A standard edit form.
-#     """
-#     grok.context(IPage)
+class Edit(edit.DefaultEditForm):
 
-#     def updateWidgets(self):
-#         super(Edit, self).updateWidgets()
-#         self.widgets['title'].mode = 'hidden'
+    def updateFields(self):
+        super(Edit, self).updateFields()
+        addToolkitFields(self)
+
+
+def addToolkitFields(form):
+    api = QueryAPI(form.context)
+    fields = []
+    for toolkit in (brain.getObject() for brain in api.getFunctions()):
+        parameters_schema = resolve(toolkit.schema)
+        field_schema = schema.Object(
+            __name__ = 'parameters_%s' % toolkit.id,
+            title=u'configuration for %s' % toolkit.title,
+            schema=parameters_schema,
+            required=False,
+        )
+        fields.append(field_schema)
+    config_group = GroupFactory('parameters', Fields(*fields), 'Configuration', None)
+    # make it the first fieldset so it always has the same ID for diazo
+    # ...there must be a better way to do that
+    form.groups.insert(0, config_group)
 
 
 class Add(add.DefaultAddForm):
@@ -139,7 +159,7 @@ class Add(add.DefaultAddForm):
         # auto start job here
 
         jt = IJobTracker(obj)
-        msgtype, msg = jt.start_job()
+        msgtype, msg = jt.start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
 
@@ -185,21 +205,7 @@ class Add(add.DefaultAddForm):
 
     def updateFields(self):
         super(Add, self).updateFields()
-        api = QueryAPI(self.context)
-        fields = []
-        for toolkit in (brain.getObject() for brain in api.getFunctions()):
-            compute_function = resolve(toolkit.compute_function)
-            field_schema = schema.Object(
-                __name__ = 'parameters_%s' % toolkit.id,
-                title=u'configuration for %s' % toolkit.title,
-                schema=compute_function.parameters,
-                required=False,
-            )
-            fields.append(field_schema)
-        config_group = GroupFactory('parameters', Fields(*fields), 'Configuration', None)
-        # make it the first fieldset so it always has the same ID for diazo
-        # ...there must be a better way to do that
-        self.groups.insert(0, config_group)
+        addToolkitFields(self)
 
 
 class AddView(add.DefaultAddView):

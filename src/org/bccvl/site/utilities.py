@@ -19,6 +19,9 @@ from gu.plone.rdf.namespace import CVOCAB
 from ordf.namespace import DC as DCTERMS
 from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 from plone.app.contenttypes.interfaces import IFile
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 @implementer(IRDFTypeMapper)
@@ -90,7 +93,7 @@ class JobTracker(object):
     def __init__(self, context):
         self.context = context
 
-    def start_job(self):
+    def start_job(self, request):
         if not self.has_active_jobs():
             self.context.current_jobs = []
             for func in (uuidToObject(f) for f in self.context.functions):
@@ -99,20 +102,25 @@ class JobTracker(object):
                 #job = async.queueJob(execute, self.context, envfile, specfile)
                 method = None
                 if func is None:
-                    return ('error',
-                            u"Can't find function {}".format(self.context.functions))
-                else:
-                    if not func.method.startswith('org.bccvl.compute'):
-                        return 'error', u"Method '{}' not in compute package".format(func.method)
-                    try:
-                        method = resolve(func.method)
-                    except ImportError:
-                        return 'error', u"Can't resolve method '{}'".format(func.method)
+                    # FIXME: hack around predict functions ... implement proper checks
+                    # return ('error',
+                    #         u"Can't find function {}".format(self.context.functions))
+                    from .content.function import Function
+                    func = Function()
+                    func.method = self.context.functions[0]
+
+                if not func.method.startswith('org.bccvl.compute'):
+                    return 'error', u"Method '{}' not in compute package".format(func.method)
+                try:
+                    method = resolve(func.method)
+                except ImportError as e:
+                    return 'error', u"Can't resolve method '{}'- {}".format(func.method, e)
                 if method is None:
                     return 'error', u"Unknown error, method is None"
 
                 # submit job to queue
-                job = method(self.context)
+                LOG.info("Submit JOB %s to queue", func.method)
+                job = method(self.context, request)
                 self.context.current_jobs.append(job)
             return 'info', u'Job submitted {}'.format(self.status())
         else:

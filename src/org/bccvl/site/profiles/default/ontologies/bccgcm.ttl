@@ -9,7 +9,7 @@ bg:GCM a owl:Class ;
     .
 
 bg:cccma-cgcm31 a bg:GCM ;
-    rdfs:label "Coupled Globac Climate Model (CGCM3)" ;
+    rdfs:label "Coupled Global Climate Model (CGCM3)" ;
     .
 
 bg:ccsr-miroc32hi a bg:GCM ;

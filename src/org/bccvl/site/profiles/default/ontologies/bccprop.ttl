@@ -48,9 +48,9 @@ bccprop:resolution a owl:ObjectProperty ;
     rdfs:range bccvocab:Resolution ;
     .
 
-bccprop:emmissionscenario a owl:ObjectProperty ;
-    rdfs:label "Emmission Scenario" ;
-    rdfs:comment "Emmission Scenario for future climate data" ;
+bccprop:emissionscenario a owl:ObjectProperty ;
+    rdfs:label "Emission Scenario" ;
+    rdfs:comment "Emission Scenario for future climate data" ;
     rdfs:range be:EMSC ;
     .
 

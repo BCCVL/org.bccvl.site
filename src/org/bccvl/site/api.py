@@ -1,6 +1,8 @@
 from org.bccvl.site import defaults
-from org.bccvl.site.namespace import BCCVOCAB
 from org.bccvl.site.content.function import IFunction
+from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.namespace import BCCVOCAB
+from ordf.namespace import DCES
 
 
 class QueryAPI(object):
@@ -15,17 +17,21 @@ class QueryAPI(object):
         self.site_physical_path = '/'.join(site.getPhysicalPath())
         self.portal_catalog = site.portal_catalog
 
-#    def getDatasets(self, genre):
+    # def getDatasets(self, genre):
     def getDatasets(self, **query_params):
 
-        datasets_physical_path = '/'.join(
-            [self.site_physical_path, defaults.DATASETS_FOLDER_ID]
-        )
+        # datasets_physical_path = '/'.join(
+        #     [self.site_physical_path, defaults.DATASETS_FOLDER_ID]
+        # )
+        # brains = self.portal_catalog(
+        #     path={'query': datasets_physical_path},
+        #     # BCCDataGenre = genre,
+        #     **query_params
+        # )
+        # path query won't find result datasets
         brains = self.portal_catalog(
-            path = {'query': datasets_physical_path},
-#            BCCDataGenre = genre,
-            **query_params
-        )
+            object_provides=IDataset.__identifier__,
+            ** query_params)
         return brains
 
     def getSpeciesOccurrenceDatasets(self):
@@ -49,21 +55,35 @@ class QueryAPI(object):
             BCCSpeciesLayer=BCCVOCAB['SpeciesLayerA']
         )
 
-    def getSpeciesDistributionDatasets(self):
+    def getSpeciesDistributionModelDatasets(self):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSD'])
+
+    def getSpeciesDistributionModelEvaluationDatasets(self):
+        return self.getDatasets(BCCDateGenre=BCCVOCAB['DataGenreSDMEval'])
 
     def getEnvironmentalDatasets(self):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreE'])
 
-    def getFutureClimateDatasets(self):
-        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreFC'])
+    def getFutureClimateDatasets(self, year=None, emission_scenario=None, climate_model=None):
+        query = dict(BCCDataGenre=BCCVOCAB['DataGenreFC'])
+        # TODO: optional param selection goes here
+        return self.getDatasets(**query)
+
+    def getFutureProjectionDatasets(self):
+        # use context to restrict to only ones that match layers?
+        return self.getDatasets(
+            BCCDataGenre=BCCVOCAB['DataGenreFP'],
+        )
 
     def getFunctions(self):
         functions_physical_path = '/'.join(
             [self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID]
         )
         brains = self.portal_catalog(
-            path = {'query': functions_physical_path},
-            object_provides = IFunction.__identifier__
+            path={'query': functions_physical_path},
+            object_provides=IFunction.__identifier__
         )
         return brains
+
+    def getEnviroLayers(self):
+        return self.portal_catalog.uniqueValuesFor('BCCEnviroLayer')

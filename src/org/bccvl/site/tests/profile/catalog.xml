@@ -6,4 +6,7 @@
     <index name="BCCSpeciesLayer" meta_type="KeywordIndex">
         <indexed_attr value="BCCSpeciesLayer"/>
     </index>
+    <index name="BCCEnviroLayer" meta_type="KeywordIndex">
+        <indexed_attr value="BCCEnviroLayer"/>
+    </index>
 </object>

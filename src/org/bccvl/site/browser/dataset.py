@@ -32,17 +32,12 @@ from zope import schema
 from zope.interface import Interface
 import gu.z3cform.rdf.schema as rdfschema
 from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
-from rdflib import Namespace, RDF, Graph, Literal
+from rdflib import RDF, Graph, Literal
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 import zipfile
-from Products.CMFCore.utils import getToolByName
-from plone.uuid.interfaces import IUUID
-BCCGCM = Namespace(u'http://namespaces.bccvl.org.au/gcm#')
-BCCEMSC = Namespace(u'http://namespaces.bccvl.org.au/emsc#')
-BIOCLIM = Namespace(u'http://namespaces.bccvl.org.au/bioclim#')
-NFO = Namespace(u'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#')
-BCCPROP = Namespace(u'http://namespaces.bccvl.org.au/prop#')
+from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, NFO, BCCPROP
+
 BioclimVocabularyFactory = SparqlInstanceVocabularyFactory(BIOCLIM['BioclimaticVariable'])
 
 
@@ -80,7 +75,6 @@ def getFileGraph(context):
         info.add((info.identifier, NFO['fileSize'], Literal(zipinfo.file_size))) # XSD:integer
         ret[hash(info.identifier)] = info
     return ret
-
 
 
 class EditFileMetadataForm(crud.EditForm):

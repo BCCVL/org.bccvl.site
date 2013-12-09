@@ -1,45 +1,64 @@
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.CMFCore.utils import getToolByName
 #from zope.publisher.browser import BrowserView as Z3BrowserView
 #from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
 #from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 #from functools import wraps
 from decorator import decorator
-from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site import defaults
 import logging
 from gu.z3cform.rdf.interfaces import IGraph, IORDF
-from zope.component import getUtility
-from rdflib import Namespace
-from org.bccvl.site.namespace import BCCPROP
+from zope.component import getUtility, queryUtility
+from org.bccvl.site.namespace import BCCPROP, BIOCLIM, NFO
 from zope.i18n import translate
-NFO = Namespace(u'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#')
-BIOCLIM = Namespace(u'http://namespaces.bccvl.org.au/bioclim#')
+from zope.schema.vocabulary import getVocabularyRegistry
+from zope.schema.interfaces import IContextSourceBinder
+from rdflib import URIRef
+import json
+
 
 LOG = logging.getLogger(__name__)
 
 
 # self passed in as *args
-@decorator  # well behaved decorator that preserves signature so that apply can inspect it
+@decorator  # well behaved decorator that preserves signature so that
+            # apply can inspect it
 def returnwrapper(f, *args, **kw):
     # see http://code.google.com/p/mimeparse/
     # self.request.get['HTTP_ACCEPT']
     # self.request.get['CONTENT_TYPE']
     # self.request.get['method'']
-    # ... decide on what type of call it is ... json?(POST), xmlrpc?(POST), url-call? (GET)
+    # ... decide on what type of call it is ... json?(POST),
+    #     xmlrpc?(POST), url-call? (GET)
+
     # in case of post extract parameters and pass in?
     # jsonrpc:
-    #    content-type: application/json-rpc (or application/json, application/jsonrequest)
-    #    accept: application/json-rpc (or --""--)
+    #    content-type: application/json-rpc (or application/json,
+    #    application/jsonrequest) accept: application/json-rpc (or
+    #    --""--)
+
+    isxmlrpc = False
+    view = args[0]
+    if view.request['CONTENT_TYPE'] == 'text/xml':
+        # we have xmlrpc
+        isxmlrpc = True
+
     ret = f(*args, **kw)
-    # return ACCEPT encoding here or IStreamIterator, that encodes stuff on the fly
-    # could handle response encoding via request.setBody ... would need to replace response
-    # instance of request.response. (see ZPublisher.xmlprc.response, which
-    # wraps a default Response)
+    # return ACCEPT encoding here or IStreamIterator, that encodes
+    # stuff on the fly could handle response encoding via
+    # request.setBody ... would need to replace response instance of
+    # request.response. (see ZPublisher.xmlprc.response, which wraps a
+    # default Response)
+
+    # if we don't have xmlrpc we serialise to json
+    if not isxmlrpc:
+        ret = json.dumps(ret)
+        view.request.response['CONTENT-TYPE'] = 'text/json'
     return ret
 
 
@@ -50,16 +69,22 @@ def getdsmetadata(ds):
             'mimetype': ds.file.contentType,
             'filename': ds.file.filename,
             'file': '{}/@@download/file/{}'.format(ds.absolute_url(),
-                                                   ds.file.filename)}
+                                                   ds.file.filename),
+            'layers': getbiolayermetadata(ds)}
+
 
 def getbiolayermetadata(ds):
     graph = IGraph(ds)
     ret = {}
     handler = getUtility(IORDF).getHandler()
-    for archiveitem in graph.objects(graph.identifier, BCCPROP['hasArchiveItem']):
+    for archiveitem in graph.objects(graph.identifier,
+                                     BCCPROP['hasArchiveItem']):
         item = handler.get(archiveitem)
-        ret[item.value(item.identifier, BIOCLIM['bioclimVariable'])] = item.value(item.identifier, NFO['fileName'])
+        layer = item.value(item.identifier, BIOCLIM['bioclimVariable'])
+        filename = item.value(item.identifier, NFO['fileName'])
+        ret[layer] = filename
     return ret
+
 
 class DataSetManager(BrowserView):
     # DS Manager API on Site Root
@@ -71,14 +96,47 @@ class DataSetManager(BrowserView):
             raise NotFound(self.context,  datasetid,  self.request)
         return getdsmetadata(ds)
 
-    # return: type, id, format, source, path, metadata dict
+    @returnwrapper
+    def queryDataset(self, genre=None, layers=None):
+        pc = getToolByName(self.context, 'portal_catalog')
+        params = {'object_provides': IDataset.__identifier__}
+        if genre:
+            if not isinstance(genre, (tuple, list)):
+                genre = (genre, )
+            params['BCCDataGenre'] = {'query': [URIRef(g) for g in genre],
+                                      'operator': 'or'}
+        if layers:
+            if not isinstance(layers, (tuple, list)):
+                layers = (layers, )
+            params['BCCEnviroLayer'] = {'query': [URIRef(l) for l in layers],
+                                        'operator': 'and'}
+        result = []
+        for brain in pc.searchResults(**params):
+            result.append({'uuid': brain.UID,
+                           'title': brain.Title})
+        return result
 
     @returnwrapper
-    def getPath(self, datasetid):
-        ds = uuidToObject(datasetid)
-        if ds is None:
-            raise NotFound(self.context,  datasetid,  self.request)
-        return {'url': ds.absolute_url()}
+    def getVocabulary(self, name):
+        # TODO: check if there are vocabularies that need to be protected
+        vocab = ()
+        try:
+            vr = getVocabularyRegistry()
+            vocab = vr.get(self.context, name)
+        except:
+            # eat all exceptions
+            pass
+        if not vocab:
+            # try IContextSourceBinder
+            vocab = queryUtility(IContextSourceBinder, name=name)
+            if vocab is None:
+                return []
+            vocab = vocab(self.context)
+        result = []
+        for term in vocab:
+            result.append({'token': term.token,
+                           'title': term.title})
+        return result
 
 
 class DataSetAPI(BrowserView):
@@ -147,7 +205,7 @@ class DataMover(BrowserView):
 
 # TODO: get data mover location from config
 DATA_MOVER = u'http://127.0.0.1:10700/data_mover'
-FILE_NAME_TEMPLATE = u'move_job_{id:d}_ala_dataset.json'
+FILE_NAME_TEMPLATE = u'move_job_{id:d}_1_ala_dataset.json'
 
 
 def alaimport(context, lsid):

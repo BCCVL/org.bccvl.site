@@ -87,6 +87,27 @@
     />
 
     <adapter
+        factory=".indexers.dataset_environmental_layer"
+        name="BCCEnviroLayer"
+    />
+
+    <adapter
+        factory=".indexers.dataset_BCCEmissionScenario"
+        name="BCCEmissionScenario"
+    />
+
+    <adapter
+        factory=".indexers.dataset_BCCGlobalClimateModel"
+        name="BCCGlobalClimateModel"
+    />
+
+    <!-- <adapter -->
+    <!--     factory=".indexers.dataset_DCTemporal" -->
+    <!--     name="DCTemporal" -->
+    <!-- /> -->
+
+
+    <adapter
         factory=".utilities.JobTracker"/>
 
   <utility
@@ -108,6 +129,41 @@
      component=".transmogrify.SelectableConstrainTypes"
      name="org.bccvl.site.transmogrify.selectableconstraintypes"
      />
+
+    <utility
+      component=".vocabularies.species_presence_datasets_source"
+      name="species_presence_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.species_absence_datasets_source"
+      name="species_absence_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.species_abundance_datasets_source"
+      name="species_abundance_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.environmental_datasets_source"
+      name="environmental_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.future_climate_datasets_source"
+      name="future_climate_datasets_source"
+    />
+
+    <utility
+      component=".vocabularies.functions_source"
+      name="functions_source"
+    />
+
+    <utility
+      component=".vocabularies.envirolayer_source"
+      name="envirolayer_source"
+    />
 
     <transmogrifier:registerConfig
         name="exportknowledgebase"

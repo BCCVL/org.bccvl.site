@@ -6,4 +6,16 @@
     <index name="BCCSpeciesLayer" meta_type="KeywordIndex">
         <indexed_attr value="BCCSpeciesLayer"/>
     </index>
+    <index name="BCCEnviroLayer" meta_type="KeywordIndex">
+        <indexed_attr value="BCCEnviroLayer"/>
+    </index>
+    <index name="BCCEmissionScenario" meta_type="KeywordIndex">
+        <indexed_attr value="BCCEmissionScenario"/>
+    </index>
+    <index name="BCCGlobalClimateModel" meta_type="KeywordIndex">
+        <indexed_attr value="BCCGlobalClimateModel"/>
+    </index>
+    <index name="DCTemporal" meta_type="DateRangeIndex">
+        <indexed_attr value="DCTemporal"/>
+    </index>
 </object>

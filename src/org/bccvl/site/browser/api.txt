@@ -25,6 +25,7 @@ Once we have a XMLRPC proxy we can just call the available methods.
     {'file': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',
      'id': '...',
+     'layers': {},
      'mimetype': 'text/csv',
      'url': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv'}
     >>> res['id'] == abtuid
@@ -41,6 +42,7 @@ have to pass in a parameter to tell it in which object we are interested.
     {'file': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',
      'id': '...',
+     'layers': {},
      'mimetype': 'text/csv',
      'url': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv'}
     >>> res['id'] == abtuid

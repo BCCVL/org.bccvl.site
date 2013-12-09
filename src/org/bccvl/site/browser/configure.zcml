@@ -74,16 +74,21 @@
     <browser:view
         name="dm"
         class=".xmlrpc.DataSetManager"
-        allowed_attributes="getMetadata getPath"
+        allowed_attributes="getMetadata queryDataset getVocabulary"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="zope2.View" >
 
         <browser:page
             name="getMetadata"
             attribute="getMetadata"/>
+
         <browser:page
-            name="getPath"
-            attribute="getPath"/>
+            name="queryDataset"
+            attribute="queryDataset"/>
+
+        <browser:page
+            name="getVocabulary"
+            attribute="getVocabulary"/>
 
     </browser:view>
 
@@ -138,6 +143,12 @@
         class=".experiment.View"
         permission="cmf.ModifyPortalContent"/>
 
+    <browser:page
+        name="edit"
+        for="..content.experiment.IExperiment"
+        class=".experiment.Edit"
+        permission="cmf.ModifyPortalContent"/>
+
 
     <!-- Standard add view and form - invoked from ++add++ traverser -->
     <adapter
@@ -146,7 +157,16 @@
              plone.dexterity.interfaces.IDexterityFTI"
         provides="zope.publisher.interfaces.browser.IBrowserPage"
         factory=".experiment.AddView"
-        name="org.bccvl.content.experiment"
+        name="org.bccvl.content.sdmexperiment"
+        />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.AddView"
+        name="org.bccvl.content.projectionexperiment"
         />
     <class class=".experiment.AddView">
         <require
@@ -170,5 +190,5 @@
     <browser:resource
         name="dataset.png"
         image="dataset.png"/>
-  
+
 </configure>
