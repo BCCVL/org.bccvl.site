@@ -4,6 +4,7 @@ from org.bccvl.site.api import QueryAPI
 from zope.interface import implementer
 from zope.component import getUtility, queryUtility
 from gu.z3cform.rdf.interfaces import IORDF
+from gu.z3cform.rdf.utils import Period
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 
 
@@ -103,9 +104,12 @@ envirolayer_source = SparqlDataSetSourceBinder(
 class SparqlValuesSourceBinder(object):
     # TODO: only return values relevant to the sdm?
 
-    def __init__(self, name, query):
+    def __init__(self, name, query, title_getter=None):
         self.__name__ = name
         self._query = query
+        if title_getter is None:
+            title_getter = lambda x: x['label']
+        self._get_term_title = title_getter
 
     def __call__(self, context):
         if context is None:
@@ -119,7 +123,7 @@ class SparqlValuesSourceBinder(object):
             SimpleTerm(
                 value=item['uri'],
                 token=str(item['uri']),
-                title=unicode(item['label']),
+                title=unicode(self._get_term_title(item)),
             )
             for item in result
         ]
@@ -180,5 +184,6 @@ fc_years_source = SparqlValuesSourceBinder(
             BIND(?uri as ?label) .
           }
         }
-    """
+    """,
+    lambda x: Period(x['label']).start,
 )
