@@ -4,6 +4,7 @@ from plone.dexterity.content import Container
 from org.bccvl.site import vocabularies
 from zope.interface import implementer
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from Products.CMFCore.utils import getToolByName
 
 
 class IExperiment(form.Schema):
@@ -43,6 +44,7 @@ class ISDMExperiment(IExperiment):
 
 
 class IProjectionExperiment(IExperiment):
+
     species_distribution_models = schema.Choice(
         title=u'Species Distribution Models',
         source=vocabularies.species_distributions_models_source,
@@ -85,5 +87,15 @@ class SDMExperiment(Container):
 @implementer(IProjectionExperiment)
 class ProjectionExperiment(Container):
 
+    functions = ('org.bccvl.compute.predict.execute', )
+
     def projections(self):
         """compile points into list of datasets"""
+
+    def future_climate_datasets(self):
+        # TODO: use QueryApi?
+        # TODO: ignore years for now
+        pc = getToolByName(self, 'portal_catalog')
+        brains = pc.searchResults(BCCEmissionsScenario=self.emission_scenarios,
+                                  BCCGlobalClimateModel=self.climate_models)
+        return [b.UID for b in brains]
