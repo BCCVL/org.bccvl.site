@@ -6,6 +6,7 @@ from zope.component import getUtility, queryUtility
 from gu.z3cform.rdf.interfaces import IORDF
 from gu.z3cform.rdf.utils import Period
 from Products.CMFPlone.interfaces import IPloneSiteRoot
+from Products.CMFCore.utils import getToolByName
 
 
 @implementer(IContextSourceBinder)
@@ -16,21 +17,46 @@ class DataSetSourceBinder(object):
         self.apiFunc = apiFunc
         self.tokenKey = tokenKey
 
+    def getTerms(self, context):
+        api = QueryAPI(context)
+        brains = getattr(api, self.apiFunc)()
+        terms = [SimpleTerm(value=brain['UID'],
+                            token=brain[self.tokenKey],
+                            title=brain['Title'])
+                 for brain in brains]
+        return sorted(terms, key=lambda o: o.title)
+
     def __call__(self, context):
         if context is None:
-            # some widgets don't provide a context so let's fall back to site root
+            # some widgets don't provide a context so let's fall back
+            # to site root
             context = queryUtility(IPloneSiteRoot)
         if context is not None:
-            api = QueryAPI(context)
-            brains = getattr(api, self.apiFunc)()
-            terms = [SimpleTerm(value=brain['UID'],
-                                token=brain[self.tokenKey],
-                                title=brain['Title'])
-                     for brain in brains]
-            terms = sorted(terms, key=lambda o: o.title)
+            terms = self.getTerms(context)
         else:
             terms = []
         return SimpleVocabulary(terms)
+
+
+class DataSetSourceBinderTitleFromParent(DataSetSourceBinder):
+
+    def getTerms(self, context):
+        api = QueryAPI(context)
+        brains = getattr(api, self.apiFunc)()
+        pc = getToolByName(context, 'portal_catalog')
+        terms = []
+        for brain in brains:
+            parentpath, _ = brain.getPath().rsplit('/', 1)
+            parentbrain = pc.searchResults(path={'query': parentpath,
+                                                 'depth': 0})
+            if parentbrain:
+                title = parentbrain[0]['Title']
+            else:
+                title = brain['Title']
+            terms.append(SimpleTerm(value=brain['UID'],
+                                    token=brain[self.tokenKey],
+                                    title=title))
+        return sorted(terms, key=lambda o: o.title)
 
 
 # species occurrence datasets
@@ -54,8 +80,9 @@ future_climate_datasets_source = DataSetSourceBinder(
     'future_climate_datasets_source', 'getFutureClimateDatasets'
 )
 
-species_distributions_models_source = DataSetSourceBinder(
-    'species_distributions_models_source', 'getSpeciesDistributionModelDatasets'
+species_distributions_models_source = DataSetSourceBinderTitleFromParent(
+    'species_distributions_models_source',
+    'getSpeciesDistributionModelDatasets'
 )
 
 functions_source = DataSetSourceBinder(
@@ -73,7 +100,8 @@ class SparqlDataSetSourceBinder(object):
 
     def __call__(self, context):
         if context is None:
-            # some widgets don't provide a context so let's fall back to site root
+            # some widgets don't provide a context so let's fall back
+            # to site root
             context = queryUtility(IPloneSiteRoot)
         if context is None:
             return SimpleVocabulary()
@@ -82,14 +110,18 @@ class SparqlDataSetSourceBinder(object):
         if urirefs:
             query = []
             for uri in urirefs:
-                query.append('{ BIND(%(uri)s as ?uri) %(uri)s <http://www.w3.org/2000/01/rdf-schema#label> ?label }' %  {'uri': uri.n3()})
-            query = "SELECT ?uri ?label WHERE { Graph?g { %s } }" % "UNION".join(query)
+                query.append('PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> '
+                             '{ BIND(%(uri)s as ?uri) %(uri)s '
+                             '%(uri)s rdfs:label ?label }' %
+                             {'uri': uri.n3()})
+            query = ("SELECT ?uri ?label WHERE { Graph?g { %s } }" %
+                     "UNION".join(query))
             handler = getUtility(IORDF).getHandler()
             result = handler.query(query)
             terms = [SimpleTerm(value=item['uri'],
                                 token=str(item['uri']),
                                 title=unicode(item['label']))
-                    for item in result]
+                     for item in result]
             terms = sorted(terms, key=lambda o: o.title)
         else:
             terms = []
@@ -113,7 +145,8 @@ class SparqlValuesSourceBinder(object):
 
     def __call__(self, context):
         if context is None:
-            # some widgets don't provide a context so let's fall back to site root
+            # some widgets don't provide a context so let's fall back
+            # to site root
             context = queryUtility(IPloneSiteRoot)
         if context is None:
             return SimpleVocabulary()
