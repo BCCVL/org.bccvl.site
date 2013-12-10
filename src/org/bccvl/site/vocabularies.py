@@ -110,11 +110,11 @@ class SparqlDataSetSourceBinder(object):
         if urirefs:
             query = []
             for uri in urirefs:
-                query.append('PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> '
-                             '{ BIND(%(uri)s as ?uri) %(uri)s '
+                query.append('{ BIND(%(uri)s as ?uri) '
                              '%(uri)s rdfs:label ?label }' %
                              {'uri': uri.n3()})
-            query = ("SELECT ?uri ?label WHERE { Graph?g { %s } }" %
+            query = ("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
+                     "SELECT ?uri ?label WHERE { Graph?g { %s } }" %
                      "UNION".join(query))
             handler = getUtility(IORDF).getHandler()
             result = handler.query(query)
