@@ -1,4 +1,5 @@
 <registry>
+  <!-- collective.onlogin settings -->
   <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_enabled" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_enabled">
     <field type="plone.registry.field.Bool">
       <default>True</default>
@@ -53,7 +54,7 @@
     </field>
     <value>False</value>
   </record>
-
+  <!-- plone.caching settings -->
   <record name="plone.caching.interfaces.ICacheSettings.enabled" interface="plone.caching.interfaces.ICacheSettings" field="enabled">
     <field type="plone.registry.field.Bool">
       <default>False</default>
@@ -62,7 +63,7 @@
     </field>
     <value>True</value>
   </record>
-
+  <!-- plone.cachepurging settings -->
   <record name="plone.cachepurging.interfaces.ICachePurgingSettings.cachingProxies" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="cachingProxies">
     <field type="plone.registry.field.Tuple">
       <description>Provide the URLs of each proxy to which PURGE requests shoudl be sent.</description>
@@ -103,14 +104,24 @@
     </field>
     <value>True</value>
   </record>
-
+  <!-- gu.plone.rdf settings -->
   <record name="gu.plone.rdf.interfaces.IRDFSettings.fresnel_graph_uri" interface="gu.plone.rdf.interfaces.IRDFSettings" field="fresnel_graph_uri">
     <field type="plone.registry.field.URI">
       <title>Fresnel Graph URI</title>
     </field>
     <value>http://namespaces.gu.edu.au/z3cform/fresnel#</value>
   </record>
-
+  <!-- dexterity.membrane settings -->
+  <record name="dexterity.membrane.behavior.settings.IDexterityMembraneSettings.use_email_as_username">
+    <field type="plone.registry.field.Bool">
+    </field>
+    <value>False</value>
+  </record>
+  <record name="dexterity.membrane.behavior.settings.IDexterityMembraneSettings.use_uuid_as_userid">
+    <field type="plone.registry.field.Bool">
+    </field>
+    <value>False</value>
+  </record>
 
   <!-- <record name="plone.app.folderui.facet.Creator.description" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="description"> -->
   <!--   <field type="plone.registry.field.TextLine"> -->
