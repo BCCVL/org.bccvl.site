@@ -53,7 +53,7 @@
                         use_external python:auth and external_login_url and not external_login_iframe;
                         target request/target|nothing;
                         target python:test(target in ('_parent', '_top', '_blank', '_self'), target, '_self');
-                        host request/HTP_X_FORWARDED_HOST | request/HTTP_HOST ;
+                        host request/HTTP_X_FORWARDED_HOST | request/HTTP_HOST ;
                         ssl_host_url string:https://${host};
                         ztu modules/ZTUtils;">
 
