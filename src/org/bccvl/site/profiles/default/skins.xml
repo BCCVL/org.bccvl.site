@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<object name="portal_skins" meta_type="Plone Skins Tool">
+ <object name="bccvl_skin" meta_type="Filesystem Directory View"
+         directory="org.bccvl.site:skins/bccvl_skin"/>
+  <skin-path name="*">
+    <layer name="bccvl_skin" insert-after="custom"/>
+  </skin-path>
+</object>
+<!-- TODO: create uninstall for this here -->

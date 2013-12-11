@@ -2,6 +2,7 @@
         xmlns="http://namespaces.zope.org/zope"
         xmlns:plone="http://namespaces.plone.org/plone"
         xmlns:transmogrifier="http://namespaces.plone.org/transmogrifier"
+        xmlns:cmf="http://namespaces.zope.org/cmf"
         i18n_domain="org.bccvl"
         >
 
@@ -10,6 +11,8 @@
     <include file="profiles.zcml"/>
     <include package=".content"/>
     <include package=".browser"/>
+
+    <cmf:registerDirectory name="bccvl_skin" />
 
     <adapter
         for="zope.interface.Interface
