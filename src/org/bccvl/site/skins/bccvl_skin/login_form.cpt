@@ -87,7 +87,7 @@
     <div id="fieldset-aaf-login"
       tal:define="login_url python:test(came_from is not None,
                   ssl_host_url + '/Shibboleth.sso/Login?target=%s' %
-                  ((came_from.replace('+', '%2B')) or ''), ssl_host_url + '/Shibboleth.sso/Login')" >
+                  ((came_from.replace('+', '%2B').replace('http://','https://')) or ''), ssl_host_url + '/Shibboleth.sso/Login')" >
         <h3>AAF Login</h3>
           <a i18n:translate="description_log_in_here"
              tal:attributes="href login_url">
