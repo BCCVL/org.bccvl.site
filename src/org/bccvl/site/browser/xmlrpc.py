@@ -18,6 +18,8 @@ from org.bccvl.site.namespace import BCCPROP, BIOCLIM, NFO
 from zope.i18n import translate
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
+from urllib2 import urlopen, Request
+from urllib import urlencode
 from rdflib import URIRef
 import json
 
@@ -82,6 +84,7 @@ def getbiolayermetadata(ds):
         item = handler.get(archiveitem)
         layer = item.value(item.identifier, BIOCLIM['bioclimVariable'])
         filename = item.value(item.identifier, NFO['fileName'])
+        # TODO: layer or filename could be None ... (don't index None)
         ret[layer] = filename
     return ret
 
@@ -173,6 +176,58 @@ class ExperimentManager(BrowserView):
     @returnwrapper
     def getExperiments(self, id):
         return {'data': 'experimentmetadata+datasetids+jobid'}
+
+
+from ZPublisher.Iterators import IStreamIterator
+from zope.interface import implementer
+
+
+@implementer(IStreamIterator)
+class UrlLibResponseIterator(object):
+
+    def __init__(self, resp):
+        self.resp = resp
+        self.length = int(resp.headers.getheader('Content-Length'))
+
+    def next(self):
+        return self.resp.next()
+
+    def __len__(self):
+        return self.length
+
+
+class ALAProxy(BrowserView):
+
+    #@returnwrapper ... returning file here ... returnwrapper not handling it properly
+    def autojson(self):
+        # TODO: do parameter checking and maybe set defaults so that js side doesn't have to do it
+        url = 'http://bie.ala.org.au/ws/search/auto.json?{}'.format(
+            self.request['QUERY_STRING'])
+        return self._dorequest(url)
+
+    #@returnwrapper ... returning file here ... returnwrapper not handling it properly
+    def searchjson(self):
+        # TODO: do parameter checking and maybe set defaults so that js side doesn't have to do it
+        url = 'http://bie.ala.org.au/ws/search.json?{}'.format(
+            self.request['QUERY_STRING'])
+        return self._dorequest(url)
+
+    def _dorequest(self, url):
+        # TODO: add headers like:
+        #    User-Agent
+        #    orig-request
+        #    etc...
+        req = Request(url)
+        # TODO: do proper exception handling
+        resp = urlopen(req)
+        # TODO: check response code?
+        for name in ('Date', 'Pragma', 'Expires', 'Content-Type', 'Cache-Control', 'Content-Language', 'Content-Length'):
+            value = resp.headers.getheader(name)
+            if value:
+                self.request.response.setHeader(name, value)
+        self.request.response.setStatus(resp.code)
+        return UrlLibResponseIterator(resp)
+
 
 
 class DataMover(BrowserView):

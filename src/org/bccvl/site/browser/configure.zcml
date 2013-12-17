@@ -122,6 +122,21 @@
     </browser:view>
 
     <browser:view
+        class=".xmlrpc.ALAProxy"
+        name="ala"
+        allowed_attributes="autojson searchjson"
+        for="*"
+        permission="zope2.View">
+
+        <browser:page
+            name="auto.json"
+            attribute="autojson"/>
+        <browser:page
+            name="search.json"
+            attribute="searchjson"/>
+    </browser:view>
+
+    <browser:view
         name="dv"
         class=".xmlrpc.DataMover"
         allowed_attributes="pullOccurrenceFromALA checkALAJobStatus"
