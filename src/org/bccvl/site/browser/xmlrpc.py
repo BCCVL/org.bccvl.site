@@ -187,7 +187,10 @@ class UrlLibResponseIterator(object):
 
     def __init__(self, resp):
         self.resp = resp
-        self.length = int(resp.headers.getheader('Content-Length'))
+        try:
+            self.length = int(resp.headers.getheader('Content-Length'))
+        except:
+            self.length = 0
 
     def next(self):
         return self.resp.next()
@@ -221,13 +224,19 @@ class ALAProxy(BrowserView):
         # TODO: do proper exception handling
         resp = urlopen(req)
         # TODO: check response code?
-        for name in ('Date', 'Pragma', 'Expires', 'Content-Type', 'Cache-Control', 'Content-Language', 'Content-Length'):
+        for name in ('Date', 'Pragma', 'Expires', 'Content-Type', 'Cache-Control', 'Content-Language', 'Content-Length', 'transfer-encoding'):
             value = resp.headers.getheader(name)
             if value:
                 self.request.response.setHeader(name, value)
         self.request.response.setStatus(resp.code)
-        return UrlLibResponseIterator(resp)
-
+        ret = UrlLibResponseIterator(resp)
+        if len(ret) != 0:
+            # we have a content-length so let the publisher stream it
+            return ret
+        # we don't have content-length and stupid publisher want's one for stream
+        # so let's stream it ourselves.
+        for data in ret.next():
+            self.request.response.write(data)
 
 
 class DataMover(BrowserView):
