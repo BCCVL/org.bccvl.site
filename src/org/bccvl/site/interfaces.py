@@ -1,4 +1,5 @@
 from zope.interface import Interface
+from plone.directives import form
 
 class IJobTracker(Interface):
 
@@ -11,3 +12,8 @@ class IJobTracker(Interface):
         """
         return the job instance
         """
+
+
+class IExperiment(form.Schema):
+    """Base Experiment Class"""
+

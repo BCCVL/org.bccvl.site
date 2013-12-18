@@ -1,6 +1,7 @@
 from org.bccvl.site import defaults
 from org.bccvl.site.content.function import IFunction
 from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.interfaces import IExperiment
 from org.bccvl.site.namespace import BCCVOCAB
 from ordf.namespace import DCES
 
@@ -87,3 +88,13 @@ class QueryAPI(object):
 
     def getEnviroLayers(self):
         return self.portal_catalog.uniqueValuesFor('BCCEnviroLayer')
+
+    def getExperiments(self):
+        experiments_physical_path = '/'.join(
+            [self.site_physical_path, defaults.EXPERIMENTS_FOLDER_ID]
+        )
+        brains = self.portal_catalog(
+            path ={'query': experiments_physical_path},
+            object_provides=IExperiment.__identifier__,
+        )
+        return brains

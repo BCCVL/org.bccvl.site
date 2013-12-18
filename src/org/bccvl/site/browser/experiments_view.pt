@@ -1,0 +1,115 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+<metal:content-core fill-slot="content-core">
+<metal:block define-macro="content-core"
+                    tal:define="kssClassesView context/@@kss_field_decorator_view;
+                                getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+                                templateId template/getId">
+
+    <div metal:define-macro="text-field-view"
+         id="parent-fieldname-text" class="stx"
+         tal:define="kss_class python:getKssClasses('text',
+                     templateId=templateId, macro='text-field-view');
+                     has_text exists:context/aq_explicit/getText;
+                     text python:has_text and here.getText() or ''"
+         tal:condition="text"
+         tal:attributes="class python: context.Format() in ('text/structured',
+                                               'text/x-rst', ) and  'stx' + kss_class or 'plain' + kss_class">
+        <div metal:define-slot="inside" tal:replace="structure text">The body</div>
+    </div>
+
+    <metal:listingmacro define-macro="listing">
+    <tal:foldercontents define="contentFilter contentFilter|request/contentFilter|nothing;
+                        contentFilter python:contentFilter and dict(contentFilter) or {};
+                        limit_display limit_display|request/limit_display|nothing;
+                        limit_display python:limit_display and int(limit_display) or None;
+                        more_url more_url|request/more_url|string:folder_contents;
+                        is_a_topic python:context.portal_type=='Topic';
+                        friendly_types context/@@plone_portal_state/friendly_types;
+                        dummy python:not is_a_topic and contentFilter.setdefault('portal_type', friendly_types);
+                        site_properties context/portal_properties/site_properties;
+                        use_view_action site_properties/typesUseViewActionInListings|python:();
+                        Batch python:modules['Products.CMFPlone'].Batch;
+                        b_start python:request.get('b_start', 0);
+                        isAnon context/@@plone_portal_state/anonymous;
+                        normalizeString nocall: context/plone_utils/normalizeString;
+                        toLocalizedTime nocall: context/@@plone/toLocalizedTime;
+                        show_about python:not isAnon or site_properties.allowAnonymousViewAbout;
+                        navigation_root_url context/@@plone_portal_state/navigation_root_url;
+                        pas_member context/@@pas_member;
+                        plone_view context/@@plone;
+                        experiments view/experiments
+                        ">
+    <tal:listing condition="experiments">
+        <div id="experiment-list">
+            <table class="table table-hover bccvl-experimenttable">
+                <thead>
+                    <tr><th colspan="3">
+                        My Experiments
+                    </th></tr>
+                      <tr class="headers">
+                          <th class="header headerSortUp">Date<span /></th>
+                          <th>Experiment<span /></th>
+                          <th>Type<span /></th>
+                          <th />
+                      </tr>
+                </thead>
+                <tbody>
+                    <tr tal:repeat="exp experiments">
+                        <td style="width: 13%;" tal:content="exp/creation_date" />
+                        <td class="bccvl-table-label">
+                            <h1 data-toggle="collapse"
+                                tal:attributes="data-target string:#${exp/self/id}">
+                                <tal:experiment_title content="exp/title" />
+                                <tal:sdm_details condition="python: exp['type']=='SDM'">
+                                    <i class="taxonomy" tal:content="exp/species_occurrence" />
+                                    <small tal:content="exp/functions" />
+                                </tal:sdm_details>
+                            </h1>
+                            <div class="collapse"
+                                 tal:attributes="id exp/self/id">
+                                <p class="bccvl-experiment-parameters"
+                                   tal:condition="python: exp['type']=='SDM'">
+                                    using:
+                                    <tal:species_absence content="exp/species_absence" />,
+                                    <tal:environmental_layers content="exp/environmental_layers" />
+                                </p>
+                                <p class="bccvl-experiment-summary" tal:content="exp/summary" />
+                            </div>
+                        </td>
+                        <td class="bccvl-table-label"><h1 tal:content="exp/type" /></td>
+                        <td class="bccvl-table-controls">
+                            <a tal:attributes="href exp/url">
+                                <i class="icon-chevron-right" title="view status &amp; results"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </tal:listing>
+    <metal:empty metal:define-slot="no_items_in_listing">
+        <p class="discreet"
+           tal:condition="not: experiments"
+           i18n:translate="description_no_items_in_folder">
+            There are currently no items in this folder.
+        </p>
+    </metal:empty>
+
+    </tal:foldercontents>
+    </metal:listingmacro>
+
+</metal:block>
+</metal:content-core>
+
+</body>
+</html>

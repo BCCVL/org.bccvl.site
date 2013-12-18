@@ -5,11 +5,7 @@ from org.bccvl.site import vocabularies
 from zope.interface import implementer
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from Products.CMFCore.utils import getToolByName
-
-
-class IExperiment(form.Schema):
-    """Base Experiment Class"""
-
+from org.bccvl.site.interfaces import IExperiment
 
 class ISDMExperiment(IExperiment):
     form.widget(functions=CheckBoxFieldWidget)
@@ -40,6 +36,7 @@ class ISDMExperiment(IExperiment):
         title=u'Environmental Layers',
         key_type=schema.Choice(source=vocabularies.envirolayer_source),
         value_type=schema.Choice(source=vocabularies.environmental_datasets_source),
+        required=False,
         )
 
 
