@@ -7,6 +7,7 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IExperiment
 
+
 class ISDMExperiment(IExperiment):
     form.widget(functions=CheckBoxFieldWidget)
     functions = schema.List(
