@@ -8,13 +8,15 @@ from collective.transmogrifier.utils import defaultMatcher
 import simplejson
 from ordf.graph import Graph
 from ordf.namespace import DC
-from rdflib import RDF, URIRef, Literal
-from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
+from rdflib import RDF, URIRef, Literal, OWL
+from rdflib.resource import Resource
+from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, TN
 from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from plone.app.dexterity.behaviors import constrains
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
+from plone.dexterity.utils import createContentInContainer
 
 
 @provider(ISectionBlueprint)
@@ -151,10 +153,9 @@ class ALASource(object):
         rdf.add((rdf.identifier, RDF['type'], CVOCAB['Dataset']))
 
         # FIXME: important of the same guid changes current existing dataset
-        _, id = json['taxonConcept']['guid'].rsplit(':', 1)
-        item = {'_path': id,
+        #_, id = json['taxonConcept']['guid'].rsplit(':', 1)
+        item = {  # '_path': id,
                 '_type': 'org.bccvl.content.dataset',
-                #'title': '{} ({})'.format(json['taxonConcept']['nameString'], json['commonNames'][0]['nameString']),
                 'title': title,
                 'description': description,
                 'file': {
@@ -174,7 +175,7 @@ class ALASource(object):
                         'data': rdf.serialize(format='turtle')
                         }
                     }
-                }
+            }
         yield item
 
 
@@ -305,6 +306,62 @@ class SelectableConstrainTypes(object):
                     constr.setImmediatelyAddableTypes(addabletypes)
 
             yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class NameChoosingConstructor(object):
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.previous = previous
+        self.context = transmogrifier.context
+        self.typekey = defaultMatcher(options, 'type-key', name, 'type',
+                                      ('portal_type', 'Type'))
+        self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
+        self.contextpathkey = defaultMatcher(options, 'contextpath-key',
+                                             name, 'contextpath')
+
+    def __iter__(self):
+        for item in self.previous:
+            keys = item.keys()
+            typekey = self.typekey(*keys)[0]
+            pathkey = self.pathkey(*keys)[0]
+            contextpathkey = self.contextpathkey(*keys)[0]
+
+            if not typekey:
+                # wouldn't know what to construct'
+                yield item
+                continue
+
+            type_ = item[typekey]
+
+            if pathkey:
+                # we have already an id, no need to choose a name
+                yield item
+                continue
+            else:
+                # we will generate a path later
+                pathkey = '_path'
+
+            context = self.context
+            if contextpathkey:
+                # if we have a contextpath use that one as contaier
+                contextpath = item[contextpathkey]
+                context = self.context.unrestrictedTraverse(contextpath)
+                if context is None:
+                    error = "Can't find Container {}".format(contextpath)
+                    raise KeyError(error)
+
+            # use title as hint for id if available
+            # TODO: maybe try to set filename upfront, to use INameFromFilename if possible
+            kws = {}
+            if 'title' in item:
+                kws['title'] = item['title']
+            # works only for dexterity based types
+            newob = createContentInContainer(context, type_, **kws)
+            item[pathkey] = newob.id
+            yield item
+
 
 
 

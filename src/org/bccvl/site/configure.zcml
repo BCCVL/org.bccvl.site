@@ -104,6 +104,7 @@
         name="BCCGlobalClimateModel"
     />
 
+    <!-- TODO: index temporal coverage someday -->
     <!-- <adapter -->
     <!--     factory=".indexers.dataset_DCTemporal" -->
     <!--     name="DCTemporal" -->
@@ -132,6 +133,11 @@
      component=".transmogrify.SelectableConstrainTypes"
      name="org.bccvl.site.transmogrify.selectableconstraintypes"
      />
+
+    <utility
+        component=".transmogrify.NameChoosingConstructor"
+        name="org.bccvl.site.transmogrify.namechoosingconstructor"
+    />
 
     <utility
       component=".vocabularies.species_presence_datasets_source"
