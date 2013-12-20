@@ -314,7 +314,7 @@ def alaimport(context, lsid):
         #       request.set(k, v)
         context.REQUEST = request
 
-        ds = context[defaults.DATASETS_FOLDER_ID]
+        ds = context[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]
         metadata_file = FILE_NAME_TEMPLATE.format(**jobstatus)
         transmogrifier = Transmogrifier(ds)
         transmogrifier(u'org.bccvl.site.alaimport',
