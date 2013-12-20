@@ -206,13 +206,4 @@
         name="dataset.png"
         image="dataset.png"/>
 
-    <browser:page
-        name="experiments_view"
-        for="plone.app.contenttypes.interfaces.IFolder"
-        layer="plone.app.contenttypes.interfaces.IPloneAppContenttypesLayer"
-        class=".experiments.ExperimentsFolderView"
-        permission="zope2.View"
-        template="experiments_view.pt"
-    />
-    
 </configure>
