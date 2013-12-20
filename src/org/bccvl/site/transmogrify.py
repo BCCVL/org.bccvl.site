@@ -90,6 +90,16 @@ class JSONSource(object):
 @implementer(ISection)
 class ALASource(object):
 
+    # map a path in json to RDF property and object type
+    JSON_TO_RDFMAP = [
+        ('taxonConcept/nameString', DC['title'], Literal),
+        ('taxonConcept/nameString', TN['nameComplete'], Literal),
+        ('taxonConcept/guid', OWL['sameAs'], URIRef),
+        ('taxonConcept/guid', DC['identifier'], URIRef),
+        ('commonNames/0/nameString', DC['description'], Literal),
+        ('images/0/thumbnail', BCCVOCAB['thumbnail'], URIRef),
+    ]
+
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
         self.name = name
@@ -101,12 +111,29 @@ class ALASource(object):
             raise Exception('File ({}) does not exists.'.format(str(self.file)))
         self.lsid = options['lsid']
 
-
         # add path prefix to imported content
         self.prefix = options.get('prefix', '').strip().strip(os.sep)
         # keys for sections further down the chain
         self.pathkey = options.get('path-key', '_path').strip()
         self.fileskey = options.get('files-key', '_files').strip()
+
+    def traverse_dict(self, source, path):
+        current = source
+        try:
+            for el in path.split('/'):
+                if isinstance(current, list):
+                    el = int(el)
+                current = current[el]
+        except:
+            # TODO: at least log error?
+            current = None
+        return current
+
+    def map_json_to_resource(self, json, resource):
+        for path, prop, obt in self.JSON_TO_RDFMAP:
+            val = self.traverse_dict(json, path)
+            if val:
+                resource.add(prop, obt(val))
 
     def __iter__(self):
         # exhaust previous iterator
@@ -116,41 +143,24 @@ class ALASource(object):
         # start our own source
         # 1. read meatada from json
         json = simplejson.load(open(self.file, 'r'))
-        # extract metadata
+        # index files by dataset_type
         files = {}
         for file in json['files']:
-            # FIXME: data_mover put's wrong file path into dataset.json
-            # files[file['dataset_type']] = file['url']
-            url = self.file
-            if file['dataset_type'] == 'occurrences':
-                url = url.replace('_dataset.json', '_occurrence.csv')
-            elif file['dataset_type'] == 'attribution':
-                url = url.replace('_dataset.json', '_metadata.json')
-            else:
-                url = file['url']
-            files[file['dataset_type']] = url
+            files[file['dataset_type']] = file
         title = json['title']
         description = json['description']
 
         # 2. read ala metadata form json
-        json = simplejson.load(open(files['attribution'], 'r'))
-        csv = files['occurrences']
+        json = simplejson.load(open(files['attribution']['url'], 'r'))
+        csv = files['occurrences']['url']
 
         rdf = Graph()
-        # rdf.add((rdf.identifier, DC['source'], URIRef(json['taxonConcept']['dcterms_source'])))
-        # rdf.add((rdf.identifier, DC['title'], URIRef(json['taxonConcept']['dcterms_title'])))
-        # rdf.add((rdf.identifier, DC['modified'], URIRef(json['taxonConcept']['dcterms_modified'])))
-        # rdf.add((rdf.identifier, DC['available'], URIRef(json['taxonConcept']['dcterms_available'])))
-        # URIRef(json['taxonConcept']['lsid'])
-        # json['taxonConcept']['RankCode'] == 'sp'
-        # json['taxonConcept']['rankString'] == 'species'
-        # json['taxonConcept']['']
-        rdf.add((rdf.identifier, DC['title'], Literal(json['taxonConcept']['nameString'])))
-        rdf.add((rdf.identifier, DC['identifier'], URIRef(json['taxonConcept']['guid'])))
-        rdf.add((rdf.identifier, DC['description'], Literal(json['commonNames'][0]['nameString'])))
-        rdf.add((rdf.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSO']))
-        rdf.add((rdf.identifier, BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP']))
-        rdf.add((rdf.identifier, RDF['type'], CVOCAB['Dataset']))
+        rdfmd = Resource(rdf, rdf.identifier)
+        self.map_json_to_resource(json,  rdfmd)
+        rdfmd.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreSO'])
+        rdfmd.add(BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP'])
+        rdfmd.add(RDF['type'], CVOCAB['Dataset'])
+        # TODO: important thing ... date of export (import data in plone)/ date modified in ALA
 
         # FIXME: important of the same guid changes current existing dataset
         #_, id = json['taxonConcept']['guid'].rsplit(':', 1)
