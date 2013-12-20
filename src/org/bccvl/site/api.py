@@ -65,7 +65,8 @@ class QueryAPI(object):
     def getEnvironmentalDatasets(self):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreE'])
 
-    def getFutureClimateDatasets(self, year=None, emission_scenario=None, climate_model=None):
+    def getFutureClimateDatasets(self, year=None, emission_scenario=None,
+                                 climate_model=None):
         query = dict(BCCDataGenre=BCCVOCAB['DataGenreFC'])
         # TODO: optional param selection goes here
         return self.getDatasets(**query)
@@ -94,7 +95,9 @@ class QueryAPI(object):
             [self.site_physical_path, defaults.EXPERIMENTS_FOLDER_ID]
         )
         brains = self.portal_catalog(
-            path ={'query': experiments_physical_path},
+            path={'query': experiments_physical_path},
             object_provides=IExperiment.__identifier__,
+            sort_on='created',
+            sort_order='descending'
         )
         return brains
