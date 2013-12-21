@@ -69,6 +69,16 @@
             menu, title
          Page:
             Pages, PagesPage -->
+        <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
+    <browser:page
+        name="experiments_listing_view"
+        for="plone.app.contenttypes.interfaces.IFolder"
+        class=".experiments_listing_view.ExperimentsListingView"
+        permission="zope2.View"
+        template="experiments_listing_view.pt"
+        menu="plone_displayviews"
+        title="Experiments Listing"
+    />
 
     <!-- named view with pages -->
     <browser:view

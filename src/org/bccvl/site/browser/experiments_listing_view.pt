@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+<metal:content-core fill-slot="content-core"
+	tal:define="folderContents view/experiments">
+	<metal:content-core use-macro="context/folder_listing/content-core">
+		<!-- TODO: make this view a bit more useful and render additional info from
+		           view/experiment_details(item)
+		       -->
+		<!-- TODO: maybe use tabular folder view as base?
+    </metal:content-core>
+</metal:content-core>
+
+</body>
+</html>
