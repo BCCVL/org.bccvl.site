@@ -7,5 +7,4 @@
   <object name="org.bccvl.content.function" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.knowledgebaseitem" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.dataset" meta_type="Dexterity FTI"/>
-  <object name="Folder" meta_type="Dexterity FTI"/>
 </object>
