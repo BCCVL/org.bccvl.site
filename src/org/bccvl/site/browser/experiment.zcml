@@ -38,13 +38,13 @@
 
     <browser:page
         name="view"
-        for="..content.experiment.IExperiment"
+        for="..interfaces.IExperiment"
         class=".experiment.View"
         permission="cmf.ModifyPortalContent"/>
 
     <browser:page
         name="edit"
-        for="..content.experiment.IExperiment"
+        for="..interfaces.IExperiment"
         class=".experiment.Edit"
         permission="cmf.ModifyPortalContent"/>
 
