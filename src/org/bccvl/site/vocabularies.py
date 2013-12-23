@@ -7,6 +7,8 @@ from gu.z3cform.rdf.interfaces import IORDF
 from gu.z3cform.rdf.utils import Period
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.CMFCore.utils import getToolByName
+from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
+from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM
 
 
 @implementer(IContextSourceBinder)
@@ -220,3 +222,8 @@ fc_years_source = SparqlValuesSourceBinder(
     """,
     lambda x: Period(x['label']).start,
 )
+
+
+BioclimVocabularyFactory = SparqlInstanceVocabularyFactory(BIOCLIM['BioclimaticVariable'])
+GCMVocabularyFactory = SparqlInstanceVocabularyFactory(BCCGCM['GCM'])
+EMSCVocabularyFactory = SparqlInstanceVocabularyFactory(BCCEMSC['EMSC'])

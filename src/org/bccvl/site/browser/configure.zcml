@@ -24,21 +24,6 @@
         permission="cmf.ModifyPortalContent"
         />
 
-    <utility
-        name="org.bccvl.site.GCMVocabulary"
-        component=".dataset.GCMVocabularyFactory"
-        />
-
-    <utility
-        name="org.bccvl.site.EMSCVocabulary"
-        component=".dataset.EMSCVocabularyFactory"
-        />
-
-    <utility
-        name="org.bccvl.site.BioclimVocabulary"
-        component=".dataset.BioclimVocabularyFactory"
-        />
-
     <adapter
         for="persistent.dict.PersistentDict
              zope.schema.interfaces.IField"

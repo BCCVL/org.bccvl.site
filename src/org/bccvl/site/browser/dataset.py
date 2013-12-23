@@ -31,14 +31,11 @@ from plone.z3cform.crud import crud
 from zope import schema
 from zope.interface import Interface
 import gu.z3cform.rdf.schema as rdfschema
-from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
 from rdflib import RDF, Graph, Literal
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 import zipfile
-from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, NFO, BCCPROP
-
-BioclimVocabularyFactory = SparqlInstanceVocabularyFactory(BIOCLIM['BioclimaticVariable'])
+from org.bccvl.site.namespace import BIOCLIM, NFO, BCCPROP
 
 
 class IFileItemMetadata(Interface):
@@ -214,11 +211,6 @@ class CrudFileMetadataForm(crud.CrudForm):
     # def before_update(self, item, data):
     #     import ipdb; ipdb.set_trace()
     #     super(CrudFileMetadataForm, self).before_update(item, data)
-
-
-#TODO: Move to dataset layer:
-GCMVocabularyFactory = SparqlInstanceVocabularyFactory(BCCGCM['GCM'])
-EMSCVocabularyFactory = SparqlInstanceVocabularyFactory(BCCEMSC['EMSC'])
 
 
 #TODO: Move to dataset layer:
