@@ -10,6 +10,7 @@ from collections import defaultdict
 def get_title_from_uuid(uuid):
     return uuidToObject(uuid).title
 
+
 # FIXME: this view needs to exist for default browser layer as well
 #        otherwise diazo.off won't find the page if set up.
 #        -> how would unthemed markup look like?
@@ -22,7 +23,6 @@ class ExperimentsListingView(BrowserView):
         return api.getExperiments()
 
     def experiment_details(self, expbrain):
-
         details = {}
 
         if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
