@@ -1,0 +1,102 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:grok="http://namespaces.zope.org/grok"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="org.bccvl.site"
+    >
+
+
+    <!-- permissions: zope2.View, zope.Public, cmf.ModifyPortalContent
+    -->
+    <browser:view
+        name="startjob"
+        class=".startjob.StartJobView"
+        for="org.bccvl.site.content.experiment.IExperiment"
+        permission="cmf.ModifyPortalContent"
+    />
+
+    <!-- named view with pages -->
+    <browser:view
+        name="dm"
+        class=".xmlrpc.DataSetManager"
+        allowed_attributes="getMetadata queryDataset getVocabulary"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        permission="zope2.View" >
+
+        <browser:page
+            name="getMetadata"
+            attribute="getMetadata"/>
+
+        <browser:page
+            name="queryDataset"
+            attribute="queryDataset"/>
+
+        <browser:page
+            name="getVocabulary"
+            attribute="getVocabulary"/>
+
+    </browser:view>
+
+    <browser:view
+        class=".xmlrpc.DataSetAPI"
+        name="dm"
+        allowed_attributes="getMetadata"
+        for="org.bccvl.site.content.dataset.IDataset"
+        permission="zope2.View" >
+
+        <browser:page
+            name="getMetadata"
+            attribute="getMetadata"/>
+
+    </browser:view>
+
+    <browser:view
+        class=".xmlrpc.JobManagerAPI"
+        name="jm"
+        allowed_attributes="getJobStatus"
+        for="org.bccvl.site.content.experiment.IExperiment"
+        permission="zope2.View" >
+
+        <browser:page
+            name="getJobStatus"
+            attribute="getJobStatus"/>
+
+    </browser:view>
+
+    <browser:view
+        class=".xmlrpc.ALAProxy"
+        name="ala"
+        allowed_attributes="autojson searchjson"
+        for="*"
+        permission="zope2.View">
+
+        <browser:page
+            name="auto.json"
+            attribute="autojson"/>
+        <browser:page
+            name="search.json"
+            attribute="searchjson"/>
+    </browser:view>
+
+    <browser:view
+        name="dv"
+        class=".xmlrpc.DataMover"
+        allowed_attributes="pullOccurrenceFromALA checkALAJobStatus"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        permission="org.bccvl.AddDataset" >
+
+        <browser:page
+            name="pullOccurrenceFromALA"
+            attribute="pullOccurrenceFromALA"/>
+        <browser:page
+            name="checkALAJobStatus"
+            attribute="checkALAJobStatus"/>
+
+    </browser:view>
+
+</configure>
