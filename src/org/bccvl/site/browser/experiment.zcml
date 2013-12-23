@@ -43,9 +43,21 @@
         permission="cmf.ModifyPortalContent"/>
 
     <browser:page
+        name="view"
+        for="..content.experiment.ISDMExperiment"
+        class=".experiment.SDMView"
+        permission="cmf.ModifyPortalContent"/>
+
+    <browser:page
         name="edit"
         for="..interfaces.IExperiment"
         class=".experiment.Edit"
+        permission="cmf.ModifyPortalContent"/>
+
+    <browser:page
+        name="edit"
+        for="..content.experiment.ISDMExperiment"
+        class=".experiment.SDMEdit"
         permission="cmf.ModifyPortalContent"/>
 
 
@@ -58,6 +70,12 @@
         factory=".experiment.SDMAddView"
         name="org.bccvl.content.sdmexperiment"
         />
+    <class class=".experiment.SDMAddView">
+        <require
+            permission="org.bccvl.AddExperiment"
+            interface="zope.publisher.interfaces.browser.IBrowserPage"
+            />
+    </class>
 
     <adapter
         for="Products.CMFCore.interfaces.IFolderish

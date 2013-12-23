@@ -8,7 +8,7 @@ from zope.component import adapter
 from zope.interface import implementer
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
-from plone.dexterity.browser import add, edit, view
+from plone.dexterity.browser import add, edit
 from zope.i18n import translate
 from org.bccvl.site import MessageFactory as _
 from org.bccvl.site.browser.xmlrpc import getdsmetadata
@@ -17,7 +17,6 @@ from z3c.form.field import Fields
 from zope import schema
 from zope.dottedname.resolve import resolve
 from plone.z3cform.fieldsets.group import GroupFactory
-from org.bccvl.compute.brt import parameters
 from org.bccvl.site.api import QueryAPI
 
 
@@ -64,11 +63,6 @@ class View(edit.DefaultEditForm):
 
     label = ''
 
-    def updateFields(self):
-        super(View, self).updateFields()
-        addToolkitFields(self)
-
-
     #@button.handler(IJobStatus.apply
     # condition=lambda form: form.showApply)
     @button.buttonAndHandler(u'Start Job')
@@ -84,7 +78,6 @@ class View(edit.DefaultEditForm):
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
         self.request.response.redirect(self.context.absolute_url())
-
 
     # def render(self):
     #     '''See interfaces.IForm'''
@@ -106,7 +99,20 @@ class View(edit.DefaultEditForm):
     #     return zope.publisher.publish.mapply(self.render, (), self.request)
     # render.base_method = True
 
+
+class SDMView(View):
+
+    def updateFields(self):
+        super(SDMView, self).updateFields()
+        addToolkitFields(self)
+
+
 class Edit(edit.DefaultEditForm):
+
+    pass
+
+
+class SDMEdit(Edit):
 
     def updateFields(self):
         super(Edit, self).updateFields()
@@ -182,9 +188,9 @@ class Add(add.DefaultAddForm):
         self._finishedAdd = True
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"), "info")
 
-
     # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
+
     def occurrences_mapping(self):
         import json
         from org.bccvl.site.api import QueryAPI
@@ -203,6 +209,9 @@ class Add(add.DefaultAddForm):
         """
         return js_tmpl % json.dumps(mapping)
 
+
+class SDMAdd(Add):
+
     def updateFields(self):
         super(Add, self).updateFields()
         addToolkitFields(self)
@@ -214,3 +223,8 @@ class AddView(add.DefaultAddView):
     """
 
     form = Add
+
+
+class SDMAddView(AddView):
+
+    form = SDMAdd
