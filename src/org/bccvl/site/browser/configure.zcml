@@ -31,48 +31,10 @@
         />
 
    <include file="api.zcml"/>
+   <include file="experiment.zcml"/>
 
     <adapter
         factory=".experiment.JobStatus"/>
-
-
-    <browser:page
-        name="view"
-        for="..content.experiment.IExperiment"
-        class=".experiment.View"
-        permission="cmf.ModifyPortalContent"/>
-
-    <browser:page
-        name="edit"
-        for="..content.experiment.IExperiment"
-        class=".experiment.Edit"
-        permission="cmf.ModifyPortalContent"/>
-
-
-    <!-- Standard add view and form - invoked from ++add++ traverser -->
-    <adapter
-        for="Products.CMFCore.interfaces.IFolderish
-             Products.CMFDefault.interfaces.ICMFDefaultSkin
-             plone.dexterity.interfaces.IDexterityFTI"
-        provides="zope.publisher.interfaces.browser.IBrowserPage"
-        factory=".experiment.AddView"
-        name="org.bccvl.content.sdmexperiment"
-        />
-
-    <adapter
-        for="Products.CMFCore.interfaces.IFolderish
-             Products.CMFDefault.interfaces.ICMFDefaultSkin
-             plone.dexterity.interfaces.IDexterityFTI"
-        provides="zope.publisher.interfaces.browser.IBrowserPage"
-        factory=".experiment.AddView"
-        name="org.bccvl.content.projectionexperiment"
-        />
-    <class class=".experiment.AddView">
-        <require
-            permission="org.bccvl.AddExperiment"
-            interface="zope.publisher.interfaces.browser.IBrowserPage"
-            />
-    </class>
 
     <browser:resource
         name="experiment.png"

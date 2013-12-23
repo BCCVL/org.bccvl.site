@@ -1,0 +1,78 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:grok="http://namespaces.zope.org/grok"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="org.bccvl.site"
+    >
+
+    <!-- Basic View:
+            for, permission, class, allowed_interface,
+            allowed_attributes
+         Pages:
+            Basic View, for, permission
+         View:
+            Pages, for, name, menu, title, provides
+         ViewPage:
+            name, attribute, template
+         ViewDefault:
+            name
+         PagesPage:
+            menu, title
+         Page:
+            Pages, PagesPage -->
+        <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
+    <browser:page
+        name="experiments_listing_view"
+        for="plone.app.contenttypes.interfaces.IFolder"
+        class=".experiments_listing_view.ExperimentsListingView"
+        permission="zope2.View"
+        template="experiments_listing_view.pt"
+        menu="plone_displayviews"
+        title="Experiments Listing"
+    />
+
+    <browser:page
+        name="view"
+        for="..content.experiment.IExperiment"
+        class=".experiment.View"
+        permission="cmf.ModifyPortalContent"/>
+
+    <browser:page
+        name="edit"
+        for="..content.experiment.IExperiment"
+        class=".experiment.Edit"
+        permission="cmf.ModifyPortalContent"/>
+
+
+    <!-- Standard add view and form - invoked from ++add++ traverser -->
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.SDMAddView"
+        name="org.bccvl.content.sdmexperiment"
+        />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.AddView"
+        name="org.bccvl.content.projectionexperiment"
+        />
+    <class class=".experiment.AddView">
+        <require
+            permission="org.bccvl.AddExperiment"
+            interface="zope.publisher.interfaces.browser.IBrowserPage"
+            />
+    </class>
+
+
+</configure>
