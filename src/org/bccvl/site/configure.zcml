@@ -176,17 +176,17 @@
 
     <utility
         name="org.bccvl.site.GCMVocabulary"
-        component=".dataset.GCMVocabularyFactory"
+        component=".vocabularies.GCMVocabularyFactory"
         />
 
     <utility
         name="org.bccvl.site.EMSCVocabulary"
-        component=".dataset.EMSCVocabularyFactory"
+        component=".vocabularies.EMSCVocabularyFactory"
         />
 
     <utility
         name="org.bccvl.site.BioclimVocabulary"
-        component=".dataset.BioclimVocabularyFactory"
+        component=".vocabularies.BioclimVocabularyFactory"
         />
 
     <transmogrifier:registerConfig
