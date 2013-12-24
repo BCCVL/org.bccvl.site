@@ -216,6 +216,12 @@ class SDMAdd(Add):
         super(Add, self).updateFields()
         addToolkitFields(self)
 
+    def updateWidgets(self):
+        super(SDMAdd, self, ).updateWidgets()
+        envirolayerwidget = self.widgets.get('environmental_layers', None)
+        if not envirolayerwidget.key_widgets:
+            envirolayerwidget.appendAddingWidget()
+
 
 class AddView(add.DefaultAddView):
     """
