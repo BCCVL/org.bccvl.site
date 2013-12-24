@@ -1,5 +1,5 @@
 from plone.directives import form
-from zope import schema
+from zope.schema import Choice, List, Dict
 from plone.dexterity.content import Container
 from org.bccvl.site import vocabularies
 from zope.interface import implementer
@@ -10,71 +10,65 @@ from org.bccvl.site.interfaces import IExperiment
 
 class ISDMExperiment(IExperiment):
     form.widget(functions=CheckBoxFieldWidget)
-    functions = schema.List(
+    functions = List(
         title=u'Algorithm',
-        value_type=schema.Choice(
-            source=vocabularies.functions_source
-        ),
+        value_type=Choice(source=vocabularies.functions_source),
         default=None,
         required=True,
     )
 
-    species_occurrence_dataset = schema.Choice(
+    species_occurrence_dataset = Choice(
         title=u'Species Occurrence Datasets',
         source=vocabularies.species_presence_datasets_source,
         default=None,
         required=False,
     )
 
-    species_absence_dataset = schema.Choice(
+    species_absence_dataset = Choice(
         title=u'Species Absence Datasets',
         source=vocabularies.species_absence_datasets_source,
         default=None,
         required=False,
     )
 
-    environmental_layers = schema.Dict(
+    environmental_layers = Dict(
         title=u'Environmental Layers',
-        key_type=schema.Choice(source=vocabularies.envirolayer_source),
-        value_type=schema.Choice(source=vocabularies.environmental_datasets_source),
-        required=False,
+        key_type=Choice(source=vocabularies.envirolayer_source),
+        value_type=Choice(source=vocabularies.environmental_datasets_source),
+        required=True,
+        )
         )
 
 
 class IProjectionExperiment(IExperiment):
 
-    species_distribution_models = schema.Choice(
+    species_distribution_models = Choice(
         title=u'Species Distribution Models',
         source=vocabularies.species_distributions_models_source,
         default=None,
         required=True,
     )
 
-    years = schema.List(
+    years = List(
         title=u'Projection Point: Years',
-        value_type=schema.Choice(
-            source=vocabularies.fc_years_source),
+        value_type=Choice(source=vocabularies.fc_years_source),
         default=None,
         required=True,
     )
 
-    emission_scenarios = schema.List(
+    emission_scenarios = List(
         title=u'Projection Point: Emission Scenarios',
-        value_type=schema.Choice(
-            source=vocabularies.emission_scenarios_source),
+        value_type=Choice(source=vocabularies.emission_scenarios_source),
         default=None,
         required=True,
     )
 
-    climate_models = schema.List(
+    climate_models = List(
         title=u'Projection Point: Climate Models',
-        value_type=schema.Choice(
-            source=vocabularies.global_climate_models_source),
+        value_type=Choice(source=vocabularies.global_climate_models_source),
         default=None,
         required=True,
     )
-
-#
 
 
 @implementer(ISDMExperiment)
