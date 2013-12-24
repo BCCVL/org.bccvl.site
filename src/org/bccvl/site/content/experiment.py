@@ -32,10 +32,14 @@ class ISDMExperiment(IExperiment):
         required=False,
     )
 
-    environmental_layers = Dict(
-        title=u'Environmental Layers',
-        key_type=Choice(source=vocabularies.envirolayer_source),
-        value_type=Choice(source=vocabularies.environmental_datasets_source),
+    # TODO: need a better field here to support dynamic vocabularies for
+    #       values based on selected key
+    #       -> needs specialised widget as well
+    environmental_datasets = Dict(
+        title=u'Environmental Datasets',
+        key_type=Choice(source=vocabularies.environmental_datasets_source),
+        value_type=List(Choice(source=vocabularies.envirolayer_source),
+                        unique=False),
         required=True,
         )
 
