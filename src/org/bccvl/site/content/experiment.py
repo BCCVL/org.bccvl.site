@@ -37,7 +37,6 @@ class ISDMExperiment(IExperiment):
         value_type=Choice(source=vocabularies.environmental_datasets_source),
         required=True,
         )
-        )
 
 
 class IProjectionExperiment(IExperiment):
