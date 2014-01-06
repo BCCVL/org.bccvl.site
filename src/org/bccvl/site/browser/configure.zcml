@@ -32,6 +32,7 @@
 
    <include file="api.zcml"/>
    <include file="experiment.zcml"/>
+   <include file="widgets.zcml"/>
 
     <adapter
         factory=".experiment.JobStatus"/>

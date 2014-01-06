@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="org.bccvl">
+
+    <z3c:widgetTemplate
+      mode="input"
+      widget=".widgets.IOrderedCheckboxWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="orderedcheckbox_input.pt"
+      />
+
+</configure>
