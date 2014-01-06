@@ -6,6 +6,7 @@ from zope.interface import implementer
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IExperiment
+from plone.directives import form
 
 
 class ISDMExperiment(IExperiment):
@@ -48,6 +49,7 @@ class IProjectionExperiment(IExperiment):
         required=True,
     )
 
+    form.widget(years='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     years = List(
         title=u'Projection Point: Years',
         value_type=Choice(source=vocabularies.fc_years_source),
@@ -55,6 +57,7 @@ class IProjectionExperiment(IExperiment):
         required=True,
     )
 
+    form.widget(emission_scenarios='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     emission_scenarios = List(
         title=u'Projection Point: Emission Scenarios',
         value_type=Choice(source=vocabularies.emission_scenarios_source),
@@ -62,6 +65,7 @@ class IProjectionExperiment(IExperiment):
         required=True,
     )
 
+    form.widget(climate_models='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     climate_models = List(
         title=u'Projection Point: Climate Models',
         value_type=Choice(source=vocabularies.global_climate_models_source),
