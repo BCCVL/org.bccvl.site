@@ -86,12 +86,19 @@ PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
 PREFIX bioclim: <http://namespaces.bccvl.org.au/bioclim#>
 PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
+
 SELECT ?bvar ?blabel ?fnam WHERE {{
+  Graph ?g {{
   <{subject}> a cvocab:Dataset .
   <{subject}> bccprop:hasArchiveItem ?ar .
-  ?ar bioclim:bioclimVariable ?bvar .
-  ?ar nfo:fileName ?fnam .
-  ?bvar rdfs:label ?blabel .
+  }}
+  Graph ?a {{
+    ?ar bioclim:bioclimVariable ?bvar .
+    ?ar nfo:fileName ?fnam .
+  }}
+  Graph ?b {{
+    ?bvar rdfs:label ?blabel .
+  }}
 }}"""
     # FIXME: need to clean up getContentUri function
     uri = getContentUri(ds)
