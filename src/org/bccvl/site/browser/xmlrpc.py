@@ -21,6 +21,7 @@ from zope.schema.interfaces import IContextSourceBinder
 from urllib2 import urlopen, Request
 from urllib import urlencode
 from rdflib import URIRef
+from gu.plone.rdf.repositorymetadata import getContentUri
 import json
 
 
@@ -76,16 +77,30 @@ def getdsmetadata(ds):
 
 
 def getbiolayermetadata(ds):
-    graph = IGraph(ds)
+    # TODO: use a sparql query to get all infos in one go...
+    #       could get layer friendly names as well
+    query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ns: <http://www.bccvl.org.au/individual/>
+PREFIX cvocab: <http://namespaces.griffith.edu.au/collection_vocab#>
+PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
+PREFIX bioclim: <http://namespaces.bccvl.org.au/bioclim#>
+PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
+
+SELECT ?bvar ?blabel ?fnam WHERE {{
+  <{subject}> a cvocab:Dataset .
+  <{subject}> bccprop:hasArchiveItem ?ar .
+  ?ar bioclim:bioclimVariable ?bvar .
+  ?ar nfo:fileName ?fnam .
+  ?bvar rdfs:label ?blabel .
+}}"""
+    # FIXME: need to clean up getContentUri function
+    uri = getContentUri(ds)
+    q = query.format(subject=uri)
     ret = {}
     handler = getUtility(IORDF).getHandler()
-    for archiveitem in graph.objects(graph.identifier,
-                                     BCCPROP['hasArchiveItem']):
-        item = handler.get(archiveitem)
-        layer = item.value(item.identifier, BIOCLIM['bioclimVariable'])
-        filename = item.value(item.identifier, NFO['fileName'])
-        # TODO: layer or filename could be None ... (don't index None)
-        ret[layer] = filename
+    for row in handler.query(q):
+        ret[unicode(row['bvar'])] = {'label': row['blabel'],
+                                     'filename': row['fnam']}
     return ret
 
 
