@@ -3,11 +3,27 @@
     xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="org.bccvl">
 
+    <adapter factory=".converter.DatasetsConverter"/>
+
     <z3c:widgetTemplate
       mode="input"
       widget=".interfaces.IOrderedCheckboxWidget"
       layer="z3c.form.interfaces.IFormLayer"
       template="orderedcheckbox_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="input"
+      widget=".interfaces.IDatasetsWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="datasets_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="display"
+      widget=".interfaces.IDatasetsWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="datasets_display.pt"
       />
 
 </configure>

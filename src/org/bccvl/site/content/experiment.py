@@ -35,6 +35,7 @@ class ISDMExperiment(IExperiment):
     # TODO: need a better field here to support dynamic vocabularies for
     #       values based on selected key
     #       -> needs specialised widget as well
+    form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetsFieldWidget')
     environmental_datasets = Dict(
         title=u'Environmental Datasets',
         key_type=Choice(source=vocabularies.environmental_datasets_source),
@@ -53,6 +54,8 @@ class IProjectionExperiment(IExperiment):
         required=True,
     )
 
+    # TODO: instead of form hints ... maybe set widgetfactory in form updateWidgets?
+    #       form hint affects all forms ... using updateWidgets would require to customise every form where we wanta custom widget
     form.widget(years='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     years = List(
         title=u'Projection Point: Years',

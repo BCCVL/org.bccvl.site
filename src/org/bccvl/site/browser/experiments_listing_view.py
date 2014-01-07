@@ -8,7 +8,10 @@ from collections import defaultdict
 
 
 def get_title_from_uuid(uuid):
-    return uuidToObject(uuid).title
+    obj = uuidToObject(uuid)
+    if obj:
+        return obj.title
+    return None
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -33,10 +36,12 @@ class ExperimentsListingView(BrowserView):
             envirolayer_vocab = envirolayer_source(self.context)
             environmental_layers = defaultdict(list)
             exp = expbrain.getObject()
-            for layer, dataset in exp.environmental_layers.items():
-                environmental_layers[dataset].append(
-                    envirolayer_vocab.getTermByToken(str(layer)).title
-                )
+            if exp.environmental_datasets:
+                for dataset, layers in exp.environmental_datasets.items():
+                    for layer in layers:
+                        environmental_layers[dataset].append(
+                            envirolayer_vocab.getTermByToken(str(layer)).title
+                        )
 
             details.update({
                 'type': 'SDM',

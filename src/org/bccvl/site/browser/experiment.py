@@ -218,9 +218,9 @@ class SDMAdd(Add):
 
     def updateWidgets(self):
         super(SDMAdd, self, ).updateWidgets()
-        envirodatasetswidget = self.widgets.get('environmental_datasets', None)
-        if not envirodatasetswidget.key_widgets:
-            envirodatasetswidget.appendAddingWidget()
+        # envirodatasetswidget = self.widgets.get('environmental_datasets', None)
+        # if not envirodatasetswidget.key_widgets:
+        #     envirodatasetswidget.appendAddingWidget()
 
 
 class AddView(add.DefaultAddView):
