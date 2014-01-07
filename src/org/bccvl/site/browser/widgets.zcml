@@ -5,7 +5,7 @@
 
     <z3c:widgetTemplate
       mode="input"
-      widget=".widgets.IOrderedCheckboxWidget"
+      widget=".interfaces.IOrderedCheckboxWidget"
       layer="z3c.form.interfaces.IFormLayer"
       template="orderedcheckbox_input.pt"
       />

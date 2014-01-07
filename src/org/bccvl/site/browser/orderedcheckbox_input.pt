@@ -5,17 +5,17 @@
 <div class="ordered-selection-field" id=""
      tal:attributes="id view/id"
      tal:define="class view/klass;
-selected view/selectedItems">
+                 selected view/selectedItems">
    <!-- view/notselectedItems -->
    <!-- view/selectedItems -->
    <tal:repeat tal:repeat="entry view/items">
     <span class="option">
     <input type="checkbox" name="vehicle" value="Bike" id="mybox" class="foo"
            tal:attributes="id entry/id;
-name string:${view/name};
-value entry/value;
-class class;
-checked python: entry in selected and 'checked' or None"/>
+                           name string:${view/name};
+                           value entry/value;
+                           class class;
+                           checked python: entry in selected and 'checked' or None"/>
     <label for="mybox" tal:content="nocall: entry/content"
            tal:attributes="for entry/id;">Label</label>
     </span>
@@ -25,7 +25,5 @@ checked python: entry in selected and 'checked' or None"/>
         tal:attributes="name string:${view/name}-empty-marker"/>
 
 </div>
-
-
 
 </html>
