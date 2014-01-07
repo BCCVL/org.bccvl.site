@@ -99,8 +99,8 @@ SELECT ?bvar ?blabel ?fnam WHERE {{
     ret = {}
     handler = getUtility(IORDF).getHandler()
     for row in handler.query(q):
-        ret[unicode(row['bvar'])] = {'label': row['blabel'],
-                                     'filename': row['fnam']}
+        ret[row['bvar']] = {'label': unicode(row['blabel']),
+                            'filename': unicode(row['fnam'])}
     return ret
 
 
