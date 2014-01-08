@@ -14,7 +14,7 @@
 		<!-- TODO: make this view a bit more useful and render additional info from
 		           view/experiment_details(item)
 		       -->
-		<!-- TODO: maybe use tabular folder view as base?
+		<!-- TODO: maybe use tabular folder view as base? -->
     </metal:content-core>
 </metal:content-core>
 
