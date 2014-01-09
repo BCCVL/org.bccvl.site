@@ -14,11 +14,12 @@ from plone.app.testing import FunctionalTesting
 # from plone.app.async.testing import AsyncFunctionalTesting
 from plone.app.async.testing import registerAsyncLayers
 # from plone.app.async.testing import PLONE_APP_ASYNC_FIXTURE
-from org.bccvl.site.namespace import BCCVOCAB, BCCPROP
+from org.bccvl.site.namespace import BCCVOCAB, BCCPROP, NFO
 from org.bccvl.site import defaults
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from plone.namedfile.file import NamedBlobFile
 from collective.transmogrifier.transmogrifier import Transmogrifier
+from rdflib import Literal
 
 
 TESTCSV = '\n'.join(['%s, %d, %d' % ('Name', x, x + 1) for x in range(1, 10)])
@@ -36,17 +37,17 @@ class BCCVLLayer(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE, )
 
     def setUpZope(self, app, configurationContext):
-        # load ZCML and use z2.installProduct here
-        self.loadZCML('testing.zcml', package=org.bccvl.site.tests)
-        z2.installProduct(app, 'Products.membrane')
-        z2.installProduct(app, 'plone.app.folderui')
-
         # FIXME: hack a config together...
         from App.config import getConfiguration
         cfg = getConfiguration()
         cfg.product_config = {'gu.plone.rdf': {
             'inifile': os.path.join(TESTSDIR, 'ordf.ini'),
             }}
+
+        # load ZCML and use z2.installProduct here
+        self.loadZCML('testing.zcml', package=org.bccvl.site.tests)
+        z2.installProduct(app, 'Products.membrane')
+        z2.installProduct(app, 'plone.app.folderui')
 
     def setUpPloneSite(self, portal):
         # base test fixture sets default chain to nothing
@@ -81,12 +82,33 @@ class BCCVLLayer(PloneSandboxLayer):
     def addTestContent(self, portal):
         # TODO get rid of this modue hack
         from org.bccvl import compute
+        from org.bccvl.compute import bioclim  # register object factory for parameters
+        # ZCA registry is cleared at beginning and this factory is not loaded again,
+        # because it is done at import time and not at configuration (zcml) time.
+        # configs a re-run in layers, but modules can't be re-imported'
+        bioclim.registerFactoryAdapter(bioclim.IParametersBioclim, bioclim.ParametersBioclim)
         from org.bccvl.site.tests.compute import testalgorithm
         compute.testalgorithm = testalgorithm
 
         transmogrifier = Transmogrifier(portal)
         transmogrifier(u'org.bccvl.site.dataimport',
                        source={'path': 'org.bccvl.site.tests:data'})
+        # update metadata on imported content:
+        # TODO: sholud be done in transomgrifier step
+        from rdflib import Graph, URIRef
+        from org.bccvl.site.namespace import BIOCLIM
+        rdfhandler = getUtility(IORDF).getHandler()
+        current = portal.datasets.environmental.current
+        g = IGraph(current)
+        for fid, i in ((URIRef("http://example.com/file%02d" % i), i)
+                    for i in range(1, 3)):
+            f = Graph(identifier=fid)
+            f.add((fid,  BIOCLIM['bioclimVariable'], BIOCLIM['B%02d' % i]))
+            f.add((fid,  NFO['fileName'], Literal('file%02d' % i)))
+            g.add((g.identifier, BCCPROP['hasArchiveItem'], f.identifier))
+            rdfhandler.put(f)
+        rdfhandler.put(g)
+        current.reindexObject()
 
 
 BCCVL_FIXTURE = BCCVLLayer()
