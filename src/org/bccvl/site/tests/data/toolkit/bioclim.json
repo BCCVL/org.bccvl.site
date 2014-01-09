@@ -2,6 +2,6 @@
   "_path": "/toolkit/bioclim",
   "_type": "org.bccvl.content.function",
   "title": "Bioclim",
-  "schema": "empty",
-  "compute_function": "org.bccvl.compute.testalgorithm"
+  "schema": "org.bccvl.compute.bioclim.IParametersBioclim",
+  "method": "org.bccvl.compute.testalgorithm"
 }
