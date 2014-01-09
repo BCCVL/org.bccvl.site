@@ -3,7 +3,7 @@
     <version>0.9.0</version>
     <dependencies>
         <!-- <dependency>profile-Products.AutoUserMakerPASPlugin:default</dependency> -->
-        <dependency>profile-org.bccvl.theme:default</dependency>
+        <!-- <dependency>profile-org.bccvl.theme:default</dependency> -->
         <dependency>profile-collective.onlogin:default</dependency>
         <dependency>profile-collective.quickupload:default</dependency>
         <!-- <dependency>profile-collective.z3cform.colorpicker:default</dependency> -->
