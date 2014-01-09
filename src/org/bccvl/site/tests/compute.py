@@ -1,16 +1,22 @@
-from org.bccvl.compute import utils
 from tempfile import mkdtemp
 import os.path
 import shutil
 import time
+from plone.app.async.interfaces import IAsyncService
+from zope.component import getUtility
+from org.bccvl.compute.utils import WorkEnvLocal
+from zc.async import local
 
 
-def testalgorithm(experiment):
+def testjob(experiment, jobid, env):
     """
     An algorithm mack function, that generates some test result data.
     """
     # 1. create tempfolder for result files
     tmpdir = mkdtemp()
+    env.tmpimport = tmpdir
+    env.workdir = tmpdir
+    status = local.getLiveAnnotation('bccvl.status')
     try:
         # 2. create some result files
         for fname in ('testfile1.txt', ):
@@ -19,13 +25,34 @@ def testalgorithm(experiment):
             f.close()
             time.sleep(1)
         # 3. store results
-        utils.store_results(experiment, tmpdir)
+        env.import_output(experiment, jobid, {})
+        status['task'] = 'Completed'
+        local.setLiveAnnotation('bccvl.status', status)
+    except:
+        status['task'] = 'Failed'
+        local.setLiveAnnotation('bccvl.status', status)
+        raise
     finally:
         # 4. clean up tmpdir
         shutil.rmtree(tmpdir)
 
 
-def failingtestalgorithm(experiment):
+def testalgorithm(experiment, request):
+    # submit test_job into queue
+    async = getUtility(IAsyncService)
+    queues = async.getQueues()
+    env = WorkEnvLocal('localhost', request)
+    job = async.wrapJob((testjob, experiment, ('testalgorithm', env), {}))
+    job.jobid = 'testalogrithm'
+    job.quota_names = ('default', )
+    job.annotations['bccvl.status'] = {
+        'step': 0,
+        'task': u'Queued'}
+    queue = queues['']
+    return queue.put(job)
+
+
+def failingtestalgorithm(experiment, request):
     """
     An algorithm that always fails.
     """
