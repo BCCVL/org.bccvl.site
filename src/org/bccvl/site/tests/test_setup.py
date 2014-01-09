@@ -43,7 +43,9 @@ class SiteSetupTest(unittest.TestCase):
     def test_add_experiment_permission(self):
         portal = self.layer['portal']
         pt = portal['portal_types']
-        fti = pt['org.bccvl.content.experiment']
+        fti = pt['org.bccvl.content.sdmexperiment']
+        self.assertEqual(fti.add_permission, 'org.bccvl.AddExperiment')
+        fti = pt['org.bccvl.content.projectionexperiment']
         self.assertEqual(fti.add_permission, 'org.bccvl.AddExperiment')
 
     def test_add_function_permission(self):
