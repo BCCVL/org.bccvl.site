@@ -14,6 +14,7 @@ from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from org.bccvl.site.testing import BCCVL_ASYNC_FUNCTIONAL_TESTING
+from org.bccvl.site.namespace import BIOCLIM
 
 from zc.async.testing import wait_for_result
 
@@ -34,7 +35,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.portal_url = self.portal.absolute_url()
         self.experiments_url = '/'.join((self.portal_url, defaults.EXPERIMENTS_FOLDER_ID))
         self.experiments_add_url = '/'.join((self.experiments_url,
-                                           '++add++org.bccvl.content.experiment'))
+                                           '++add++org.bccvl.content.sdmexperiment'))
         self.browser = Browser(app)
         # make publisher errors avilable
         self.browser.handleErrors = False
@@ -75,6 +76,18 @@ class ExperimentAddTest(unittest.TestCase):
         # self.assertTrue('This is my experiment' in self.browser.contents)
         # check for submit button
 
+    def in_out_select(self, form, name, value):
+        """
+        little helper to deal with in-out widget.
+
+        form ... the form we are manipulating
+        name ... the name of the target control to generate
+        value ... the value to submit with the new control
+        """
+        form.mech_form.new_control(
+            type='hidden', name=name,
+            attrs=dict(value=value))
+
     def test_add_experiment(self):
         self.browser.open(self.experiments_url)
         self.browser.getLink(url=self.experiments_add_url).click()
@@ -86,8 +99,20 @@ class ExperimentAddTest(unittest.TestCase):
             .displayValue = ["Bioclim"]
         self.browser.getControl(name='form.widgets.species_occurrence_dataset:list')\
             .displayValue = ["ABT"]
-        self.browser.getControl(name='form.widgets.environmental_dataset:list')\
-            .displayValue = ["Current"]
+        # self.browser.getControl(name='form.widgets.species_absence_dataset:list')\
+        #     .displayValue = ["ABT"]
+        # select two layers in test dataset
+        datasets = self.portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
+        curuid = datasets['current'].UID()  # get current datasets uuid
+        cbname = 'form.widgets.environmental_datasets.{}.select'.format(curuid)
+        # select current dataset
+        self.browser.getControl(name=cbname).value = [curuid]
+        # select 1st two layers within current dataset
+        lname = 'form.widgets.environmental_datasets.{}:list'.format(curuid)
+        form = self.browser.getForm(index=1)
+        self.in_out_select(form, lname, str(BIOCLIM['B01']))
+        self.in_out_select(form, lname, str(BIOCLIM['B02']))
+
         # form.widgets.functions:list
         # form.widgets.species_occurrence_dataset:list
         # form.widgets.species_absence_dataset:list
@@ -107,8 +132,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.assertEquals(self.browser.url, new_exp_url)
         self.assertTrue('My Experiment' in self.browser.contents)
         self.assertTrue('This is my experiment description' in self.browser.contents)
-        self.assertTrue('Job submitted pending-status' in self.browser.contents)
-        self.assertTrue('Pending' in self.browser.contents)
+        self.assertTrue("Job submitted [('testalogrithm', u'Queued')]" in self.browser.contents)
         # wait for job to finish
         self._wait_for_job('my-experiment')
         self.browser.open(new_exp_url)
@@ -128,23 +152,33 @@ class ExperimentAddTest(unittest.TestCase):
             .displayValue = ["Bioclim"]
         self.browser.getControl(name='form.widgets.species_occurrence_dataset:list')\
             .displayValue = ["ABT"]
-        self.browser.getControl(name='form.widgets.environmental_dataset:list')\
-            .displayValue = ["Current"]
+        # self.browser.getControl(name='form.widgets.species_absence_dataset:list')\
+        #     .displayValue = ["ABT"]
+        # select two layers in test dataset
+        datasets = self.portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
+        curuid = datasets['current'].UID()  # get current datasets uuid
+        cbname = 'form.widgets.environmental_datasets.{}.select'.format(curuid)
+        # select current dataset
+        self.browser.getControl(name=cbname).value = [curuid]
+        # select 1st two layers within current dataset
+        lname = 'form.widgets.environmental_datasets.{}:list'.format(curuid)
+        form = self.browser.getForm(index=1)
+        self.in_out_select(form, lname, str(BIOCLIM['B01']))
+        self.in_out_select(form, lname, str(BIOCLIM['B02']))
         # start
         self.browser.getControl('Create and start').click()
         self.assertTrue('Item created' in self.browser.contents)
         self.assertTrue('Job submitted' in self.browser.contents)
         new_exp_url = urljoin(self.experiments_add_url, 'my-experiment/view')
         self.assertEquals(self.browser.url, new_exp_url)
-        self.assertTrue('Job submitted pending-status' in self.browser.contents)
-        self.assertTrue('Pending' in self.browser.contents)
+        self.assertTrue("Job submitted [('testalogrithm', u'Queued')]" in self.browser.contents)
         # wait for result
         self._wait_for_job('my-experiment')
         # reload exp page and check for status on page
         self.browser.open(new_exp_url)
         self.assertTrue('Completed' in self.browser.contents)
         # TODO: check Result list
-        results = re.findall(r'<a href=.*My Experiment - result.*</a>', self.browser.contents)
+        results = re.findall(r'<a href=.*My Experiment - testalgorithm.*</a>', self.browser.contents)
         self.assertEqual(len(results), 1)
         # start again
         self.browser.getControl('Start Job').click()
@@ -154,7 +188,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.browser.open(new_exp_url)
         self.assertTrue('Completed' in self.browser.contents)
         # We should have two results now
-        results = re.findall(r'<a href=.*My Experiment - result.*</a>', self.browser.contents)
+        results = re.findall(r'<a href=.*My Experiment - testalgorithm.*</a>', self.browser.contents)
         self.assertEqual(len(results), 2)
 
     def _wait_for_job(self, expid):
@@ -178,7 +212,7 @@ class ExperimentsViewFunctionalTest(unittest.TestCase):
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
         self.experiments_url = self.experiments.absolute_url()
-        self.experiments.invokeFactory('org.bccvl.content.experiment', id='exp', title='My Experiment')
+        self.experiments.invokeFactory('org.bccvl.content.sdmexperiment', id='exp', title='My Experiment')
         self.exp = self.experiments['exp']
         self.exp_url = self.exp.absolute_url()
         import transaction
