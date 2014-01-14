@@ -42,5 +42,9 @@ class DatasetsConverter(BaseDataConverter):
 
         converter = self._getConverter(self.field.value_type)
         #key_converter = self._getConverter(self.field.key_type)
-
-        return dict(((k, converter.toFieldValue(v)) for k, v in value.items()))
+        ret = {}
+        for k, v in value.items():
+            fv = converter.toFieldValue(v)
+            if fv:
+                ret[k] = fv
+        return ret
