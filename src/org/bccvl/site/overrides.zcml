@@ -5,4 +5,12 @@
       factory=".contentlisting.ContentListingObject"
       for="Products.ZCatalog.interfaces.ICatalogBrain"/>
 
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="plone-addsite"
+      class="Products.CMFPlone.browser.admin.AddPloneSite"
+      permission="zope2.ViewManagementScreens"
+      template="plone-addsite.pt"
+      />
+
 </configure>
