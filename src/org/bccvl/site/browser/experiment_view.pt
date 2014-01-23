@@ -25,10 +25,10 @@
                     </h3>
                     <ul>
                         <li tal:repeat="item python:result.getObject().restrictedTraverse('@@folderListing')()">
-                            <a tal:content="item/Title"
+                            <a href="#" data-mimetype="application/octet-stream"
+                               tal:content="item/Title"
                                tal:attributes="href string:${item/getURL}${item/appendViewAction};
-                                               data-mimetype
-                                               item/Format"></a>
+                                               data-mimetype item/Format">Dataset Title</a>
                         </li>
                     </ul>
                 </div>
