@@ -111,6 +111,10 @@ class SparqlDataSetSourceBinder(object):
         urirefs = getattr(api, self.apiFunc)()
         if urirefs:
             query = []
+            # TODO: uri could be None???
+            # TODO: maybe rebuild this query to fetch all labels from rdf
+            #       and fetch all uris from catalog and do a set intersection
+            #       all layers could be a 2nd vocabulary? (fresnel vocab?)
             for uri in urirefs:
                 query.append('{ BIND(%(uri)s as ?uri) '
                              '%(uri)s rdfs:label ?label }' %
