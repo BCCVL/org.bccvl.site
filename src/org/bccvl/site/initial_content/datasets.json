@@ -1,4 +1,8 @@
 {
   "_type": "Folder",
-  "title": "Reference Data Sets"
+  "title": "My Data",
+  "_layout": "datats_listing_view",
+  "_permission_mapping": {
+    "Add portal content": {"acquire": true, "roles": ["Manager", "Member"]}
+  }
 }

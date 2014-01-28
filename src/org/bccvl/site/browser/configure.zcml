@@ -10,19 +10,6 @@
     i18n_domain="org.bccvl.site"
     >
 
-    <browser:page
-        for="..content.dataset.IDataset"
-        name="edit"
-        class=".dataset.DatasetEditView"
-        permission="cmf.ModifyPortalContent"
-        />
-
-    <browser:page
-        for="..content.dataset.IDataset"
-        name="editfilemetadata"
-        class=".dataset.CrudFileMetadataForm"
-        permission="cmf.ModifyPortalContent"
-        />
 
     <adapter
         for="persistent.dict.PersistentDict
@@ -32,6 +19,7 @@
 
    <include file="api.zcml"/>
    <include file="experiment.zcml"/>
+   <include file="dataset.zcml"/>
    <include file="widgets.zcml"/>
 
     <adapter
