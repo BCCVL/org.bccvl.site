@@ -28,6 +28,7 @@
                         <th class="nosort"
                             tal:condition="show_about">&nbsp;<tal:modified i18n:translate="listingheader_modified"
                           >Modified</tal:modified>&nbsp;</th>
+                        <th class="nosort">&nbsp;<tal:title i18n:translate="Actions">Actions</tal:title>&nbsp;</th>
                     </tr>
                 </thead>
 
@@ -38,7 +39,7 @@
                     <tr metal:define-macro="listitem"
                         tal:define="oddrow repeat/item/odd;"
                         tal:attributes="class python: oddrow and 'even' or 'odd'">
-
+                            <!-- Title -->
                             <td>
                                 <img width="16" height="16"
                                      src="" alt=""
@@ -56,7 +57,7 @@
                                     Item Title
                                 </a>
                             </td>
-
+                            <!-- Author -->
                             <td tal:condition="show_about">
                                 <tal:name tal:condition="item_creator"
                                   tal:define="author python:pas_member.info(item_creator)">
@@ -68,17 +69,27 @@
                                 </a>
                                 </tal:name>
                             </td>
-
+                            <!-- Type -->
                             <td tal:content="item_type_title"
                                 i18n:translate="">
                                 Page
                             </td>
-
+                        <!-- Modified -->
                         <td tal:condition="show_about"
                             tal:content="python:toLocalizedTime(item_modified,long_format=1)">
                           August 16, 2001 at 23:35:59
                         </td>
-
+                        <!-- Actions -->
+                        <td>
+                          <a href="#"
+                             tal:attributes="href string:${item_url}/dm/share"
+                             tal:condition="python: show_about and item_wf_state != 'published'"
+                             >Share</a>
+                          <a href="#"
+                             tal:attributes="href string:${item_url}/dm/unshare"
+                             tal:condition="python: show_about and item_wf_state == 'published'"
+                             >Un-share</a>
+                        </td>
                     </tr>
 
                         </metal:entry>

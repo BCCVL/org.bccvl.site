@@ -2,9 +2,7 @@ from Products.Five import BrowserView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
-from org.bccvl.site.vocabularies import envirolayer_source
 from org.bccvl.site.api import QueryAPI
-from collections import defaultdict
 
 
 def get_title_from_uuid(uuid):
