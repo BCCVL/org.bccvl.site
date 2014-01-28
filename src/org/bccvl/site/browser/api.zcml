@@ -45,13 +45,21 @@
     <browser:view
         class=".xmlrpc.DataSetAPI"
         name="dm"
-        allowed_attributes="getMetadata"
+        allowed_attributes="getMetadata share unshare"
         for="org.bccvl.site.content.dataset.IDataset"
         permission="zope2.View" >
 
         <browser:page
             name="getMetadata"
             attribute="getMetadata"/>
+
+        <browser:page
+            name="share"
+            attribute="share"/>
+
+        <browser:page
+            name="unshare"
+            attribute="unshare"/>
 
     </browser:view>
 

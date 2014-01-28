@@ -1,5 +1,6 @@
 from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 #from zope.publisher.browser import BrowserView as Z3BrowserView
 #from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
 #from zope.publisher.interfaces import IPublishTraverse
@@ -23,6 +24,7 @@ from urllib import urlencode
 from rdflib import URIRef
 from gu.plone.rdf.repositorymetadata import getContentUri
 import json
+from Products.statusmessages.interfaces import IStatusMessage
 
 
 LOG = logging.getLogger(__name__)
@@ -170,6 +172,34 @@ class DataSetAPI(BrowserView):
     @returnwrapper
     def getMetadata(self):
         return getdsmetadata(self.context)
+
+    @returnwrapper
+    def share(self):
+        # TODO: status message and redirect are not useful for ajax
+        msg = u"Status changed"
+        msg_type = 'info'
+        try:
+            wtool = getToolByName(self.context, 'portal_workflow')
+            wtool.doActionFor(self.context,  'publish')
+        except WorkflowException as e:
+            msg = u"Status change failed"
+            msg_type = 'error'
+        IStatusMessage(self.request).add(msg, type=msg_type)
+        self.request.response.redirect(self.request['HTTP_REFERER'])
+
+    @returnwrapper
+    def unshare(self):
+        # TODO: status message and redirect are not useful for ajax
+        msg = u"Status changed"
+        msg_type = 'info'
+        try:
+            wtool = getToolByName(self.context, 'portal_workflow')
+            wtool.doActionFor(self.context,  'retract')
+        except WorkflowException as e:
+            msg = u"Status change failed"
+            msg_type = 'error'
+        IStatusMessage(self.request).add(msg, type=msg_type)
+        self.request.response.redirect(self.request['HTTP_REFERER'])
 
 
 class JobManager(BrowserView):
