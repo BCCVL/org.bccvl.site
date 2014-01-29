@@ -16,6 +16,7 @@ def testjob(experiment, jobid, env):
     tmpdir = mkdtemp()
     env.tmpimport = tmpdir
     env.workdir = tmpdir
+    env.jobid = jobid
     status = local.getLiveAnnotation('bccvl.status')
     try:
         # 2. create some result files
@@ -25,7 +26,7 @@ def testjob(experiment, jobid, env):
             f.close()
             time.sleep(1)
         # 3. store results
-        env.import_output(experiment, jobid, {})
+        env.import_output(experiment, env, {})
         status['task'] = 'Completed'
         local.setLiveAnnotation('bccvl.status', status)
     except:
@@ -41,7 +42,7 @@ def testalgorithm(experiment, request):
     # submit test_job into queue
     async = getUtility(IAsyncService)
     queues = async.getQueues()
-    env = WorkEnvLocal('localhost', request)
+    env = WorkEnvLocal('localhost')
     job = async.wrapJob((testjob, experiment, ('testalgorithm', env), {}))
     job.jobid = 'testalogrithm'
     job.quota_names = ('default', )

@@ -19,6 +19,8 @@ overrides anything else in a stacked component registry scenario -->
     <include package="plone.app.folderui"/>
     <include package="org.bccvl.site"/>
 
+    <includeOverrides package="org.bccvl.site" file="overrides.zcml"/>
+
     <genericsetup:registerProfile
         name="testing"
         title="BCCVL Site Testing Profile"
