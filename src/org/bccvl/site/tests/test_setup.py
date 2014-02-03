@@ -2,6 +2,7 @@ import unittest2 as unittest
 from org.bccvl.site import defaults
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
+from Products.CMFCore.utils import getToolByName
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 
@@ -10,6 +11,12 @@ def selectedRoles(obj, permission):
     for role in obj.rolesOfPermission(permission):
         if role['selected'] == 'SELECTED':
             yield role['name']
+
+
+def selectedPermissions(obj, role):
+    for perm in obj.permissionsOfRole(role):
+        if perm['selected'] == 'SELECTED':
+            yield perm['name']
 
 
 class SiteSetupTest(unittest.TestCase):
@@ -40,6 +47,55 @@ class SiteSetupTest(unittest.TestCase):
         # let's be Member again
         setRoles(portal, TEST_USER_ID, ['Member'])
 
+    def test_permissions_for_roles(self):
+        portal = self.layer['portal']
+        roles = {'Manager': ['org.bccvl: Add Experiment',
+                             'org.bccvl: Add Function',
+                             'org.bccvl: Add Dataset']}
+        for role, perms in roles.items():
+            permissions = tuple(selectedPermissions(portal, role))
+            for perm in perms:
+                self.assertIn(perm, permissions,
+                              "check {} has permission '{}'".format(role, perm))
+
+    def test_not_permissions_for_roles(self):
+        portal = self.layer['portal']
+        roles = {'Member': ['org.bccvl: Add Experiment',
+                            'org.bccvl: Add Function',
+                            'org.bccvl: Add Dataset']}
+        for role, perms in roles.items():
+            permissions = tuple(selectedPermissions(portal, role))
+            for perm in perms:
+                self.assertNotIn(perm, permissions,
+                                 "check {} has not permission '{}'".format(role, perm))
+
+    def test_groups_local_roles(self):
+        portal = self.layer['portal']
+        kb = portal[defaults.KNOWLEDGEBASE_FOLDER_ID]
+        roles = kb.get_local_roles()
+        kb_roles = {'Knowledgebase Contributor': ['Knowledgebase Contributor'],
+                    'Knowledgebase Editor': ['Knowledgebase Editor']}
+        for group, roles in kb_roles.items():
+            self.assertIn(group, roles)
+            self.assertEqual(kb_roles[group], roles)
+
+    def test_groups(self):
+        portal = self.layer['portal']
+        gt = getToolByName(portal, 'portal_groups')
+        # groups get Authenticated role per default
+        groups = {'Knowledgebase Contributor': {'roles': ['Authenticated']},
+                  'Knowledgebase Editor': {'roles': ['Authenticated']}}
+        for group, values in groups.items():
+            pg = gt.getGroupById(group)
+            self.assertIsNotNone(pg)
+            self.assertEqual(pg.getRoles(), values['roles'])
+            # gt.getGroupMembes(group_id)
+            # gt.getGroupsForPrincipal(principal)
+            # gt.getGroupInfo(gruop_id)
+            # gt.getGroupsByUserId(user_id)
+            # gt.setGroupOwnership(group,object)
+
+
     def test_add_experiment_permission(self):
         portal = self.layer['portal']
         pt = portal['portal_types']
@@ -59,18 +115,6 @@ class SiteSetupTest(unittest.TestCase):
         pt = portal['portal_types']
         fti = pt['org.bccvl.content.dataset']
         self.assertEqual(fti.add_permission, 'org.bccvl.AddDataset')
-
-    def test_roles(self):
-        portal = self.layer['portal']
-        roles = tuple(selectedRoles(portal, "org.bccvl: Add Experiment"))
-        self.assertEqual(roles,
-                         ('Manager', 'Member'))
-        roles = tuple(selectedRoles(portal, "org.bccvl: Add Function"))
-        self.assertEqual(roles,
-                         ('Manager', ))
-        roles = tuple(selectedRoles(portal, "org.bccvl: Add Dataset"))
-        self.assertEqual(roles,
-                         ('Manager', 'Member'))
 
     def test_permission_mapping(self):
         # FIXME: this tests our easy testing permissions and should change to harden the system
