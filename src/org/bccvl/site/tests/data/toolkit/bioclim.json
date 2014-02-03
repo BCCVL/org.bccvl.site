@@ -3,5 +3,6 @@
   "_type": "org.bccvl.content.function",
   "title": "Bioclim",
   "schema": "org.bccvl.compute.bioclim.IParametersBioclim",
-  "method": "org.bccvl.compute.testalgorithm"
+  "method": "org.bccvl.compute.testalgorithm",
+  "_transitions": "publish"
 }
