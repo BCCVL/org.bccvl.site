@@ -1,3 +1,4 @@
+from Products.CMFCore.utils import getToolByName
 from collective.transmogrifier.transmogrifier import Transmogrifier
 
 import logging
@@ -14,6 +15,23 @@ def setupVarious(context):
 
     portal.setDefaultPage('front-page')
 
+    # setup default groups
+    groups = [
+        {'id': 'Knowledgebase Contributor',
+         'title': 'Knowledgebase Contributor',
+         #'roles': ['...', '...']
+         'description': 'Users in this group can contribute to knowledge base'},
+        {'id': 'Knowledgebase Editor',
+         'title': 'Knowledgebase Editor',
+         'description': 'Users in this group can manage knowledgebase content'}]
+    gtool = getToolByName(portal, 'portal_groups')
+    for group in groups:
+        if gtool.getGroupById(group['id']):
+            gtool.editGroup(**group)
+        else:
+            gtool.addGroup(**group)
+
+    # setup initial content
     transmogrifier = Transmogrifier(portal)
     transmogrifier(u'org.bccvl.site.dataimport',
                    source={'path': 'org.bccvl.site:initial_content'})
