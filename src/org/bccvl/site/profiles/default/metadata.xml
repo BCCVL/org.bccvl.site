@@ -16,7 +16,7 @@
 
         <dependency>profile-plone.app.theming:default</dependency>
         <dependency>profile-plone.app.dexterity:default</dependency>
-        <dependency>profile-plone.app.collection:default</dependency>
+        <!-- <dependency>profile-plone.app.collection:default</dependency> -->
         <dependency>profile-plone.formwidget.autocomplete:default</dependency>
 
         <!-- <dependency>profile-collective.geo.settings:default</dependency> -->
