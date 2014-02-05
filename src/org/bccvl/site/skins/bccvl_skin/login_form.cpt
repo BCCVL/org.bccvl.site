@@ -88,7 +88,7 @@
       tal:define="login_url python:test(came_from is not None,
                   ssl_host_url + '/Shibboleth.sso/Login?target=%s' %
                   ((came_from.replace('+', '%2B').replace('http://','https://')) or ''), ssl_host_url + '/Shibboleth.sso/Login')" >
-        <h3>AAF Login</h3>
+        <h3>Australian Access Federation (AAF) Login</h3>
           <a i18n:translate="description_log_in_here"
              tal:attributes="href login_url">
             <image src="aaf_410x100.png" width="410" height="100" alt="Log in with AAF credentials"></image>
@@ -96,7 +96,7 @@
     </div>
     <div id="fieldset-site-login">
 
-            <h3>Site Login</h3>
+            <h3>Built-in Authentication</h3>
 
             <div tal:condition="python: not auth" i18n:translate="login_form_disabled">
                 Since cookie authentication is disabled, cookie-based login is not available.
