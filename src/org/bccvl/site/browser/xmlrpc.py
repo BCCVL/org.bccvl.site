@@ -244,8 +244,14 @@ class UrlLibResponseIterator(object):
         except:
             self.length = 0
 
+    def __iter__(self):
+        return self
+
     def next(self):
-        return self.resp.next()
+        data = self.resp.next()
+        if not data:
+            raise StopIteration
+        return data
 
     def __len__(self):
         return self.length
@@ -293,8 +299,12 @@ class ALAProxy(BrowserView):
             return ret
         # we don't have content-length and stupid publisher want's one for stream
         # so let's stream it ourselves.
-        for data in ret.next():
-            self.request.response.write(data)
+        while True:
+            try:
+                data = ret.next()
+                self.request.response.write(data)
+            except StopIteration:
+                break
 
 
 class DataMover(BrowserView):
