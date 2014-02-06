@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+<metal:content-core fill-slot="body">
+
+
+    <ul class="contentTabs">
+        <li class="contentTab firstContentTab">
+            <a id="datasets-listing"
+               href="#"
+               tal:attributes="href string:${context/absolute_url}"><span>My Datasets</span></a>
+        </li>
+        <li class="contentTab">
+            <a id="datasets-import"
+               href="#"
+               tal:attributes="href string:${context/absolute_url}/datasets_import_view"><span>Import Dataset</span></a>
+        </li>
+        <li class="contentTab lastContentTab">
+            <a id="datasets-upload"
+               href="#" class="selected"
+               tal:attributes="href string:${context/absolute_url}/datasets_upload_view"><span>Upload Dataset</span></a>
+        </li>
+    </ul>
+
+    <div class="bccvl-add-datasets tab-pane active" id="tab-find">
+        <div class="row-fluid">
+	    <div class="span6 offset3">
+
+              <div class="bccvlbutton-dataset-upload">
+                  <a class="btn btn-primary bccvlbutton-dataset-upload pull-left" href="http://localhost:8499/bccvl/datasets/++add++org.bccvl.content.dataset">Upload New Dataset</a>
+              </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</metal:content-core>
+
+</body>
+</html>

@@ -37,6 +37,22 @@
     />
 
     <browser:page
+        name="datasets_import_view"
+        for="plone.app.contenttypes.interfaces.IFolder"
+        class=".datasets_import_view.DatasetsImportView"
+        permission="zope2.View"
+        template="datasets_import_view.pt"
+    />
+
+    <browser:page
+        name="datasets_upload_view"
+        for="plone.app.contenttypes.interfaces.IFolder"
+        class=".datasets_upload_view.DatasetsUploadView"
+        permission="zope2.View"
+        template="datasets_upload_view.pt"
+    />
+
+    <browser:page
         for="..content.dataset.IDataset"
         name="edit"
         class=".dataset.DatasetEditView"

@@ -8,8 +8,27 @@
 
 <body>
 
-<metal:content-core fill-slot="content-core"
+<metal:content-core fill-slot="body"
 	            tal:define="folderContents view/datasets">
+
+    <ul class="contentTabs">
+        <li class="contentTab firstContentTab">
+            <a id="datasets-listing"
+               href="#" class="selected"
+               tal:attributes="href string:${context/absolute_url}"><span>My Datasets</span></a>
+        </li>
+        <li class="contentTab">
+            <a id="datasets-import"
+               href="#"
+               tal:attributes="href string:${context/absolute_url}/datasets_import_view"><span>Import Dataset</span></a>
+        </li>
+        <li class="contentTab lastContentTab">
+            <a id="datasets-upload"
+               href="#"
+               tal:attributes="href string:${context/absolute_url}/datasets_upload_view"><span>Upload Dataset</span></a>
+        </li>
+    </ul>
+
     <metal:content-core  use-macro="context/folder_listing/content-core">
         <metal:entries fill-slot="entries">
             <div metal:use-macro="context/batch_macros/macros/navigation" />
