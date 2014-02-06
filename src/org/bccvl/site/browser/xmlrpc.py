@@ -273,12 +273,6 @@ class ALAProxy(BrowserView):
             self.request['QUERY_STRING'])
         return self._dorequest(url)
 
-    #@returnwrapper ... returning file here ... returnwrapper not handling it properly
-    def visualisespecies(self):
-        url = 'http://bie.ala.org.au/species/Macropus+rufus'
-        LOG.info('visualise yay!')
-        return self._dorequest(url)
-
     def _dorequest(self, url):
         # TODO: add headers like:
         #    User-Agent

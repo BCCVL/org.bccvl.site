@@ -79,7 +79,7 @@
     <browser:view
         class=".xmlrpc.ALAProxy"
         name="ala"
-        allowed_attributes="autojson searchjson visualisespecies"
+        allowed_attributes="autojson searchjson"
         for="*"
         permission="zope2.View">
 
@@ -89,9 +89,6 @@
         <browser:page
             name="search.json"
             attribute="searchjson"/>
-        <browser:page
-            name="visualisespecies"
-            attribute="visualisespecies"/>
     </browser:view>
 
     <browser:view
