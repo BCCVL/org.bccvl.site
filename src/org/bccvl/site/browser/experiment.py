@@ -130,6 +130,8 @@ def addToolkitFields(form):
             schema=parameters_schema,
             required=False,
         )
+        if len(field_schema.schema.names()) == 0:
+            field_schema.description = u"No configuration options"
         fields.append(field_schema)
     config_group = GroupFactory('parameters', Fields(*fields), 'Configuration', None)
     # make it the first fieldset so it always has the same ID for diazo
