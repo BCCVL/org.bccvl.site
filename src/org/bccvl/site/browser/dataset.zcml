@@ -25,7 +25,18 @@
             menu, title
          Page:
             Pages, PagesPage -->
-        <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
+
+    <browser:page
+        name="datasets-macros"
+        for="*"
+        template="datasets_macros.pt"
+        permission="zope.Public"
+    />
+    <!--         class=".templates.Macro"
+        allowed_interface="zope.interface.common.mapping.IItemMapping"
+-->
+
+    <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
     <browser:page
         name="datasets_listing_view"
         for="plone.app.contenttypes.interfaces.IFolder"

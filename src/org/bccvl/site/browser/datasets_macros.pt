@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone.z3cform"
+      tal:omit-tag="">
+
+  <head></head>
+
+  <body>
+
+    <metal:block metal:define-macro="datasets_tabs">
+
+    <ul class="contentTabs">
+        <li class="contentTab firstContentTab">
+            <a id="datasets-listing"
+               href="#"
+               tal:define="selected python: view.__name__ == 'datasets_listing_view'"
+               tal:attributes="href string:${context/absolute_url};
+                               class python: 'selected' if selected else None"><span>My Datasets</span></a>
+        </li>
+        <li class="contentTab">
+            <a id="datasets-import"
+               href="#"
+               tal:define="selected python: view.__name__ == 'datasets_import_view'"
+               tal:attributes="href string:${context/absolute_url}/datasets_import_view;
+                               class python: 'selected' if selected else None"><span>Import Dataset</span></a>
+        </li>
+        <li class="contentTab lastContentTab">
+            <a id="datasets-upload"
+               href="#"
+               tal:define="selected python: view.__name__ == 'datasets_upload_view'"
+               tal:attributes="href string:${context/absolute_url}/datasets_upload_view;
+                               class python: 'selected' if selected else None"><span>Upload Dataset</span></a>
+        </li>
+    </ul>
+
+    </metal:block>
+  </body>
+</html>
