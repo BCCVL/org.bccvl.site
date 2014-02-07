@@ -304,7 +304,7 @@ class ALAProxy(BrowserView):
 class DataMover(BrowserView):
 
     @returnwrapper
-    def pullOccurrenceFromALA(self, lsid, title=None):
+    def pullOccurrenceFromALA(self, lsid, taxon=None,  common=None):
         # TODO: check permisions?
         from zope.component import getUtility
         from plone.app.async.interfaces import IAsyncService
