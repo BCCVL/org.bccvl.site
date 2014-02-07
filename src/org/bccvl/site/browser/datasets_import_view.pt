@@ -12,26 +12,19 @@
 
     <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
 
-    <div class="bccvl-add-datasets tab-pane active" id="tab-find">
-        <div class="row-fluid">
-	    <div class="span6 offset3">
+    <div id="searchOccurrence" class="bccvl-search-form form-inline">
+        <input name="searchOccurrence_query" type="text"
+               class="span8" placeholder="Find more species..."
+               autocomplete="off"/>
+        <select name="searchOccurrence_source" class="span4">
+           <option value="ala">at ALA</option>
+        </select>
+        <p class="bccvl-labelfade-description bccvl-read"></p>
 
-                <div id="searchOccurrence" class="bccvl-search-form form-inline">
-                    <input name="searchOccurrence_query" type="text"
-                           class="span8" placeholder="Find more species..."
-                           autocomplete="off"/>
-                    <select name="searchOccurrence_source" class="span4">
-                       <option value="ala">at ALA</option>
-                    </select>
-                    <p class="bccvl-labelfade-description bccvl-read"></p>
-
-                    <img src="/bccvl/++theme++org.bccvl.theme/images/big-ajax-loader.gif" class="bccvl-results-spinner"/>
-                    <div id="searchOccurrence_results" class="bccvl-searchform-results"></div>
-                </div>
-            </div>
-
-        </div>
+        <img src="/bccvl/++theme++org.bccvl.theme/images/big-ajax-loader.gif" class="bccvl-results-spinner"/>
+        <div id="searchOccurrence_results" class="bccvl-searchform-results"></div>
     </div>
+
 </metal:content-core>
 
 </body>
