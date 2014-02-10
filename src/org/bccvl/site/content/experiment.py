@@ -47,6 +47,8 @@ class ISDMExperiment(IExperiment):
 
 class IProjectionExperiment(IExperiment):
 
+    form.widget(species_distribution_models=
+                'org.bccvl.site.browser.widgets.DatasetsRadioFieldWidget')
     species_distribution_models = Choice(
         title=u'Species Distribution Models',
         source=vocabularies.species_distributions_models_source,
@@ -56,7 +58,8 @@ class IProjectionExperiment(IExperiment):
 
     # TODO: instead of form hints ... maybe set widgetfactory in form updateWidgets?
     #       form hint affects all forms ... using updateWidgets would require to customise every form where we wanta custom widget
-    form.widget(years='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    form.widget(years=
+                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     years = List(
         title=u'Projection Point: Years',
         value_type=Choice(source=vocabularies.fc_years_source),
@@ -64,7 +67,8 @@ class IProjectionExperiment(IExperiment):
         required=True,
     )
 
-    form.widget(emission_scenarios='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    form.widget(emission_scenarios=
+                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     emission_scenarios = List(
         title=u'Projection Point: Emission Scenarios',
         value_type=Choice(source=vocabularies.emission_scenarios_source),
@@ -72,7 +76,8 @@ class IProjectionExperiment(IExperiment):
         required=True,
     )
 
-    form.widget(climate_models='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    form.widget(climate_models=
+                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     climate_models = List(
         title=u'Projection Point: Climate Models',
         value_type=Choice(source=vocabularies.global_climate_models_source),

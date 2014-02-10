@@ -1,11 +1,17 @@
 from zope.component import adapter, getMultiAdapter
 from zope.interface import implementer, alsoProvides
 from zope.schema.interfaces import ISequence, ITitledTokenizedTerm
-from z3c.form.interfaces import IFieldWidget,  IFormLayer, ITerms, IFormAware, NO_VALUE
-from z3c.form.widget import FieldWidget, Widget
+from z3c.form import util
+from z3c.form.interfaces import (IFieldWidget,  IFormLayer,
+                                 ITerms, IFormAware, NO_VALUE)
+from z3c.form.widget import FieldWidget, Widget, SequenceWidget
 from z3c.form.browser.orderedselect import OrderedSelectWidget
-from z3c.form.browser.widget import HTMLFormElement, addFieldClass
-from .interfaces import IDatasetsWidget, IOrderedCheckboxWidget
+from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
+                                     addFieldClass)
+from zope.i18n import translate
+from .interfaces import (IDatasetsWidget, IDatasetsRadioWidget,
+                         IOrderedCheckboxWidget)
+from Products.CMFCore.utils import getToolByName
 
 
 @implementer(IOrderedCheckboxWidget)
@@ -114,3 +120,45 @@ def DatasetsFieldWidget(field, request):
     Widget to select datasets and layers
     """
     return FieldWidget(field,  DatasetsWidget(request))
+
+
+@implementer(IDatasetsRadioWidget)
+class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
+
+    klass = u'radio-widget'
+    css = u'radio'
+
+    def isChecked(self, term):
+        return term.token in self.value
+
+    @property
+    def items(self):
+        # TODO: could this be a generator?
+        items = []
+        for count, term in enumerate(self.terms):
+            checked = self.isChecked(term)
+            id = '%s-%i' % (self.id, count)
+            if ITitledTokenizedTerm.providedBy(term):
+                label = translate(term.title, context=self.request,
+                                  default=term.title)
+            else:
+                label = util.toUnicode(term.value)
+            # do catalog query for additional infos
+            items.append(
+                {'id':id, 'name':self.name, 'value':term.token,
+                 'label':label, 'checked':checked})
+        return items
+
+    def get_item_details(self, item):
+        # TODO: fetch additional data for item here
+        pc = getToolByName(self.context, 'portal_catalog')
+        brain = pc.searchResults(UID=item['value'])[0]
+        return brain
+
+    def update(self):
+        super(DatasetsRadioWidget, self).update()
+        addFieldClass(self)
+
+
+def DatasetsRadioFieldWidget(field, request):
+    return FieldWidget(field, DatasetsRadioWidget(request))

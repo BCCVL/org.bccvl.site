@@ -26,4 +26,18 @@
       template="datasets_display.pt"
       />
 
+    <z3c:widgetTemplate
+      mode="input"
+      widget=".interfaces.IDatasetsRadioWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="datasetsradio_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="display"
+      widget=".interfaces.IDatasetsRadioWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="datasetsradio_display.pt"
+      />
+
 </configure>

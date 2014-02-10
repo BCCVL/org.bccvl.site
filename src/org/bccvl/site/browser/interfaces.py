@@ -10,3 +10,8 @@ class IOrderedCheckboxWidget(IOrderedSelectWidget):
 class IDatasetsWidget(IWidget):
 
     pass
+
+
+class IDatasetsRadioWidget(IWidget):
+
+    pass
