@@ -51,7 +51,7 @@
         name="datasets_import_view"
         for="plone.app.contenttypes.interfaces.IFolder"
         class=".datasets_import_view.DatasetsImportView"
-        permission="zope2.View"
+        permission="org.bccvl.AddDataset"
         template="datasets_import_view.pt"
     />
 
@@ -59,7 +59,7 @@
         name="datasets_upload_view"
         for="plone.app.contenttypes.interfaces.IFolder"
         class=".datasets_upload_view.DatasetsUploadView"
-        permission="zope2.View"
+        permission="org.bccvl.AddDataset"
         template="datasets_upload_view.pt"
     />
 
@@ -75,6 +75,14 @@
         name="editfilemetadata"
         class=".dataset.CrudFileMetadataForm"
         permission="cmf.ModifyPortalContent"
+        />
+
+    <browser:page
+        for="..content.dataset.IDataset"
+        name="view"
+        class=".dataset.DatasetDisplayView"
+        template="dataset_view.pt"
+        permission="zope2.View"
         />
 
     <!-- <browser:page -->

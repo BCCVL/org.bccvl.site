@@ -1,9 +1,37 @@
 #from plone.dexaterity.browser.view import DefaultView (template override in plone.app.dexterity.browser)
 from plone.dexterity.browser.edit import DefaultEditForm
+from plone.dexterity.browser.view import DefaultView
 from z3c.form import form, field, button
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
 from zope.event import notify
+from plone.app.dexterity.behaviors.metadata import IBasic
+from z3c.form.field import Fields
+from org.bccvl.site.content.dataset import (IDataset,
+                                            ISpeciesDataset,
+                                            ILayerDataset)
+from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
+
+
+class DatasetFieldMixin(object):
+
+    fields = Fields(IBasic, IDataset)
+
+    def updateFields(self):
+        md = IGraph(self.context)
+        genre = md.value(md.identifier, BCCPROP['datagenre'])
+        # TODO: do a better check for genre. e.g. query store for classes of genre?
+        if genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreSD'],
+                     BCCVOCAB['DataGenreSO']):
+            self.fields += Fields(ISpeciesDataset)
+        else:
+            self.fields += Fields(ILayerDataset)
+
+
+class DatasetDisplayView(DatasetFieldMixin, DefaultView):
+
+    pass
+
 
 # FIXME: Turn this whole form into something re-usable
 #        e.g. could be used within a widget that renders a button
@@ -11,10 +39,10 @@ from zope.event import notify
 #             js turns the button into an ajax form and non-js uses redirects
 
 
-class DatasetEditView(DefaultEditForm):
+class DatasetEditView(DatasetFieldMixin, DefaultEditForm):
 
     # kw: ignoreFields, ignoreButtons, ignoreHandlers
-    form.extends(DefaultEditForm)
+    form.extends(DefaultEditForm, ignoreFields=True)
 
     @button.buttonAndHandler(u'Edit File Details', name='edit_file_metadata')
     def handleEditFileMetadata(self, action):
@@ -22,9 +50,6 @@ class DatasetEditView(DefaultEditForm):
         # TODO: use restrictedTraverse to check security as well? (would avoid login page)
         url = self.context.absolute_url() + '/@@editfilemetadata'
         self.request.response.redirect(url)
-
-    def update(self):
-        super(DatasetEditView, self).update()
 
 
 from plone.z3cform.crud import crud
