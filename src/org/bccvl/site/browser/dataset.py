@@ -15,22 +15,45 @@ from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
 
 class DatasetFieldMixin(object):
 
-    fields = Fields(IBasic, IDataset)
+    # fields = Fields(IBasic, IDataset)
 
-    def updateFields(self):
+    @property
+    def additionalSchemata(self):
+        for schema in super(DatasetFieldMixin, self).additionalSchemata:
+            yield schema
         md = IGraph(self.context)
         genre = md.value(md.identifier, BCCPROP['datagenre'])
         # TODO: do a better check for genre. e.g. query store for classes of genre?
         if genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreSD'],
                      BCCVOCAB['DataGenreSO']):
-            self.fields += Fields(ISpeciesDataset)
+            yield ISpeciesDataset
         else:
-            self.fields += Fields(ILayerDataset)
+            yield ILayerDataset
+
+
+    # def updateFields(self):
+    #     md = IGraph(self.context)
+    #     genre = md.value(md.identifier, BCCPROP['datagenre'])
+    #     # TODO: do a better check for genre. e.g. query store for classes of genre?
+    #     import ipdb; ipdb.set_trace()
+    #     if genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreSD'],
+    #                  BCCVOCAB['DataGenreSO']):
+    #         self.fields += Fields(ISpeciesDataset)
+    #     else:
+    #         self.fields += Fields(ILayerDataset)
 
 
 class DatasetDisplayView(DatasetFieldMixin, DefaultView):
 
-    pass
+    # schema = None
+    # additionalSchemata = ()
+
+    # def updateFieldsFromSchemata(self):
+    #     self.updateFields()
+
+    def _update(self):
+        # import ipdb; ipdb.set_trace()
+        super(DatasetDisplayView, self)._update()
 
 
 # FIXME: Turn this whole form into something re-usable
@@ -44,6 +67,7 @@ class DatasetEditView(DatasetFieldMixin, DefaultEditForm):
     # kw: ignoreFields, ignoreButtons, ignoreHandlers
     form.extends(DefaultEditForm, ignoreFields=True)
 
+    # TODO: do this only for zipped files
     @button.buttonAndHandler(u'Edit File Details', name='edit_file_metadata')
     def handleEditFileMetadata(self, action):
         # do whatever here and redirect to metadata edit view
