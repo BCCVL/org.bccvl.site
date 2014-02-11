@@ -1108,21 +1108,21 @@ z3c:FORVocabulary a z3c:Vocabulary ;
     fresnel:group :DefaultGroup ;
     .
 
-:bccpropSpeciesLayer a fresnel:Format ;
+:bccpropEmissionScenario a fresnel:Format ;
     fresnel:propertyFormatDomain bccprop:emissionscenario ;
     fresnel:label "Emission Scenario" ;
     z3c:fieldDescription "Emission Scenario for future climate data" ;
     z3c:field z3c:EmissionScenarioField ;
     fresnel:group :DefaultGroup ;
     .
-    
+
 :bccpropGlobalClimateModel a fresnel:Format ;
     fresnel:propertyFormatDomain bccprop:gcm ;
     fresnel:label "Global Climate Model" ;
     z3c:fieldDescription "Global Climate Model" ;
     z3c:field z3c:GlobalClimateModelField ;
     fresnel:group :DefaultGroup ;
-    .    
+    .
 
 
 
