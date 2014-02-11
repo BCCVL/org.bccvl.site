@@ -12,30 +12,20 @@
 
     <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
 
-    <div class="bccvl-add-datasets tab-pane active" id="tab-find">
-        <div class="row-fluid">
-	    <div class="span6 offset3">
 
-              <div class="bccvlbutton-dataset-upload">
-                  <tal:form tal:define="view nocall:view/addspeciesform">"
-                    <metal:block
-                        use-macro="context/@@ploneform-macros/titlelessform"
-                        />
-                  </tal:form>
+      <div class="bccvlbutton-dataset-upload">
+          <tal:form tal:define="view nocall:view/addspeciesform">"
+            <metal:block
+                use-macro="context/@@ploneform-macros/titlelessform"
+                />
+          </tal:form>
 
-                  <tal:form tal:define="view nocall:view/addlayerform">"
-                    <metal:block
-                        use-macro="context/@@ploneform-macros/titlelessform"
-                        />
-                  </tal:form>
-
-                  <a class="btn btn-primary bccvlbutton-dataset-upload pull-left" href="http://localhost:8499/bccvl/datasets/++add++org.bccvl.content.dataset">Upload New Dataset</a>
-              </div>
-            </div>
-
-        </div>
-    </div>
-
+          <tal:form tal:define="view nocall:view/addlayerform">"
+            <metal:block
+                use-macro="context/@@ploneform-macros/titlelessform"
+                />
+          </tal:form>
+      </div>
 
 </metal:content-core>
 
