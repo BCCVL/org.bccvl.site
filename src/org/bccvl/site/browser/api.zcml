@@ -15,7 +15,7 @@
     -->
     <browser:view
         name="startjob"
-        class=".startjob.StartJobView"
+        class=".job.StartJobView"
         for="org.bccvl.site.content.experiment.IExperiment"
         permission="cmf.ModifyPortalContent"
     />

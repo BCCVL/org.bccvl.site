@@ -1,18 +1,14 @@
-from plone.directives import dexterity, form
-from zope.schema import TextLine
+from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends
-from org.bccvl.site.content.experiment import IExperiment
 from org.bccvl.site.interfaces import IJobTracker
-from zope.component import adapter
-from zope.interface import implementer
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit
 from zope.i18n import translate
 from org.bccvl.site import MessageFactory as _
 from org.bccvl.site.browser.xmlrpc import getdsmetadata
-
+from org.bccvl.site.browser.job import IJobStatus
 from z3c.form.field import Fields
 from zope import schema
 from zope.dottedname.resolve import resolve
@@ -20,29 +16,7 @@ from plone.z3cform.fieldsets.group import GroupFactory
 from org.bccvl.site.api import QueryAPI
 
 
-class IJobStatus(form.Schema):
-
-    status = TextLine(title=u'Current Job Status',
-                      required=False,
-                      readonly=True)
-
-    #apply = button.Button(title=u'Apply')
-
-
 from z3c.form.interfaces import DISPLAY_MODE
-
-
-@adapter(IExperiment)
-@implementer(IJobStatus)
-class JobStatus(object):
-    # implement additional fields for form schema
-
-    def __init__(self, context):
-        self.context = context
-
-    @property
-    def status(self):
-        return IJobTracker(self.context).status()
 
 
 # DefaultEditView = layout.wrap_form(DefaultEditForm)

@@ -28,9 +28,6 @@
     <utility
         factory=".ws.ALAService"/>
 
-    <adapter
-        factory=".experiment.JobStatus"/>
-
     <browser:resource
         name="experiment.png"
         image="experiment.png"/>
