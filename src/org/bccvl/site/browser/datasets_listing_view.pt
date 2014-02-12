@@ -31,6 +31,7 @@
                         <th class="nosort"
                             tal:condition="show_about">&nbsp;<tal:modified i18n:translate="listingheader_modified"
                           >Modified</tal:modified>&nbsp;</th>
+                        <th class="nosort" tal:condition="show_about">&nbsp;<tal:title i18n:translate="State">State</tal:title>&nbsp;</th>
                         <th class="nosort"
                             tal:condition="show_about">&nbsp;<tal:title i18n:translate="Actions">Actions</tal:title>&nbsp;</th>
                         <th class="nosort">&nbsp;<tal:title i18n:translate="Download">Download</tal:title>&nbsp;</th>
@@ -83,6 +84,11 @@
                         <td tal:condition="show_about"
                             tal:content="python:toLocalizedTime(item_modified,long_format=1)">
                           August 16, 2001 at 23:35:59
+                        </td>
+                        <!-- job state -->
+                        <td tal:condition="show_about"
+                            tal:define="state python:view.job_status(item.getObject())">
+                            <tal:state tal:replace="python: state or 'Available'"/>
                         </td>
                         <!-- Actions -->
                         <td tal:condition="show_about">

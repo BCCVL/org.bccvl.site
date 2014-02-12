@@ -3,6 +3,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
 from org.bccvl.site.api import QueryAPI
+from org.bccvl.site.utilities import IJobTracker
 
 
 def get_title_from_uuid(uuid):
@@ -26,6 +27,12 @@ class DatasetsListingView(BrowserView):
                                      'depth': -1},
                                sort_on='modified',
                                sort_order='descending')
+
+    def job_status(self, ds):
+        states = IJobTracker(ds).status()
+        if states:
+            return states[0][1]
+        return None
 
     # def experiment_details(self, expbrain):
     #     details = {}
