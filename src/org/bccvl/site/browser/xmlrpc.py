@@ -13,18 +13,16 @@ from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site import defaults
 import logging
-from gu.z3cform.rdf.interfaces import IGraph, IORDF
+from gu.z3cform.rdf.interfaces import IORDF
 from zope.component import getUtility, queryUtility
-from org.bccvl.site.namespace import BCCPROP, BIOCLIM, NFO
 from zope.i18n import translate
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
-from urllib2 import urlopen, Request
-from urllib import urlencode
 from rdflib import URIRef
 from gu.plone.rdf.repositorymetadata import getContentUri
 import json
 from Products.statusmessages.interfaces import IStatusMessage
+from org.bccvl.site.browser.ws import IDataMover, IALAService
 
 
 LOG = logging.getLogger(__name__)
@@ -260,29 +258,30 @@ class UrlLibResponseIterator(object):
 class ALAProxy(BrowserView):
 
     #@returnwrapper ... returning file here ... returnwrapper not handling it properly
-    def autojson(self):
+    def autojson(self, q, geoOnly=None, idxType=None, limit=None,
+                 callback=None):
         # TODO: do parameter checking and maybe set defaults so that js side doesn't have to do it
-        url = 'http://bie.ala.org.au/ws/search/auto.json?{}'.format(
-            self.request['QUERY_STRING'])
-        return self._dorequest(url)
+        ala = getUtility(IALAService)
+        return self._doResponse(ala.autojson(q, geoOnly, idxType, limit,
+                                             callback))
 
     #@returnwrapper ... returning file here ... returnwrapper not handling it properly
-    def searchjson(self):
+    def searchjson(self, q, fq=None, start=None, pageSize=None,
+                   sort=None, dir=None, callback=None):
         # TODO: do parameter checking and maybe set defaults so that js side doesn't have to do it
-        url = 'http://bie.ala.org.au/ws/search.json?{}'.format(
-            self.request['QUERY_STRING'])
-        return self._dorequest(url)
+        ala = getUtility(IALAService)
+        return self._doResponse(ala.searchjson(q, fq, start, pageSize,
+                                               sort, dir, callback))
 
-    def _dorequest(self, url):
+    def _doResponse(self, resp):
         # TODO: add headers like:
         #    User-Agent
         #    orig-request
         #    etc...
-        req = Request(url)
-        # TODO: do proper exception handling
-        resp = urlopen(req)
         # TODO: check response code?
-        for name in ('Date', 'Pragma', 'Expires', 'Content-Type', 'Cache-Control', 'Content-Language', 'Content-Length', 'transfer-encoding'):
+        for name in ('Date', 'Pragma', 'Expires', 'Content-Type',
+                     'Cache-Control', 'Content-Language', 'Content-Length',
+                     'transfer-encoding'):
             value = resp.headers.getheader(name)
             if value:
                 self.request.response.setHeader(name, value)
@@ -323,39 +322,32 @@ class DataMover(BrowserView):
     def checkALAJobStatus(self, job_id):
         # TODO: check permissions? or maybe git rid of this here and
         #       use job tracking for status. (needs job annotations)
-        from xmlrpclib import ServerProxy
-        s = ServerProxy(DATA_MOVER)
-        ret = s.check_move_status(job_id)
-        return ret
+        dm = getUtility(IDataMover)
+        return dm.check_move_status(job_id)
 
 
 # TODO: get data mover location from config
-DATA_MOVER = u'http://127.0.0.1:10700/data_mover'
 FILE_NAME_TEMPLATE = u'move_job_{id:d}_1_ala_dataset.json'
 
 
 def alaimport(context, lsid):
     # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
     import time
-    from xmlrpclib import ServerProxy
     from collective.transmogrifier.transmogrifier import Transmogrifier
     import os
     from tempfile import mkdtemp
     path = mkdtemp()
     try:
-        # TODO: get data movel location from config
-        s = ServerProxy(DATA_MOVER)
+        dm = getUtility(IDataMover)
         # TODO: fix up params
-        jobstatus = s.move({'type': 'ala', 'lsid': lsid},
-                     {'host': 'plone',
-                      'path': path})
-        # TODO: check return status
+        jobstatus = dm.move({'type': 'ala', 'lsid': lsid},
+                            {'host': 'plone', 'path': path})
+        # TODO: do we need some timeout here?
         while jobstatus['status'] in ('PENDING', "IN_PROGRESS"):
             time.sleep(1)
-            jobstatus = s.check_move_status(jobstatus['id'])
-        # TODO: call to xmlrpc server might also throw socket errors. (e.g. socket.error: [Errno 61] Connection refused)
+            jobstatus = dm.check_move_status(jobstatus['id'])
         if jobstatus['status'] in ("FAILED",  "REJECTED"):
-            # Do something useful here; how to notify user about failure?
+            # TODO: Do something useful here; how to notify user about failure?
             LOG.fatal("ALA import failed %s: %s", jobstatus['status'], jobstatus['reason'])
             return
 

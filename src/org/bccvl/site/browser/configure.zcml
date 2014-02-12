@@ -22,6 +22,12 @@
    <include file="dataset.zcml"/>
    <include file="widgets.zcml"/>
 
+    <utility
+        factory=".ws.DataMover"/>
+
+    <utility
+        factory=".ws.ALAService"/>
+
     <adapter
         factory=".experiment.JobStatus"/>
 
