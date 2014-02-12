@@ -23,7 +23,7 @@ next = request.get('next', None)
 if (next is not None and context.portal_url.isURLInPortal(next)):
     target_url = next
 else:
-    if "HTTP_X_REMOTE_USER" in request:
+    if request.get("HTTP_X_REMOTE_USER"):
         site_url = context.portal_url()
         target_url = "/Shibboleth.sso/Logout?return={0:s}".format(site_url)
     else:
