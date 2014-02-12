@@ -45,13 +45,13 @@
         name="view"
         for="..interfaces.IExperiment"
         class=".experiment.View"
-        permission="cmf.ModifyPortalContent"/>
+        permission="zope2.View"/>
 
     <browser:page
         name="view"
         for="..content.experiment.ISDMExperiment"
         class=".experiment.SDMView"
-        permission="cmf.ModifyPortalContent"/>
+        permission="zope2.View"/>
 
     <browser:page
         name="edit"
