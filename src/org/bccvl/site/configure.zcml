@@ -115,6 +115,11 @@
 
 
     <adapter
+        for=".content.experiment.IExperiment"
+        factory=".utilities.JobTracker"/>
+
+    <adapter
+        for=".content.dataset.IDataset"
         factory=".utilities.JobTracker"/>
 
   <utility

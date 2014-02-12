@@ -86,7 +86,6 @@ class RDFDataMapper(object):
                 graph.add((graph.identifier, prop, val))
 
 
-@adapter(IExperiment)
 @implementer(IJobTracker)
 class JobTracker(object):
 

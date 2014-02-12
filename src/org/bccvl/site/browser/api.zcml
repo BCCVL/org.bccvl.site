@@ -77,6 +77,19 @@
     </browser:view>
 
     <browser:view
+        class=".xmlrpc.JobManagerAPI"
+        name="jm"
+        allowed_attributes="getJobStatus"
+        for="org.bccvl.site.content.dataset.IDataset"
+        permission="zope2.View" >
+
+        <browser:page
+            name="getJobStatus"
+            attribute="getJobStatus"/>
+
+    </browser:view>
+
+    <browser:view
         class=".xmlrpc.ALAProxy"
         name="ala"
         allowed_attributes="autojson searchjson"
