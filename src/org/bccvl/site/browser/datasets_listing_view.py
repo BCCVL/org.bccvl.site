@@ -23,7 +23,9 @@ class DatasetsListingView(BrowserView):
         api = QueryAPI(self.context)
         path = '/'.join(self.context.getPhysicalPath())
         return api.getDatasets(path={'query': path,
-                                     'depth': -1})
+                                     'depth': -1},
+                               sort_on='modified',
+                               sort_order='descending')
 
     # def experiment_details(self, expbrain):
     #     details = {}
