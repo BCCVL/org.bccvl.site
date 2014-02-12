@@ -3,22 +3,27 @@ from rdflib import RDF, RDFS, Literal, OWL
 from ordf.namespace import FOAF
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.content.group import IBCCVLGroup
-from org.bccvl.site.content.experiment import IExperiment
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.namespace import DWC
+from org.bccvl.site.browser.ws import IDataMover
 from gu.repository.content.interfaces import (
     IRepositoryContainer,
     IRepositoryItem,
     )
 from plone.app.uuid.utils import uuidToObject
 from zc.async.interfaces import COMPLETED
-from zope.component import adapter
 from zope.interface import implementer
 from zope.dottedname.resolve import resolve
 from gu.plone.rdf.namespace import CVOCAB
 from ordf.namespace import DC as DCTERMS
 from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 from plone.app.contenttypes.interfaces import IFile
+from plone.app.async.interfaces import IAsyncService
+from plone.app.async import service
+from zope.component import getUtility
+from gu.z3cform.rdf.interfaces import IGraph
+from zc.async import local
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -119,14 +124,37 @@ class JobTracker(object):
 
                 # submit job to queue
                 LOG.info("Submit JOB %s to queue", func.method)
+                # TODO: do I need request here? (and pass it into this method?)
                 job = method(self.context, request)
                 self.context.current_jobs.append(job)
             return 'info', u'Job submitted {}'.format(self.status())
         else:
             return 'error', u'Current Job is still running'
 
+    def start_ala_job(self):
+        if self.has_active_jobs():
+            return 'error', u'Current Job is still running'
+        self.context.current_jobs = []
+        async = getUtility(IAsyncService)
+        md = IGraph(self.context)
+        # TODO: this assumes we have an lsid in the metadata
+        #       should check for it
+        lsid = md.value(md.identifier, DWC['taxonID'])
+
+        jobinfo = (alaimport, self.context, (unicode(lsid), ), {})
+        queue = async.getQueues()['']
+        job = async.wrapJob(jobinfo)
+        job = queue.put(job)
+        job.jobid = 'alaimport'
+        job.annotations['bccvl.status'] = {
+            'step': 0,
+            'task': u'Queued'}
+        job.addCallbacks(success=service.job_success_callback,
+                         failure=service.job_failure_callback)
+        self.context.current_jobs = [job]
+        return 'info', u'Job submitted {}'.format(self.status())
+
     def status(self):
-        from zope.i18n import translate
         status = []
         for job in self.get_jobs():
             status.append((job.jobid, job.annotations['bccvl.status']['task']))
@@ -142,3 +170,69 @@ class JobTracker(object):
                 active = True
                 break
         return active
+
+
+# TODO: move stuff below to separate module
+# TODO: get rid of this template
+FILE_NAME_TEMPLATE = u'move_job_{id:d}_1_ala_dataset.json'
+
+
+def alaimport(dataset, lsid):
+    # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
+    status = local.getLiveAnnotation('bccvl.status')
+    status['task'] = 'Running'
+    local.setLiveAnnotation('bccvl.status', status)
+    import time
+    from collective.transmogrifier.transmogrifier import Transmogrifier
+    import os
+    from tempfile import mkdtemp
+    path = mkdtemp()
+    try:
+        dm = getUtility(IDataMover)
+        # TODO: fix up params
+        jobstatus = dm.move({'type': 'ala', 'lsid': lsid},
+                            {'host': 'plone', 'path': path})
+        # TODO: do we need some timeout here?
+        while jobstatus['status'] in ('PENDING', "IN_PROGRESS"):
+            time.sleep(1)
+            jobstatus = dm.check_move_status(jobstatus['id'])
+        if jobstatus['status'] in ("FAILED",  "REJECTED"):
+            # TODO: Do something useful here; how to notify user about failure?
+            LOG.fatal("ALA import failed %s: %s", jobstatus['status'], jobstatus['reason'])
+            return
+
+        #transmogrify.dexterity.schemaupdater needs a REQUEST on context????
+        from ZPublisher.HTTPResponse import HTTPResponse
+        from ZPublisher.HTTPRequest import HTTPRequest
+        import sys
+        response = HTTPResponse(stdout=sys.stdout)
+        env = {'SERVER_NAME':'fake_server',
+               'SERVER_PORT':'80',
+               'REQUEST_METHOD':'GET'}
+        request = HTTPRequest(sys.stdin, env, response)
+
+        # Set values from original request
+        # original_request = kwargs.get('original_request')
+        # if original_request:
+        #     for k,v in original_request.items():
+        #       request.set(k, v)
+        context = dataset.__parent__
+        context.REQUEST = request
+
+        metadata_file = FILE_NAME_TEMPLATE.format(**jobstatus)
+        status['task'] = 'Transferring'
+        local.setLiveAnnotation('bccvl.status', status)
+        transmogrifier = Transmogrifier(context)
+        transmogrifier(u'org.bccvl.site.alaimport',
+                       alasource={'file': os.path.join(path, metadata_file),
+                                  'lsid': lsid,
+                                  'id': dataset.getId()})
+
+        # cleanup fake request
+        del context.REQUEST
+        # TODO: catch errors and create state Failed annotation
+    finally:
+        import shutil
+        shutil.rmtree(path)
+        status['task'] = 'Completed'
+        local.setLiveAnnotation('bccvl.status', status)

@@ -12,10 +12,10 @@ from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site import defaults
+from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC
 import logging
-from gu.z3cform.rdf.interfaces import IORDF
+from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from zope.component import getUtility, queryUtility
-from zope.i18n import translate
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
 from rdflib import URIRef
@@ -23,6 +23,9 @@ from gu.plone.rdf.repositorymetadata import getContentUri
 import json
 from Products.statusmessages.interfaces import IStatusMessage
 from org.bccvl.site.browser.ws import IDataMover, IALAService
+from plone.dexterity.utils import createContentInContainer
+from rdflib.resource import Resource
+from rdflib import Literal
 
 
 LOG = logging.getLogger(__name__)
@@ -302,21 +305,42 @@ class ALAProxy(BrowserView):
 
 class DataMover(BrowserView):
 
+    # TODO: typo in view ergistartion in api.zcml-> update js as well
     @returnwrapper
-    def pullOccurrenceFromALA(self, lsid, taxon=None,  common=None):
+    def pullOccurrenceFromALA(self, lsid, taxon,  common=None):
         # TODO: check permisions?
-        from zope.component import getUtility
-        from plone.app.async.interfaces import IAsyncService
-        from plone.app.async import service
-        async = getUtility(IAsyncService)
-        jobinfo = (alaimport, self.context, (lsid, ), {})
-        job = async.wrapJob(jobinfo)
-        queue = async.getQueues()['']
-        job = queue.put(job)
-        ret = job.addCallbacks(success=service.job_success_callback,
-                               failure=service.job_failure_callback)
-        # return message id and localized message
-        return (str(ret.status), translate(ret.status))
+        # 1. create new dataset with taxon, lsid and common name set
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]
+
+        title = [taxon]
+        if common:
+            title.append(u"({})".format(common))
+        # TODO: check whether title will be updated in transmog import?
+        #       set title now to "Whatever (import pending)"?
+        # TODO: make sure we get a better content id that dataset-x
+        ds = createContentInContainer(dscontainer,
+                                      'org.bccvl.content.dataset',
+                                      title=u' '.join(title))
+        # TODO: add number of occurences to description
+        ds.description = u' '.join(title) + u' imported from ALA'
+        md = IGraph(ds)
+        md = Resource(md, md.identifier)
+        # TODO: provenance ... import url?
+        # FIXME: verify input parameters before adding to graph
+        md.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreSO'])
+        md.add(BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP'])
+        md.add(DWC['scientificName'], Literal(taxon))
+        md.add(DWC['taxonID'], Literal(lsid))
+        if common:
+            md.add(DWC['vernacularName'], Literal(common))
+
+        getUtility(IORDF).getHandler().put(md.graph)
+
+        # 2. create and push alaimport job for dataset
+        jt = IJobTracker(ds)
+        status, message = jt.start_ala_job()
+        return (status, message)
 
     @returnwrapper
     def checkALAJobStatus(self, job_id):
@@ -324,59 +348,3 @@ class DataMover(BrowserView):
         #       use job tracking for status. (needs job annotations)
         dm = getUtility(IDataMover)
         return dm.check_move_status(job_id)
-
-
-# TODO: get data mover location from config
-FILE_NAME_TEMPLATE = u'move_job_{id:d}_1_ala_dataset.json'
-
-
-def alaimport(context, lsid):
-    # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
-    import time
-    from collective.transmogrifier.transmogrifier import Transmogrifier
-    import os
-    from tempfile import mkdtemp
-    path = mkdtemp()
-    try:
-        dm = getUtility(IDataMover)
-        # TODO: fix up params
-        jobstatus = dm.move({'type': 'ala', 'lsid': lsid},
-                            {'host': 'plone', 'path': path})
-        # TODO: do we need some timeout here?
-        while jobstatus['status'] in ('PENDING', "IN_PROGRESS"):
-            time.sleep(1)
-            jobstatus = dm.check_move_status(jobstatus['id'])
-        if jobstatus['status'] in ("FAILED",  "REJECTED"):
-            # TODO: Do something useful here; how to notify user about failure?
-            LOG.fatal("ALA import failed %s: %s", jobstatus['status'], jobstatus['reason'])
-            return
-
-        #transmogrify.dexterity.schemaupdater needs a REQUEST on context????
-        from ZPublisher.HTTPResponse import HTTPResponse
-        from ZPublisher.HTTPRequest import HTTPRequest
-        import sys
-        response = HTTPResponse(stdout=sys.stdout)
-        env = {'SERVER_NAME':'fake_server',
-               'SERVER_PORT':'80',
-               'REQUEST_METHOD':'GET'}
-        request = HTTPRequest(sys.stdin, env, response)
-
-        # Set values from original request
-        # original_request = kwargs.get('original_request')
-        # if original_request:
-        #     for k,v in original_request.items():
-        #       request.set(k, v)
-        context.REQUEST = request
-
-        ds = context[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]
-        metadata_file = FILE_NAME_TEMPLATE.format(**jobstatus)
-        transmogrifier = Transmogrifier(ds)
-        transmogrifier(u'org.bccvl.site.alaimport',
-                       alasource={'file': os.path.join(path, metadata_file),
-                                  'lsid': lsid})
-
-        # cleanup fake request
-        del context.REQUEST
-    finally:
-        import shutil
-        shutil.rmtree(path)
