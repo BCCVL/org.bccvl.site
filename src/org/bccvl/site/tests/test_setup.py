@@ -95,6 +95,21 @@ class SiteSetupTest(unittest.TestCase):
             # gt.getGroupsByUserId(user_id)
             # gt.setGroupOwnership(group,object)
 
+    def test_initial_content_published(self):
+        # make sure fronte-page and knowledgebase are published
+        portal = self.layer['portal']
+        for id in (defaults.KNOWLEDGEBASE_FOLDER_ID,
+                   'front-page'):
+            content = portal[id]
+            wf_tool = getToolByName(portal, 'portal_workflow')
+            chain = wf_tool.getChainFor(content)
+            # only one workflow chain
+            self.assertEqual(len(chain), 1)
+            # our custom simple pub workflow
+            self.assertEqual(chain[0], 'simple_publication_workflow')
+            # is the state published?
+            wf_state = wf_tool.getStatusOf(chain[0], content)
+            self.assertEqual(wf_state['review_state'], 'published')
 
     def test_add_experiment_permission(self):
         portal = self.layer['portal']

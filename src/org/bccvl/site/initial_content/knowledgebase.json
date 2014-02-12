@@ -1,6 +1,7 @@
 {
   "_type": "Folder",
   "title": "Knowledge Base",
+  "_transitions": "publish",
   "_ac_local_roles": {
     "Knowledgebase Editor": ["Knowledgebase Editor"],
     "Knowledgebase Contributor": ["Knowledgebase Contributor"]

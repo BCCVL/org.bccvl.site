@@ -1,5 +1,6 @@
 {
   "_type": "Document",
   "title": "Welcome to BCCVL",
+  "_transitions": "publish",
   "description": "Congratulations! You have successfully installed BCCVL"
 }
