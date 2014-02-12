@@ -102,6 +102,7 @@ class ALASource(object):
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
+        self.context = transmogrifier.context
         self.name = name
         self.options = options
         self.previous = previous
@@ -110,7 +111,7 @@ class ALASource(object):
         if self.file is None or not os.path.isfile(self.file):
             raise Exception('File ({}) does not exists.'.format(str(self.file)))
         self.lsid = options['lsid']
-
+        self.id = options.get('id')
         # add path prefix to imported content
         self.prefix = options.get('prefix', '').strip().strip(os.sep)
         # keys for sections further down the chain
@@ -164,8 +165,7 @@ class ALASource(object):
 
         # FIXME: important of the same guid changes current existing dataset
         #_, id = json['taxonConcept']['guid'].rsplit(':', 1)
-        item = {  # '_path': id,
-                '_type': 'org.bccvl.content.dataset',
+        item = {'_type': 'org.bccvl.content.dataset',
                 'title': title,
                 'description': description,
                 'file': {
@@ -185,7 +185,11 @@ class ALASource(object):
                         'data': rdf.serialize(format='turtle')
                         }
                     }
-            }
+                }
+        # if we have an id use it to possibly update existing content
+        if self.id:
+            item['_path'] = self.id
+
         yield item
 
 
