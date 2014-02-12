@@ -11,6 +11,7 @@ from org.bccvl.site.content.dataset import (IDataset,
                                             ISpeciesDataset,
                                             ILayerDataset)
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
+from org.bccvl.site.browser.job import IJobStatus
 
 
 class DatasetFieldMixin(object):
@@ -29,6 +30,7 @@ class DatasetFieldMixin(object):
             yield ISpeciesDataset
         else:
             yield ILayerDataset
+        yield IJobStatus
 
 
     # def updateFields(self):

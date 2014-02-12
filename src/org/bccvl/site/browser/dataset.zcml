@@ -10,6 +10,10 @@
     i18n_domain="org.bccvl.site"
     >
 
+    <adapter
+        for="org.bccvl.site.content.dataset.IDataset"
+        factory=".job.JobStatus"/>
+
     <!-- Basic View:
             for, permission, class, allowed_interface,
             allowed_attributes
