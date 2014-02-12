@@ -53,7 +53,7 @@
                         use_external python:auth and external_login_url and not external_login_iframe;
                         target request/target|nothing;
                         target python:test(target in ('_parent', '_top', '_blank', '_self'), target, '_self');
-                        host request/HTTP_X_FORWARDED_HOST | request/HTTP_HOST ;
+                        host python:request.get('HTTP_X_FORWARDED_HOST') or request.get('HTTP_HOST') ;
                         ssl_host_url string:https://${host};
                         ztu modules/ZTUtils;">
 
@@ -85,9 +85,10 @@
        Site login
     </dt>-->
     <div id="fieldset-aaf-login"
-      tal:define="login_url python:test(came_from is not None,
-                  ssl_host_url + '/Shibboleth.sso/Login?target=%s' %
-                  ((came_from.replace('+', '%2B').replace('http://','https://')) or ''), ssl_host_url + '/Shibboleth.sso/Login')" >
+      tal:define="came_from python:came_from and came_from.replace('+', '%2B').replace('http://','https://');
+                  login_url python:test(came_from is not None,
+                                        ssl_host_url + '/Shibboleth.sso/Login?target=%s' % came_from,
+                                        ssl_host_url + '/Shibboleth.sso/Login')" >
         <h3>Australian Access Federation (AAF) Login</h3>
           <a i18n:translate="description_log_in_here"
              tal:attributes="href login_url">
