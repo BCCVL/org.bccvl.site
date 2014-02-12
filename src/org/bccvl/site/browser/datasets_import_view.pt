@@ -12,18 +12,52 @@
 
     <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
 
-    <div id="searchOccurrence" class="bccvl-search-form form-inline">
-        <input name="searchOccurrence_query" type="text"
-               class="span8" placeholder="Find more species..."
-               autocomplete="off"/>
+    <form action="" id="searchOccurrence" class="bccvl-search-form form-inline">
         <select name="searchOccurrence_source" class="span4">
            <option value="ala">at ALA</option>
         </select>
-        <p class="bccvl-labelfade-description bccvl-read"></p>
+        <input name="searchOccurrence_query" type="text"
+               class="span8" placeholder="Find more species..."
+               autocomplete="off"/>
+        <input type="submit" name="search" value="Search"/>
 
-        <img src="/bccvl/++theme++org.bccvl.theme/images/big-ajax-loader.gif" class="bccvl-results-spinner"/>
-        <div id="searchOccurrence_results" class="bccvl-searchform-results"></div>
-    </div>
+        <div id="searchOccurrence_results" class="bccvl-searchform-results">
+
+          <table class="listing">
+            <tbody>
+              <tal:loop tal:repeat="result view/searchResults">
+              <tr class="row"
+                  tal:define="oddrow repeat/result/odd;"
+                  tal:attributes="class python: oddrow and 'even' or 'odd'">
+                <td>
+                  <img src="http://bie.ala.org.au/repo/1003/175/1754104/smallRaw.jpg"
+                       width="64" height="64"
+                       tal:attributes="src result/thumbUrl"/>
+                </td>
+                <td>
+                  <p><strong tal:content="result/friendlyName">Koala Fur Mite <i class="taxonomy" tal:content="result/title">Koalachirus perkinsi</i></strong></p>
+                  <p tal:content="result/description"> (species) 3 occurrences from ALA</p>
+                </td>
+                <td>
+                  <a class="fine"
+                     href="http://bie.ala.org.au/species/urn%3Alsid%3Abiodiversity.org.au%3Aafd.taxon%3Ab49d8b75-eac1-4e52-8729-3311b02098ad"
+                     target="_blank"
+                     tal:attributes="href result/actions/viz">
+                    Preview
+                  </a>
+                </td>
+                <td>
+                  <a class="fine" href="link to start import"
+                     tal:attributes="href result/actions/alaimport">
+                     Import
+                  </a>
+                </td>
+              </tr>
+              </tal:loop>
+            </tbody>
+          </table>
+        </div>
+    </form>
 
 </metal:content-core>
 
