@@ -3,7 +3,6 @@ from org.bccvl.site.content.function import IFunction
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.interfaces import IExperiment
 from org.bccvl.site.namespace import BCCVOCAB
-from ordf.namespace import DCES
 
 
 class QueryAPI(object):

@@ -5,7 +5,6 @@ from org.bccvl.site.interfaces import IJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit
-from zope.i18n import translate
 from org.bccvl.site import MessageFactory as _
 from org.bccvl.site.browser.xmlrpc import getdsmetadata
 from org.bccvl.site.browser.job import IJobStatus
