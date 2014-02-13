@@ -5,10 +5,7 @@ from z3c.form import form, field, button
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
 from zope.event import notify
-from plone.app.dexterity.behaviors.metadata import IBasic
-from z3c.form.field import Fields
-from org.bccvl.site.content.dataset import (IDataset,
-                                            ISpeciesDataset,
+from org.bccvl.site.content.dataset import (ISpeciesDataset,
                                             ILayerDataset)
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
 from org.bccvl.site.browser.job import IJobStatus
@@ -86,7 +83,7 @@ from rdflib import RDF, Graph, Literal
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 import zipfile
-from org.bccvl.site.namespace import BIOCLIM, NFO, BCCPROP
+from org.bccvl.site.namespace import BIOCLIM, NFO
 
 
 class IFileItemMetadata(Interface):
