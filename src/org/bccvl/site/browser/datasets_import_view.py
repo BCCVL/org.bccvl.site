@@ -5,6 +5,7 @@ from zope.component import getUtility
 from org.bccvl.site.browser.ws import IALAService
 from Products.CMFCore.utils import getToolByName
 from Products.statusmessages.interfaces import IStatusMessage
+from org.bccvl.site import defaults
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -112,6 +113,10 @@ class DatasetsImportView(BrowserView):
             IStatusMessage(self.request).add(ret[1], type=ret[0])
             # TODO: what is ret? json? html? tuple?
             # TODO: redirect to dataset or listing view?
+            # everything went fine until here .. so let's redirect
+            nexturl = portal[defaults.DATASETS_FOLDER_ID].absolute_url()
+            self.request.response.redirect(nexturl)
+            return
         return super(DatasetsImportView, self).__call__()
 
     # TODO: implement search: get list of data and feed template with it
