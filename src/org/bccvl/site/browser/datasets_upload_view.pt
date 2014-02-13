@@ -12,20 +12,9 @@
 
     <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
 
+    <tal:form tal:replace="structure view/addspeciesform"/>
 
-      <div class="bccvlbutton-dataset-upload">
-          <tal:form tal:define="view nocall:view/addspeciesform">"
-            <metal:block
-                use-macro="context/@@ploneform-macros/titlelessform"
-                />
-          </tal:form>
-
-          <tal:form tal:define="view nocall:view/addlayerform">"
-            <metal:block
-                use-macro="context/@@ploneform-macros/titlelessform"
-                />
-          </tal:form>
-      </div>
+    <tal:form tal:replace="structure view/addlayerform"/>
 
 </metal:content-core>
 

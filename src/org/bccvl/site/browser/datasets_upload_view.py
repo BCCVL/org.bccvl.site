@@ -5,9 +5,12 @@ from Products.CMFCore.utils import getToolByName
 
 from plone.app.dexterity.behaviors.metadata import IBasic
 from z3c.form.field import Fields
+from org.bccvl.site import defaults
 from org.bccvl.site.content.dataset import (IDataset,
                                             ISpeciesDataset,
                                             ILayerDataset)
+#from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 # TODO: provenance field:
@@ -20,16 +23,32 @@ class SpeciesAddForm(DefaultAddForm):
 
     fields = Fields(IBasic, IDataset, ISpeciesDataset)
 
+    template = ViewPageTemplateFile('dataset_upload_subform.pt')
+
     def updateFields(self):
+        # don't fetch plone default fields'
         pass
+
+    def nextURL(self):
+        # redirect to default datasets page
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        return portal[defaults.DATASETS_FOLDER_ID].absolute_url()
 
 
 class RasterAddForm(DefaultAddForm):
 
     fields = Fields(IBasic, IDataset, ILayerDataset)
 
+    template = ViewPageTemplateFile('dataset_upload_subform.pt')
+
     def updateFields(self):
+        # don't fetch plone default fields'
         pass
+
+    def nextURL(self):
+        # redirect to default datasets page
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        return portal[defaults.DATASETS_FOLDER_ID].absolute_url()
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -62,39 +81,24 @@ class DatasetsUploadView(BrowserView):
                                              self.request, fti)
         self.addspeciesform.__name__ = "addspeciesform"
         self.addspeciesform.prefix = "addspecies"
-        # set portal_type only if there is none set already
-        #-> AddForm accepts third parameter ti to do this for me
-        # self.addspeciesform.portal_type = fti.getId()
 
         self.addlayerform = RasterAddForm(aq_inner(self.context),
                                           self.request, fti)
         self.addlayerform.__name__ = "addlayerform"
         self.addlayerform.prefix = "addlayer"
-        # self.addlayerform.portal_type = fti.getId()
 
-        # z2.switch_on(self, request_layer=IFormLayer)
-        # self.form_instance.update()
-
+        # always update both forms in case we return and want to preserve
+        # entered values
         self.addspeciesform.update()
         self.addlayerform.update()
 
-        # if self.request.response.getStatus() in (302, 303):
-        #      self.contents = ""
-        #      return
-
-        #  # A z3c.form.form.AddForm does a redirect in its render method.
-        #  # So we have to render the form to see if we have a redirection.
-        #  # In the case of redirection, we don't render the layout at all.
-        #  self.contents = self.form_instance.render()
-        # self.addspeciesform = self.addspeciesform.render()
-        # self.addlayerform = self.addlayerform.render()
+        # render the forms for display or generate redirect
+        self.addspeciesform = self.addspeciesform.render()
+        self.addlayerform = self.addlayerform.render()
 
     def __call__(self):
         self.update()
+        # if one of our subforms initiated a redirect follow it
+        if self.request.response.getStatus() in (302, 303):
+            return
         return super(DatasetsUploadView, self).__call__()
-
-
-# add view lookup:
-#-> queryMultiAdapter((self.context, self.request, ti),  name=ti.factory)
-#-> queryMultiAdapter((self.context, self.request, ti))
-#->
