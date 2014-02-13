@@ -173,10 +173,6 @@ class JobTracker(object):
 
 
 # TODO: move stuff below to separate module
-# TODO: get rid of this template
-FILE_NAME_TEMPLATE = u'move_job_{id:d}_1_ala_dataset.json'
-
-
 def alaimport(dataset, lsid):
     # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
     status = local.getLiveAnnotation('bccvl.status')
@@ -219,7 +215,7 @@ def alaimport(dataset, lsid):
         context = dataset.__parent__
         context.REQUEST = request
 
-        metadata_file = FILE_NAME_TEMPLATE.format(**jobstatus)
+        metadata_file = 'ala_dataset.json'
         status['task'] = 'Transferring'
         local.setLiveAnnotation('bccvl.status', status)
         transmogrifier = Transmogrifier(context)
