@@ -70,13 +70,22 @@ def returnwrapper(f, *args, **kw):
 
 def getdsmetadata(ds):
     # extract info about files
-    return {'url': ds.absolute_url(),
-            'id': IUUID(ds),
+    md = {
+        'url': ds.absolute_url(),
+        'id': IUUID(ds),
+        'mimetype': None,
+        'filename': None,
+        'file': None,
+        'layers': getbiolayermetadata(ds)
+        }
+    if ds.file:
+        md.update({
             'mimetype': ds.file.contentType,
             'filename': ds.file.filename,
             'file': '{}/@@download/file/{}'.format(ds.absolute_url(),
                                                    ds.file.filename),
-            'layers': getbiolayermetadata(ds)}
+        })
+    return md
 
 
 def getbiolayermetadata(ds):
