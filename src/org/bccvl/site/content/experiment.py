@@ -32,15 +32,15 @@ class ISDMExperiment(IExperiment):
         required=False,
     )
 
-    species_random_points = Bool(
-        title=u"Random background points",
-        description=u"Enable generation of random background points across area defined inenvironmental data",
+    species_pseudo_absence_points = Bool(
+        title=u"Pseudo absence points",
+        description=u"Enable generation of random pseudo absence points across area defined inenvironmental data",
         default=False,
         required=False)
 
-    species_number_random_points = Int(
-        title=u"Number of random points",
-        description=u"The number of random background points to generate",
+    species_number_pseudo_absence_points = Int(
+        title=u"Number of pseudo absence points",
+        description=u"The number of random pseudo absence points to generate",
         default=10000,
         required=False)
 
