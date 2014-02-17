@@ -18,8 +18,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 class SpeciesAddForm(DefaultAddForm):
 
-    title = u"Species occurrence data"
-    description = u"A set of occurrences for single species"
+    title = u"Upload Species Data"
+    description = u"Upload ccurrences or abundance data for single species"
 
     fields = Fields(IBasic, IDataset, ISpeciesDataset)
 
@@ -36,6 +36,9 @@ class SpeciesAddForm(DefaultAddForm):
 
 
 class RasterAddForm(DefaultAddForm):
+
+    title = u"Upload Environmental Data"
+    description = u"Upload current or future climate data"
 
     fields = Fields(IBasic, IDataset, ILayerDataset)
 
