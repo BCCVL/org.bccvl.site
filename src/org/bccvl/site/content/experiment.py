@@ -1,5 +1,5 @@
 from plone.directives import form
-from zope.schema import Choice, List, Dict
+from zope.schema import Choice, List, Dict, Bool, Int
 from plone.dexterity.content import Container
 from org.bccvl.site import vocabularies
 from zope.interface import implementer
@@ -31,6 +31,18 @@ class ISDMExperiment(IExperiment):
         default=None,
         required=False,
     )
+
+    species_random_points = Bool(
+        title=u"Random background points",
+        description=u"Enable generation of random background points across area defined inenvironmental data",
+        default=False,
+        required=False)
+
+    species_number_random_points = Int(
+        title=u"Number of random points",
+        description=u"The number of random background points to generate",
+        default=10000,
+        required=False)
 
     # TODO: need a better field here to support dynamic vocabularies for
     #       values based on selected key
