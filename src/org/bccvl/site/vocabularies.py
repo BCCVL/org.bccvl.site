@@ -8,7 +8,7 @@ from gu.z3cform.rdf.utils import Period
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.CMFCore.utils import getToolByName
 from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
-from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM
+from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB
 
 
 @implementer(IContextSourceBinder)
@@ -231,3 +231,9 @@ fc_years_source = SparqlValuesSourceBinder(
 BioclimVocabularyFactory = SparqlInstanceVocabularyFactory(BIOCLIM['BioclimaticVariable'])
 GCMVocabularyFactory = SparqlInstanceVocabularyFactory(BCCGCM['GCM'])
 EMSCVocabularyFactory = SparqlInstanceVocabularyFactory(BCCEMSC['EMSC'])
+
+SpeciesDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['SpeciesDataGenre'])
+SpeciesLayerVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['SpeciesLayer'])
+EnvironmentalDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['EnvironmentalDataGenre'])
+DatasetTypeVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['DataSetType'])
+ResolutionVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Resolution'])

@@ -20,11 +20,6 @@ class IDataset(form.Schema):
         description=_(u"Data content"),
         required=True)
 
-    datagenre = RDFURIChoiceField(
-        prop=BCCPROP['datagenre'],
-        title=_(u'Data Genre'),
-        vocabulary=u'http://namespaces.zope.org/z3c/form#DataGenreVocabulary')
-
         # fixed fields
         # RDFURIChoiceField(
         #     __name__='format',
@@ -59,11 +54,17 @@ class ISpeciesDataset(form.Schema):
     """
     a schema to drive the forms for species data sets
     """
+    datagenre = RDFURIChoiceField(
+        prop=BCCPROP['datagenre'],
+        title=_(u'Data Genre'),
+        vocabulary=u'org.bccvl.site.SpeciesDataGenreVocabulary'
+    )
+
     specieslayer = RDFURIChoiceField(
         prop=BCCPROP['specieslayer'],
         required=False,
         title=u'Species Layer',
-        vocabulary=u'http://namespaces.zope.org/z3c/form#SpeciesLayerVocabulary'
+        vocabulary=u'org.bccvl.site.SpeciesLayerVocabulary'
     )
 
     scientificName = RDFLiteralLineField(
@@ -95,18 +96,23 @@ class ILayerDataset(form.Schema):
     # moref fields;
     #-> projection, spatial units, spatial coverage,
     #-> pixel units, (value space)
+    datagenre = RDFURIChoiceField(
+        prop=BCCPROP['datagenre'],
+        title=_(u'Data Genre'),
+        vocabulary=u'org.bccvl.site.EnvironmentalDataGenreVocabulary'
+    )
 
     datatype = RDFURIChoiceField(
         prop=BCCPROP['datatype'],
         required=False,
         title=u'Type of Dataset',
-        vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetTypeVocabulary')
+        vocabulary=u'org.bccvl.site.DatasetTypeVocabulary')
 
     resolution = RDFURIChoiceField(
         prop=BCCPROP['resolution'],
         title=u'Resolution',
         required=False,
-        vocabulary=u'http://namespaces.zope.org/z3c/form#ResolutionVocabulary')
+        vocabulary=u'org.bccvl.site.ResolutionVocabulary')
 
     resolutiono = RDFLiteralLineField(
         prop=BCCPROP['resolutionother'],
@@ -122,10 +128,10 @@ class ILayerDataset(form.Schema):
         prop=BCCPROP['emissionscenario'],
         required=False,
         title=u'Emission Scenario',
-        vocabulary=u'http://namespaces.zope.org/z3c/form#EmissionScenarioVocabulary')
+        vocabulary=u'org.bccvl.site.EMSCVocabulary')
 
     gcm = RDFURIChoiceField(
         prop=BCCPROP['gcm'],
         required=False,
         title=u'Global Climate Model',
-        vocabulary=u'http://namespaces.zope.org/z3c/form#GlobalClimateModelVocabulary')
+        vocabulary=u'org.bccvl.site.GCMVocabulary')

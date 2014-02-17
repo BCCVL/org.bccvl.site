@@ -22,13 +22,11 @@ class DatasetFieldMixin(object):
         md = IGraph(self.context)
         genre = md.value(md.identifier, BCCPROP['datagenre'])
         # TODO: do a better check for genre. e.g. query store for classes of genre?
-        if genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreSD'],
-                     BCCVOCAB['DataGenreSO']):
+        if genre in (BCCVOCAB['DataGenreSA'], BCCVOCAB['DataGenreSO']):
             yield ISpeciesDataset
-        else:
+        elif genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreE']):
             yield ILayerDataset
         yield IJobStatus
-
 
     # def updateFields(self):
     #     md = IGraph(self.context)

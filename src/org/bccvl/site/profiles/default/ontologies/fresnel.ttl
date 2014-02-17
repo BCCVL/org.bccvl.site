@@ -564,28 +564,8 @@ z3c:DataGenreVocabulary a z3c:Vocabulary ;
     z3c:valueClass bccvocab:DataGenre ;
     .
 
-z3c:DataSetTypeVocabulary a z3c:Vocabulary ;
-    z3c:valueClass bccvocab:DataSetType ;
-    .
-
-z3c:SpeciesLayerVocabulary a z3c:Vocabulary ;
-    z3c:valueClass bccvocab:SpeciesLayer ;
-    .
-
-z3c:EmissionScenarioVocabulary a z3c:Vocabulary ;
-    z3c:valueClass be:EMSC ;
-    .
-
-z3c:GlobalClimateModelVocabulary a z3c:Vocabulary ;
-    z3c:valueClass bg:GCM ;
-    .
-
 z3c:DataSetFormatVocabulary a z3c:Vocabulary ;
     z3c:valueClass bccvocab:DataSetFormat ;
-    .
-
-z3c:ResolutionVocabulary a z3c:Vocabulary ;
-    z3c:valueClass bccvocab:Resolution ;
     .
 
 z3c:RdfTypeVocabulary a z3c:Vocabulary ;

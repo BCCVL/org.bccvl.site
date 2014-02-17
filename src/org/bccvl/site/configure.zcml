@@ -197,6 +197,31 @@
         component=".vocabularies.BioclimVocabularyFactory"
         />
 
+    <utility
+        name="org.bccvl.site.SpeciesDataGenreVocabulary"
+        component=".vocabularies.SpeciesDataGenreVocabularyFactory"
+    />
+
+    <utility
+        name="org.bccvl.site.SpeciesLayerVocabulary"
+        component=".vocabularies.SpeciesLayerVocabularyFactory"
+    />
+
+    <utility
+        name="org.bccvl.site.EnvironmentalDataGenreVocabulary"
+        component=".vocabularies.EnvironmentalDataGenreVocabularyFactory"
+    />
+
+    <utility
+        name="org.bccvl.site.DatasetTypeVocabulary"
+        component=".vocabularies.DatasetTypeVocabularyFactory"
+    />
+
+    <utility
+        name="org.bccvl.site.ResolutionVocabulary"
+        component=".vocabularies.ResolutionVocabularyFactory"
+    />
+
     <transmogrifier:registerConfig
         name="exportknowledgebase"
         title="Export Knowledgebase pipeline configuration"
