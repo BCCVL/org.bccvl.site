@@ -73,6 +73,7 @@ def getdsmetadata(ds):
     md = {
         'url': ds.absolute_url(),
         'id': IUUID(ds),
+        'description': ds.description,
         'mimetype': None,
         'filename': None,
         'file': None,
