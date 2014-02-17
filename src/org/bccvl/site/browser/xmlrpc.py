@@ -85,8 +85,8 @@ def getdsmetadata(ds):
             'file': '{}/@@download/file/{}'.format(ds.absolute_url(),
                                                    ds.file.filename),
             'vizurl': '{}{}/@@download/file/{}'.format('http://127.0.0.1:8201',
-                                             '/'.join(datasetitem.getPhysicalPath()),
-                                             datasetitem.file.filename),
+                                             '/'.join(ds.getPhysicalPath()),
+                                             ds.file.filename),
         })
     return md
 
