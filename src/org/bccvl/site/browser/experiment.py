@@ -96,6 +96,9 @@ def addToolkitFields(form):
     api = QueryAPI(form.context)
     fields = []
     for toolkit in (brain.getObject() for brain in api.getFunctions()):
+        if form.mode == DISPLAY_MODE and toolkit.UID() not in form.context.functions:
+            # filter out unused algorithms in display mode
+            continue
         parameters_schema = resolve(toolkit.schema)
         field_schema = schema.Object(
             __name__ = 'parameters_%s' % toolkit.id,
