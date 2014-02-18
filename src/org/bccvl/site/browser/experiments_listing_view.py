@@ -1,16 +1,18 @@
 from Products.Five import BrowserView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
-from plone.app.uuid.utils import uuidToObject
+from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from org.bccvl.site.vocabularies import envirolayer_source
 from org.bccvl.site.api import QueryAPI
 from collections import defaultdict
+from zope.component import getUtility
+from zope.schema.interfaces import IContextSourceBinder
 
 
 def get_title_from_uuid(uuid):
-    obj = uuidToObject(uuid)
+    obj = uuidToCatalogBrain(uuid)
     if obj:
-        return obj.title
+        return obj.Title
     return None
 
 
@@ -29,7 +31,26 @@ class ExperimentsListingView(BrowserView):
         details = {}
 
         if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
-            details['type'] = 'PROJECTION'
+            # TODO: duplicate code here... see org.bccvl.site.browser.widget.py
+            exp = expbrain.getObject()
+            sdm = uuidToObject(exp.species_distribution_models)
+            sdmresult = sdm.__parent__
+            sdmexp = sdmresult.__parent__
+            envlayervocab = getUtility(IContextSourceBinder, name='envirolayer_source')(self.context)
+            # TODO: absence data
+            envlayers = ', '.join(
+                '{}: {}'.format(uuidToCatalogBrain(envuuid).Title,
+                                ', '.join(envlayervocab.getTerm(envlayer).title
+                                          for envlayer in sorted(layers)))
+                    for (envuuid, layers) in sorted(sdmexp.environmental_datasets.items()))
+
+            details.update({
+                'type': 'PROJECTION',
+                'functions': sdmresult.toolkit,
+                'species_occurrence': get_title_from_uuid(sdmexp.species_occurrence_dataset),
+                'species_absence': '',
+                'environmental_layers': envlayers
+            })
         elif expbrain.portal_type == 'org.bccvl.content.sdmexperiment':
             # this is ripe for optimising so it doesn't run every time
             # experiments are listed

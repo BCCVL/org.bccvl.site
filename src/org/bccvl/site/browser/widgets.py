@@ -151,6 +151,7 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
         return items
 
     def get_item_details(self, item):
+        # TODO: code duplication see: experiments_listing_view.py:45
         # TODO: fetch additional data for item here
         pc = getToolByName(self.context, 'portal_catalog')
         brain = pc.searchResults(UID=item['value'])[0]
