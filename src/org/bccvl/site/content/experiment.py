@@ -7,6 +7,8 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IExperiment
 from plone.directives import form
+from gu.z3cform.rdf.interfaces import IGraph
+from ordf.namespace import DC as DCTERMS
 
 
 class ISDMExperiment(IExperiment):
@@ -115,6 +117,13 @@ class ProjectionExperiment(Container):
         # TODO: use QueryApi?
         # TODO: ignore years for now
         pc = getToolByName(self, 'portal_catalog')
+        result = []
         brains = pc.searchResults(BCCEmissionsScenario=self.emission_scenarios,
                                   BCCGlobalClimateModel=self.climate_models)
-        return [b.UID for b in brains]
+        for brain in brains:
+            graph = IGraph(brain.getObject())
+            # TODO: do better date matching
+            year = graph.value(graph.identifier, DCTERMS['temporal'])
+            if year in self.years:
+                result.append(brain.UID)
+        return result
