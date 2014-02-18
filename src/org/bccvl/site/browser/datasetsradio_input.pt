@@ -40,7 +40,7 @@
     <span class="label" tal:content="item/label">Label</span>
     <tal:block tal:define="itemdetails python:view.get_item_details(item)">
     <p class="discreet"
-       tal:content="itemdetails/Title"></p>
+       tal:content="itemdetails/model/Title"></p>
     </tal:block>
   </label>
 </span>

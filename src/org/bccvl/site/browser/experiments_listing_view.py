@@ -40,7 +40,7 @@ class ExperimentsListingView(BrowserView):
                 for dataset, layers in exp.environmental_datasets.items():
                     for layer in layers:
                         environmental_layers[dataset].append(
-                            envirolayer_vocab.getTermByToken(str(layer)).title
+                            envirolayer_vocab.getTerm(layer).title
                         )
 
             details.update({

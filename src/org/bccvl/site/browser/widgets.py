@@ -1,6 +1,6 @@
-from zope.component import adapter, getMultiAdapter
+from zope.component import adapter, getMultiAdapter, getUtility
 from zope.interface import implementer, alsoProvides
-from zope.schema.interfaces import ISequence, ITitledTokenizedTerm
+from zope.schema.interfaces import ISequence, ITitledTokenizedTerm, IContextSourceBinder
 from z3c.form import util
 from z3c.form.interfaces import (IFieldWidget,  IFormLayer,
                                  ITerms, IFormAware, NO_VALUE)
@@ -12,6 +12,7 @@ from zope.i18n import translate
 from .interfaces import (IDatasetsWidget, IDatasetsRadioWidget,
                          IOrderedCheckboxWidget)
 from Products.CMFCore.utils import getToolByName
+from plone.app.uuid.utils import uuidToCatalogBrain
 
 
 @implementer(IOrderedCheckboxWidget)
@@ -153,7 +154,29 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
         # TODO: fetch additional data for item here
         pc = getToolByName(self.context, 'portal_catalog')
         brain = pc.searchResults(UID=item['value'])[0]
-        return brain
+        sdm = brain.getObject()
+        # TODO: we might have two options here
+        #       sdm could be uploaded, then we'll show other data
+        #       for now ignore this case and consider only results for sdm experiments
+        result = sdm.__parent__
+        exp = result.__parent__
+        occurbrain = uuidToCatalogBrain(exp.species_occurrence_dataset)
+        #TODO:  need function for this specific str
+        envlayervocab = getUtility(IContextSourceBinder, name='envirolayer_source')(self.context)
+        # TODO: absence data
+        envlayers = ', '.join(
+                '{}: {}'.format(uuidToCatalogBrain(envuuid).Title,
+                                ', '.join(envlayervocab.getTerm(envlayer).title
+                                          for envlayer in sorted(layers)))
+                    for (envuuid, layers) in sorted(exp.environmental_datasets.items()))
+
+        return {
+            'model': brain,
+            'experiment': exp,
+            'function': result.toolkit,
+            'species': occurbrain,
+            'layers': envlayers
+        }
 
     def update(self):
         super(DatasetsRadioWidget, self).update()
