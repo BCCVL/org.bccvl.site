@@ -47,20 +47,6 @@
         handler=".subscribers.InitaliseUser"
     />
 
-    <!-- FIXE: remove ASAP - see handler comments for info -->
-    <subscriber
-        for="gu.repository.content.interfaces.IRepositoryItem
-             zope.lifecycleevent.interfaces.IObjectAddedEvent"
-        handler=".subscribers.publishOnAdd"
-    />
-
-    <!-- FIXE: remove ASAP - see handler comments for info -->
-    <subscriber
-        for="org.bccvl.site.content.dataset.IDataset
-             zope.lifecycleevent.interfaces.IObjectAddedEvent"
-        handler=".subscribers.publishOnAdd"
-    />
-
     <!--<adapter-->
         <!--for="Products.CMFCore.interfaces.IFolderish-->
              <!--Products.CMFDefault.interfaces.ICMFDefaultSkin-->

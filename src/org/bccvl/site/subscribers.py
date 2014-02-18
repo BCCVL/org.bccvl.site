@@ -44,16 +44,6 @@ def InitaliseUser(user, event):
     # don't forget to reindex
     userobj.reindexObject()
 
-# FIXME: remove after initial testing phases are done
-# This is just an early convenience to auto-publish Content to
-# minimise the amount of setup needed for testing
-def publishOnAdd(object, event):
-    try:
-        object.portal_workflow.doActionFor(object, 'publish')
-    except:
-        # ignore, object was already published
-        pass
-
 
 #def recordDatasetFileMimeType(object, event):
 #    import pdb; pdb.set_trace()

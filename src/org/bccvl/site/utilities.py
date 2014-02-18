@@ -87,6 +87,7 @@ class RDFDataMapper(object):
                           (DCTERMS['description'], Literal(content.description)),
                           (RDFS['comment'], Literal(content.description)),
                           ):
+            # TODO: support language tagged values (e.g. remove only same language first and add new values)
             if not graph.value(graph.identifier, prop):
                 graph.add((graph.identifier, prop, val))
 
