@@ -1,6 +1,8 @@
 from plone.directives import dexterity
 from z3c.form import button
+from z3c.form.field import Fields
 from z3c.form.form import extends
+from z3c.form.interfaces import ActionExecutionError
 from org.bccvl.site.interfaces import IJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -8,8 +10,8 @@ from plone.dexterity.browser import add, edit
 from org.bccvl.site import MessageFactory as _
 from org.bccvl.site.browser.xmlrpc import getdsmetadata
 from org.bccvl.site.browser.job import IJobStatus
-from z3c.form.field import Fields
 from zope import schema
+from zope.interface import Invalid
 from zope.dottedname.resolve import resolve
 from plone.z3cform.fieldsets.group import GroupFactory
 from org.bccvl.site.api import QueryAPI
@@ -125,6 +127,7 @@ class Add(add.DefaultAddForm):
     @button.buttonAndHandler(_('Create and start'), name='save')
     def handleAdd(self, action):
         data, errors = self.extractData()
+        self.validateAction(data)
         if errors:
             self.status = self.formErrorsMessage
             return
@@ -150,6 +153,7 @@ class Add(add.DefaultAddForm):
     @button.buttonAndHandler(_('Create'), name='create')
     def handleCreate(self, action):
         data, errors = self.extractData()
+        self.validateAction(data)
         if errors:
             self.status = self.formErrorsMessage
             return
@@ -200,15 +204,34 @@ class SDMAdd(Add):
         # if not envirodatasetswidget.key_widgets:
         #     envirodatasetswidget.appendAddingWidget()
 
+    def validateAction(self, data):
+        # ActionExecutionError ... form wide error
+        # WidgetActionExecutionError ... widget specific
+        # TODO: validate all sort of extra info- new object does not exist yet
+        e.g. do spatial scale validation here
+        pass
 
-class AddView(add.DefaultAddView):
+
+class ProjectionAdd(Add):
+
+    def validateAction(self, data):
+        # ActionExecutionError ... form wide error
+        # WidgetActionExecutionError ... widget specific
+        from org.bccvl.site.content.experiment import find_projections
+        result = find_projections(self.context, data.get('emission_scenarios'),
+                                  data.get('climate_models'), data.get('years'))
+        if not len(result):
+            raise ActionExecutionError(Invalid(u"The combination of projection points does not match any datasets"))
+
+
+class ProjectionAddView(add.DefaultAddView):
     """
     The formwrapper wrapping Add form above
     """
 
-    form = Add
+    form = ProjectionAdd
 
 
-class SDMAddView(AddView):
+class SDMAddView(add.DefaultAddView):
 
     form = SDMAdd

@@ -110,20 +110,23 @@ class ProjectionExperiment(Container):
 
     functions = ('org.bccvl.compute.predict.execute', )
 
-    def projections(self):
-        """compile points into list of datasets"""
-
     def future_climate_datasets(self):
         # TODO: use QueryApi?
-        # TODO: ignore years for now
-        pc = getToolByName(self, 'portal_catalog')
+        return find_projections(self.context, self.emission_scenarios, self.climate_models, self.years)
+
+
+# TODO: turn this into some adapter lookup component-> maybe use z3c.form validation adapter lookup?
+def find_projections(ctx, emission_scenarios, climate_models, years):
+        """compile points into list of datasets"""
+        pc = getToolByName(ctx, 'portal_catalog')
         result = []
-        brains = pc.searchResults(BCCEmissionsScenario=self.emission_scenarios,
-                                  BCCGlobalClimateModel=self.climate_models)
+        brains = pc.searchResults(BCCEmissionScenario=emission_scenarios,
+                                  BCCGlobalClimateModel=climate_models)
         for brain in brains:
             graph = IGraph(brain.getObject())
             # TODO: do better date matching
             year = graph.value(graph.identifier, DCTERMS['temporal'])
-            if year in self.years:
-                result.append(brain.UID)
+            if year in years:
+                # TODO: yield?
+                result.append(brain)
         return result
