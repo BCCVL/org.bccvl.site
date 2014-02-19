@@ -532,22 +532,22 @@ z3c:DataGenreField a z3c:Field ;
 
 z3c:DataSetTypeField a z3c:Field ;
     z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
-    z3c:vocabulary z3c:DataSetTypeVocabulary ;
+    z3c:vocabulary "org.bccvl.site.DatasetTypeVocabulary" ;
     .
 
 z3c:SpeciesLayerField a z3c:Field ;
     z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
-    z3c:vocabulary z3c:SpeciesLayerVocabulary ;
+    z3c:vocabulary "org.bccvl.site.SpeciesLayerVocabulary" ;
     .
 
 z3c:EmissionScenarioField a z3c:Field ;
     z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
-    z3c:vocabulary z3c:EmissionScenarioVocabulary ;
+    z3c:vocabulary "org.bccvl.site.EMSCVocabulary" ;
     .
 
 z3c:GlobalClimateModelField a z3c:Field ;
     z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
-    z3c:vocabulary z3c:GlobalClimateModelVocabulary ;
+    z3c:vocabulary "org.bccvl.site.GCMVocabulary" ;
     .
 
 z3c:DataSetFormatField a z3c:Field ;
@@ -557,7 +557,7 @@ z3c:DataSetFormatField a z3c:Field ;
 
 z3c:ResolutionField a z3c:Field ;
     z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
-    z3c:vocabulary z3c:ResolutionVocabulary ;
+    z3c:vocabulary "org.bccvl.site.ResolutionVocabulary" ;
     .
 
 z3c:DataGenreVocabulary a z3c:Vocabulary ;
