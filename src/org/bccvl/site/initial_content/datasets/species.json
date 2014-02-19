@@ -1,4 +1,5 @@
 {
   "_type": "Folder",
-  "title": "Biological Data"
+  "title": "Biological Data",
+  "_transitions": "publish"
 }

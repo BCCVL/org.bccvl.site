@@ -1,4 +1,5 @@
 {
   "_type": "Folder",
-  "title": "Climate Data"
+  "title": "Climate Data",
+  "_transitions": "publish"
 }

@@ -99,8 +99,16 @@ class SiteSetupTest(unittest.TestCase):
         # make sure fronte-page and knowledgebase are published
         portal = self.layer['portal']
         for id in (defaults.KNOWLEDGEBASE_FOLDER_ID,
+                   defaults.DATASETS_FOLDER_ID,
+                   defaults.EXPERIMENTS_FOLDER_ID,
+                   '/'.join((defaults.DATASETS_FOLDER_ID,
+                            defaults.DATASETS_CLIMATE_FOLDER_ID)),
+                   '/'.join((defaults.DATASETS_FOLDER_ID,
+                            defaults.DATASETS_SPECIES_FOLDER_ID)),
+                   '/'.join((defaults.DATASETS_FOLDER_ID,
+                            defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID)),
                    'front-page'):
-            content = portal[id]
+            content = portal.restrictedTraverse(id)
             wf_tool = getToolByName(portal, 'portal_workflow')
             chain = wf_tool.getChainFor(content)
             # only one workflow chain
