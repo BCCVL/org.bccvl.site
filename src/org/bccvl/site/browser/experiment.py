@@ -208,7 +208,7 @@ class SDMAdd(Add):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
         # TODO: validate all sort of extra info- new object does not exist yet
-        e.g. do spatial scale validation here
+        # e.g. do spatial scale validation here
         pass
 
 
