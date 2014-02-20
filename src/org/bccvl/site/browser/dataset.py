@@ -72,6 +72,8 @@ class DatasetEditView(DatasetFieldMixin, DefaultEditForm):
         url = self.context.absolute_url() + '/@@editfilemetadata'
         self.request.response.redirect(url)
 
+    # TODO: when the file get's replaced the metadata about zip content may become invalid'
+
 
 from plone.z3cform.crud import crud
 from zope import schema
@@ -116,12 +118,21 @@ def getFileGraph(context):
         #info.add((info.identifier, NFO['fileCreated'], NFO['ArchiveItem'])) # xsd:datetime
         info.add((info.identifier, NFO['fileName'], Literal(zipinfo.filename))) # XSD:string
         info.add((info.identifier, NFO['fileSize'], Literal(zipinfo.file_size))) # XSD:integer
-        ret[hash(info.identifier)] = info
+        ret[zipinfo.filename] = info
     return ret
+
+
+class EditSubForm(crud.EditSubForm):
+
+    def _select_field(self):
+        # remove checkbox field
+        return field.Fields()
 
 
 class EditFileMetadataForm(crud.EditForm):
     # only works within crud as well as base form
+
+    editsubform_factory = EditSubForm
 
     @button.buttonAndHandler(u'Apply changes',
                              name='edit',
@@ -145,7 +156,8 @@ class EditFileMetadataForm(crud.EditForm):
                 elif status is success:
                     status = partly_success
                 continue
-            del data['select']
+            # Wo have no select field in our editsubform
+            #del data['select']
             self.context.before_update(subform.content, data)
             changes = subform.applyChanges(data)
             if changes:
@@ -162,12 +174,16 @@ class EditFileMetadataForm(crud.EditForm):
                         notify(AfterWidgetUpdateEvent(widget))
         # don't forget to update our property we manage
 
+        # TODO: we shouldn't need a handler here'
+        handler = getUtility(IORDF).getHandler()
+
         urilist = []
         for subform in self.subforms:
             # TODO: this would handle adds?
             #if not subform.content_id: # we had no filename
             #    import ipdb; ipdb.set_trace()
             urilist.append(subform.content.identifier)
+            handler.put(subform.content)
         data = {self.context.property: urilist}
         # here we applyData to the context (actually Crud context)
         # should be fine but cleaner solution would be better?
@@ -179,7 +195,6 @@ class EditFileMetadataForm(crud.EditForm):
         # TODO: do only if things have changed
         #      - put current graph into changed queue, to persist changes
         #      - got ordf tool and push graph
-        handler = getUtility(IORDF).getHandler()
         handler.put(content)
         # TODO: update status if necessary
         self.status = status
@@ -233,9 +248,14 @@ class CrudFileMetadataForm(crud.CrudForm):
         if not self._items:
             handler = getUtility(IORDF).getHandler()
             items = {}
-            for ref in g.objects(g.identifier, self.property):
-                item = handler.get(ref)
-                items[hash(ref)] = item
+            try:
+                for ref in g.objects(g.identifier, self.property):
+                    item = handler.get(ref)
+                    itemid = item.value(item.identifier, NFO['fileName']).toPython()
+                    items[str(itemid)] = item
+            except:
+                # something wrong with file metadata ... regenerate it
+                items =  {}
             if not items: # was empty
                 items = getFileGraph(self.context)
             self._items = items
