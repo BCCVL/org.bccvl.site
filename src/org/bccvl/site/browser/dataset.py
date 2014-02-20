@@ -5,6 +5,7 @@ from z3c.form import form, field, button
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
 from zope.event import notify
+from zope.lifecycleevent import modified
 from org.bccvl.site.content.dataset import (ISpeciesDataset,
                                             ILayerDataset)
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
@@ -202,6 +203,7 @@ class EditFileMetadataForm(crud.EditForm):
         #      - got ordf tool and push graph
         handler.put(content)
         # TODO: update status if necessary
+        modified(self.context.context)
         self.status = status
         self.context.redirect()
 
