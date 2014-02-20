@@ -104,12 +104,12 @@
             <role name="Editor"/>
             <role name="Knowledgebase Editor"/>
         </permission>
-        <permission name="gu.repository.content: Add Repository Container" acquire="False"">
+        <permission name="gu.repository.content: Add Repository Container" acquire="False">
             <role name="Repository Administrator"/>
             <role name="Manager"/>
             <role name="Owner"/>
         </permission>
-        <permission name="gu.repository.content: Add Repository Item" acquire="False"">
+        <permission name="gu.repository.content: Add Repository Item" acquire="False">
             <role name="Repository Administrator"/>
             <role name="Repository Contributor"/>
             <role name="Manager"/>
