@@ -7,6 +7,7 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:cache="http://namespaces.zope.org/cache"
     i18n_domain="org.bccvl.site"
     >
 
@@ -79,6 +80,11 @@
         name="editfilemetadata"
         class=".dataset.CrudFileMetadataForm"
         permission="cmf.ModifyPortalContent"
+        />
+
+    <cache:ruleset
+        for=".dataset.CrudFileMetadataForm"
+        ruleset="plone.content.itemView"
         />
 
     <browser:page
