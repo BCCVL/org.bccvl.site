@@ -12,6 +12,7 @@
         </permission>
         <permission name="org.bccvl: Add Dataset" acquire="False">
             <role name="Manager" />
+            <role name="Owner" />
         </permission>
         <permission name="Add portal content" acquire="True">
             <role name="Manager"/>
@@ -102,6 +103,17 @@
             <role name="Owner"/>
             <role name="Editor"/>
             <role name="Knowledgebase Editor"/>
+        </permission>
+        <permission name="gu.repository.content: Add Repository Container" acquire="False"">
+            <role name="Repository Administrator"/>
+            <role name="Manager"/>
+            <role name="Owner"/>
+        </permission>
+        <permission name="gu.repository.content: Add Repository Item" acquire="False"">
+            <role name="Repository Administrator"/>
+            <role name="Repository Contributor"/>
+            <role name="Manager"/>
+            <role name="Owner"/>
         </permission>
         <!-- see Products/CMFEditions/profiles/default/rolemap.xml
              for history permissions -->
