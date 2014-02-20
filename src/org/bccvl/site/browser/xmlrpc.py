@@ -12,12 +12,12 @@ from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site import defaults
-from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC
+from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO
 import logging
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from zope.component import getUtility, queryUtility
 from zope.schema.vocabulary import getVocabularyRegistry
-from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
 from rdflib import URIRef
 from gu.plone.rdf.repositorymetadata import getContentUri
 import json
@@ -92,9 +92,10 @@ def getdsmetadata(ds):
     return md
 
 
-def getbiolayermetadata(ds):
+def getbiolayermetadata_query(ds):
     # TODO: use a sparql query to get all infos in one go...
     #       could get layer friendly names as well
+    # FIXME: this here does not respect uncomitted changes
     query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ns: <http://www.bccvl.org.au/individual/>
 PREFIX cvocab: <http://namespaces.griffith.edu.au/collection_vocab#>
@@ -124,6 +125,22 @@ SELECT ?bvar ?blabel ?fnam WHERE {{
     for row in handler.query(q):
         ret[row['bvar']] = {'label': unicode(row['blabel']),
                             'filename': unicode(row['fnam'])}
+    return ret
+
+
+def getbiolayermetadata(ds):
+    # TODO: use a sparql query to get all infos in one go...
+    #       could get layer friendly names as well
+    # FIXME: this here is slow compared to the query version above
+    ret = {}
+    handler = getUtility(IORDF).getHandler()
+    biovocab = getUtility(IVocabularyFactory, name='org.bccvl.site.BioclimVocabulary')(ds)
+    g = IGraph(ds)
+    for ref in g.objects(g.identifier, BCCPROP['hasArchiveItem']):
+        item = handler.get(ref)
+        bvar = item.value(item.identifier, BIOCLIM['bioclimVariable'])
+        ret[bvar] = {'label': unicode(biovocab.getTerm(bvar).title),
+                     'filename': unicode(item.value(item.identifier, NFO['fileName']))}
     return ret
 
 
