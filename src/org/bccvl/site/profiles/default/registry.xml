@@ -104,6 +104,22 @@
     </field>
     <value>True</value>
   </record>
+  <!-- plone.app.caching settings -->
+  <record name="plone.app.caching.interfaces.IPloneCacheSettings.contentTypeRulesetMapping" interface="plone.app.caching.interfaces.IPloneCacheSettings" field="contentTypeRulesetMapping">
+    <field type="plone.registry.field.Dict">
+      <description>Maps content type names to ruleset names</description>
+      <key_type type="plone.registry.field.ASCIILine">
+        <title>Content type name</title>
+      </key_type>
+      <title>Content type/ruleset mapping</title>
+      <value_type type="plone.registry.field.DottedName">
+        <title>Ruleset name</title>
+      </value_type>
+    </field>
+    <value>
+      <element key="Folder">plone.content.folderView</element>
+    </value>
+  </record>
   <!-- gu.plone.rdf settings -->
   <record name="gu.plone.rdf.interfaces.IRDFSettings.fresnel_graph_uri" interface="gu.plone.rdf.interfaces.IRDFSettings" field="fresnel_graph_uri">
     <field type="plone.registry.field.URI">
