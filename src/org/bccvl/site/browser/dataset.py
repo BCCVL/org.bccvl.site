@@ -9,6 +9,7 @@ from org.bccvl.site.content.dataset import (ISpeciesDataset,
                                             ILayerDataset)
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
 from org.bccvl.site.browser.job import IJobStatus
+from zope.browserpage import viewpagetemplatefile
 
 
 class DatasetFieldMixin(object):
@@ -124,6 +125,8 @@ def getFileGraph(context):
 
 class EditSubForm(crud.EditSubForm):
 
+    template = viewpagetemplatefile.ViewPageTemplateFile('datasets_filemd_row.pt')
+
     def _select_field(self):
         # remove checkbox field
         return field.Fields()
@@ -131,6 +134,7 @@ class EditSubForm(crud.EditSubForm):
 
 class EditFileMetadataForm(crud.EditForm):
     # only works within crud as well as base form
+    template = viewpagetemplatefile.ViewPageTemplateFile('datasets_filemd_table.pt')
 
     editsubform_factory = EditSubForm
 
@@ -211,7 +215,7 @@ class CrudFileMetadataForm(crud.CrudForm):
     # Could be used as generic form for a specific property
     # .. lookup by (property)name ?
     # TODO: remember return address and maybe all form parameters (to return to previous form in same state if possible); makes this form work the same way with or without ajax
-
+    template = viewpagetemplatefile.ViewPageTemplateFile('datasets_filemd_master.pt')
     # TODO generalise this
     property = BCCPROP['hasArchiveItem']
 
