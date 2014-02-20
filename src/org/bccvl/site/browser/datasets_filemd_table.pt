@@ -16,7 +16,7 @@
 
     <tal:batch tal:replace="structure view/render_batch_navigation" />
 
-    <table class="listing table" tal:define="rows view/subforms">
+    <table class="listing" tal:define="rows view/subforms">
         <thead tal:define="row1 python:len(rows) and rows[0] or None"
                tal:condition="python:row1 is not None">
           <tr>
