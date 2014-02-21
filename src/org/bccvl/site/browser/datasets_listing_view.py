@@ -4,6 +4,8 @@ from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
 from org.bccvl.site.api import QueryAPI
 from org.bccvl.site.utilities import IJobTracker
+from Products.CMFCore.utils import getToolByName
+from zope.security import checkPermission
 
 
 def get_title_from_uuid(uuid):
@@ -33,6 +35,23 @@ class DatasetsListingView(BrowserView):
         if states:
             return states[0][1]
         return None
+
+    def get_transition(self, itemob):
+        #return checkPermission('cmf.RequestReview', self.context)
+        wftool = getToolByName(itemob, 'portal_workflow')
+        wfid = wftool.getChainFor(itemob)[0]
+        wf = wftool.getWorkflowById(wfid)
+        # check whether user can invoke transition
+        # TODO: expects simple publication workflow publish/retract
+        for transition in ('publish', 'retract'):
+            if wf.isActionSupported(itemob, transition):
+                return transition
+
+    def download_url(self):
+        pass
+
+    def can_modify(self, itemob):
+        return checkPermission('cmf.ModifyPortalContent', itemob)
 
     # def experiment_details(self, expbrain):
     #     details = {}

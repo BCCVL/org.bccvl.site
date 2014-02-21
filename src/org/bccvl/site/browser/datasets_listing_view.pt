@@ -43,7 +43,8 @@
                         <metal:entry fill-slot="entry">
 
                     <tr metal:define-macro="listitem"
-                        tal:define="oddrow repeat/item/odd;"
+                        tal:define="oddrow repeat/item/odd;
+                                    item_obj item/getObject;"
                         tal:attributes="class python: oddrow and 'even' or 'odd'">
                             <!-- Title -->
                             <td>
@@ -91,20 +92,22 @@
                             <tal:state tal:replace="python: state or 'Available'"/>
                         </td>
                         <!-- Actions -->
-                        <td tal:condition="show_about">
+                        <!-- TODO: expects simple publication workflow
+                        publish/retract -->
+                        <td tal:condition="show_about"
+                            tal:define="action python:view.get_transition(item_obj)">
                           <a href="#"
                              tal:attributes="href string:${item_url}/dm/share"
-                             tal:condition="python: show_about and item_wf_state != 'published'"
+                             tal:condition="python: action == 'publish'"
                              >Share</a>
                           <a href="#"
                              tal:attributes="href string:${item_url}/dm/unshare"
-                             tal:condition="python: show_about and item_wf_state == 'published'"
+                             tal:condition="python: action == 'retract'"
                              >Un-share</a>
                         </td>
                         <!-- Download -->
                         <td
-                             tal:define="item_obj item/getObject;
-                                         file item_obj/file">
+                             tal:define="file item_obj/file">
                           <a href="#"
                              tal:condition="file"
                              tal:attributes="href string:${item_url}/@@download/file/${file/filename}">Download</a>
