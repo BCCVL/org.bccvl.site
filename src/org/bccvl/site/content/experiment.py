@@ -112,7 +112,7 @@ class ProjectionExperiment(Container):
 
     def future_climate_datasets(self):
         # TODO: use QueryApi?
-        return find_projections(self.context, self.emission_scenarios, self.climate_models, self.years)
+        return find_projections(self, self.emission_scenarios, self.climate_models, self.years)
 
 
 # TODO: turn this into some adapter lookup component-> maybe use z3c.form validation adapter lookup?
