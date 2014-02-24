@@ -24,7 +24,7 @@
     <browser:view
         name="dm"
         class=".xmlrpc.DataSetManager"
-        allowed_attributes="getMetadata queryDataset getVocabulary"
+        allowed_attributes="getMetadata queryDataset getVocabulary getProjectionDatasets"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="zope2.View" >
 
@@ -39,6 +39,10 @@
         <browser:page
             name="getVocabulary"
             attribute="getVocabulary"/>
+
+       <browser:page
+            name="getProjectionDatasets"
+            attribute="getProjectionDatasets"/>
 
     </browser:view>
 

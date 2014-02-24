@@ -11,21 +11,22 @@ from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.experiment import find_projections
 from org.bccvl.site import defaults
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO
+from ordf.namespace import DC
 import logging
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from zope.component import getUtility, queryUtility
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
-from rdflib import URIRef
 from gu.plone.rdf.repositorymetadata import getContentUri
 import json
 from Products.statusmessages.interfaces import IStatusMessage
 from org.bccvl.site.browser.ws import IDataMover, IALAService
 from plone.dexterity.utils import createContentInContainer
 from rdflib.resource import Resource
-from rdflib import Literal
+from rdflib import Literal, URIRef
 
 
 LOG = logging.getLogger(__name__)
@@ -173,6 +174,33 @@ class DataSetManager(BrowserView):
             result.append({'uuid': brain.UID,
                            'title': brain.Title})
         return result
+
+    @returnwrapper
+    def getProjectionDatasets(self):
+        # TODO: should move this to Projection Add Form and let form
+        # do the parameter parsing
+        # reads:
+        #   form.widgets.years  W3CDTF
+        #   form.widgets.emission_scenarios URIRefs
+        #   form.widgets.climate_models URIRefs
+        # 1. read request:
+        years = self.request.get('form.widgets.years')
+        emsc = self.request.get('form.widgets.emission_scenarios')
+        gcms = self.request.get('form.widgets.climate_models')
+        # 2. no search if we have no values
+        if not all((years, emsc, gcms)):
+            return 0
+        # 3. make sure we have lists
+        years = [years] if not isinstance(years, list) else years
+        emsc = [emsc] if not isinstance(emsc, list) else emsc
+        gcms = [gcms] if not isinstance(gcms, list) else gcms
+        # 4. convert to proper values
+        years = [Literal(x, datatype=DC['Period']) for x in years]
+        emsc = [URIRef(x) for x in emsc]
+        gcms = [URIRef(x) for x in gcms]
+        # 5. search
+        res = find_projections(self.context, emsc, gcms, years)
+        return len(res)
 
     @returnwrapper
     def getVocabulary(self, name):
