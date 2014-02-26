@@ -140,7 +140,8 @@ class SiteSetupTest(unittest.TestCase):
         self.assertEqual(fti.add_permission, 'org.bccvl.AddDataset')
 
     def test_permission_mapping(self):
-        # FIXME: this tests our easy testing permissions and should change to harden the system
+        # FIXME: this tests our easy testing permissions and should
+        #        change to harden the system
         portal = self.layer['portal']
         experiments = portal[defaults.EXPERIMENTS_FOLDER_ID]
         # FIXME: Allow ever Member to add anything within expermiments

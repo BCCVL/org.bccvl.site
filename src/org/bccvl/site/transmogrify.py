@@ -48,8 +48,8 @@ class JSONSource(object):
         # 1. iterate through dir  files first
         for (root, dirs, files) in os.walk(self.path):
             for filename in files:
-                if (not filename.endswith('.json') or
-                    filename.startswith('.')):
+                if (not filename.endswith('.json')
+                    or filename.startswith('.')):
                     # if it's not json it's not an item
                     # if it starts with . we don't want it
                     continue
@@ -67,13 +67,15 @@ class JSONSource(object):
                 item[self.pathkey] = '/'.join(path.split(os.sep))
                 # _files
                 if name in dirs:
-                    # matching dir for entry? then read all the files within it.
+                    # matching dir for entry? then read all the files
+                    # within it.
                     _files = item.setdefault(self.fileskey, {})
                     for _filename in os.listdir(os.path.join(root, name)):
                         if (_filename.startswith('.') or
                             _filename.endswith('.json')):
-                            # TODO: figure out way to allow attachments with .json
-                            # ignore . and .json in case item is a folder
+                            # TODO: figure out way to allow
+                            # attachments with .json ignore . and
+                            # .json in case item is a folder
                             continue
                         _absfilename = os.path.join(root, name, _filename)
                         if os.path.isdir(_absfilename):
@@ -161,7 +163,8 @@ class ALASource(object):
         rdfmd.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreSO'])
         rdfmd.add(BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP'])
         rdfmd.add(RDF['type'], CVOCAB['Dataset'])
-        # TODO: important thing ... date of export (import data in plone)/ date modified in ALA
+        # TODO: important thing ... date of export (import data in
+        #       plone)/ date modified in ALA
 
         # FIXME: important of the same guid changes current existing dataset
         #_, id = json['taxonConcept']['guid'].rsplit(':', 1)
@@ -297,8 +300,9 @@ class SelectableConstrainTypes(object):
                 yield item
                 continue
 
-            obj = self.context.unrestrictedTraverse(item[pathkey].lstrip('/'), None)
-            if obj is None:             # path doesn't exist
+            obj = self.context.unrestrictedTraverse(item[pathkey].lstrip('/'),
+                                                    None)
+            if obj is None:  # path doesn't exist
                 yield item
                 continue
 
@@ -367,7 +371,8 @@ class NameChoosingConstructor(object):
                     raise KeyError(error)
 
             # use title as hint for id if available
-            # TODO: maybe try to set filename upfront, to use INameFromFilename if possible
+            # TODO: maybe try to set filename upfront, to use
+            #       INameFromFilename if possible
             kws = {}
             if 'title' in item:
                 kws['title'] = item['title']

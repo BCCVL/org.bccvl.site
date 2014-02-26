@@ -109,7 +109,8 @@ class DatasetsImportView(BrowserView):
             ret = json.loads(ret)
             # TODO: check ret for errors?
             # TODO: dataset created should be added in pullOccurenceFromALA
-            IStatusMessage(self.request).add("New Dataset created", type='info')
+            IStatusMessage(self.request).add("New Dataset created",
+                                             type='info')
             IStatusMessage(self.request).add(ret[1], type=ret[0])
             # TODO: what is ret? json? html? tuple?
             # TODO: redirect to dataset or listing view?
@@ -120,4 +121,5 @@ class DatasetsImportView(BrowserView):
         return super(DatasetsImportView, self).__call__()
 
     # TODO: implement search: get list of data and feed template with it
-    #       implement import: get selected lsid and title and do what pullOccurrencesFromALA does
+    #       implement import: get selected lsid and title and do
+    #                         what pullOccurrencesFromALA does

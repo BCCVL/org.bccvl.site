@@ -111,7 +111,8 @@ class DatasetsWidget(HTMLFormElement, Widget):
         for item in self.items:
             cbname = '{}.select'.format(item['name'])
             if cbname in self.request:
-                value_widget = self.getValueWidget(item['token'], item['value'])
+                value_widget = self.getValueWidget(item['token'],
+                                                   item['value'])
                 values.append((item['value'], value_widget.value))
         return dict(values)
 
@@ -146,8 +147,8 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
                 label = util.toUnicode(term.value)
             # do catalog query for additional infos
             items.append(
-                {'id':id, 'name':self.name, 'value':term.token,
-                 'label':label, 'checked':checked})
+                {'id': id, 'name': self.name, 'value': term.token,
+                 'label': label, 'checked': checked})
         return items
 
     def get_item_details(self, item):
@@ -156,20 +157,21 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
         pc = getToolByName(self.context, 'portal_catalog')
         brain = pc.searchResults(UID=item['value'])[0]
         sdm = brain.getObject()
-        # TODO: we might have two options here
-        #       sdm could be uploaded, then we'll show other data
-        #       for now ignore this case and consider only results for sdm experiments
+        # TODO: we might have two options here sdm could be uploaded,
+        #       then we'll show other data; for now ignore this case
+        #       and consider only results for sdm experiments
         result = sdm.__parent__
         exp = result.__parent__
         occurbrain = uuidToCatalogBrain(exp.species_occurrence_dataset)
         #TODO:  need function for this specific str
-        envlayervocab = getUtility(IContextSourceBinder, name='envirolayer_source')(self.context)
+        envlayervocab = getUtility(IContextSourceBinder,
+                                   name='envirolayer_source')(self.context)
         # TODO: absence data
         envlayers = ', '.join(
-                '{}: {}'.format(uuidToCatalogBrain(envuuid).Title,
-                                ', '.join(envlayervocab.getTerm(envlayer).title
-                                          for envlayer in sorted(layers)))
-                    for (envuuid, layers) in sorted(exp.environmental_datasets.items()))
+            '{}: {}'.format(uuidToCatalogBrain(envuuid).Title,
+                            ', '.join(envlayervocab.getTerm(envlayer).title
+                                      for envlayer in sorted(layers)))
+            for (envuuid, layers) in sorted(exp.environmental_datasets.items()))
 
         return {
             'model': brain,

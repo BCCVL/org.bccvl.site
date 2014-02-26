@@ -24,7 +24,8 @@ class DatasetFieldMixin(object):
             yield schema
         md = IGraph(self.context)
         genre = md.value(md.identifier, BCCPROP['datagenre'])
-        # TODO: do a better check for genre. e.g. query store for classes of genre?
+        # TODO: do a better check for genre. e.g. query store for
+        #       classes of genre?
         if genre in (BCCVOCAB['DataGenreSA'], BCCVOCAB['DataGenreSO']):
             yield ISpeciesDataset
         elif genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreE']):
@@ -34,7 +35,8 @@ class DatasetFieldMixin(object):
     # def updateFields(self):
     #     md = IGraph(self.context)
     #     genre = md.value(md.identifier, BCCPROP['datagenre'])
-    #     # TODO: do a better check for genre. e.g. query store for classes of genre?
+    #     # TODO: do a better check for genre. e.g. query store for
+    #             classes of genre?
     #     import ipdb; ipdb.set_trace()
     #     if genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreSD'],
     #                  BCCVOCAB['DataGenreSO']):
@@ -71,11 +73,13 @@ class DatasetEditView(DatasetFieldMixin, DefaultEditForm):
     @button.buttonAndHandler(u'Edit File Details', name='edit_file_metadata')
     def handleEditFileMetadata(self, action):
         # do whatever here and redirect to metadata edit view
-        # TODO: use restrictedTraverse to check security as well? (would avoid login page)
+        # TODO: use restrictedTraverse to check security as well?
+        #       (would avoid login page)
         url = self.context.absolute_url() + '/@@editfilemetadata'
         self.request.response.redirect(url)
 
-    # TODO: when the file get's replaced the metadata about zip content may become invalid'
+    # TODO: when the file get's replaced the metadata about zip
+    #       content may become invalid'
 
 
 from plone.z3cform.crud import crud
@@ -99,13 +103,15 @@ class IFileItemMetadata(Interface):
 
     bioclim = rdfschema.RDFURIChoiceField(
         title=u"Bioclimatic Variable",
-        prop = BIOCLIM['bioclimVariable'],
+        prop=BIOCLIM['bioclimVariable'],
         vocabulary='org.bccvl.site.BioclimVocabulary')
 
 
 def getFileGraph(context):
     """
-    create a new set of graphs to hold general file information for files within an archive
+    create a new set of graphs to hold general file information for
+    files within an archive
+
     """
     file = context.file.open('r')
     zip = zipfile.ZipFile(file)
@@ -118,9 +124,12 @@ def getFileGraph(context):
         info = Graph(identifier=ordf.generateURI())
         info.add((info.identifier, RDF['type'], NFO['ArchiveItem']))
         #info.add((info.identifier, RDF['type'], NFO['RasterImage']))
-        #info.add((info.identifier, NFO['fileCreated'], NFO['ArchiveItem'])) # xsd:datetime
-        info.add((info.identifier, NFO['fileName'], Literal(zipinfo.filename))) # XSD:string
-        info.add((info.identifier, NFO['fileSize'], Literal(zipinfo.file_size))) # XSD:integer
+        #info.add((info.identifier, NFO['fileCreated'],
+        #          NFO['ArchiveItem'])) # xsd:datetime
+        info.add((info.identifier, NFO['fileName'],
+                  Literal(zipinfo.filename)))  # XSD:string
+        info.add((info.identifier, NFO['fileSize'],
+                  Literal(zipinfo.file_size)))  # XSD:integer
         ret[zipinfo.filename] = info
     return ret
 
@@ -174,7 +183,7 @@ class EditFileMetadataForm(crud.EditForm):
 
                 # If there were changes, we'll update the view widgets
                 # again, so that they'll actually display the changes
-                for widget in  subform.widgets.values():
+                for widget in subform.widgets.values():
                     if widget.mode == DISPLAY_MODE:
                         widget.update()
                         notify(AfterWidgetUpdateEvent(widget))
@@ -217,7 +226,10 @@ class CrudFileMetadataForm(crud.CrudForm):
     # by this property
     # Could be used as generic form for a specific property
     # .. lookup by (property)name ?
-    # TODO: remember return address and maybe all form parameters (to return to previous form in same state if possible); makes this form work the same way with or without ajax
+
+    # TODO: remember return address and maybe all form parameters (to
+    #       return to previous form in same state if possible); makes this
+    #       form work the same way with or without ajax
     template = ViewPageTemplateFile('datasets_filemd_master.pt')
     # TODO generalise this
     property = BCCPROP['hasArchiveItem']
@@ -228,21 +240,22 @@ class CrudFileMetadataForm(crud.CrudForm):
     addform_factory = crud.NullForm
 
     _content = None
-    _items =  None
+    _items = None
     _referer = None
 
     def __init__(self, context, request):
         super(CrudFileMetadataForm, self).__init__(context, request)
         # TODO: need to store the referer as hiddon field on form or in session
         #       .... referer/ returnURL processing should happen in update
-        #       .... __init__ is also called on submit and will set current url...
-        #            so request param must win over http header
-        # could also check 'PARENTS', 'PATH_INFO','PATH_TRANSLATED', ACTUAL_URL or URL
+        #       .... __init__ is also called on submit and will set
+        #            current url... so request param must win over http header
+        # could also check 'PARENTS', 'PATH_INFO','PATH_TRANSLATED',
+        #                   ACTUAL_URL or URL
         # to get context + previous view name
 
     def redirect(self):
         # get current context and redirect to @@edit
-        nexturl = self.context.absolute_url() +  '/edit'
+        nexturl = self.context.absolute_url() + '/edit'
         self.request.response.redirect(nexturl)
 
     def getContent(self):
@@ -258,16 +271,19 @@ class CrudFileMetadataForm(crud.CrudForm):
             try:
                 for ref in g.objects(g.identifier, self.property):
                     item = handler.get(ref)
-                    itemid = item.value(item.identifier, NFO['fileName']).toPython()
+                    itemid = item.value(item.identifier,
+                                        NFO['fileName']).toPython()
                     items[str(itemid)] = item
             except:
                 # something wrong with file metadata ... regenerate it
-                items =  {}
-            if not items: # was empty
+                items = {}
+            if not items:  # was empty
                 items = getFileGraph(self.context)
             self._items = items
         # TODO: sort key configurable
-        return sorted(self._items.items(), key=lambda x: x[1].value(x[1].identifier, NFO['fileName']))
+        return sorted(self._items.items(),
+                      key=lambda x: x[1].value(x[1].identifier,
+                                               NFO['fileName']))
 
     def add(self, data):
         #import ipdb; ipdb.set_trace()

@@ -31,7 +31,8 @@ def dataset_BCCGlobalClimateModel(object, *kw):
     return tuple(graph.objects(graph.identifier, BCCPROP['gcm']))
 
 
-# TODO: should be a DateRangeIndex (resolve partial dates to 1stday (start) and last day (end))
+# TODO: should be a DateRangeIndex (resolve partial dates to 1stday
+#       (start) and last day (end))
 # @indexer(IDataset)
 # def dataset_DCTemporal(object, *kw):
 #     graph = IGraph(object)

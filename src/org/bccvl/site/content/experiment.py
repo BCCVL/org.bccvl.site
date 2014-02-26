@@ -6,7 +6,6 @@ from zope.interface import implementer
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IExperiment
-from plone.directives import form
 from gu.z3cform.rdf.interfaces import IGraph
 from ordf.namespace import DC as DCTERMS
 
@@ -36,7 +35,8 @@ class ISDMExperiment(IExperiment):
 
     species_pseudo_absence_points = Bool(
         title=u"Pseudo absence points",
-        description=u"Enable generation of random pseudo absence points across area defined inenvironmental data",
+        description=u"Enable generation of random pseudo absence "
+                    u"points across area defined inenvironmental data",
         default=False,
         required=False)
 
@@ -70,8 +70,10 @@ class IProjectionExperiment(IExperiment):
         required=True,
     )
 
-    # TODO: instead of form hints ... maybe set widgetfactory in form updateWidgets?
-    #       form hint affects all forms ... using updateWidgets would require to customise every form where we wanta custom widget
+    # TODO: instead of form hints ... maybe set widgetfactory in form
+    #       updateWidgets?  form hint affects all forms ... using
+    #       updateWidgets would require to customise every form where
+    #       we wanta custom widget
     form.widget(years=
                 'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     years = List(
@@ -112,10 +114,12 @@ class ProjectionExperiment(Container):
 
     def future_climate_datasets(self):
         # TODO: use QueryApi?
-        return find_projections(self, self.emission_scenarios, self.climate_models, self.years)
+        return find_projections(self, self.emission_scenarios,
+                                self.climate_models, self.years)
 
 
-# TODO: turn this into some adapter lookup component-> maybe use z3c.form validation adapter lookup?
+# TODO: turn this into some adapter lookup component-> maybe use
+# z3c.form validation adapter lookup?
 def find_projections(ctx, emission_scenarios, climate_models, years):
         """compile points into list of datasets"""
         pc = getToolByName(ctx, 'portal_catalog')

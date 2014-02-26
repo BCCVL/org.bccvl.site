@@ -86,9 +86,10 @@ def getdsmetadata(ds):
             'filename': ds.file.filename,
             'file': '{}/@@download/file/{}'.format(ds.absolute_url(),
                                                    ds.file.filename),
-            'vizurl': '{}{}/@@download/file/{}'.format('http://127.0.0.1:8201',
-                                             '/'.join(ds.getPhysicalPath()),
-                                             ds.file.filename),
+            'vizurl': '{}{}/@@download/file/{}'.format(
+                'http://127.0.0.1:8201',
+                '/'.join(ds.getPhysicalPath()),
+                ds.file.filename),
         })
     return md
 
@@ -135,13 +136,15 @@ def getbiolayermetadata(ds):
     # FIXME: this here is slow compared to the query version above
     ret = {}
     handler = getUtility(IORDF).getHandler()
-    biovocab = getUtility(IVocabularyFactory, name='org.bccvl.site.BioclimVocabulary')(ds)
+    biovocab = getUtility(IVocabularyFactory,
+                          name='org.bccvl.site.BioclimVocabulary')(ds)
     g = IGraph(ds)
     for ref in g.objects(g.identifier, BCCPROP['hasArchiveItem']):
         item = handler.get(ref)
         bvar = item.value(item.identifier, BIOCLIM['bioclimVariable'])
         ret[bvar] = {'label': unicode(biovocab.getTerm(bvar).title),
-                     'filename': unicode(item.value(item.identifier, NFO['fileName']))}
+                     'filename': unicode(item.value(item.identifier,
+                                                    NFO['fileName']))}
     return ret
 
 
@@ -321,7 +324,8 @@ class ALAProxy(BrowserView):
     #@returnwrapper ... returning file here ... returnwrapper not handling it properly
     def autojson(self, q, geoOnly=None, idxType=None, limit=None,
                  callback=None):
-        # TODO: do parameter checking and maybe set defaults so that js side doesn't have to do it
+        # TODO: do parameter checking and maybe set defaults so that
+        # js side doesn't have to do it
         ala = getUtility(IALAService)
         return self._doResponse(ala.autojson(q, geoOnly, idxType, limit,
                                              callback))
@@ -329,7 +333,8 @@ class ALAProxy(BrowserView):
     #@returnwrapper ... returning file here ... returnwrapper not handling it properly
     def searchjson(self, q, fq=None, start=None, pageSize=None,
                    sort=None, dir=None, callback=None):
-        # TODO: do parameter checking and maybe set defaults so that js side doesn't have to do it
+        # TODO: do parameter checking and maybe set defaults so that
+        #       js side doesn't have to do it
         ala = getUtility(IALAService)
         return self._doResponse(ala.searchjson(q, fq, start, pageSize,
                                                sort, dir, callback))
@@ -351,8 +356,8 @@ class ALAProxy(BrowserView):
         if len(ret) != 0:
             # we have a content-length so let the publisher stream it
             return ret
-        # we don't have content-length and stupid publisher want's one for stream
-        # so let's stream it ourselves.
+        # we don't have content-length and stupid publisher want's one
+        # for stream, so let's stream it ourselves.
         while True:
             try:
                 data = ret.next()

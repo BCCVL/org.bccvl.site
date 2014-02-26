@@ -103,7 +103,7 @@ def addToolkitFields(form):
             continue
         parameters_schema = resolve(toolkit.schema)
         field_schema = schema.Object(
-            __name__ = 'parameters_%s' % toolkit.id,
+            __name__='parameters_%s' % toolkit.id,
             title=u'configuration for %s' % toolkit.title,
             schema=parameters_schema,
             required=False,
@@ -111,7 +111,8 @@ def addToolkitFields(form):
         if len(field_schema.schema.names()) == 0:
             field_schema.description = u"No configuration options"
         fields.append(field_schema)
-    config_group = GroupFactory('parameters', Fields(*fields), 'Configuration', None)
+    config_group = GroupFactory('parameters', Fields(*fields),
+                                'Configuration', None)
     # make it the first fieldset so it always has the same ID for diazo
     # ...there must be a better way to do that
     form.groups.insert(0, config_group)
@@ -131,8 +132,8 @@ class Add(add.DefaultAddForm):
         if errors:
             self.status = self.formErrorsMessage
             return
-        # TODO: this is prob. a bug in base form, because createAndAdd does not return
-        #       the wrapped object.
+        # TODO: this is prob. a bug in base form, because createAndAdd
+        #       does not return the wrapped object.
         obj = self.createAndAdd(data)
         if obj is None:
             # TODO: this is probably an error here?
@@ -142,9 +143,9 @@ class Add(add.DefaultAddForm):
         obj = self.context[obj.id]
         # mark only as finished if we get the new object
         self._finishedAdd = True
-        IStatusMessage(self.request).addStatusMessage(_(u"Item created"), "info")
+        IStatusMessage(self.request).addStatusMessage(_(u"Item created"),
+                                                      "info")
         # auto start job here
-
         jt = IJobTracker(obj)
         msgtype, msg = jt.start_job(self.request)
         if msgtype is not None:
@@ -157,8 +158,8 @@ class Add(add.DefaultAddForm):
         if errors:
             self.status = self.formErrorsMessage
             return
-        # TODO: this is prob. a bug in base form, because createAndAdd does not return
-        #       the wrapped object.
+        # TODO: this is prob. a bug in base form, because createAndAdd
+        #       does not return the wrapped object.
         obj = self.createAndAdd(data)
         if obj is None:
             # TODO: this is probably an error here?
@@ -168,7 +169,8 @@ class Add(add.DefaultAddForm):
         obj = self.context[obj.id]
         # mark only as finished if we get the new object
         self._finishedAdd = True
-        IStatusMessage(self.request).addStatusMessage(_(u"Item created"), "info")
+        IStatusMessage(self.request).addStatusMessage(_(u"Item created"),
+                                                      "info")
 
     # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
@@ -217,9 +219,13 @@ class ProjectionAdd(Add):
     def validateAction(self, data):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
+        # TODO: do spatial scale validation as well (find_projection
+        #       might be able to do it already)
+        #
         from org.bccvl.site.content.experiment import find_projections
         result = find_projections(self.context, data.get('emission_scenarios'),
-                                  data.get('climate_models'), data.get('years'))
+                                  data.get('climate_models'),
+                                  data.get('years'))
         if not len(result):
             raise ActionExecutionError(Invalid(u"The combination of projection points does not match any datasets"))
 

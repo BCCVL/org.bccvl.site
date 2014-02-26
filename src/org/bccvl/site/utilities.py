@@ -87,7 +87,8 @@ class RDFDataMapper(object):
                           (DCTERMS['description'], Literal(content.description)),
                           (RDFS['comment'], Literal(content.description)),
                           ):
-            # TODO: support language tagged values (e.g. remove only same language first and add new values)
+            # TODO: support language tagged values (e.g. remove only
+            #       same language first and add new values)
             if not graph.value(graph.identifier, prop):
                 graph.add((graph.identifier, prop, val))
 
@@ -102,7 +103,8 @@ class JobTracker(object):
         if not self.has_active_jobs():
             self.context.current_jobs = []
             for func in (uuidToObject(f) for f in self.context.functions):
-                # TODO: default queue quota is 1. either set it to a defined value (see: plone.app.asnc.subscriber)
+                # TODO: default queue quota is 1. either set it to a
+                #       defined value (see: plone.app.asnc.subscriber)
                 #       or create and submit job manually
                 #job = async.queueJob(execute, self.context, envfile, specfile)
                 method = None
@@ -195,7 +197,8 @@ def alaimport(dataset, lsid):
             jobstatus = dm.check_move_status(jobstatus['id'])
         if jobstatus['status'] in ("FAILED",  "REJECTED"):
             # TODO: Do something useful here; how to notify user about failure?
-            LOG.fatal("ALA import failed %s: %s", jobstatus['status'], jobstatus['reason'])
+            LOG.fatal("ALA import failed %s: %s", jobstatus['status'],
+                      jobstatus['reason'])
             return
 
         #transmogrify.dexterity.schemaupdater needs a REQUEST on context????
@@ -203,9 +206,9 @@ def alaimport(dataset, lsid):
         from ZPublisher.HTTPRequest import HTTPRequest
         import sys
         response = HTTPResponse(stdout=sys.stdout)
-        env = {'SERVER_NAME':'fake_server',
-               'SERVER_PORT':'80',
-               'REQUEST_METHOD':'GET'}
+        env = {'SERVER_NAME': 'fake_server',
+               'SERVER_PORT': '80',
+               'REQUEST_METHOD': 'GET'}
         request = HTTPRequest(sys.stdin, env, response)
 
         # Set values from original request
