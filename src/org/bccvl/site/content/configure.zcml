@@ -4,6 +4,10 @@
         i18n_domain="org.bccvl"
         >
 
+    <adapter factory=".user.NameFromFullName" />
+
+    <adapter factory=".user.BCCVLUserProperties" />
+
     <genericsetup:registerProfile
         name="content"
         title="BCCVL User / Group content"

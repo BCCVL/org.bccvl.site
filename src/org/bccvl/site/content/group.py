@@ -21,12 +21,12 @@ class IBCCVLGroup(form.Schema):
         #title=_(u"External Homepage"),
         title=u"External Homepage",
         required=False,
-    #constraint=is_url,
+        #constraint=is_url,
         )
 
     form.widget(bio="plone.app.z3cform.wysiwyg.WysiwygFieldWidget")
     bio = schema.Text(
-    #title=_(u"Biography"),
-    title=u"Biography",
+        #title=_(u"Biography"),
+        title=u"Biography",
         required=False,
         )

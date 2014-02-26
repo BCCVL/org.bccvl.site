@@ -41,12 +41,6 @@
         name="BCCVL User Adder"
     />
 
-    <subscriber
-        for="Products.membrane.interfaces.user.IMembraneUser
-             Products.PlonePAS.interfaces.events.IUserInitialLoginInEvent"
-        handler=".subscribers.InitaliseUser"
-    />
-
     <!--<adapter-->
         <!--for="Products.CMFCore.interfaces.IFolderish-->
              <!--Products.CMFDefault.interfaces.ICMFDefaultSkin-->
