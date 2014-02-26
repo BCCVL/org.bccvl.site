@@ -37,13 +37,6 @@ class BCCVLLayer(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE, )
 
     def setUpZope(self, app, configurationContext):
-        # FIXME: hack a config together...
-        from App.config import getConfiguration
-        cfg = getConfiguration()
-        cfg.product_config = {'gu.plone.rdf': {
-            'inifile': os.path.join(TESTSDIR, 'ordf.ini'),
-            }}
-
         # load ZCML and use z2.installProduct here
         self.loadZCML('testing.zcml', package=org.bccvl.site.tests)
         z2.installProduct(app, 'Products.membrane')
