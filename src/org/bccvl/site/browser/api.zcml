@@ -10,7 +10,6 @@
     i18n_domain="org.bccvl.site"
     >
 
-
     <!-- permissions: zope2.View, zope.Public, cmf.ModifyPortalContent
     -->
     <browser:view

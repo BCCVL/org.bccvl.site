@@ -247,7 +247,10 @@ class DataSetAPI(BrowserView):
             msg = u"Status change failed"
             msg_type = 'error'
         IStatusMessage(self.request).add(msg, type=msg_type)
-        self.request.response.redirect(self.request['HTTP_REFERER'])
+        next = self.request['HTTP_REFERER']
+        if not next or next == self.request['URL']:
+            next = self.context.absolute_url()
+        self.request.response.redirect(next)
 
     @returnwrapper
     def unshare(self):
@@ -261,7 +264,10 @@ class DataSetAPI(BrowserView):
             msg = u"Status change failed"
             msg_type = 'error'
         IStatusMessage(self.request).add(msg, type=msg_type)
-        self.request.response.redirect(self.request['HTTP_REFERER'])
+        next = self.request['HTTP_REFERER']
+        if not next or next == self.request['URL']:
+            next = self.context.absolute_url()
+        self.request.response.redirect(next)
 
 
 class JobManager(BrowserView):
