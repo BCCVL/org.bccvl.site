@@ -209,9 +209,9 @@ class ExperimentsViewFunctionalTest(unittest.TestCase):
         app = self.layer['app']
         self.portal = self.layer['portal']
         self.request = self.layer['request']
-        setRoles(self.portal, TEST_USER_ID, ['Manager'])
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
         self.experiments_url = self.experiments.absolute_url()
+        # this creates an experiment with no values set at all
         self.experiments.invokeFactory('org.bccvl.content.sdmexperiment', id='exp', title='My Experiment')
         self.exp = self.experiments['exp']
         self.exp_url = self.exp.absolute_url()

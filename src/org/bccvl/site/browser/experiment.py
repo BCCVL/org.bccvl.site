@@ -95,10 +95,12 @@ class SDMEdit(Edit):
 
 
 def addToolkitFields(form):
+    # context is usually a folder (add form) or experiment (edit, display)
     api = QueryAPI(form.context)
     fields = []
+    functions = getattr(form.context, 'functions', None) or ()
     for toolkit in (brain.getObject() for brain in api.getFunctions()):
-        if form.mode == DISPLAY_MODE and toolkit.UID() not in form.context.functions:
+        if form.mode == DISPLAY_MODE and toolkit.UID() not in functions:
             # filter out unused algorithms in display mode
             continue
         parameters_schema = resolve(toolkit.schema)

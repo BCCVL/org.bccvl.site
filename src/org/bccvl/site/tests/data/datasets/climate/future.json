@@ -1,6 +1,7 @@
 {
   "_type": "org.bccvl.content.dataset",
   "title": "Future",
+  "_transitions": "publish",
   "_rdf": {
           "file": "future.ttl",
           "contenttype": "text/turtle"}

@@ -41,6 +41,7 @@ class BCCVLLayer(PloneSandboxLayer):
         self.loadZCML('testing.zcml', package=org.bccvl.site.tests)
         z2.installProduct(app, 'Products.membrane')
         z2.installProduct(app, 'plone.app.folderui')
+        z2.installProduct(app, 'Products.DateRecurringIndex')
 
     def setUpPloneSite(self, portal):
         # base test fixture sets default chain to nothing
@@ -59,8 +60,9 @@ class BCCVLLayer(PloneSandboxLayer):
         login(portal, TEST_USER_NAME)
 
     def tearDownZope(self, app):
-        z2.uninstallProduct(app, 'Products.membrane')
+        z2.uninstallProduct(app, 'Products.DateRecurringIndex')
         z2.uninstallProduct(app, 'plone.app.folderui')
+        z2.uninstallProduct(app, 'Products.membrane')
 
     def updateMetadata(self, context, mdgraph):
         rdfhandler = getUtility(IORDF).getHandler()
