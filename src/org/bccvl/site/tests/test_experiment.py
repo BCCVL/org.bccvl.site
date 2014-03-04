@@ -195,7 +195,7 @@ class ExperimentAddTest(unittest.TestCase):
         exp = self.portal[defaults.EXPERIMENTS_FOLDER_ID][expid]
         jobs = IJobTracker(exp).get_jobs()
         for job in jobs:
-            wait_for_result(job)
+            wait_for_result(job, seconds=30)
         # TODO: check if we only have error messages if at all?
         # if job.result is not None:
         #     job.result.raiseException()
