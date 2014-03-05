@@ -38,7 +38,7 @@ class NameFromFullName(object):
     @property
     def title(self):
         # TODO: fallback to user id?
-        self.context.full_name
+        return self.context.full_name
 
 
 @adapter(IBCCVLUser)
