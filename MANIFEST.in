@@ -1,0 +1,2 @@
+include README.md MANIFEST.in
+recursive-include src *.zcml *.cfg *.pt *.png *.txt *.json *.po *.xml *.ttl *.cpt *.metadata *.css *.cpy *.csv
