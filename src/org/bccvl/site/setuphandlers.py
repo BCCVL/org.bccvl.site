@@ -13,6 +13,13 @@ def setupVarious(context):
         return
     portal = context.getSite()
 
+    # install Products.AutoUserMakerPASPLugin
+    qi = getToolByName(portal, 'portal_quickinstaller')
+    if 'AutoUserMakerPASPLugin' in (p['id'] for
+                                    p in qi.listInstallableProducts()):
+        qi.installProduct('AutoUserMakerPASPlugin')
+
+    # set default front-page
     portal.setDefaultPage('front-page')
 
     # setup default groups
@@ -20,10 +27,12 @@ def setupVarious(context):
         {'id': 'Knowledgebase Contributor',
          'title': 'Knowledgebase Contributor',
          #'roles': ['...', '...']
-         'description': 'Users in this group can contribute to knowledge base'},
+         'description': 'Users in this group can contribute to knowledge base'
+         },
         {'id': 'Knowledgebase Editor',
          'title': 'Knowledgebase Editor',
-         'description': 'Users in this group can manage knowledgebase content'}]
+         'description': 'Users in this group can manage knowledgebase content'
+         }]
     gtool = getToolByName(portal, 'portal_groups')
     for group in groups:
         if gtool.getGroupById(group['id']):
