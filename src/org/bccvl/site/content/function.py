@@ -16,6 +16,25 @@ class IFunction(form.Schema):
         description=_(u"Full dotted name of a python function implementing this algorithm"),
         required=True)
 
+    interpreter = schema.Choice(
+        title=_(u"Programming language"),
+        description=_(u"The language the code is written in."),
+        vocabulary="org.bccvl.site.programming_language_vocab",
+        required=True,
+        )
+
+    script = schema.Text(
+        title=_(u"Script"),
+        description=_(u"The code being executed"),
+        required=True,
+        )
+
+    interface = schema.DottedName(
+        title=_(u'Interface'),
+        description=_(u"full package name to interface"),
+        required=True
+        )
+
     schema = schema.Text(
         title=_(u"Schema"),
         description=_(u"A dexterity schema describing the input parameters for the algorithm"),
@@ -27,7 +46,7 @@ class IFunction(form.Schema):
 #    other option:
 #       let method provide specific interface ... register via name as utility
 #       this way only system wide supplied code can be used
- 
+
 @implementer(IFunction)
 class Function(Item):
 
