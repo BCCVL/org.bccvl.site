@@ -113,6 +113,11 @@
      />
 
   <utility
+     component=".transmogrify.AttributeFromFile"
+     name="org.bccvl.site.transmogrify.attributefromfile"
+     />
+
+  <utility
      component=".transmogrify.RDFMetadataUpdater"
      name="org.bccvl.site.transmogrify.rdfmetadata"
      />
