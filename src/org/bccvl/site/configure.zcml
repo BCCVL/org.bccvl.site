@@ -168,6 +168,11 @@
     />
 
     <utility
+      factory=".vocabularies.programming_language_vocab_factory"
+      name="org.bccvl.site.programming_language_vocab"
+      />
+
+    <utility
         name="org.bccvl.site.GCMVocabulary"
         component=".vocabularies.GCMVocabularyFactory"
         />
