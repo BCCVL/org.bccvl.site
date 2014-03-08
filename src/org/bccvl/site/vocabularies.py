@@ -1,4 +1,4 @@
-from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from org.bccvl.site.api import QueryAPI
 from zope.interface import implementer
@@ -237,3 +237,15 @@ SpeciesLayerVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Specie
 EnvironmentalDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['EnvironmentalDataGenre'])
 DatasetTypeVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['DataSetType'])
 ResolutionVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Resolution'])
+
+
+programming_language_vocab = SimpleVocabulary([
+    SimpleTerm("R", "R", u'R'),
+    SimpleTerm("Perl", "Perl", u'Perl'),
+#    SimpleTerm("Python", "Python", u'Python'),
+])
+
+
+@implementer(IVocabularyFactory)
+def programming_language_vocab_factory():
+    return programming_language_vocab
