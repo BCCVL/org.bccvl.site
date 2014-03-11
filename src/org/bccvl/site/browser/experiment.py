@@ -103,7 +103,14 @@ def addToolkitFields(form):
         if form.mode == DISPLAY_MODE and toolkit.UID() not in functions:
             # filter out unused algorithms in display mode
             continue
-        parameters_schema = resolve(toolkit.schema)
+        # FIXME: need to cache
+        from plone.supermodel import xmlSchema
+        parameters_model = xmlSchema(toolkit.schema)
+        parameters_schema = resolve(toolkit.interface)
+        from plone.supermodel.utils import syncSchema
+        # FIXME: sync only necessary on schema source update
+        syncSchema(parameters_model.schema, parameters_schema)
+
         field_schema = schema.Object(
             __name__='parameters_%s' % toolkit.id,
             title=u'configuration for %s' % toolkit.title,
@@ -113,8 +120,10 @@ def addToolkitFields(form):
         if len(field_schema.schema.names()) == 0:
             field_schema.description = u"No configuration options"
         fields.append(field_schema)
+    # FIXME: need a recursive rendering GroupFactory here?
     config_group = GroupFactory('parameters', Fields(*fields),
                                 'Configuration', None)
+    # FIXME: group id
     # make it the first fieldset so it always has the same ID for diazo
     # ...there must be a better way to do that
     form.groups.insert(0, config_group)
