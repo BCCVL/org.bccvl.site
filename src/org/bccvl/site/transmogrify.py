@@ -17,6 +17,10 @@ from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from plone.app.dexterity.behaviors import constrains
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes
 from plone.dexterity.utils import createContentInContainer
+import logging
+
+
+LOG = logging.getLogger(__name__)
 
 
 @provider(ISectionBlueprint)
@@ -56,8 +60,14 @@ class JSONSource(object):
                 # read the json
                 f = open(os.path.join(root, filename), 'r')
                 # TODO: could put this into _files as well with 'content' key
-                item = simplejson.loads(f.read())
-                f.close()
+                try:
+                    item = simplejson.loads(f.read())
+                except simplejson.JSONDecodeError as e:
+                    LOG.error("couldn't parse item %s (%s)", filename, e)
+                    # No point to move on
+                    continue
+                finally:
+                    f.close()
                 # TODO: need _type?
                 # _path
                 name, ext = os.path.splitext(filename)
