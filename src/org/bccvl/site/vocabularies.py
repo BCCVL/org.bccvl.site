@@ -1,7 +1,7 @@
 from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from org.bccvl.site.api import QueryAPI
-from zope.interface import implementer
+from zope.interface import implementer, provider
 from zope.component import getUtility, queryUtility
 from gu.z3cform.rdf.interfaces import IORDF
 from gu.z3cform.rdf.utils import Period
@@ -246,6 +246,6 @@ programming_language_vocab = SimpleVocabulary([
 ])
 
 
-@implementer(IVocabularyFactory)
-def programming_language_vocab_factory():
+@provider(IVocabularyFactory)
+def programming_language_vocab_factory(context):
     return programming_language_vocab

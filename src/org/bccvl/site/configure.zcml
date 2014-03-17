@@ -168,7 +168,7 @@
     />
 
     <utility
-      factory=".vocabularies.programming_language_vocab_factory"
+      component=".vocabularies.programming_language_vocab_factory"
       name="org.bccvl.site.programming_language_vocab"
       />
 
