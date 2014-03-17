@@ -95,12 +95,17 @@ class DatasetsImportView(BrowserView):
             yield result
 
     def __call__(self):
+        # FIXME: write test: create dataset in correct location and
+        #        test permissions to 'dv' view
         # TODO: implement non js-search, and import here
         #       -> reuse DataMover api endpoint
         self.params = self.parseRequest()
         if self.params.get('action') == 'import':
-            portal = getToolByName(self.context, 'portal_url').getPortalObject()
-            view = portal.restrictedTraverse('dv/pullOccurrenceFromALA')
+            portal = getToolByName(self.context,
+                                   'portal_url').getPortalObject()
+            view = portal.restrictedTraverse(
+                '/'.join(defaults.DATASETS_FOLDER_ID,
+                         'dv', '/pullOccurrenceFromALA'))
             # create dataset and start import job
             ret = view(lsid=self.params['lsid'],
                        taxon=self.params['taxon'],
