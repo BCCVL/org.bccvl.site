@@ -1,6 +1,7 @@
 {
   "_type": "Folder",
   "title": "Toolkits",
+  "exclude_from_nav": true,
   "_constraintypes": {
     "mode": 1,
     "locallyallowedtypes": ["Document", "org.bccvl.content.function"],
