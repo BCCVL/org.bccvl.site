@@ -13,11 +13,22 @@ from org.bccvl.site.browser.job import IJobStatus
 from zope import schema
 from zope.interface import Invalid
 from zope.dottedname.resolve import resolve
-from plone.z3cform.fieldsets.group import GroupFactory
+from plone.z3cform.fieldsets.group import GroupFactory, Group
 from org.bccvl.site.api import QueryAPI
-
-
 from z3c.form.interfaces import DISPLAY_MODE
+import logging
+
+LOG = logging.getLogger(__name__)
+
+class ExperimentParamGroup(Group):
+
+    def getContent(self):
+        import ipdb; ipdb.set_trace()
+        if not hasattr(self.context, 'parameters'):
+            return {}
+        if not self.toolkit in self.context.parameters:
+            return {}
+        return self.context.parameters[self.toolkit]
 
 
 # DefaultEditView = layout.wrap_form(DefaultEditForm)
@@ -97,36 +108,41 @@ class SDMEdit(Edit):
 def addToolkitFields(form):
     # context is usually a folder (add form) or experiment (edit, display)
     api = QueryAPI(form.context)
-    fields = []
+    groups = []
     functions = getattr(form.context, 'functions', None) or ()
     for toolkit in (brain.getObject() for brain in api.getFunctions()):
         if form.mode == DISPLAY_MODE and toolkit.UID() not in functions:
             # filter out unused algorithms in display mode
             continue
         # FIXME: need to cache
-        from plone.supermodel import xmlSchema
-        parameters_model = xmlSchema(toolkit.schema)
+        from plone.supermodel import loadString
+        try:
+            parameters_model = loadString(toolkit.schema)
+        except Exception as e:
+
+            continue
+
         parameters_schema = resolve(toolkit.interface)
         from plone.supermodel.utils import syncSchema
         # FIXME: sync only necessary on schema source update
         syncSchema(parameters_model.schema, parameters_schema)
 
-        field_schema = schema.Object(
-            __name__='parameters_%s' % toolkit.id,
-            title=u'configuration for %s' % toolkit.title,
-            schema=parameters_schema,
-            required=False,
-        )
-        if len(field_schema.schema.names()) == 0:
-            field_schema.description = u"No configuration options"
-        fields.append(field_schema)
-    # FIXME: need a recursive rendering GroupFactory here?
-    config_group = GroupFactory('parameters', Fields(*fields),
-                                'Configuration', None)
-    # FIXME: group id
-    # make it the first fieldset so it always has the same ID for diazo
-    # ...there must be a better way to do that
-    form.groups.insert(0, config_group)
+        # FIXME: bad hack with field name toolkit.id is fine, but
+        #        compute shouldn't rely on hardcoded names'
+        param_group = ExperimentParamGroup(
+            form.context,
+            form.request,
+            form)
+        param_group.__name__ = "parameters_{}".format(toolkit.id),
+        #param_group.prefix = ''+ form.prefix?
+        param_group.toolkit = toolkit.id,
+        param_group.fields = Fields(parameters_schema)
+        param_group.label = u"configuration for {}".format(toolkit.title)
+        if len(parameters_schema.names()) == 0:
+            param_group.description = u"No configuration options"
+        groups.append(param_group)
+
+    form.param_groups = groups
 
 
 class Add(add.DefaultAddForm):
@@ -197,6 +213,7 @@ class Add(add.DefaultAddForm):
                 'object': dataset_info['url'],
                 'file': dataset_info['file'],
             }
+        # FIXME: this does look bad, and should probably be handled by a proper widget
         js_tmpl = """
             window.bccvl || (window.bccvl = {});
             window.bccvl.lookups || (window.bccvl.lookups = {});
@@ -216,6 +233,14 @@ class SDMAdd(Add):
         # envirodatasetswidget = self.widgets.get('environmental_datasets', None)
         # if not envirodatasetswidget.key_widgets:
         #     envirodatasetswidget.appendAddingWidget()
+
+    def update(self):
+        super(SDMAdd, self, ).update()
+        for group in self.param_groups:
+            try:
+                group.update()
+            except Exception as e:
+                LOG.info("Group %s failed: %s", group.__name__, e)
 
     def validateAction(self, data):
         # ActionExecutionError ... form wide error

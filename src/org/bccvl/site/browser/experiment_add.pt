@@ -1,5 +1,51 @@
 <div id="main-container" class="main-container"
      tal:define="site_url context/@@plone_portal_state/portal_url;">
-        <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+        <metal:block
+            use-macro="context/@@ploneform-macros/titlelessform">
+          <metal:block fill-slot="fields">
+             <metal:fields
+                 use-macro="context/@@ploneform-macros/fields"/>
+               <!-- Algorithm parameter fieldsets -->
+               <fieldset id="algo_params">
+                 <legend id="algo_params_label">Algo Params</legend>
+               <tal:block tal:repeat="group view/param_groups"
+                          condition="view/param_groups">
+                 <fieldset
+                     tal:define="normalizeString nocall:context/@@plone/normalizeString;
+                                 fieldset_label group/label;
+                                 fieldset_name group/__name__|group/label/default|fieldset_label;
+                                 fieldset_name python:normalizeString(fieldset_name);"
+                     tal:attributes="id string:fieldset-${fieldset_name};
+                                     class string:kssattr-fieldset-${fieldset_name};
+                                     data-fieldset fieldset_name">
+
+                     <legend tal:condition="fieldset_label"
+                             tal:attributes="id string:fieldsetlegend-${fieldset_name}"
+                             tal:content="fieldset_label">Form name</legend>
+
+                     <p i18n:translate=""
+                        tal:define="group_description group/description|nothing"
+                        tal:condition="group_description"
+                        tal:content="structure group_description">
+                        Description
+                     </p>
+
+                     <tal:block tal:define="errors group/widgets/errors"
+                                tal:condition="errors"
+                                tal:repeat="error errors">
+                       <div class="field error"
+                            tal:condition="not:nocall:error/widget"
+                            tal:content="structure error/render"
+                            />
+                     </tal:block>
+
+                     <tal:block define="view nocall:group">
+                       <metal:block use-macro="context/@@ploneform-macros/widget_rendering" />
+                     </tal:block>
+                 </fieldset>
+               </tal:block>
+               </fieldset>
+          </metal:block>
+        </metal:block>
         <script id="bccvl-lookups" tal:content="view/occurrences_mapping" />
 </div>
