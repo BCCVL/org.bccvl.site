@@ -1,7 +1,7 @@
 from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.field import Fields
-from z3c.form.form import extends
+from z3c.form.form import extends, applyChanges
 from z3c.form.interfaces import ActionExecutionError
 from org.bccvl.site.interfaces import IJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -20,10 +20,18 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+
+# FIXME: probably need an additional widget traverser to inline validate param_groups fields
+
 class ExperimentParamGroup(Group):
 
+    # def updateWidgets(self, prefix=None):
+    #     if prefix is None:
+    #         import ipdb; ipdb.set_trace()
+    #         prefix = self.toolkit
+    #     super(ExperimentParamGroup, self).updateWidgets(prefix)
+
     def getContent(self):
-        import ipdb; ipdb.set_trace()
         if not hasattr(self.context, 'parameters'):
             return {}
         if not self.toolkit in self.context.parameters:
@@ -31,12 +39,99 @@ class ExperimentParamGroup(Group):
         return self.context.parameters[self.toolkit]
 
 
+class ParamGroupMixin(object):
+    """
+    Mix-in to handle parameter froms
+    """
+
+    param_groups = ()
+
+    def addToolkitFields(self):
+        api = QueryAPI(self.context)
+        groups = []
+        functions = getattr(self.context, 'functions', None) or ()
+        for toolkit in (brain.getObject() for brain in api.getFunctions()):
+            if self.mode == DISPLAY_MODE and toolkit.UID() not in functions:
+                # filter out unused algorithms in display mode
+                continue
+            # FIXME: need to cache
+            from plone.supermodel import loadString
+            try:
+                parameters_model = loadString(toolkit.schema)
+            except Exception as e:
+
+                continue
+
+            # parameters_schema = resolve(toolkit.interface)
+            # from plone.supermodel.utils import syncSchema
+            # # FIXME: sync only necessary on schema source update
+            # syncSchema(parameters_model.schema, parameters_schema)
+            parameters_schema = parameters_model.schema
+
+            # FIXME: bad hack with field name toolkit.id is fine, but
+            #        compute shouldn't rely on hardcoded names'
+            param_group = ExperimentParamGroup(
+                self.context,
+                self.request,
+                self)
+            param_group.__name__ = "parameters_{}".format(toolkit.id)
+            #param_group.prefix = ''+ form.prefix?
+            param_group.toolkit = toolkit.id
+            param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
+            param_group.label = u"configuration for {}".format(toolkit.title)
+            if len(parameters_schema.names()) == 0:
+                param_group.description = u"No configuration options"
+            groups.append(param_group)
+
+        self.param_groups = groups
+
+    def updateFields(self):
+        super(ParamGroupMixin, self).updateFields()
+        self.addToolkitFields()
+
+    def updateWidgets(self):
+        super(ParamGroupMixin, self).updateWidgets()
+        # update groups here
+        for group in self.param_groups:
+            try:
+                group.update()
+            except Exception as e:
+                LOG.info("Group %s failed: %s", group.__name__, e)
+        # should group generation happen here in updateFields or in update?
+
+    def extractData(self, setErrors=True):
+        data, errors = super(ParamGroupMixin, self).extractData(setErrors)
+        for group in self.param_groups:
+            groupData, groupErrors = group.extractData(setErrors=setErrors)
+            data.update(groupData)
+            if groupErrors:
+                if errors:
+                    errors += groupErrors
+                else:
+                    errors = groupErrors
+        return data, errors
+
+    def applyChanges(self, data):
+        # FIXME: store only selected algos
+        changed = super(ParamGroupMixin, self).applyChanges(data)
+        # apply algo params:
+        new_params = {}
+        for group in self.param_groups:
+            content = group.getContent()
+            param_changed = applyChanges(group, content, data)
+            new_params[group.toolkit] = content
+        self.context.parameters = new_params
+
+        return changed
+
+
 # DefaultEditView = layout.wrap_form(DefaultEditForm)
 # from plone.z3cform import layout
 class View(edit.DefaultEditForm):
-    """The view. Will be a template from <modulename>_templates/view.pt,
-    and will be called 'view' unless otherwise stated.
     """
+    View Experiment
+    """
+
     # id = 'view'
     # enctype = None
     mode = DISPLAY_MODE
@@ -86,66 +181,34 @@ class View(edit.DefaultEditForm):
     # render.base_method = True
 
 
-class SDMView(View):
-
-    def updateFields(self):
-        super(SDMView, self).updateFields()
-        addToolkitFields(self)
-
-
-class Edit(edit.DefaultEditForm):
+class SDMView(ParamGroupMixin, View):
+    """
+    View SDM Experiment
+    """
 
     pass
 
 
-class SDMEdit(Edit):
+class Edit(edit.DefaultEditForm):
+    """
+    Edit Experiment
+    """
 
-    def updateFields(self):
-        super(Edit, self).updateFields()
-        addToolkitFields(self)
+    template = ViewPageTemplateFile("experiment_edit.pt")
 
 
-def addToolkitFields(form):
-    # context is usually a folder (add form) or experiment (edit, display)
-    api = QueryAPI(form.context)
-    groups = []
-    functions = getattr(form.context, 'functions', None) or ()
-    for toolkit in (brain.getObject() for brain in api.getFunctions()):
-        if form.mode == DISPLAY_MODE and toolkit.UID() not in functions:
-            # filter out unused algorithms in display mode
-            continue
-        # FIXME: need to cache
-        from plone.supermodel import loadString
-        try:
-            parameters_model = loadString(toolkit.schema)
-        except Exception as e:
+class SDMEdit(ParamGroupMixin, Edit):
+    """
+    Edit SDM Experiment
+    """
 
-            continue
-
-        parameters_schema = resolve(toolkit.interface)
-        from plone.supermodel.utils import syncSchema
-        # FIXME: sync only necessary on schema source update
-        syncSchema(parameters_model.schema, parameters_schema)
-
-        # FIXME: bad hack with field name toolkit.id is fine, but
-        #        compute shouldn't rely on hardcoded names'
-        param_group = ExperimentParamGroup(
-            form.context,
-            form.request,
-            form)
-        param_group.__name__ = "parameters_{}".format(toolkit.id),
-        #param_group.prefix = ''+ form.prefix?
-        param_group.toolkit = toolkit.id,
-        param_group.fields = Fields(parameters_schema)
-        param_group.label = u"configuration for {}".format(toolkit.title)
-        if len(parameters_schema.names()) == 0:
-            param_group.description = u"No configuration options"
-        groups.append(param_group)
-
-    form.param_groups = groups
+    pass
 
 
 class Add(add.DefaultAddForm):
+    """
+    Add Experiment
+    """
 
     extends(dexterity.DisplayForm,
             ignoreButtons=True)
@@ -222,25 +285,24 @@ class Add(add.DefaultAddForm):
         return js_tmpl % json.dumps(mapping)
 
 
-class SDMAdd(Add):
+class SDMAdd(ParamGroupMixin, Add):
+    """
+    Add SDM Experiment
+    """
 
-    def updateFields(self):
-        super(Add, self).updateFields()
-        addToolkitFields(self)
-
-    def updateWidgets(self):
-        super(SDMAdd, self, ).updateWidgets()
-        # envirodatasetswidget = self.widgets.get('environmental_datasets', None)
-        # if not envirodatasetswidget.key_widgets:
-        #     envirodatasetswidget.appendAddingWidget()
-
-    def update(self):
-        super(SDMAdd, self, ).update()
+    def create(self, data):
+        # FIXME: store only selcted algos
+        # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
+        # we'll have to override it to find a place to apply our algo_group data'
+        newob = super(SDMAdd, self).create(data)
+        # apply values to algo dict manually to make sure we don't write data on read
+        new_params = {}
         for group in self.param_groups:
-            try:
-                group.update()
-            except Exception as e:
-                LOG.info("Group %s failed: %s", group.__name__, e)
+            content = group.getContent()
+            applyChanges(group, content, data)
+            new_params[group.toolkit] = content
+        newob.parameters = new_params
+        return newob
 
     def validateAction(self, data):
         # ActionExecutionError ... form wide error

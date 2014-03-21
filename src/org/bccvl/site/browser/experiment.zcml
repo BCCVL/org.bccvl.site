@@ -66,7 +66,10 @@
         permission="cmf.ModifyPortalContent"/>
 
 
-    <!-- Standard add view and form - invoked from ++add++ traverser -->
+    <!-- Standard add view and form - invoked from ++add++ traverser
+    -->
+    <!-- FIXME: don't use ++add++ traverser here, get rid of AddView
+    classes, change FTI entries to use proper view, etc... -->
     <adapter
         for="Products.CMFCore.interfaces.IFolderish
              Products.CMFDefault.interfaces.ICMFDefaultSkin
