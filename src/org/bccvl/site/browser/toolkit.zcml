@@ -1,0 +1,27 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:grok="http://namespaces.zope.org/grok"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="org.bccvl.site"
+    >
+
+    <browser:page
+        name="editschema"
+        for="org.bccvl.site.content.function.IFunction"
+        class=".toolkit.ToolkitSchemaContext"
+        permission="cmf.ManagePortal"
+        allowed_interface="OFS.interfaces.IItem"
+        />
+
+    <subscriber
+        for=".toolkit.IToolkitSchemaContext
+             plone.schemaeditor.interfaces.ISchemaModifiedEvent"
+        handler=".toolkit.serializeSchemaContext"
+        />
+
+</configure>
