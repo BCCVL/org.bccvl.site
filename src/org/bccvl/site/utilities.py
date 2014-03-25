@@ -118,6 +118,9 @@ class JobTracker(object):
 
                 if not func.method.startswith('org.bccvl.compute'):
                     return 'error', u"Method '{}' not in compute package".format(func.method)
+                # TODO: remove interface from function content fields
+                # TODO: resolve method based on type,... R, Perl,....
+                #       ... named utility ...
                 try:
                     method = resolve(func.method)
                 except ImportError as e:
@@ -128,7 +131,7 @@ class JobTracker(object):
                 # submit job to queue
                 LOG.info("Submit JOB %s to queue", func.method)
                 # TODO: do I need request here? (and pass it into this method?)
-                job = method(self.context, request)
+                job = method(self.context, func, request)
                 self.context.current_jobs.append(job)
             return 'info', u'Job submitted {}'.format(self.status())
         else:
