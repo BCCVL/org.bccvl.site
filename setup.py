@@ -32,6 +32,7 @@ setup(
         'Products.ShibbolethPermissions',
         'sc.social.like',
         'gu.repository.content',
+        'gu.transmogrifier',
         'collective.js.jqueryui',
         'collective.js.uix.multiselect',
         'collective.geo.contentlocations',

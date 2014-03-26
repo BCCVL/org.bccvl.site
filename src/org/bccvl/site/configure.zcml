@@ -103,34 +103,14 @@
         factory=".utilities.JobTracker"/>
 
   <utility
-     component=".transmogrify.JSONSource"
-     name="org.bccvl.site.transmogrify.jsonsource"
-     />
-
-  <utility
      component=".transmogrify.ALASource"
      name="org.bccvl.site.transmogrify.alasource"
-     />
-
-  <utility
-     component=".transmogrify.AttributeFromFile"
-     name="org.bccvl.site.transmogrify.attributefromfile"
      />
 
   <utility
      component=".transmogrify.RDFMetadataUpdater"
      name="org.bccvl.site.transmogrify.rdfmetadata"
      />
-
-  <utility
-     component=".transmogrify.SelectableConstrainTypes"
-     name="org.bccvl.site.transmogrify.selectableconstraintypes"
-     />
-
-    <utility
-        component=".transmogrify.NameChoosingConstructor"
-        name="org.bccvl.site.transmogrify.namechoosingconstructor"
-    />
 
     <utility
       component=".vocabularies.species_presence_datasets_source"
