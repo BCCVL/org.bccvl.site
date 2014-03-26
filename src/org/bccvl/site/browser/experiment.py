@@ -1,6 +1,7 @@
 from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
+from z3c.form.field import Fields
 from z3c.form.interfaces import ActionExecutionError
 from org.bccvl.site.interfaces import IJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -12,6 +13,7 @@ from org.bccvl.site.browser.job import IJobStatus
 from zope.interface import Invalid
 from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
+from plone.autoform.utils import processFields
 from plone.supermodel import loadString
 from org.bccvl.site.api import QueryAPI
 from z3c.form.interfaces import DISPLAY_MODE
@@ -32,7 +34,14 @@ class ExperimentParamGroup(AutoFields, Group):
         return self.context.parameters[self.toolkit]
 
     def update(self):
-        self.updateFieldsFromSchemata()
+        # FIXME: stupid autoform thinks if the schema is in schema
+        #        attribute and not in additionalSchemata it won't need a
+        #        prefix
+        # self.updateFieldsFromSchemata()
+        #
+        # use  processFields instead
+        processFields(self, self.schema, prefix=self.toolkit) #, permissionChecks=have_user)
+
         super(ExperimentParamGroup, self).update()
 
 
@@ -69,7 +78,7 @@ class ParamGroupMixin(object):
             #param_group.prefix = ''+ form.prefix?
             param_group.toolkit = toolkit.id
             param_group.schema = parameters_schema
-            param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
+            #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
             #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
             param_group.label = u"configuration for {}".format(toolkit.title)
             if len(parameters_schema.names()) == 0:
