@@ -1,6 +1,5 @@
 from plone.directives import dexterity
 from z3c.form import button
-from z3c.form.field import Fields
 from z3c.form.form import extends, applyChanges
 from z3c.form.interfaces import ActionExecutionError
 from org.bccvl.site.interfaces import IJobTracker
@@ -10,10 +9,10 @@ from plone.dexterity.browser import add, edit
 from org.bccvl.site import MessageFactory as _
 from org.bccvl.site.browser.xmlrpc import getdsmetadata
 from org.bccvl.site.browser.job import IJobStatus
-from zope import schema
 from zope.interface import Invalid
-from zope.dottedname.resolve import resolve
-from plone.z3cform.fieldsets.group import GroupFactory, Group
+from plone.z3cform.fieldsets.group import Group
+from plone.autoform.base import AutoFields
+from plone.supermodel import loadString
 from org.bccvl.site.api import QueryAPI
 from z3c.form.interfaces import DISPLAY_MODE
 import logging
@@ -21,15 +20,9 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-# FIXME: probably need an additional widget traverser to inline validate param_groups fields
-
-class ExperimentParamGroup(Group):
-
-    # def updateWidgets(self, prefix=None):
-    #     if prefix is None:
-    #         import ipdb; ipdb.set_trace()
-    #         prefix = self.toolkit
-    #     super(ExperimentParamGroup, self).updateWidgets(prefix)
+# FIXME: probably need an additional widget traverser to inline
+#        validate param_groups fields
+class ExperimentParamGroup(AutoFields, Group):
 
     def getContent(self):
         if not hasattr(self.context, 'parameters'):
@@ -37,6 +30,10 @@ class ExperimentParamGroup(Group):
         if not self.toolkit in self.context.parameters:
             return {}
         return self.context.parameters[self.toolkit]
+
+    def update(self):
+        self.updateFieldsFromSchemata()
+        super(ExperimentParamGroup, self).update()
 
 
 class ParamGroupMixin(object):
@@ -55,21 +52,15 @@ class ParamGroupMixin(object):
                 # filter out unused algorithms in display mode
                 continue
             # FIXME: need to cache
-            from plone.supermodel import loadString
             try:
+                # FIXME: do some caching here
                 parameters_model = loadString(toolkit.schema)
             except Exception as e:
-
+                LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
                 continue
 
-            # parameters_schema = resolve(toolkit.interface)
-            # from plone.supermodel.utils import syncSchema
-            # # FIXME: sync only necessary on schema source update
-            # syncSchema(parameters_model.schema, parameters_schema)
             parameters_schema = parameters_model.schema
 
-            # FIXME: bad hack with field name toolkit.id is fine, but
-            #        compute shouldn't rely on hardcoded names'
             param_group = ExperimentParamGroup(
                 self.context,
                 self.request,
@@ -77,7 +68,9 @@ class ParamGroupMixin(object):
             param_group.__name__ = "parameters_{}".format(toolkit.id)
             #param_group.prefix = ''+ form.prefix?
             param_group.toolkit = toolkit.id
-            param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
+            param_group.schema = parameters_schema
+            param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
+            #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
             param_group.label = u"configuration for {}".format(toolkit.title)
             if len(parameters_schema.names()) == 0:
                 param_group.description = u"No configuration options"
