@@ -77,11 +77,6 @@ class BCCVLLayer(PloneSandboxLayer):
     def addTestContent(self, portal):
         # TODO get rid of this modue hack
         from org.bccvl import compute
-        from org.bccvl.compute import bioclim  # register object factory for parameters
-        # ZCA registry is cleared at beginning and this factory is not loaded again,
-        # because it is done at import time and not at configuration (zcml) time.
-        # configs a re-run in layers, but modules can't be re-imported'
-        bioclim.registerFactoryAdapter(bioclim.IParametersBioclim, bioclim.ParametersBioclim)
         from org.bccvl.site.tests.compute import testalgorithm
         compute.testalgorithm = testalgorithm
 

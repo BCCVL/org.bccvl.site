@@ -132,7 +132,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.assertEquals(self.browser.url, new_exp_url)
         self.assertTrue('My Experiment' in self.browser.contents)
         self.assertTrue('This is my experiment description' in self.browser.contents)
-        self.assertTrue("Job submitted [('testalogrithm', u'Queued')]" in self.browser.contents)
+        self.assertTrue("Job submitted [('testalgorithm', u'Queued')]" in self.browser.contents)
         # wait for job to finish
         self._wait_for_job('my-experiment')
         self.browser.open(new_exp_url)
@@ -171,7 +171,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.assertTrue('Job submitted' in self.browser.contents)
         new_exp_url = urljoin(self.experiments_add_url, 'my-experiment/view')
         self.assertEquals(self.browser.url, new_exp_url)
-        self.assertTrue("Job submitted [('testalogrithm', u'Queued')]" in self.browser.contents)
+        self.assertTrue("Job submitted [('testalgorithm', u'Queued')]" in self.browser.contents)
         # wait for result
         self._wait_for_job('my-experiment')
         # reload exp page and check for status on page
