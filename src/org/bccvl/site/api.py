@@ -82,7 +82,9 @@ class QueryAPI(object):
         )
         brains = self.portal_catalog(
             path={'query': functions_physical_path},
-            object_provides=IFunction.__identifier__
+            object_provides=IFunction.__identifier__,
+            sort_on='sortable_title',
+
         )
         return brains
 

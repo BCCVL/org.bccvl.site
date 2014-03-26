@@ -26,6 +26,7 @@ class DataSetSourceBinder(object):
                             token=brain[self.tokenKey],
                             title=brain['Title'])
                  for brain in brains]
+        # TODO: get rid of sorted ... let api.query do it (it partly does already)
         return sorted(terms, key=lambda o: o.title)
 
     def __call__(self, context):
@@ -58,6 +59,7 @@ class DataSetSourceBinderTitleFromParent(DataSetSourceBinder):
             terms.append(SimpleTerm(value=brain['UID'],
                                     token=brain[self.tokenKey],
                                     title=title))
+        # TODO: get rid of sorted ... let query do it
         return sorted(terms, key=lambda o: o.title)
 
 
@@ -115,6 +117,7 @@ class SparqlDataSetSourceBinder(object):
             # TODO: maybe rebuild this query to fetch all labels from rdf
             #       and fetch all uris from catalog and do a set intersection
             #       all layers could be a 2nd vocabulary? (fresnel vocab?)
+            # FIXME: order in sparqlquery instead of sorted call afterwards
             for uri in urirefs:
                 query.append('{ BIND(%(uri)s as ?uri) '
                              '%(uri)s rdfs:label ?label }' %
@@ -124,10 +127,12 @@ class SparqlDataSetSourceBinder(object):
                      "UNION".join(query))
             handler = getUtility(IORDF).getHandler()
             result = handler.query(query)
+            # FIXME: can I turn this into a generator?
             terms = [SimpleTerm(value=item['uri'],
                                 token=str(item['uri']),
                                 title=unicode(item['label']))
                      for item in result]
+            # TODO: get rid of sorted ... query should do it
             terms = sorted(terms, key=lambda o: o.title)
         else:
             terms = []
@@ -158,6 +163,7 @@ class SparqlValuesSourceBinder(object):
             return SimpleVocabulary()
         handler = getUtility(IORDF).getHandler()
         result = handler.query(self._query)
+        # FIXME: generator?
         terms = [
             SimpleTerm(
                 value=item['uri'],
@@ -166,6 +172,7 @@ class SparqlValuesSourceBinder(object):
             )
             for item in result
         ]
+        # TODO: get rid of sorted ... query should do it
         terms = sorted(terms, key=lambda o: o.title)
         return SimpleVocabulary(terms)
 
