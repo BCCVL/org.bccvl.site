@@ -30,7 +30,8 @@
             menu, title
          Page:
             Pages, PagesPage -->
-
+    <!-- TODO: check if Public macros would allow unauthenticated
+    acces? -->
     <browser:page
         name="datasets-macros"
         for="*"
