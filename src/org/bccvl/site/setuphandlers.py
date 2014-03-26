@@ -92,3 +92,5 @@ def setupVarious(context):
     transmogrifier = Transmogrifier(portal)
     transmogrifier(u'org.bccvl.site.dataimport',
                    source={'path': 'org.bccvl.site:initial_content'})
+    transmogrifier(u'org.bccvl.site.dataimport',
+                   source={'path': 'org.bccvl.compute:content'})
