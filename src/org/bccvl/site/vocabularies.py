@@ -5,10 +5,11 @@ from zope.interface import implementer, provider
 from zope.component import getUtility, queryUtility
 from gu.z3cform.rdf.interfaces import IORDF
 from gu.z3cform.rdf.utils import Period
-from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.CMFCore.utils import getToolByName
 from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
 from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB
+from rdflib import RDF
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 
 
 @implementer(IContextSourceBinder)
@@ -20,6 +21,7 @@ class DataSetSourceBinder(object):
         self.tokenKey = tokenKey
 
     def getTerms(self, context):
+        # FIXME: if nothing return []
         api = QueryAPI(context)
         brains = getattr(api, self.apiFunc)()
         terms = [SimpleTerm(value=brain['UID'],
@@ -30,20 +32,14 @@ class DataSetSourceBinder(object):
         return sorted(terms, key=lambda o: o.title)
 
     def __call__(self, context):
-        if context is None:
-            # some widgets don't provide a context so let's fall back
-            # to site root
-            context = queryUtility(IPloneSiteRoot)
-        if context is not None:
-            terms = self.getTerms(context)
-        else:
-            terms = []
+        terms = self.getTerms(context)
         return SimpleVocabulary(terms)
 
 
 class DataSetSourceBinderTitleFromParent(DataSetSourceBinder):
 
     def getTerms(self, context):
+        # FIXME: no context return []?
         api = QueryAPI(context)
         brains = getattr(api, self.apiFunc)()
         pc = getToolByName(context, 'portal_catalog')
@@ -89,6 +85,10 @@ species_distributions_models_source = DataSetSourceBinderTitleFromParent(
     'getSpeciesDistributionModelDatasets'
 )
 
+species_projection_datasets_source = DataSetSourceBinder(
+    'species_projection_datasets_source',
+    'getFutureProjectionDatasets')
+
 functions_source = DataSetSourceBinder(
     'functions_source', 'getFunctions', 'id'
 )
@@ -108,6 +108,7 @@ class SparqlDataSetSourceBinder(object):
             # to site root
             context = queryUtility(IPloneSiteRoot)
         if context is None:
+            # if we have no site return empty
             return SimpleVocabulary()
         api = QueryAPI(context)
         urirefs = getattr(api, self.apiFunc)()
@@ -135,7 +136,7 @@ class SparqlDataSetSourceBinder(object):
             # TODO: get rid of sorted ... query should do it
             terms = sorted(terms, key=lambda o: o.title)
         else:
-            terms = []
+            terms = [] # FIXME: should be a SimpleVocabulary?
         return SimpleVocabulary(terms)
 
 
@@ -160,6 +161,7 @@ class SparqlValuesSourceBinder(object):
             # to site root
             context = queryUtility(IPloneSiteRoot)
         if context is None:
+            # if we have no site return empty
             return SimpleVocabulary()
         handler = getUtility(IORDF).getHandler()
         result = handler.query(self._query)
