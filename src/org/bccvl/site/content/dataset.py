@@ -1,47 +1,14 @@
 from plone.directives import form
-from plone.namedfile.field import NamedBlobFile
 from plone.dexterity.content import Item
 from zope.interface import implementer
-from org.bccvl.site import MessageFactory as _
 from plone.app.contenttypes.interfaces import IFile
 from gu.z3cform.rdf.schema import (RDFURIChoiceField,
                                    RDFLiteralLineField,
                                    RDFDateRangeField)
 from org.bccvl.site.namespace import BCCPROP, DWC
+from org.bccvl.site.interface import IDataset
 from ordf.namespace import DC as DCTERMS
-
-
-class IDataset(form.Schema):
-
-    # TODO: a primary field should not be required. possible bug in plone core
-    form.primary('file')
-    file = NamedBlobFile(
-        title=_(u"File"),
-        description=_(u"Data content"),
-        required=True)
-
-        # fixed fields
-        # RDFURIChoiceField(
-        #     __name__='format',
-        #     prop=BCCPROP['format'],
-        #     required=False,
-        #     title=u'Format',
-        #     vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetFormatVocabulary')
-
-
-        # layer
-        # RDFURIChoiceField(
-        #     __name__='datatype',
-        #     prop=BCCPROP['datatype'],
-        #     required=False,
-        #     title=u'Type of Dataset',
-        #     vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetTypeVocabulary'),
-        # # not needed?
-        # RDFLiteralLineField(
-        #     __name__='formato',
-        #     prop=DCTERMS['format'],
-        #     required=False,
-        #     title=u'Data format (other)'),
+from org.bccvl.site import MessageFactory as _
 
 
 @implementer(IDataset, IFile)
@@ -68,10 +35,10 @@ class ISpeciesDataset(form.Schema):
     )
 
     scientificName = RDFLiteralLineField(
-        prop = DWC['scientificName'],
-        required = True,
-        title = u'Scientific name',
-        description = u'The full scientific name, with authorship and date information if known. When forming part of an Identification, this should be the name in lowest level taxonomic rank that can be determined. This term should not contain identification qualifications, which should instead be supplied in the IdentificationQualifier term.'
+        prop=DWC['scientificName'],
+        required=True,
+        title=u'Scientific name',
+        description=u'The full scientific name, with authorship and date information if known. When forming part of an Identification, this should be the name in lowest level taxonomic rank that can be determined. This term should not contain identification qualifications, which should instead be supplied in the IdentificationQualifier term.'
     )
 
     taxonID = RDFLiteralLineField(  # lsid

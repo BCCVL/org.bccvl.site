@@ -11,7 +11,7 @@
     >
 
     <adapter
-        for="org.bccvl.site.content.experiment.IExperiment"
+        for="org.bccvl.site.content.interfaces.IExperiment"
         factory=".job.JobStatus"/>
 
 
@@ -53,19 +53,19 @@
 
     <browser:page
         name="view"
-        for="..interfaces.IExperiment"
+        for="org.bccvl.site.content.interfaces.IExperiment"
         class=".experiment.View"
         permission="zope2.View"/>
 
     <browser:page
         name="view"
-        for="..content.experiment.ISDMExperiment"
+        for="..content.interfaces.ISDMExperiment"
         class=".experiment.SDMView"
         permission="zope2.View"/>
 
     <browser:page
         name="edit"
-        for="..interfaces.IExperiment"
+        for="org.bccvl.site.content.interfaces.IExperiment"
         class=".experiment.Edit"
         permission="cmf.ModifyPortalContent"/>
 

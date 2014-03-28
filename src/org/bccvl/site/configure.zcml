@@ -95,7 +95,7 @@
 
 
     <adapter
-        for=".content.experiment.IExperiment"
+        for=".content.interfaces.IExperiment"
         factory=".utilities.JobTracker"/>
 
     <adapter
