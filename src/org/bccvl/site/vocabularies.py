@@ -243,7 +243,8 @@ SpeciesDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Sp
 SpeciesLayerVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['SpeciesLayer'])
 EnvironmentalDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['EnvironmentalDataGenre'])
 DatasetTypeVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['DataSetType'])
-ResolutionVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Resolution'])
+ResolutionVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Resolution'],
+                                                              RDF['value'])
 
 
 programming_language_vocab = SimpleVocabulary([
