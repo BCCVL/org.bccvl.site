@@ -3,6 +3,8 @@ from org.bccvl.site.content.function import IFunction
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.interfaces import IExperiment
 from org.bccvl.site.namespace import BCCVOCAB
+from zope.component import queryUtility
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 
 
 class QueryAPI(object):
@@ -10,7 +12,7 @@ class QueryAPI(object):
     Provides API for common queries
     """
     def __init__(self, context):
-        site = context.portal_url.getPortalObject()
+        site = queryUtility(IPloneSiteRoot)
 
         self.context = context
         self.site = site
