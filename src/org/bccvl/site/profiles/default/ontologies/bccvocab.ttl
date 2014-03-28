@@ -1,4 +1,5 @@
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix bccprop: <http://namespaces.bccvl.org.au/prop#> .
@@ -121,20 +122,25 @@ bccvocab:DataSetFormatPNG a bccvocab:DataSetFormat ;
 
 bccvocab:Resolution30s a bccvocab:Resolution ;
     rdfs:label "30\" (~1km)" ;
+    rdf:value 30 ;
     .
 
 bccvocab:Resolution2_5m a bccvocab:Resolution ;
     rdfs:label "2.5' (~5km)" ;
+    rdf:value 150 ;
     .
 
 bccvocab:Resolution5m a bccvocab:Resolution ;
     rdfs:label "5' (~10km)" ;
+    rdf:value 300 ;
     .
 
 bccvocab:Resolution10m a bccvocab:Resolution ;
     rdfs:label "10' (~20km)" ;
+    rdf:value 600 ;
     .
 
 bccvocab:Resolution30m a bccvocab:Resolution ;
     rdfs:label "30' (~50km)" ;
+    rdf:value 1800 ;
     .
