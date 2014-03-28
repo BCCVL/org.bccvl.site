@@ -151,7 +151,9 @@ class IBiodiverseExperiment(IExperiment):
     form.widget(datasets='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
     datasets = List(
         title=u'Species layer',
-        value_type=Choice(source=vocabularies.species_projection_datasets_source),
+        value_type=Choice(
+            source=vocabularies.species_projection_datasets_source
+        ),
         default=None,
         required=True,
         )

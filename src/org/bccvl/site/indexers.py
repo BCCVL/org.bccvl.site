@@ -2,7 +2,6 @@ from plone.indexer.decorator import indexer
 from org.bccvl.site.content.dataset import IDataset
 from gu.z3cform.rdf.interfaces import IGraph
 from org.bccvl.site.browser.xmlrpc import getbiolayermetadata
-
 from ordf.namespace import DCES
 from .namespace import BCCPROP, BCCVOCAB, BIOCLIM
 
