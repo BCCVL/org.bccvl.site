@@ -264,6 +264,26 @@ class Add(add.DefaultAddForm):
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"),
                                                       "info")
 
+
+class SDMAdd(ParamGroupMixin, Add):
+    """
+    Add SDM Experiment
+    """
+
+    def create(self, data):
+        # FIXME: store only selcted algos
+        # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
+        # we'll have to override it to find a place to apply our algo_group data'
+        newob = super(SDMAdd, self).create(data)
+        # apply values to algo dict manually to make sure we don't write data on read
+        new_params = {}
+        for group in self.param_groups:
+            content = group.getContent()
+            applyChanges(group, content, data)
+            new_params[group.toolkit] = content
+        newob.parameters = new_params
+        return newob
+
     # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
 
@@ -285,26 +305,6 @@ class Add(add.DefaultAddForm):
             window.bccvl.lookups.occurrencesMap = %s;
         """
         return js_tmpl % json.dumps(mapping)
-
-
-class SDMAdd(ParamGroupMixin, Add):
-    """
-    Add SDM Experiment
-    """
-
-    def create(self, data):
-        # FIXME: store only selcted algos
-        # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
-        # we'll have to override it to find a place to apply our algo_group data'
-        newob = super(SDMAdd, self).create(data)
-        # apply values to algo dict manually to make sure we don't write data on read
-        new_params = {}
-        for group in self.param_groups:
-            content = group.getContent()
-            applyChanges(group, content, data)
-            new_params[group.toolkit] = content
-        newob.parameters = new_params
-        return newob
 
     def validateAction(self, data):
         # ActionExecutionError ... form wide error
@@ -341,3 +341,65 @@ class ProjectionAddView(add.DefaultAddView):
 class SDMAddView(add.DefaultAddView):
 
     form = SDMAdd
+
+
+# from collective.z3cform.wizard import wizard
+# from org.bccvl.site.content.interfaces import IBiodiverseExperiment
+
+
+# from .widgets import SequenceCheckboxFieldWidget
+# class BiodiverseDatasetsStep(wizard.GroupStep):
+
+#     label = u'Datasets'
+#     prefix = 'datasets'
+#     fields = Fields(IBiodiverseExperiment).select('datasets')
+#     fields['datasets'].widgetFactory = SequenceCheckboxFieldWidget
+
+#     def render(self):
+#         import ipdb; ipdb.set_trace()
+#         return super(BiodiverseDatasetsStep, self).render()
+
+
+# class BiodiverseThresholdsStep(wizard.GroupStep):
+
+#     label = u'Thresholds'
+#     prefix = 'thresholds'
+#     fields = Fields(IBiodiverseExperiment).select('thresholds')
+
+
+# class BiodiverseAddWizard(wizard.Wizard):
+
+#     __name__ = ''
+
+#     label = 'New Biodiverse Experiment'
+
+#     steps = (BiodiverseDatasetsStep, BiodiverseThresholdsStep)
+
+#     def finish(self):
+#         super(BiodiverseAddWizard, self).finish()
+#         import ipdb; ipdb.set_trace()
+
+#     def render(self):
+#         import ipdb; ipdb.set_trace()
+#         return super(BiodiverseAddWizard, self).render()
+
+#         # Do Adding code here
+
+
+# from plone.z3cform import layout
+# from zope.publisher.browser import BrowserPage
+
+
+# class BiodiverseAddView(layout.FormWrapper, BrowserPage):
+
+#     __name__ = '++add++org.bccvl.content.biodiverseexperiment'
+
+#     form = BiodiverseAddWizard
+
+#     def __init__(self, context, request, ti):
+#         import ipdb; ipdb.set_trace()
+#         super(BiodiverseAddView, self).__init__(context, request)
+#         self.ti = ti
+
+#         if self.form_instance is not None and not getattr(self.form_instance, 'portal_type', None):
+#             self.form_instance.portal_type = ti.getId()

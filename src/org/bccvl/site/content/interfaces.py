@@ -2,8 +2,8 @@ from zope.interface import Interface
 from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
 from zope.schema import Choice, List, Dict, Bool, Int, Decimal
-from org.bccvl.site import vocabularies
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from org.bccvl.site import vocabularies
 from org.bccvl.site import MessageFactory as _
 
 
@@ -163,6 +163,14 @@ class IBiodiverseExperiment(IExperiment):
         value_type=Decimal(),
         default=None,
         required=True,
+        )
+
+    cluster_size = Choice(
+        title=u'Cluster size',
+        description=u'x/y cell size in meter',
+        default=5000,
+        required=True,
+        values=(5000, 10000, 20000, 50000),
         )
 
     # ->  interface,  content class? , profile,  add / edit / display / result view

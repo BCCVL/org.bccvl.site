@@ -47,4 +47,4 @@ def find_projections(ctx, emission_scenarios, climate_models, years):
 @implementer(IBiodiverseExperiment)
 class BiodiverseExperiment(Container):
 
-    pass
+    functions = ('org.bccvl.compute.biodiverse.execute', )
