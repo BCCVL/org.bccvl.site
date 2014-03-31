@@ -79,4 +79,12 @@ class ExperimentsListingView(BrowserView):
                     for dataset, layers in environmental_layers.items()
                 ),
             })
+        elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
+            details.update({
+                'type': 'Biodiverse',
+                'functions': 'biodiverse options',
+                'species_occurrence': 'Species1, Species2, Species3',
+                'species_absence': '',
+                'environmental_layers': '2015, 2020, 2025'  # should be years?
+            })
         return details
