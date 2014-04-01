@@ -55,7 +55,7 @@ class QueryAPI(object):
         )
 
     def getSpeciesDistributionModelDatasets(self):
-        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSD'])
+        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSDMModel'])
 
     def getSpeciesDistributionModelEvaluationDatasets(self):
         return self.getDatasets(BCCDateGenre=BCCVOCAB['DataGenreSDMEval'])
