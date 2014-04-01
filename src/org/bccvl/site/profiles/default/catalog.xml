@@ -12,10 +12,15 @@
     <index name="BCCEmissionScenario" meta_type="KeywordIndex">
         <indexed_attr value="BCCEmissionScenario"/>
     </index>
-    <index name="BCCGlobalClimateModel" meta_type="KeywordIndex">
+    <index name="BCCGlobalClimateModel" meta_type="KeywordIndex" >
         <indexed_attr value="BCCGlobalClimateModel"/>
+    </index>
+    <index name="BCCResolution" meta_type="FieldIndex" >
+        <indexed_attr value="BCCResolution"/>
     </index>
     <index name="DCTemporal" meta_type="DateRangeIndex">
         <indexed_attr value="DCTemporal"/>
     </index>
+
+    <column value="BCCResolution" />
 </object>

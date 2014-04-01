@@ -1,8 +1,8 @@
 from plone.indexer.decorator import indexer
-from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.interfaces import IDataset
+from org.bccvl.site.content.interfaces import IExperiment
 from gu.z3cform.rdf.interfaces import IGraph
 from org.bccvl.site.browser.xmlrpc import getbiolayermetadata
-from ordf.namespace import DCES
 from .namespace import BCCPROP, BCCVOCAB, BIOCLIM
 
 
@@ -28,6 +28,18 @@ def dataset_BCCEmissionScenario(object, *kw):
 def dataset_BCCGlobalClimateModel(object, *kw):
     graph = IGraph(object)
     return tuple(graph.objects(graph.identifier, BCCPROP['gcm']))
+
+
+@indexer(IDataset)
+def BCCDatasetResolution(object, **kw):
+    graph = IGraph(object)
+    return graph.value(graph.identifier, BCCPROP['resolution'])
+
+
+@indexer(IExperiment)
+def BCCExperimentResolution(object, **kw):
+    graph = IGraph(object)
+    return graph.value(graph.identifier, BCCPROP['resolution'])
 
 
 # TODO: should be a DateRangeIndex (resolve partial dates to 1stday
