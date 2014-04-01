@@ -16,6 +16,7 @@ from plone.autoform.utils import processFields
 from plone.supermodel import loadString
 from org.bccvl.site.api import QueryAPI
 from z3c.form.interfaces import DISPLAY_MODE
+from plone.app.uuid.utils import uuidToCatalogBrain
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -309,8 +310,19 @@ class SDMAdd(ParamGroupMixin, Add):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
         # TODO: validate all sort of extra info- new object does not exist yet
-        # e.g. do spatial scale validation here
-        pass
+        # data contains already field values
+        resolution = data.get('resolution', None)
+        if resolution is None:
+            raise ActionExecutionError(Invalid('No resolution selected'))
+        datasets = data.get('environmental_datasets', {}).keys()
+        if not datasets:
+            raise ActionExecutionError(Invalid('No environmental dataset selected'))
+        # FIXME: index resolution for faster access
+        #        or use dsbrain.subjecturi to get info
+        #        or run sparql query across all dsbrain.subjecturis
+        for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+            if dsbrain.BCCResolution != resolution:
+                raise ActionExecutionError(Invalid("Selected resolution doesn't match selected datasets"))
 
 
 class ProjectionAdd(Add):
@@ -318,9 +330,13 @@ class ProjectionAdd(Add):
     def validateAction(self, data):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
-        # TODO: do spatial scale validation as well (find_projection
+        # FIXME: do spatial scale validation as well (find_projection
         #       might be able to do it already)
-        #
+        # FIXME: when changing source model, adapt resolution
+        #        allow only from same resolution
+        #        find projection for this resolution
+        #        validate resolution on submit
+        #        check that layers in sdm match layers in future data (can this be a partial match as well?)
         from org.bccvl.site.content.experiment import find_projections
         result = find_projections(self.context, data.get('emission_scenarios'),
                                   data.get('climate_models'),
