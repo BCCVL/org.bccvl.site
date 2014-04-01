@@ -3,7 +3,7 @@ from zope.interface import implementer
 from Products.CMFCore.utils import getToolByName
 from gu.z3cform.rdf.interfaces import IGraph
 from ordf.namespace import DC as DCTERMS
-
+from org.bccvl.site.namespace import BCCVOCAB
 
 # BBB: backwards compatible import
 from .interfaces import (
@@ -33,7 +33,8 @@ def find_projections(ctx, emission_scenarios, climate_models, years):
         pc = getToolByName(ctx, 'portal_catalog')
         result = []
         brains = pc.searchResults(BCCEmissionScenario=emission_scenarios,
-                                  BCCGlobalClimateModel=climate_models)
+                                  BCCGlobalClimateModel=climate_models,
+                                  BCCDataGenre=BCCVOCAB['DataGenreFC'])
         for brain in brains:
             graph = IGraph(brain.getObject())
             # TODO: do better date matching
