@@ -7,4 +7,6 @@ NFO = Namespace(u'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#')
 BCCGCM = Namespace(u'http://namespaces.bccvl.org.au/gcm#')
 BCCEMSC = Namespace(u'http://namespaces.bccvl.org.au/emsc#')
 TN = Namespace(u"http://rs.tdwg.org/ontology/voc/TaxonName#")
-DWC = Namespace(u"http://rs.tdwg.org/dwc/terms/taxonID")
+# DWC Terms
+DWC = Namespace(u"http://rs.tdwg.org/dwc/terms/")
+# DWC Core http://rs.tdwg.org/dwc/dwcore/
