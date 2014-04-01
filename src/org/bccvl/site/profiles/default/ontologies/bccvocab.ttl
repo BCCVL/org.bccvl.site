@@ -92,34 +92,6 @@ bccvocab:SpeciesLayerX a bccvocab:SpeciesLayer ;
     rdfs:label "Absence" ;
     .
 
-bccvocab:DataSetFormatCSV a bccvocab:DataSetFormat ;
-    rdfs:label "CSV" ;
-    .
-
-bccvocab:DataSetFormatExcel a bccvocab:DataSetFormat ;
-    rdfs:label "Excel" ;
-    .
-
-bccvocab:DataSetFormatNetCDF a bccvocab:DataSetFormat ;
-    rdfs:label "NetCDF" ;
-    .
-
-bccvocab:DataSetFormatRDATA a bccvocab:DataSetFormat ;
-    rdfs:label "R Data Frame" ;
-    .
-
-bccvocab:DataSetFormatGTiff a bccvocab:DataSetFormat ;
-    rdfs:label "GeoTiff" ;
-    .
-
-bccvocab:DataSetFormatText a bccvocab:DataSetFormat ;
-    rdfs:label "Plain text" ;
-    .
-
-bccvocab:DataSetFormatPNG a bccvocab:DataSetFormat ;
-    rdfs:label "PNG" ;
-    .
-
 bccvocab:Resolution30s a bccvocab:Resolution ;
     rdfs:label "30\" (~1km)" ;
     rdf:value 30 ;

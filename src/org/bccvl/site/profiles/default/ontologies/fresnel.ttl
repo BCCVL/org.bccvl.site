@@ -299,8 +299,6 @@
         bccprop:datagenre
         bccprop:datatype
         bccprop:specieslayer
-        bccprop:format
-        dcterms:format
         bccprop:resolution
         bccprop:resolutionother
         dcterms:temporal
@@ -317,8 +315,6 @@
 #        bccprop:datagenre
 #        bccprop:datatype
 #        bccprop:specieslayer
-        bccprop:format
-        dcterms:format
         bccprop:resolution
         bccprop:resolutionother
     ) ;
@@ -332,8 +328,6 @@
 #        bccprop:datagenre
 #        bccprop:datatype
 #        bccprop:specieslayer
-        bccprop:format
-        dcterms:format
 #        bccprop:resolution
 #        bccprop:resolutionother
     ) ;
@@ -550,11 +544,6 @@ z3c:GlobalClimateModelField a z3c:Field ;
     z3c:vocabulary "org.bccvl.site.GCMVocabulary" ;
     .
 
-z3c:DataSetFormatField a z3c:Field ;
-    z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
-    z3c:vocabulary z3c:DataSetFormatVocabulary ;
-    .
-
 z3c:ResolutionField a z3c:Field ;
     z3c:fieldName "gu.z3cform.rdf.schema.RDFURIChoiceField" ;
     z3c:vocabulary "org.bccvl.site.ResolutionVocabulary" ;
@@ -562,10 +551,6 @@ z3c:ResolutionField a z3c:Field ;
 
 z3c:DataGenreVocabulary a z3c:Vocabulary ;
     z3c:valueClass bccvocab:DataGenre ;
-    .
-
-z3c:DataSetFormatVocabulary a z3c:Vocabulary ;
-    z3c:valueClass bccvocab:DataSetFormat ;
     .
 
 z3c:RdfTypeVocabulary a z3c:Vocabulary ;
@@ -1062,13 +1047,6 @@ z3c:FORVocabulary a z3c:Vocabulary ;
     fresnel:label "Species Layer" ;
     z3c:fieldDescription "Species distribution data only" ;
     z3c:field z3c:SpeciesLayerField ;
-    fresnel:group :DefaultGroup ;
-    .
-
-:bccpropFormat a fresnel:Format ;
-    fresnel:propertyFormatDomain bccprop:format ;
-    fresnel:label "Format" ;
-    z3c:field z3c:DataSetFormatField ;
     fresnel:group :DefaultGroup ;
     .
 
