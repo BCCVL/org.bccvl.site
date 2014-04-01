@@ -1,7 +1,6 @@
 from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
-from z3c.form.field import Fields
 from z3c.form.interfaces import ActionExecutionError
 from org.bccvl.site.interfaces import IJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -196,7 +195,7 @@ class Edit(edit.DefaultEditForm):
     Edit Experiment
     """
 
-    template = ViewPageTemplateFile("experiment_edit.pt")
+    pass
 
 
 class SDMEdit(ParamGroupMixin, Edit):
@@ -204,7 +203,7 @@ class SDMEdit(ParamGroupMixin, Edit):
     Edit SDM Experiment
     """
 
-    pass
+    template = ViewPageTemplateFile("experiment_edit.pt")
 
 
 class Add(add.DefaultAddForm):
@@ -341,65 +340,3 @@ class ProjectionAddView(add.DefaultAddView):
 class SDMAddView(add.DefaultAddView):
 
     form = SDMAdd
-
-
-# from collective.z3cform.wizard import wizard
-# from org.bccvl.site.content.interfaces import IBiodiverseExperiment
-
-
-# from .widgets import SequenceCheckboxFieldWidget
-# class BiodiverseDatasetsStep(wizard.GroupStep):
-
-#     label = u'Datasets'
-#     prefix = 'datasets'
-#     fields = Fields(IBiodiverseExperiment).select('datasets')
-#     fields['datasets'].widgetFactory = SequenceCheckboxFieldWidget
-
-#     def render(self):
-#         import ipdb; ipdb.set_trace()
-#         return super(BiodiverseDatasetsStep, self).render()
-
-
-# class BiodiverseThresholdsStep(wizard.GroupStep):
-
-#     label = u'Thresholds'
-#     prefix = 'thresholds'
-#     fields = Fields(IBiodiverseExperiment).select('thresholds')
-
-
-# class BiodiverseAddWizard(wizard.Wizard):
-
-#     __name__ = ''
-
-#     label = 'New Biodiverse Experiment'
-
-#     steps = (BiodiverseDatasetsStep, BiodiverseThresholdsStep)
-
-#     def finish(self):
-#         super(BiodiverseAddWizard, self).finish()
-#         import ipdb; ipdb.set_trace()
-
-#     def render(self):
-#         import ipdb; ipdb.set_trace()
-#         return super(BiodiverseAddWizard, self).render()
-
-#         # Do Adding code here
-
-
-# from plone.z3cform import layout
-# from zope.publisher.browser import BrowserPage
-
-
-# class BiodiverseAddView(layout.FormWrapper, BrowserPage):
-
-#     __name__ = '++add++org.bccvl.content.biodiverseexperiment'
-
-#     form = BiodiverseAddWizard
-
-#     def __init__(self, context, request, ti):
-#         import ipdb; ipdb.set_trace()
-#         super(BiodiverseAddView, self).__init__(context, request)
-#         self.ti = ti
-
-#         if self.form_instance is not None and not getattr(self.form_instance, 'portal_type', None):
-#             self.form_instance.portal_type = ti.getId()
