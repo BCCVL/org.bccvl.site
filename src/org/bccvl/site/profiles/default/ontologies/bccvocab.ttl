@@ -51,6 +51,10 @@ bccvocab:DataGenreE a bccvocab:DataGenre, bccvocab:EnvironmentalDataGenre ;
     rdfs:label "Environmental" ;
     .
 
+# FIXME: should be DataGenreSDM ... merge with DataGenreSDMModel
+#        add comments to describe genre a bit further.. e.g.
+#        usually an RData file describing a computed model
+#        may have additional metadata like layers, resolution, species, etc...
 bccvocab:DataGenreSD a bccvocab:DataGenre ;
     rdfs:label "Species Distribution" ;
     .
@@ -67,8 +71,20 @@ bccvocab:DataGenreSDMEval a bccvocab:DataGenre ;
     rdfs:label "Species Distribution Model Evaluation" ;
     .
 
+bccvocab:DataGenreSDMModel a bccvocab:DataGenre ;
+    rdfs:label "Species Distribution Model";
+    .
+
+bccvocab:DataGenreClampingMask a bccvocab:DataGenre ;
+    rdfs:label "Clapming Mask";
+    .
+
 bccvocab:DataGenreFP a bccvocab:DataGenre ;
     rdfs:label "Future Projection" ;
+    .
+
+bccvocab:DataGenreCP a bccvocab:DataGenre ;
+    rdfs:label "Current Projection" ;
     .
 
 bccvocab:DataGenreLog a bccvocab:DataGenre ;
