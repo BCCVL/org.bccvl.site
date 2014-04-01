@@ -33,6 +33,8 @@ class ExperimentsListingView(BrowserView):
         if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
             # TODO: duplicate code here... see org.bccvl.site.browser.widget.py
             exp = expbrain.getObject()
+            # FIXME: upon experiment deletenio sdm might be None
+            #        all uuidToObject and uudiToCatalogBrain suffer from that
             sdm = uuidToObject(exp.species_distribution_models)
             sdmresult = sdm.__parent__
             sdmexp = sdmresult.__parent__
