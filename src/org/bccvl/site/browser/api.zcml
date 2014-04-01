@@ -111,7 +111,7 @@
         name="dv"
         class=".xmlrpc.DataMover"
         allowed_attributes="pullOccurrenceFromALA checkALAJobStatus"
-        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        for="Products.CMFCore.interfaces.IFolderish"
         permission="org.bccvl.AddDataset" >
 
         <browser:page
