@@ -47,7 +47,7 @@ class IExperiment(Interface):
 class ISDMExperiment(IExperiment):
 
     resolution = Choice(
-        title=u'Spatial scale',
+        title=u'Resolution',
         default=None,
         vocabulary='org.bccvl.site.ResolutionVocabulary',
         required=True,
@@ -88,9 +88,9 @@ class ISDMExperiment(IExperiment):
         default=10000,
         required=False)
 
-    # TODO: need a better field here to support dynamic vocabularies for
-    #       values based on selected key
-    #       -> needs specialised widget as well
+    # store dataset + layer (or file within zip)
+    # e.g. ... basic key and value_types .... and widget does heavy work?
+    # FIXME: would be best if widget supplies only possible values (at least for key_type)
     form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetsFieldWidget')
     environmental_datasets = Dict(
         title=u'Environmental Datasets',
@@ -102,6 +102,13 @@ class ISDMExperiment(IExperiment):
 
 
 class IProjectionExperiment(IExperiment):
+
+    resolution = Choice(
+        title=u'Resolution',
+        default=None,
+        vocabulary='org.bccvl.site.ResolutionVocabulary',
+        required=True,
+        )
 
     form.widget(species_distribution_models=
                 'org.bccvl.site.browser.widgets.DatasetsRadioFieldWidget')
@@ -145,6 +152,13 @@ class IProjectionExperiment(IExperiment):
 
 
 class IBiodiverseExperiment(IExperiment):
+
+    resolution = Choice(
+        title=u'Resolution',
+        default=None,
+        vocabulary='org.bccvl.site.ResolutionVocabulary',
+        required=True,
+        )
 
     # options: use dicts or other things here
     #          number of items in both lists must match
