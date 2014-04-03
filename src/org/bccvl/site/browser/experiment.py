@@ -346,7 +346,7 @@ class ProjectionAdd(Add):
             uuid = data.get('species_distribution_models')
             from plone.app.uuid.utils import uuidToObject
             from gu.z3cform.rdf.interfaces import IGraph
-            from org.bccvl.namespace import BCCPROP
+            from org.bccvl.site.namespace import BCCPROP
             sdm = uuidToObject(uuid)
             sdmgraph = IGraph(sdm)
             resolution = sdmgraph.value(sdmgraph.identifier,
