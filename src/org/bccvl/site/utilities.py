@@ -122,6 +122,7 @@ class JobTracker(object):
 
     def start_job(self, request):
         # TODO: could split projection job across future climate datasets
+        # TODO: split biodiverse job across years, gcm, emsc
         if not self.has_active_jobs():
             self.context.current_jobs = []
             for func in (uuidToObject(f) for f in self.context.functions):
