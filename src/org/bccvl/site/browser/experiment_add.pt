@@ -1,5 +1,12 @@
 <div id="main-container" class="main-container"
      tal:define="site_url context/@@plone_portal_state/portal_url;">
-        <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+        <metal:block
+            use-macro="context/@@ploneform-macros/titlelessform">
+          <metal:block fill-slot="fields">
+             <metal:fields use-macro="context/@@ploneform-macros/fields"/>
+             <!-- Algorithm parameter fieldsets -->
+             <metal:parameters use-macro="context/@@experiment-macros/algo_parameters"/>
+          </metal:block>
+        </metal:block>
         <script id="bccvl-lookups" tal:content="view/occurrences_mapping" />
 </div>

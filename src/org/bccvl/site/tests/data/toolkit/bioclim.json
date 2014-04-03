@@ -2,7 +2,10 @@
   "_path": "/toolkit/bioclim",
   "_type": "org.bccvl.content.function",
   "title": "Bioclim",
-  "schema": "org.bccvl.compute.bioclim.IParametersBioclim",
   "method": "org.bccvl.compute.testalgorithm",
+  "interpreter": "R",
+  "script": "ignored in test",
+  "schema": {"filename": "bioclim.xml"},
+  "_fileattributes": ["schema"],
   "_transitions": "publish"
 }

@@ -1,8 +1,7 @@
 from org.bccvl.site import defaults
-from org.bccvl.site.content.function import IFunction
-from org.bccvl.site.content.dataset import IDataset
-from org.bccvl.site.interfaces import IExperiment
 from org.bccvl.site.namespace import BCCVOCAB
+from zope.component import queryUtility
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 
 
 class QueryAPI(object):
@@ -10,7 +9,7 @@ class QueryAPI(object):
     Provides API for common queries
     """
     def __init__(self, context):
-        site = context.portal_url.getPortalObject()
+        site = queryUtility(IPloneSiteRoot)
 
         self.context = context
         self.site = site
@@ -30,7 +29,7 @@ class QueryAPI(object):
         # )
         # path query won't find result datasets
         brains = self.portal_catalog(
-            object_provides=IDataset.__identifier__,
+            object_provides='org.bccvl.site.content.interfaces.IDataset',
             ** query_params)
         return brains
 
@@ -56,7 +55,7 @@ class QueryAPI(object):
         )
 
     def getSpeciesDistributionModelDatasets(self):
-        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSD'])
+        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSDMModel'])
 
     def getSpeciesDistributionModelEvaluationDatasets(self):
         return self.getDatasets(BCCDateGenre=BCCVOCAB['DataGenreSDMEval'])
@@ -82,7 +81,9 @@ class QueryAPI(object):
         )
         brains = self.portal_catalog(
             path={'query': functions_physical_path},
-            object_provides=IFunction.__identifier__
+            object_provides='org.bccvl.site.content.function.IFunction',
+            sort_on='sortable_title',
+
         )
         return brains
 
@@ -95,7 +96,7 @@ class QueryAPI(object):
         )
         brains = self.portal_catalog(
             path={'query': experiments_physical_path},
-            object_provides=IExperiment.__identifier__,
+            object_provides='org.bccvl.site.content.interfaces.IExperiment',
             sort_on='created',
             sort_order='descending'
         )

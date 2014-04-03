@@ -1,0 +1,55 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone.z3cform"
+      tal:omit-tag="">
+
+  <head></head>
+
+  <body>
+
+    <metal:block metal:define-macro="algo_parameters">
+
+         <fieldset id="fieldset-parameters">
+           <legend id="fieldset-parameters_label">Algo Params</legend>
+         <tal:block tal:repeat="group view/param_groups"
+                    condition="view/param_groups">
+           <fieldset
+               tal:define="normalizeString nocall:context/@@plone/normalizeString;
+                           fieldset_label group/label;
+                           fieldset_name group/__name__|group/label/default|fieldset_label;
+                           fieldset_name python:normalizeString(fieldset_name);"
+               tal:attributes="id string:fieldset-${fieldset_name};
+                               class string:kssattr-fieldset-${fieldset_name};
+                               data-fieldset fieldset_name">
+
+               <legend tal:condition="fieldset_label"
+                       tal:attributes="id string:fieldsetlegend-${fieldset_name}"
+                       tal:content="fieldset_label">Form name</legend>
+
+               <p i18n:translate=""
+                  tal:define="group_description group/description|nothing"
+                  tal:condition="group_description"
+                  tal:content="structure group_description">
+                  Description
+               </p>
+
+               <tal:block tal:define="errors group/widgets/errors"
+                          tal:condition="errors"
+                          tal:repeat="error errors">
+                 <div class="field error"
+                      tal:condition="not:nocall:error/widget"
+                      tal:content="structure error/render"
+                      />
+               </tal:block>
+
+               <tal:block define="view nocall:group">
+                 <metal:block use-macro="context/@@ploneform-macros/widget_rendering" />
+               </tal:block>
+           </fieldset>
+         </tal:block>
+         </fieldset>
+    </metal:block>
+  </body>
+</html>

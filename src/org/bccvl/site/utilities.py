@@ -4,6 +4,7 @@ from ordf.namespace import FOAF
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.namespace import DWC
 from org.bccvl.site.browser.ws import IDataMover
@@ -24,6 +25,8 @@ from plone.app.async import service
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IGraph
 from zc.async import local
+from plone.dexterity.utils import createContentInContainer
+from datetime import datetime
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -99,14 +102,30 @@ class JobTracker(object):
     def __init__(self, context):
         self.context = context
 
+    def status(self):
+        status = []
+        for job in self.get_jobs():
+            status.append((job.jobid, job.annotations['bccvl.status']['task']))
+        return status
+
+    def get_jobs(self):
+        return getattr(self.context, 'current_jobs', [])
+
+    def has_active_jobs(self):
+        # FIXME: check all results for active jobs
+        active = False
+        for job in self.get_jobs():
+            if job.status not in (None, COMPLETED):
+                active = True
+                break
+        return active
+
     def start_job(self, request):
+        # TODO: could split projection job across future climate datasets
+        # TODO: split biodiverse job across years, gcm, emsc
         if not self.has_active_jobs():
             self.context.current_jobs = []
             for func in (uuidToObject(f) for f in self.context.functions):
-                # TODO: default queue quota is 1. either set it to a
-                #       defined value (see: plone.app.asnc.subscriber)
-                #       or create and submit job manually
-                #job = async.queueJob(execute, self.context, envfile, specfile)
                 method = None
                 if func is None:
                     # FIXME: hack around predict functions ... implement proper checks
@@ -125,10 +144,36 @@ class JobTracker(object):
                 if method is None:
                     return 'error', u"Unknown error, method is None"
 
+                # create result object:
+                title = u'%s - %s %s' % (self.context.title, func.getId(),
+                                 datetime.now().isoformat())
+                result = createContentInContainer(
+                    self.context,
+                    'gu.repository.content.RepositoryItem',
+                    title=title)
+                # FIXXME: do I need these attributes here?
+                #         maybe add them as annotations
+                spds = None
+                if ISDMExperiment.providedBy(self.context):
+                    result.toolkit = func.getId()
+                    spds = uuidToObject(self.context.species_occurrence_dataset)
+                elif IProjectionExperiment.providedBy(self.context):
+                    spds = uuidToObject(self.context.species_distribution_models)
+
+                if spds is not None:
+                    spmd = IGraph(spds)
+                    result.species = unicode(spmd.value(spmd.identifier, DWC['scientificName']))
+                else:
+                    # TODO: throw error here or earlier?
+                    result.species = u'Unknown Species'
+                result.resolution = self.context.resolution
+                # FIXME: attach additional info here
+                #       e.g. layers
+                #        future: year, emsc, gcm
                 # submit job to queue
                 LOG.info("Submit JOB %s to queue", func.method)
                 # TODO: do I need request here? (and pass it into this method?)
-                job = method(self.context, request)
+                job = method(result, func, request)
                 self.context.current_jobs.append(job)
             return 'info', u'Job submitted {}'.format(self.status())
         else:
@@ -156,23 +201,6 @@ class JobTracker(object):
                          failure=service.job_failure_callback)
         self.context.current_jobs = [job]
         return 'info', u'Job submitted {}'.format(self.status())
-
-    def status(self):
-        status = []
-        for job in self.get_jobs():
-            status.append((job.jobid, job.annotations['bccvl.status']['task']))
-        return status
-
-    def get_jobs(self):
-        return getattr(self.context, 'current_jobs', [])
-
-    def has_active_jobs(self):
-        active = False
-        for job in self.get_jobs():
-            if job.status not in (None, COMPLETED):
-                active = True
-                break
-        return active
 
 
 # TODO: move stuff below to separate module

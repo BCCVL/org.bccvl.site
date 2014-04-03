@@ -33,6 +33,8 @@ class ExperimentsListingView(BrowserView):
         if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
             # TODO: duplicate code here... see org.bccvl.site.browser.widget.py
             exp = expbrain.getObject()
+            # FIXME: upon experiment deletion sdm might be None
+            #        all uuidToObject and uudiToCatalogBrain suffer from that
             sdm = uuidToObject(exp.species_distribution_models)
             sdmresult = sdm.__parent__
             sdmexp = sdmresult.__parent__
@@ -78,5 +80,13 @@ class ExperimentsListingView(BrowserView):
                                     ', '.join(layers))
                     for dataset, layers in environmental_layers.items()
                 ),
+            })
+        elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
+            details.update({
+                'type': 'Biodiverse',
+                'functions': 'biodiverse options',
+                'species_occurrence': 'Species1, Species2, Species3',
+                'species_absence': '',
+                'environmental_layers': '2015, 2020, 2025'  # should be years?
             })
         return details

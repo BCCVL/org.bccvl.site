@@ -18,6 +18,7 @@ overrides anything else in a stacked component registry scenario -->
     <include package="plone.app.caching"/>
     <include package="plone.app.folderui"/>
     <include package="org.bccvl.site"/>
+    <include package="gu.transmogrifier"/>
 
     <includeOverrides package="org.bccvl.site" file="overrides.zcml"/>
 

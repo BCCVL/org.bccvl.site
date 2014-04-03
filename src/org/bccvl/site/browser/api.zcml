@@ -15,7 +15,7 @@
     <browser:view
         name="startjob"
         class=".job.StartJobView"
-        for="org.bccvl.site.content.experiment.IExperiment"
+        for="org.bccvl.site.content.interfaces.IExperiment"
         permission="cmf.ModifyPortalContent"
     />
 
@@ -70,7 +70,7 @@
         class=".xmlrpc.JobManagerAPI"
         name="jm"
         allowed_attributes="getJobStatus"
-        for="org.bccvl.site.content.experiment.IExperiment"
+        for="org.bccvl.site.content.interfaces.IExperiment"
         permission="zope2.View" >
 
         <browser:page
@@ -111,7 +111,7 @@
         name="dv"
         class=".xmlrpc.DataMover"
         allowed_attributes="pullOccurrenceFromALA checkALAJobStatus"
-        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        for="Products.CMFCore.interfaces.IFolderish"
         permission="org.bccvl.AddDataset" >
 
         <browser:page

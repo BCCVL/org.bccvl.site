@@ -21,6 +21,7 @@
    <include file="experiment.zcml"/>
    <include file="dataset.zcml"/>
    <include file="widgets.zcml"/>
+   <include file="toolkit.zcml"/>
 
     <utility
         factory=".ws.DataMover"/>

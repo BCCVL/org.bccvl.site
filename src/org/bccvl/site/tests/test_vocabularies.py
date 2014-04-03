@@ -146,7 +146,8 @@ class FunctionsSourceTest(unittest.TestCase):
         data = ds['bioclim']
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
-        self.assertEqual(len(source), 1)
+        # TODO: this test depends on whatever is setup in org.bccvl.compute:content
+        self.assertEqual(len(source), 10)
 
 
 class EnviroLayerSourceTest(unittest.TestCase):

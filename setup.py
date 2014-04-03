@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.8.2-rc1'
+version = '0.8.3-rc1'
 
 setup(
     name='org.bccvl.site',
@@ -32,6 +32,7 @@ setup(
         'Products.ShibbolethPermissions',
         'sc.social.like',
         'gu.repository.content',
+        'gu.transmogrifier',
         'collective.js.jqueryui',
         'collective.js.uix.multiselect',
         'collective.geo.contentlocations',

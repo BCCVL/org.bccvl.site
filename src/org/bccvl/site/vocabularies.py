@@ -1,14 +1,15 @@
-from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from org.bccvl.site.api import QueryAPI
-from zope.interface import implementer
+from zope.interface import implementer, provider
 from zope.component import getUtility, queryUtility
 from gu.z3cform.rdf.interfaces import IORDF
 from gu.z3cform.rdf.utils import Period
-from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.CMFCore.utils import getToolByName
 from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
 from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB
+from rdflib import RDF
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 
 
 @implementer(IContextSourceBinder)
@@ -20,29 +21,25 @@ class DataSetSourceBinder(object):
         self.tokenKey = tokenKey
 
     def getTerms(self, context):
+        # FIXME: if nothing return []
         api = QueryAPI(context)
         brains = getattr(api, self.apiFunc)()
         terms = [SimpleTerm(value=brain['UID'],
                             token=brain[self.tokenKey],
                             title=brain['Title'])
                  for brain in brains]
+        # TODO: get rid of sorted ... let api.query do it (it partly does already)
         return sorted(terms, key=lambda o: o.title)
 
     def __call__(self, context):
-        if context is None:
-            # some widgets don't provide a context so let's fall back
-            # to site root
-            context = queryUtility(IPloneSiteRoot)
-        if context is not None:
-            terms = self.getTerms(context)
-        else:
-            terms = []
+        terms = self.getTerms(context)
         return SimpleVocabulary(terms)
 
 
 class DataSetSourceBinderTitleFromParent(DataSetSourceBinder):
 
     def getTerms(self, context):
+        # FIXME: no context return []?
         api = QueryAPI(context)
         brains = getattr(api, self.apiFunc)()
         pc = getToolByName(context, 'portal_catalog')
@@ -58,6 +55,7 @@ class DataSetSourceBinderTitleFromParent(DataSetSourceBinder):
             terms.append(SimpleTerm(value=brain['UID'],
                                     token=brain[self.tokenKey],
                                     title=title))
+        # TODO: get rid of sorted ... let query do it
         return sorted(terms, key=lambda o: o.title)
 
 
@@ -87,6 +85,10 @@ species_distributions_models_source = DataSetSourceBinderTitleFromParent(
     'getSpeciesDistributionModelDatasets'
 )
 
+species_projection_datasets_source = DataSetSourceBinder(
+    'species_projection_datasets_source',
+    'getFutureProjectionDatasets')
+
 functions_source = DataSetSourceBinder(
     'functions_source', 'getFunctions', 'id'
 )
@@ -106,6 +108,7 @@ class SparqlDataSetSourceBinder(object):
             # to site root
             context = queryUtility(IPloneSiteRoot)
         if context is None:
+            # if we have no site return empty
             return SimpleVocabulary()
         api = QueryAPI(context)
         urirefs = getattr(api, self.apiFunc)()
@@ -115,6 +118,7 @@ class SparqlDataSetSourceBinder(object):
             # TODO: maybe rebuild this query to fetch all labels from rdf
             #       and fetch all uris from catalog and do a set intersection
             #       all layers could be a 2nd vocabulary? (fresnel vocab?)
+            # FIXME: order in sparqlquery instead of sorted call afterwards
             for uri in urirefs:
                 query.append('{ BIND(%(uri)s as ?uri) '
                              '%(uri)s rdfs:label ?label }' %
@@ -124,13 +128,15 @@ class SparqlDataSetSourceBinder(object):
                      "UNION".join(query))
             handler = getUtility(IORDF).getHandler()
             result = handler.query(query)
+            # FIXME: can I turn this into a generator?
             terms = [SimpleTerm(value=item['uri'],
                                 token=str(item['uri']),
                                 title=unicode(item['label']))
                      for item in result]
+            # TODO: get rid of sorted ... query should do it
             terms = sorted(terms, key=lambda o: o.title)
         else:
-            terms = []
+            terms = [] # FIXME: should be a SimpleVocabulary?
         return SimpleVocabulary(terms)
 
 
@@ -155,9 +161,11 @@ class SparqlValuesSourceBinder(object):
             # to site root
             context = queryUtility(IPloneSiteRoot)
         if context is None:
+            # if we have no site return empty
             return SimpleVocabulary()
         handler = getUtility(IORDF).getHandler()
         result = handler.query(self._query)
+        # FIXME: generator?
         terms = [
             SimpleTerm(
                 value=item['uri'],
@@ -166,6 +174,7 @@ class SparqlValuesSourceBinder(object):
             )
             for item in result
         ]
+        # TODO: get rid of sorted ... query should do it
         terms = sorted(terms, key=lambda o: o.title)
         return SimpleVocabulary(terms)
 
@@ -236,4 +245,17 @@ SpeciesDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Sp
 SpeciesLayerVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['SpeciesLayer'])
 EnvironmentalDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['EnvironmentalDataGenre'])
 DatasetTypeVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['DataSetType'])
-ResolutionVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Resolution'])
+ResolutionVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Resolution'],
+                                                              RDF['value'])
+
+
+programming_language_vocab = SimpleVocabulary([
+    SimpleTerm("R", "R", u'R'),
+    SimpleTerm("Perl", "Perl", u'Perl'),
+#    SimpleTerm("Python", "Python", u'Python'),
+])
+
+
+@provider(IVocabularyFactory)
+def programming_language_vocab_factory(context):
+    return programming_language_vocab

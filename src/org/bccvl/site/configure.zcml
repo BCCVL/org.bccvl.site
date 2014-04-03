@@ -87,6 +87,17 @@
         name="BCCGlobalClimateModel"
     />
 
+    <adapter
+        factory=".indexers.BCCDatasetResolution"
+        name="BCCResolution"
+        />
+
+    <adapter
+        factory=".indexers.BCCExperimentResolution"
+        name="BCCResolution"
+        />
+
+
     <!-- TODO: index temporal coverage someday -->
     <!-- <adapter -->
     <!--     factory=".indexers.dataset_DCTemporal" -->
@@ -95,17 +106,12 @@
 
 
     <adapter
-        for=".content.experiment.IExperiment"
+        for=".content.interfaces.IExperiment"
         factory=".utilities.JobTracker"/>
 
     <adapter
         for=".content.dataset.IDataset"
         factory=".utilities.JobTracker"/>
-
-  <utility
-     component=".transmogrify.JSONSource"
-     name="org.bccvl.site.transmogrify.jsonsource"
-     />
 
   <utility
      component=".transmogrify.ALASource"
@@ -116,16 +122,6 @@
      component=".transmogrify.RDFMetadataUpdater"
      name="org.bccvl.site.transmogrify.rdfmetadata"
      />
-
-  <utility
-     component=".transmogrify.SelectableConstrainTypes"
-     name="org.bccvl.site.transmogrify.selectableconstraintypes"
-     />
-
-    <utility
-        component=".transmogrify.NameChoosingConstructor"
-        name="org.bccvl.site.transmogrify.namechoosingconstructor"
-    />
 
     <utility
       component=".vocabularies.species_presence_datasets_source"
@@ -161,6 +157,11 @@
       component=".vocabularies.envirolayer_source"
       name="envirolayer_source"
     />
+
+    <utility
+      component=".vocabularies.programming_language_vocab_factory"
+      name="org.bccvl.site.programming_language_vocab"
+      />
 
     <utility
         name="org.bccvl.site.GCMVocabulary"

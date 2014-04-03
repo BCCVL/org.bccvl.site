@@ -11,7 +11,7 @@
     >
 
     <adapter
-        for="org.bccvl.site.content.experiment.IExperiment"
+        for="org.bccvl.site.content.interfaces.IExperiment"
         factory=".job.JobStatus"/>
 
 
@@ -30,7 +30,17 @@
             menu, title
          Page:
             Pages, PagesPage -->
-        <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
+        <!-- using menu and title is a shortcut for a separate
+             browser:menuItem tag -->
+    <!-- TODO: check if Public macros would allow unauthenticated
+    acces? -->
+    <browser:page
+        name="experiment-macros"
+        for="*"
+        template="experiment_macros.pt"
+        permission="zope.Public"
+    />
+
     <browser:page
         name="experiments_listing_view"
         for="plone.app.contenttypes.interfaces.IFolder"
@@ -43,19 +53,19 @@
 
     <browser:page
         name="view"
-        for="..interfaces.IExperiment"
+        for="org.bccvl.site.content.interfaces.IExperiment"
         class=".experiment.View"
         permission="zope2.View"/>
 
     <browser:page
         name="view"
-        for="..content.experiment.ISDMExperiment"
+        for="..content.interfaces.ISDMExperiment"
         class=".experiment.SDMView"
         permission="zope2.View"/>
 
     <browser:page
         name="edit"
-        for="..interfaces.IExperiment"
+        for="org.bccvl.site.content.interfaces.IExperiment"
         class=".experiment.Edit"
         permission="cmf.ModifyPortalContent"/>
 
@@ -65,8 +75,10 @@
         class=".experiment.SDMEdit"
         permission="cmf.ModifyPortalContent"/>
 
-
-    <!-- Standard add view and form - invoked from ++add++ traverser -->
+    <!-- Standard add view and form - invoked from ++add++ traverser
+    -->
+    <!-- FIXME: don't use ++add++ traverser here, get rid of AddView
+    classes, change FTI entries to use proper view, etc... -->
     <adapter
         for="Products.CMFCore.interfaces.IFolderish
              Products.CMFDefault.interfaces.ICMFDefaultSkin

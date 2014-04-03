@@ -12,7 +12,3 @@ class IJobTracker(Interface):
         """
         return the job instance
         """
-
-
-class IExperiment(Interface):
-    """Base Experiment Class"""

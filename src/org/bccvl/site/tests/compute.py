@@ -38,13 +38,13 @@ def testjob(experiment, jobid, env):
         shutil.rmtree(tmpdir)
 
 
-def testalgorithm(experiment, request):
+def testalgorithm(experiment, toolkit, request):
     # submit test_job into queue
     async = getUtility(IAsyncService)
     queues = async.getQueues()
     env = WorkEnvLocal('localhost')
     job = async.wrapJob((testjob, experiment, ('testalgorithm', env), {}))
-    job.jobid = 'testalogrithm'
+    job.jobid = 'testalgorithm'
     job.quota_names = ('default', )
     job.annotations['bccvl.status'] = {
         'step': 0,
