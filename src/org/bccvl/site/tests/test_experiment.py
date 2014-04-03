@@ -14,7 +14,7 @@ from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from org.bccvl.site.testing import BCCVL_ASYNC_FUNCTIONAL_TESTING
-from org.bccvl.site.namespace import BIOCLIM
+from org.bccvl.site.namespace import BIOCLIM, BCCVOCAB
 
 from zc.async.testing import wait_for_result
 
@@ -102,6 +102,9 @@ class ExperimentAddTest(unittest.TestCase):
         # self.browser.getControl(name='form.widgets.species_absence_dataset:list')\
         #     .displayValue = ["ABT"]
         # select two layers in test dataset
+        self.browser.getControl(name='form.widgets.resolution:list')\
+            .value = [unicode(BCCVOCAB['Resolution30s'])]
+
         datasets = self.portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
         curuid = datasets['current'].UID()  # get current datasets uuid
         cbname = 'form.widgets.environmental_datasets.{}.select'.format(curuid)
@@ -178,7 +181,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.browser.open(new_exp_url)
         self.assertTrue('Completed' in self.browser.contents)
         # TODO: check Result list
-        results = re.findall(r'<a href=.*My Experiment - testalgorithm.*</a>', self.browser.contents)
+        results = re.findall(r'<a href=.*My Experiment - bioclim.*</a>', self.browser.contents)
         self.assertEqual(len(results), 1)
         # start again
         self.browser.getControl('Start Job').click()
@@ -188,7 +191,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.browser.open(new_exp_url)
         self.assertTrue('Completed' in self.browser.contents)
         # We should have two results now
-        results = re.findall(r'<a href=.*My Experiment - testalgorithm.*</a>', self.browser.contents)
+        results = re.findall(r'<a href=.*My Experiment - bioclim.*</a>', self.browser.contents)
         self.assertEqual(len(results), 2)
 
     def _wait_for_job(self, expid):
