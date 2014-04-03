@@ -103,11 +103,12 @@ class ISDMExperiment(IExperiment):
 
 class IProjectionExperiment(IExperiment):
 
+    # FIXME: this field is not required, until UI supports it
     resolution = Choice(
         title=u'Resolution',
         default=None,
         vocabulary='org.bccvl.site.ResolutionVocabulary',
-        required=True,
+        required=False,
         )
 
     form.widget(species_distribution_models=

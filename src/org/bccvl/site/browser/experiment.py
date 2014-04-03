@@ -337,6 +337,22 @@ class ProjectionAdd(Add):
         #        find projection for this resolution
         #        validate resolution on submit
         #        check that layers in sdm match layers in future data (can this be a partial match as well?)
+
+        # FIXME: get rid of this as soon as UI supports it
+        # check if we have a resolution in the request and set it to
+        # whatever the sdm has if not there
+        resolution = data.get("resolution")
+        if resolution is None:
+            uuid = data.get('species_distribution_models')
+            from plone.app.uuid.utils import uuidToObject
+            from gu.z3cform.rdf.interfaces import IGraph
+            from org.bccvl.namespace import BCCPROP
+            sdm = uuidToObject(uuid)
+            sdmgraph = IGraph(sdm)
+            resolution = sdmgraph.value(sdmgraph.identifier,
+                                        BCCPROP['resolution'])
+            data['resolution'] = resolution
+
         from org.bccvl.site.content.experiment import find_projections
         result = find_projections(self.context, data.get('emission_scenarios'),
                                   data.get('climate_models'),
