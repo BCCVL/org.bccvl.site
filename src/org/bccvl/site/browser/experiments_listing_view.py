@@ -33,23 +33,29 @@ class ExperimentsListingView(BrowserView):
         if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
             # TODO: duplicate code here... see org.bccvl.site.browser.widget.py
             exp = expbrain.getObject()
-            # FIXME: upon experiment deletion sdm might be None
-            #        all uuidToObject and uudiToCatalogBrain suffer from that
             sdm = uuidToObject(exp.species_distribution_models)
-            sdmresult = sdm.__parent__
-            sdmexp = sdmresult.__parent__
-            envlayervocab = getUtility(IContextSourceBinder, name='envirolayer_source')(self.context)
-            # TODO: absence data
-            envlayers = ', '.join(
-                '{}: {}'.format(uuidToCatalogBrain(envuuid).Title,
-                                ', '.join(envlayervocab.getTerm(envlayer).title
-                                          for envlayer in sorted(layers)))
+            if sdm is not None:
+                sdmresult = sdm.__parent__
+                sdmexp = sdmresult.__parent__
+                envlayervocab = getUtility(IContextSourceBinder, name='envirolayer_source')(self.context)
+                # TODO: absence data
+                envlayers = ', '.join(
+                    '{}: {}'.format(uuidToCatalogBrain(envuuid).Title,
+                                    ', '.join(envlayervocab.getTerm(envlayer).title
+                                            for envlayer in sorted(layers)))
                     for (envuuid, layers) in sorted(sdmexp.environmental_datasets.items()))
+                toolkit = sdmresult.toolkit
+                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
+            else:
+                # FIXME: should we prevent users from deleting / unsharing?
+                toolkit = 'missing experiment'
+                species_occ = ''
+                envlayers = []
 
             details.update({
                 'type': 'PROJECTION',
-                'functions': sdmresult.toolkit,
-                'species_occurrence': get_title_from_uuid(sdmexp.species_occurrence_dataset),
+                'functions': toolkit,
+                'species_occurrence': species_occ,
                 'species_absence': '',
                 'environmental_layers': envlayers
             })
@@ -82,8 +88,9 @@ class ExperimentsListingView(BrowserView):
                 ),
             })
         elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
+            # FIXME: implement this
             details.update({
-                'type': 'Biodiverse',
+                'type': 'BIODIVERSE',
                 'functions': 'biodiverse options',
                 'species_occurrence': 'Species1, Species2, Species3',
                 'species_absence': '',
