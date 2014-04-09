@@ -115,6 +115,15 @@
             <role name="Manager"/>
             <role name="Owner"/>
         </permission>
+        <permission name="Sharing page: Delegate Contributor role" acquire="True">
+            <role name="Manager"/>
+            <role name="Site Administrator"/>
+        </permission>
+        <permission name="Sharing page: Delegate Editor role" acquire="True">
+            <role name="Manager"/>
+            <role name="Site Administrator"/>
+            <role name="Editor"/>
+        </permission>
         <!-- see Products/CMFEditions/profiles/default/rolemap.xml
              for history permissions -->
         <!-- see plone/app/contenttypes/profiles/default/rolemap.xml
