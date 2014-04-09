@@ -10,6 +10,7 @@ from decorator import decorator
 from plone.app.uuid.utils import uuidToObject
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.experiment import find_projections
 from org.bccvl.site import defaults
@@ -27,6 +28,7 @@ from org.bccvl.site.browser.ws import IDataMover, IALAService
 from plone.dexterity.utils import createContentInContainer
 from rdflib.resource import Resource
 from rdflib import Literal, URIRef
+from gu.z3cform.rdf.utils import Period
 
 
 LOG = logging.getLogger(__name__)
@@ -179,7 +181,7 @@ class DataSetManager(BrowserView):
         return result
 
     @returnwrapper
-    def getProjectionDatasets(self):
+    def getFutureClimateDatasets(self):
         # TODO: should move this to Projection Add Form and let form
         # do the parameter parsing
         # reads:
@@ -204,6 +206,63 @@ class DataSetManager(BrowserView):
         # 5. search
         res = find_projections(self.context, emsc, gcms, years)
         return len(res)
+
+    @returnwrapper
+    def getProjectionDatasets(self):
+        pc = getToolByName(self.context, 'portal_catalog')
+        # to make it easire to produce required structure do separate queries
+        # 1st query for all projection experiments
+        projbrains = pc.searchResults(
+            object_provides=IProjectionExperiment.__identifier__,
+            sort_on='sortable_title')  # date?
+        # the list to collect results
+        projections = []
+        for projbrain in projbrains:
+            # get all result datasets from experiment and build list
+            datasets = []
+            agg_species = set()
+            agg_years = set()
+            for dsbrain in pc.searchResults(
+                    path=projbrain.getPath(),
+                    BCCDataGenre=BCCVOCAB['DataGenreFP']):
+                # get year, gcm, emsc, species, filename/title, fileuuid
+                # TODO: Result is one file per species ... should this be a dict by species or year as well?
+                # FIXME: build on dataset, check if a sparql query using all dsbrains at once would be faster?
+                ds = dsbrain.getObject()
+                dsgraph = IGraph(ds)
+                # parse year
+                period = dsgraph.value(dsgraph.identifier, DC['temporal'])
+                year = Period(period).start if period else None
+                gcm = dsgraph.value(dsgraph.identifier, BCCPROP['gcm'])
+                gcm = unicode(gcm) if gcm else None
+                emsc = dsgraph.value(dsgraph.identifier, BCCPROP['emissionscenario'])
+                emsc = unicode(emsc) if emsc else None
+                datasets.append({
+                    # passible fields on brain:
+                    #   Description, BCCResolution
+                    #   ds.file.contentType
+                    # TODO: restructure ... tile, filename no list
+                    "title":  dsbrain.Title,
+                    "uuid": dsbrain.UID,
+                    "files": [ds.file.filename],  # filenames
+                    "year":  year,  # int or string?
+                    "gcm":  gcm,  # URI? title? both?-> ui can fetch vocab to get titles
+                    "emsc": emsc,  # URI
+                    "species":  ds.species,   # species for this file ...
+                })
+                agg_species.add(ds.species)
+                agg_years.add(year)
+            # TODO: could also aggregate all data on projections result:
+            #       e.g. list all years, grms, emsc, aggregated from datasets
+            projections.append({
+                "name": projbrain.Title,  # TODO: rename to title
+                "id":  projbrain.UID,   # TODO: rename to uuid
+                "species":  tuple(agg_species),
+                "years": tuple(agg_years),
+                "result": datasets
+            })
+        # wrap in projections neccesarry?
+        return {'projections': projections}
 
     @returnwrapper
     def getVocabulary(self, name):

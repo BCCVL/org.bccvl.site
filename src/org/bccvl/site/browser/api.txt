@@ -53,4 +53,140 @@ have to pass in a parameter to tell it in which object we are interested.
     True
 
 
+
+Test getProjectionDatasets:
+===========================
+
+    >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
+    >>> res = proxy.getProjectionDatasets()
+    >>> pprint(res)
+    {'projections': []}
+
+Let's try to to log in to find some datasets.
+
+    >>> from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
+    >>> from urlparse import urlsplit, urlunsplit
+    >>> urlparts = urlsplit(portal.absolute_url() + '/dm')
+    >>> urlparts = urlparts._replace(netloc="{}:{}@{}".format(
+    ...     TEST_USER_NAME, TEST_USER_PASSWORD, urlparts.netloc))
+    >>> proxy = xmlrpclib.ServerProxy(urlunsplit(urlparts))
+    >>> res = proxy.getProjectionDatasets()
+    >>> pprint(res)
+    {'projections': [{'id': '...',
+                      'name': 'Test Projection',
+                      'result': [{'emsc': 'http://namespaces.bccvl.org.au/emsc#RCP3D',
+                                  'files': ['Result_file.tiff'],
+                                  'gcm': 'http://namespaces.bccvl.org.au/gcm#cccma-cgcm31',
+                                  'species': 'Result species',
+                                  'title': 'Result Test',
+                                  'uuid': '...',
+                                  'year': '2014'}],
+                      'species': ['Result species'],
+                      'years': ['2014']}]}
+
+
+Vocabulary endpoint:
+====================
+
+   >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
+   >>> pprint(proxy.getVocabulary('org.bccvl.site.GCMVocabulary'))
+    [{'title': 'CM2.0 - AOGCM',
+      'token': 'http://namespaces.bccvl.org.au/gcm#gfdl-cm20'},
+     {'title': 'CM2.1 - AOGCM',
+      'token': 'http://namespaces.bccvl.org.au/gcm#gfdl-cm21'},
+     {'title': 'CNRM-CM3', 'token': 'http://namespaces.bccvl.org.au/gcm#cnrm-cm3'},
+     {'title': 'CSIRO Mark 3.0',
+      'token': 'http://namespaces.bccvl.org.au/gcm#csiro-mk30'},
+     {'title': 'Community Climate System Model, version 3.0 (CCSM3)',
+      'token': 'http://namespaces.bccvl.org.au/gcm#ncar-ccsm30'},
+     {'title': 'Coupled Global Climate Model (CGCM3)',
+      'token': 'http://namespaces.bccvl.org.au/gcm#cccma-cgcm31'},
+     {'title': 'ECHAM5/MPI-OM',
+      'token': 'http://namespaces.bccvl.org.au/gcm#mpi-echam5'},
+     {'title': 'FGOALS1.0_g',
+      'token': 'http://namespaces.bccvl.org.au/gcm#iap-fgoals10g'},
+     {'title': 'GISS-EH',
+      'token': 'http://namespaces.bccvl.org.au/gcm#giss-modeleh'},
+     {'title': 'GISS-ER',
+      'token': 'http://namespaces.bccvl.org.au/gcm#giss-modeler'},
+     {'title': 'HadCM3',
+      'token': 'http://namespaces.bccvl.org.au/gcm#ukmo-hadcm3'},
+     {'title': 'Hadley Centre Global Environmental Model, version 1 (HadGEM1)',
+      'token': 'http://namespaces.bccvl.org.au/gcm#ukmo-hadgem1'},
+     {'title': 'INMCM3.0', 'token': 'http://namespaces.bccvl.org.au/gcm#inm-cm30'},
+     {'title': 'IPSL-CM4', 'token': 'http://namespaces.bccvl.org.au/gcm#ipsl-cm4'},
+     {'title': 'MIROC3.2 (hires)',
+      'token': 'http://namespaces.bccvl.org.au/gcm#ccsr-miroc32hi'},
+     {'title': 'MIROC3.2 (medres)',
+      'token': 'http://namespaces.bccvl.org.au/gcm#ccsr-miroc32med'},
+     {'title': 'MRI-CGCM2.3.2',
+      'token': 'http://namespaces.bccvl.org.au/gcm#mri-cgcm232a'},
+     {'title': 'Parallel Climate Model (PCM)',
+      'token': 'http://namespaces.bccvl.org.au/gcm#ncar-pcm1'}]
+
+   >>> pprint(proxy.getVocabulary('org.bccvl.site.EMSCVocabulary'))
+    [{'title': 'RCP3D', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP3D'},
+     {'title': 'RCP45', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP45'},
+     {'title': 'RCP6', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP6'},
+     {'title': 'RCP85', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP85'},
+     {'title': 'SRESA1B', 'token': 'http://namespaces.bccvl.org.au/emsc#SRESA1B'},
+     {'title': 'SRESA1FI',
+      'token': 'http://namespaces.bccvl.org.au/emsc#SRESA1FI'},
+     {'title': 'SRESA2', 'token': 'http://namespaces.bccvl.org.au/emsc#SRESA2'},
+     {'title': 'SRESB1', 'token': 'http://namespaces.bccvl.org.au/emsc#SRESB1'},
+     {'title': 'SRESB2', 'token': 'http://namespaces.bccvl.org.au/emsc#SRESB2'}]
+
+   >>> pprint(proxy.getVocabulary('org.bccvl.site.BioclimVocabulary'))
+    [{'title': 'B01 - Annual Mean Temperature',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B01'},
+     {'title': 'B02 - Mean Diurnal Range (Mean of monthly (max temp - min temp))',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B02'},
+     {'title': 'B03 - Isothermality (BIO2/BIO7) (* 100)',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B03'},
+     {'title': 'B04 - Temperature Seasonality (standard deviation *100)',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B04'},
+     {'title': 'B05 - Max Temperature of Warmest Month',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B05'},
+     {'title': 'B06 - Min Temperature of Coldest Month',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B06'},
+     {'title': 'B07 - Temperature Annual Range (BIO5-BIO6)',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B07'},
+     {'title': 'B08 - Mean Temperature of Wettest Quarter',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B08'},
+     {'title': 'B09 - Mean Temperature of Driest Quarter',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B09'},
+     {'title': 'B10 - Mean Temperature of Warmest Quarter',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B10'},
+     {'title': 'B11 - Mean Temperature of Coldest Quarter',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B11'},
+     {'title': 'B12 - Annual Precipitation',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B12'},
+     {'title': 'B13 - Precipitation of Wettest Month',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B13'},
+     {'title': 'B14 - Precipitation of Driest Month',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B14'},
+     {'title': 'B15 - Precipitation Seasonality (Coefficient of Variation)',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B15'},
+     {'title': 'B16 - Precipitation of Wettest Quarter',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B16'},
+     {'title': 'B17 - Precipitation of Driest Quarter',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B17'},
+     {'title': 'B18 - Precipitation of Warmest Quarter',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B18'},
+     {'title': 'B19 - Precipitation of Coldest Quarter',
+      'token': 'http://namespaces.bccvl.org.au/bioclim#B19'}]
+
+   >>> pprint(proxy.getVocabulary('org.bccvl.site.SpeciesDataGenreVocabulary'))
+    [{'title': 'Abundance',
+      'token': 'http://namespaces.bccvl.org.au/vocab#DataGenreSA'},
+     {'title': 'Species Occurrence',
+      'token': 'http://namespaces.bccvl.org.au/vocab#DataGenreSO'}]
+
+   >>> pprint(proxy.getVocabulary('org.bccvl.site.SpeciesLayerVocabulary'))
+    [{'title': 'Absence',
+      'token': 'http://namespaces.bccvl.org.au/vocab#SpeciesLayerX'},
+     {'title': 'Presence',
+      'token': 'http://namespaces.bccvl.org.au/vocab#SpeciesLayerP'}]
+
+
 TODO: add test cases that fail because of restricted access

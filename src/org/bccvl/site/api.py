@@ -18,7 +18,6 @@ class QueryAPI(object):
 
     # def getDatasets(self, genre):
     def getDatasets(self, **query_params):
-
         # datasets_physical_path = '/'.join(
         #     [self.site_physical_path, defaults.DATASETS_FOLDER_ID]
         # )
