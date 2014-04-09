@@ -10,8 +10,6 @@ from rdflib import Literal
 from gu.z3cform.rdf.interfaces import IORDF
 from zope.component import getUtility
 from plone.namedfile import NamedFile
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login, logout
 
 # setup site with content
 # run doctest in xmlrpc package (rename to api or move to sep. package someday)
@@ -25,7 +23,6 @@ def setUpApiTests(doctest):
     # layer: app, portal, request,
     #        configurationContext, host, port, zodbDB
     portal = layer['portal']
-    login(portal, TEST_USER_NAME)
     # create a fake projection experiment
     proj = portal.experiments.invokeFactory('org.bccvl.content.projectionexperiment',
                                             id='proj',

@@ -100,7 +100,7 @@ class EnvironmentalSourceTest(unittest.TestCase):
         data = ds[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
-        self.assertEqual(len(source), 1)
+        self.assertEqual(len(source), 2)
 
 
 class FutureSourceTest(unittest.TestCase):

@@ -311,9 +311,7 @@ class SDMAdd(ParamGroupMixin, Add):
         # WidgetActionExecutionError ... widget specific
         # TODO: validate all sort of extra info- new object does not exist yet
         # data contains already field values
-        resolution = data.get('resolution', None)
-        if resolution is None:
-            raise ActionExecutionError(Invalid('No resolution selected'))
+        resolution = None
         datasets = data.get('environmental_datasets', {}).keys()
         if not datasets:
             raise ActionExecutionError(Invalid('No environmental dataset selected'))
@@ -321,8 +319,11 @@ class SDMAdd(ParamGroupMixin, Add):
         #        or use dsbrain.subjecturi to get info
         #        or run sparql query across all dsbrain.subjecturis
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+            if resolution is None:
+                resolution = dsbrain.BCCResolution
+                continue
             if dsbrain.BCCResolution != resolution:
-                raise ActionExecutionError(Invalid("Selected resolution doesn't match selected datasets"))
+                raise ActionExecutionError(Invalid("All datasets must have the same resolution"))
 
 
 class ProjectionAdd(Add):

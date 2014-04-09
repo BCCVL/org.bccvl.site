@@ -88,7 +88,10 @@ class ExperimentAddTest(unittest.TestCase):
             type='hidden', name=name,
             attrs=dict(value=value))
 
-    def test_add_experiment(self):
+    def start_experiment(self):
+        """
+        fill out common stuff when creating a new experiment
+        """
         self.browser.open(self.experiments_url)
         self.browser.getLink(url=self.experiments_add_url).click()
         self.browser.getControl(name='form.widgets.IDublinCore.title')\
@@ -99,23 +102,22 @@ class ExperimentAddTest(unittest.TestCase):
             .displayValue = ["Bioclim"]
         self.browser.getControl(name='form.widgets.species_occurrence_dataset:list')\
             .displayValue = ["ABT"]
+        # select absence data
         # self.browser.getControl(name='form.widgets.species_absence_dataset:list')\
         #     .displayValue = ["ABT"]
-        # select two layers in test dataset
-        self.browser.getControl(name='form.widgets.resolution:list')\
-            .value = [unicode(BCCVOCAB['Resolution30s'])]
-
+        # select resolution
+        # self.browser.getControl(name='form.widgets.resolution:list')\
+        #     .value = [unicode(BCCVOCAB['Resolution30s'])]
+        # select current dataset
         datasets = self.portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
         curuid = datasets['current'].UID()  # get current datasets uuid
         cbname = 'form.widgets.environmental_datasets.{}.select'.format(curuid)
-        # select current dataset
         self.browser.getControl(name=cbname).value = [curuid]
         # select 1st two layers within current dataset
         lname = 'form.widgets.environmental_datasets.{}:list'.format(curuid)
         form = self.browser.getForm(index=1)
         self.in_out_select(form, lname, str(BIOCLIM['B01']))
         self.in_out_select(form, lname, str(BIOCLIM['B02']))
-
         # form.widgets.functions:list
         # form.widgets.species_occurrence_dataset:list
         # form.widgets.species_absence_dataset:list
@@ -128,6 +130,10 @@ class ExperimentAddTest(unittest.TestCase):
         # control.controls/ control.getControls
         # itemcontrol.selected (get/set selcted state)
         # form.widgets.species_climate_dataset:list
+
+    def test_add_experiment(self):
+        self.start_experiment()
+        # start experiment
         self.browser.getControl('Create and start').click()
         self.assertTrue('Item created' in self.browser.contents)
         self.assertTrue('Job submitted' in self.browser.contents)
@@ -145,30 +151,8 @@ class ExperimentAddTest(unittest.TestCase):
 
     def test_run_experiment_twice(self):
         # create experiment
-        self.browser.open(self.experiments_url)
-        self.browser.getLink(url=self.experiments_add_url).click()
-        self.browser.getControl(name='form.widgets.IDublinCore.title')\
-            .value = "My Experiment"
-        self.browser.getControl(name='form.widgets.IDublinCore.description')\
-            .value = "This is my experiment description."
-        self.browser.getControl(name='form.widgets.functions:list')\
-            .displayValue = ["Bioclim"]
-        self.browser.getControl(name='form.widgets.species_occurrence_dataset:list')\
-            .displayValue = ["ABT"]
-        # self.browser.getControl(name='form.widgets.species_absence_dataset:list')\
-        #     .displayValue = ["ABT"]
-        # select two layers in test dataset
-        datasets = self.portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
-        curuid = datasets['current'].UID()  # get current datasets uuid
-        cbname = 'form.widgets.environmental_datasets.{}.select'.format(curuid)
-        # select current dataset
-        self.browser.getControl(name=cbname).value = [curuid]
-        # select 1st two layers within current dataset
-        lname = 'form.widgets.environmental_datasets.{}:list'.format(curuid)
-        form = self.browser.getForm(index=1)
-        self.in_out_select(form, lname, str(BIOCLIM['B01']))
-        self.in_out_select(form, lname, str(BIOCLIM['B02']))
-        # start
+        self.start_experiment()
+        # start experiment
         self.browser.getControl('Create and start').click()
         self.assertTrue('Item created' in self.browser.contents)
         self.assertTrue('Job submitted' in self.browser.contents)
@@ -193,6 +177,22 @@ class ExperimentAddTest(unittest.TestCase):
         # We should have two results now
         results = re.findall(r'<a href=.*My Experiment - bioclim.*</a>', self.browser.contents)
         self.assertEqual(len(results), 2)
+
+    def test_validate_resolution(self):
+        self.start_experiment()
+        # select layer from 2nd dataset
+        datasets = self.portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
+        curuid = datasets['current_1k'].UID()  # get current datasets uuid
+        cbname = 'form.widgets.environmental_datasets.{}.select'.format(curuid)
+        self.browser.getControl(name=cbname).value = [curuid]
+        # select 1st two layers within current dataset
+        lname = 'form.widgets.environmental_datasets.{}:list'.format(curuid)
+        form = self.browser.getForm(index=1)
+        self.in_out_select(form, lname, str(BIOCLIM['B01']))
+        # form submit should fail with resolution mismatch error
+        self.browser.getControl('Create and start').click()
+        self.assertTrue('All datasets must have the same resolution' in self.browser.contents)
+        self.assertEquals(self.browser.url, self.experiments_add_url)
 
     def _wait_for_job(self, expid):
         exp = self.portal[defaults.EXPERIMENTS_FOLDER_ID][expid]
