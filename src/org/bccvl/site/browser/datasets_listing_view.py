@@ -6,6 +6,7 @@ from org.bccvl.site.api import QueryAPI
 from org.bccvl.site.utilities import IJobTracker
 from Products.CMFCore.utils import getToolByName
 from zope.security import checkPermission
+from zope.component import getMultiAdapter
 
 
 def get_title_from_uuid(uuid):
@@ -29,6 +30,14 @@ class DatasetsListingView(BrowserView):
                                      'depth': -1},
                                sort_on='modified',
                                sort_order='descending')
+
+    def local_roles_action(self, itemobj):
+        context_state = getMultiAdapter((itemobj, self.request),
+                                        name=u'plone_context_state')
+        for action in context_state.actions().get('object'):
+            if action.get('id') == 'local_roles':
+                return action
+        return {}
 
     def job_status(self, ds):
         states = IJobTracker(ds).status()
