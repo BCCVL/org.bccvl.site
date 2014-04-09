@@ -11,10 +11,11 @@
 
     <metal:block metal:define-macro="algo_parameters">
 
-         <fieldset id="fieldset-parameters">
+         <fieldset id="fieldset-parameters"
+                   tal:define="param_groups view/param_groups|nothing"
+                   tal:condition="param_groups">
            <legend id="fieldset-parameters_label">Algo Params</legend>
-         <tal:block tal:repeat="group view/param_groups"
-                    condition="view/param_groups">
+         <tal:block tal:repeat="group param_groups">
            <fieldset
                tal:define="normalizeString nocall:context/@@plone/normalizeString;
                            fieldset_label group/label;

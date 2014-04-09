@@ -14,6 +14,9 @@
 
         <div id="bccvl-experiment-view">
             <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+
+            <metal:parameters use-macro="context/@@experiment-macros/algo_parameters"/>
+
             <div id="bccvl-experiment-results">
                 <h2>Results</h2>
                 <div class="bccvl-experiment-result-set"
