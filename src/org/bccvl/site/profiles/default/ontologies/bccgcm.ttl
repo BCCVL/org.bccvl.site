@@ -37,11 +37,11 @@ bg:gfdl-cm21 a bg:GCM ;
     .
 
 bg:giss-modeleh a bg:GCM ;
-    rdfs:label "GISS ModelE-H and GISS ModelE-R (which differ only in ocean component)" ;
+    rdfs:label "GISS-EH" ;
     .
 
 bg:giss-modeler a bg:GCM ;
-    rdfs:label "GISS ModelE-H and GISS ModelE-R (which differ only in ocean component)" ;
+    rdfs:label "GISS-ER" ;
     .
 
 bg:iap-fgoals10g a bg:GCM ;
