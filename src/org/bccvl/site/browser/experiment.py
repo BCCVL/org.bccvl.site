@@ -295,17 +295,15 @@ class SDMAdd(ParamGroupMixin, Add):
         for brain in api.getSpeciesOccurrenceDatasets():
             dataset_info = getdsmetadata(brain.getObject())
 
-            try: 
-                mapping[dataset_info['id']] = {
-                    'object': dataset_info['url'],
-                    'file': dataset_info['file'],
-                    'vizurl': dataset_info['vizurl'],
-                }
-            except KeyError:
-                mapping[dataset_info['id']] = {
-                    'object': dataset_info['url'],
-                    'file': dataset_info['file'],
-                }
+            mapping[dataset_info['id']] = {
+                'object': dataset_info['url'],
+                'file': dataset_info['file'],
+            }
+
+            if 'vizurl' in dataset_info:
+                mapping[dataset_info['id']].update({
+                    'vizurl': dataset_info['vizurl']
+                })
         # FIXME: this does look bad, and should probably be handled by a proper widget
         js_tmpl = """
             window.bccvl || (window.bccvl = {});
