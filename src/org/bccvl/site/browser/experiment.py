@@ -1,7 +1,7 @@
 from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
-from z3c.form.interfaces import ActionExecutionError
+from z3c.form.interfaces import ActionExecutionError, IErrorViewSnippet
 from org.bccvl.site.interfaces import IJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -16,7 +16,10 @@ from plone.autoform.utils import processFields
 from plone.supermodel import loadString
 from org.bccvl.site.api import QueryAPI
 from z3c.form.interfaces import DISPLAY_MODE
+from z3c.form.error import MultipleErrors
+from zope.component import getMultiAdapter
 from plone.app.uuid.utils import uuidToCatalogBrain
+from decimal import Decimal
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -368,6 +371,53 @@ class ProjectionAdd(Add):
             raise ActionExecutionError(Invalid(u"The combination of projection points does not match any datasets"))
 
 
+class BiodiverseAdd(Add):
+
+    def create(self, data):
+        # FIXME: store only selcted algos
+        # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
+        # we'll have to override it to find a place to apply our algo_group data'
+        newob = super(BiodiverseAdd, self).create(data)
+        # and now apply data['projection']
+        newob.projection = data['projection']
+        return newob
+
+    def validateAction(self, data):
+        # TODO: check data ...
+        pass
+
+    def extractData(self, setErrors=True):
+        data, errors = super(BiodiverseAdd, self).extractData(setErrors)
+        # extract datasets and thresholds and convert to field values
+        prefix = '{}{}{}'.format(self.prefix, self.widgets.prefix, 'projection')
+        count = self.request.get('{}.count'.format(prefix))
+        try:
+            count = int(count)
+            projdata = []
+            for x in xrange(count):
+                dsname = '{}.{}.dataset'.format(prefix, x)
+                thname = '{}.{}.threshold'.format(prefix, x)
+                # try to parse value as float... parsing as Decimal throws an unsupported error
+                _ = float(self.request.get(thname))
+                projdata.append({'dataset': self.request.get(dsname),
+                                 'threshold': Decimal(self.request.get(thname))})
+            if not projdata:
+                # TODO: set errors
+                pass
+            data['projection'] = projdata
+        except (Invalid, ValueError, MultipleErrors) as error:
+            #view = getMultiAdapter((error, self.request, widget, widget.field,
+            view = getMultiAdapter((error, self.request, None, None,
+                                    self.form, self.content), IErrorViewSnippet)
+            view.update()
+            # if self.setErrors:
+            #     widget.error = view
+            errors += (view, )
+        else:
+            data['projection'] = projdata
+        return data, errors
+
+
 class ProjectionAddView(add.DefaultAddView):
     """
     The formwrapper wrapping Add form above
@@ -379,3 +429,8 @@ class ProjectionAddView(add.DefaultAddView):
 class SDMAddView(add.DefaultAddView):
 
     form = SDMAdd
+
+
+class BiodiverseAddView(add.DefaultAddView):
+
+    form = BiodiverseAdd

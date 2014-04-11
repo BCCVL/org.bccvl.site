@@ -158,27 +158,18 @@ class IBiodiverseExperiment(IExperiment):
         title=u'Resolution',
         default=None,
         vocabulary='org.bccvl.site.ResolutionVocabulary',
-        required=True,
+        required=False,
         )
 
     # options: use dicts or other things here
     #          number of items in both lists must match
-    form.widget(datasets='org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
-    datasets = List(
-        title=u'Species layer',
-        value_type=Choice(
-            source=vocabularies.species_projection_datasets_source
-        ),
-        default=None,
-        required=True,
-        )
-
-    thresholds = List(
-        title=u'Threshold values',
-        value_type=Decimal(),
-        default=None,
-        required=True,
-        )
+    # FIXME: this list will store a list of datests + threshold values
+    #        I don't have yet a widget for it so I can't add it to the interface'
+    # projection = List(
+    #     title=u'Projection Datasets',
+    #     default=None,
+    #     required=True,
+    #     )
 
     cluster_size = Choice(
         title=u'Cluster size',

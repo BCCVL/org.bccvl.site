@@ -110,4 +110,27 @@
     </class>
 
 
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.BiodiverseAddView"
+        name="org.bccvl.content.biodiverseexperiment"
+        />
+    <class class=".experiment.BiodiverseAddView">
+        <require
+            permission="org.bccvl.AddExperiment"
+            interface="zope.publisher.interfaces.browser.IBrowserPage"
+            />
+    </class>
+
+    <!-- add form without ++add++ traverser  -->
+    <!-- <browser:page -->
+    <!--     name="org.bccvl.content.biodiverseexperiment" -->
+    <!--     for="Products.CMFCore.interfaces.IFolderish" -->
+    <!--     class=".experiment.BiodiverseAddWizard" -->
+    <!--     permission="org.bccvl.AddExperiment" -->
+    <!-- /> -->
+
 </configure>
