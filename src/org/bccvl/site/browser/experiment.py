@@ -79,7 +79,7 @@ class ParamGroupMixin(object):
                 self)
             param_group.__name__ = "parameters_{}".format(toolkit.id)
             #param_group.prefix = ''+ form.prefix?
-            param_group.toolkit = toolkit.id
+            param_group.toolkit = toolkit.getId()
             param_group.schema = parameters_schema
             #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
             #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
