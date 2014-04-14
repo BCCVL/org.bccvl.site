@@ -176,7 +176,7 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
         return {
             'model': brain,
             'experiment': exp,
-            'function': result.toolkit,
+            'function': result.job_params['function'],
             'species': occurbrain,
             'layers': envlayers
         }

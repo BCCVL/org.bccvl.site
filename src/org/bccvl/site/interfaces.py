@@ -12,3 +12,11 @@ class IJobTracker(Interface):
         """
         return the job instance
         """
+
+
+class IComputeMethod(Interface):
+
+    def __call__(result, toolkit):
+        """
+        execute a compute method
+        """

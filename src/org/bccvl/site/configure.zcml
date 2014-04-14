@@ -106,12 +106,16 @@
 
 
     <adapter
-        for=".content.interfaces.IExperiment"
-        factory=".utilities.JobTracker"/>
+        factory=".utilities.SDMJobTracker"/>
 
     <adapter
-        for=".content.dataset.IDataset"
-        factory=".utilities.JobTracker"/>
+        factory=".utilities.ProjectionJobTracker"/>
+
+    <adapter
+        factory=".utilities.BiodiverseJobTracker"/>
+
+    <adapter
+        factory=".utilities.ALAJobTracker"/>
 
   <utility
      component=".transmogrify.ALASource"

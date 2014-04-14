@@ -4,9 +4,9 @@ from ordf.namespace import FOAF
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.dataset import IDataset
-from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment
-from org.bccvl.site.interfaces import IJobTracker
-from org.bccvl.site.namespace import DWC
+from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment
+from org.bccvl.site.interfaces import IJobTracker, IComputeMethod
+from org.bccvl.site.namespace import DWC, BCCPROP
 from org.bccvl.site.browser.ws import IDataMover
 from gu.repository.content.interfaces import (
     IRepositoryContainer,
@@ -22,11 +22,13 @@ from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 from plone.app.contenttypes.interfaces import IFile
 from plone.app.async.interfaces import IAsyncService
 from plone.app.async import service
-from zope.component import getUtility
+from zope.component import getUtility, adapter, queryUtility
 from gu.z3cform.rdf.interfaces import IGraph
+from gu.z3cform.rdf.utils import Period
 from zc.async import local
 from plone.dexterity.utils import createContentInContainer
 from datetime import datetime
+from zope.schema.interfaces import IVocabularyFactory
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -120,66 +122,187 @@ class JobTracker(object):
                 break
         return active
 
+    def clear_jobs(self):
+        self.context.current_jobs = []
+
+    def add_job(self, job):
+        self.context.current_jobs.append(job)
+
     def start_job(self, request):
-        # TODO: could split projection job across future climate datasets
-        # TODO: split biodiverse job across years, gcm, emsc
+        raise NotImplementedError()
+
+
+# TODO: should this be named adapter as well in case there are multiple
+#       different jobs for experiments
+@adapter(ISDMExperiment)
+class SDMJobTracker(JobTracker):
+
+    def start_job(self, request):
+        # split sdm jobs across multiple algorithms,
+        # and multiple species input datasets
+        # TODO: rethink and maybe split jobs based on enviro input datasets?
         if not self.has_active_jobs():
-            self.context.current_jobs = []
+            self.clear_jobs()
             for func in (uuidToObject(f) for f in self.context.functions):
-                method = None
-                if func is None:
-                    # FIXME: hack around predict functions ... implement proper checks
-                    # return ('error',
-                    #         u"Can't find function {}".format(self.context.functions))
-                    from .content.function import Function
-                    func = Function()
-                    func.method = self.context.functions[0]
-
-                if not func.method.startswith('org.bccvl.compute'):
-                    return 'error', u"Method '{}' not in compute package".format(func.method)
-                try:
-                    method = resolve(func.method)
-                except ImportError as e:
-                    return 'error', u"Can't resolve method '{}'- {}".format(func.method, e)
+                # get utility to execute this experiment
+                method = queryUtility(IComputeMethod,
+                                      name=ISDMExperiment.__identifier__)
                 if method is None:
-                    return 'error', u"Unknown error, method is None"
-
+                    return ('error',
+                            u"Can't find method to run SDM Experiment")
                 # create result object:
+                # TODO: refactor this out into helper method
                 title = u'%s - %s %s' % (self.context.title, func.getId(),
-                                 datetime.now().isoformat())
+                                         datetime.now().isoformat())
                 result = createContentInContainer(
                     self.context,
                     'gu.repository.content.RepositoryItem',
                     title=title)
-                # FIXXME: do I need these attributes here?
-                #         maybe add them as annotations
-                spds = None
-                if ISDMExperiment.providedBy(self.context):
-                    result.toolkit = func.getId()
-                    spds = uuidToObject(self.context.species_occurrence_dataset)
-                elif IProjectionExperiment.providedBy(self.context):
-                    spds = uuidToObject(self.context.species_distribution_models)
 
-                if spds is not None:
-                    spmd = IGraph(spds)
-                    result.species = unicode(spmd.value(spmd.identifier, DWC['scientificName']))
-                else:
-                    # TODO: throw error here or earlier?
-                    result.species = u'Unknown Species'
-                result.resolution = self.context.resolution
-                # FIXME: attach additional info here
-                #       e.g. layers
-                #        future: year, emsc, gcm
-                # submit job to queue
-                LOG.info("Submit JOB %s to queue", func.method)
-                # TODO: do I need request here? (and pass it into this method?)
-                job = method(result, func, request)
-                self.context.current_jobs.append(job)
+                # Build job_params store them on result and submit job
+                result.job_params = {
+                    'resolution': self.context.resolution,
+                    'function': func.getId(),
+                    'species_occurrence_dataset': self.context.species_occurrence_dataset,
+                    'species_absence_dataset': self.context.species_absence_dataset,
+                    'species_pseudo_absence_points': self.context.species_pseudo_absence_points,
+                    'species_number_pseudo_absence_points': self.context.species_number_pseudo_absence_points,
+                    'environmental_datasets': self.context.environmental_datasets,
+                }
+                # add toolkit params:
+                result.job_params.update(self.context.parameters[func.getId()])
+                # submit job
+                LOG.info("Submit JOB %s to queue", func.getId())
+                job = method(result, func)
+                self.add_job(job)
             return 'info', u'Job submitted {}'.format(self.status())
         else:
             return 'error', u'Current Job is still running'
 
-    def start_ala_job(self):
+
+# TODO: should this be named adapter as well
+@adapter(IProjectionExperiment)
+class ProjectionJobTracker(JobTracker):
+
+    def start_job(self, request):
+        if not self.has_active_jobs():
+            # split jobs across future climate datasets
+            for dsbrain in self.context.future_climate_datasets():
+                self.clear_jobs()
+                # get utility to execute this experiment
+                method = queryUtility(IComputeMethod,
+                                      name=IProjectionExperiment.__identifier__)
+                if method is None:
+                    return ('error',
+                            u"Can't find method to run Projection Experiment")
+                # create result object:
+                # get more metadata about dataset
+                dsobj = dsbrain.getObject()
+                dsmd = IGraph(dsobj)
+                emsc = dsmd.value(dsmd.identifier, BCCPROP['emissionscenario'])
+                gcm = dsmd.value(dsmd.identifier, BCCPROP['gcm'])
+                period = dsmd.value(dsmd.identifier, DCTERMS['temporal'])
+                # get display values for metadata
+                emsc = emsc.split('#', 1)[-1] if emsc else None
+                gcm = gcm.split('#', 1)[-1] if gcm else None
+                year = Period(period).start if period else None
+
+                title = u'{} - project {}_{}_{} {}'.format(
+                    self.context.title, emsc, gcm, year,
+                    datetime.now().isoformat())
+                result = createContentInContainer(
+                    self.context,
+                    'gu.repository.content.RepositoryItem',
+                    title=title)
+
+                # build job_params and store on result
+                result.job_params = {
+                    'resolution': self.context.resolution,
+                    'species_distribution_models': self.context.species_distribution_models,
+                    # TODO: URI values or titles?
+                    'year': year,
+                    'emission_scenario': emsc,
+                    'climate_models': gcm,
+                    'future_climate_datasets': dsbrain.UID,
+                }
+
+                # submit job
+                LOG.info("Submit JOB project to queue")
+                job = method(result, "project")  # TODO: wrong interface
+                self.add_job(job)
+            return 'info', u'Job submitted {}'.format(self.status())
+        else:
+            # TODO: in case there is an error should we abort the transaction
+            #       to cancel previously submitted jobs?
+            return 'error', u'Current Job is still running'
+
+
+# TODO: should this be named adapter as well
+@adapter(IBiodiverseExperiment)
+class BiodiverseJobTracker(JobTracker):
+
+    def start_job(self, request):
+        # TODO: split biodiverse job across years, gcm, emsc
+        if not self.has_active_jobs():
+            self.clear_jobs()
+            # get utility to execute this experiment
+            method = queryUtility(IComputeMethod,
+                                  name=IBiodiverseExperiment.__identifier__)
+            if method is None:
+                return ('error',
+                        u"Can't find method to run Biodiverse Experiment")
+
+            # iterate over all datasets and group them by emsc,gcm,year
+            datasets = {}
+            for projds in self.context.projection:
+                dsobj = uuidToObject(projds['dataset'])
+                dsmd = IGraph(dsobj)
+                emsc = dsmd.value(dsmd.identifier, BCCPROP['emissionscenario'])
+                gcm = dsmd.value(dsmd.identifier, BCCPROP['gcm'])
+                period = dsmd.value(dsmd.identifier, DCTERMS['temporal'])
+                year = Period(period).start if period else None
+                key = (emsc, gcm, year)
+                if key not in datasets:
+                    datasets[key] = []
+                datasets[key].append(projds)
+
+            # create one job per dataset group
+            for key, datasets in datasets.items():
+                (emsc, gcm, year) = key
+                emsc = emsc.split('#', 1)[-1] if emsc else None
+                gcm = gcm.split('#', 1)[-1] if gcm else None
+
+                # create result object:
+                title = u'{} - biodiverse {}_{}_{} {}'.format(
+                    self.context.title, emsc, gcm, year,
+                    datetime.now().isoformat())
+                result = createContentInContainer(
+                    self.context,
+                    'gu.repository.content.RepositoryItem',
+                    title=title)
+
+                # build job_params and store on result
+                job_params = {
+                    # datasets is a list of dicts with 'threshold' and 'uuid'
+                    'projections': datasets,
+                    'cluster_size': self.context.cluster_size,
+                }
+                result.job_params = job_params
+
+                # submit job to queue
+                LOG.info("Submit JOB Biodiverse to queue")
+                job = method(result, "biodiverse")  # TODO: wrong interface
+                self.add_job(job)
+            return 'info', u'Job submitted {}'.format(self.status())
+        else:
+            return 'error', u'Current Job is still running'
+
+
+# TODO: named adapter
+@adapter(IDataset)
+class ALAJobTracker(JobTracker):
+
+    def start_job(self):
         if self.has_active_jobs():
             return 'error', u'Current Job is still running'
         self.context.current_jobs = []

@@ -44,7 +44,7 @@ class ExperimentsListingView(BrowserView):
                                     ', '.join(envlayervocab.getTerm(envlayer).title
                                             for envlayer in sorted(layers)))
                     for (envuuid, layers) in sorted(sdmexp.environmental_datasets.items()))
-                toolkit = sdmresult.toolkit
+                toolkit = sdmresult.job_params['function']
                 species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
             else:
                 # FIXME: should we prevent users from deleting / unsharing?
