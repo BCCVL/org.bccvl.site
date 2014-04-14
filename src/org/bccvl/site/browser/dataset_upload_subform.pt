@@ -1,4 +1,4 @@
 <metal:block use-macro="context/@@ploneform-macros/titlelessform">
   <!-- empty description slot -->
-  <metal:description fill-slot="description"></metal:description>
+  <!-- <metal:description fill-slot="description"></metal:description> -->
 </metal:block>

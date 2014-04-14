@@ -20,8 +20,9 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 class SpeciesAddForm(DefaultAddForm):
 
     title = u"Upload Species Data"
-    description = u"Upload ccurrences or abundance data for single species"
-
+    description = (u"<p>Upload occurrences or abundance data for single species</p>"
+                   u"<p>An occurrence dataset is expected to be in CSV format."
+                   u" BCCVL will only try to interpret columns with labels 'lon' and 'lat'.</p>" )
     fields = Fields(IBasic, IDataset, ISpeciesDataset)
 
     template = ViewPageTemplateFile('dataset_upload_subform.pt')
@@ -39,7 +40,13 @@ class SpeciesAddForm(DefaultAddForm):
 class RasterAddForm(DefaultAddForm):
 
     title = u"Upload Environmental Data"
-    description = u"Upload current or future climate data"
+    description = (u"<p>Upload current or future climate data</p>"
+                   u"<p>BCCVL can only deal with raster data in GeoTIFF format."
+                   u" Valid files are either single GeoTiff files or a number of"
+                   u" GeoTiff packaged within a zip file."
+                   u" Idealy the map projection information is embedded as metadata"
+                   u" within the GeoTiff itself. In case of missing map projection"
+                   u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
     fields = Fields(IBasic, IDataset, ILayerDataset)
 
