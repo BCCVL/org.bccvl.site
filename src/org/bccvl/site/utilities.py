@@ -187,8 +187,8 @@ class ProjectionJobTracker(JobTracker):
     def start_job(self, request):
         if not self.has_active_jobs():
             # split jobs across future climate datasets
+            self.clear_jobs()
             for dsbrain in self.context.future_climate_datasets():
-                self.clear_jobs()
                 # get utility to execute this experiment
                 method = queryUtility(IComputeMethod,
                                       name=IProjectionExperiment.__identifier__)
