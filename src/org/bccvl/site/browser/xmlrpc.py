@@ -237,6 +237,8 @@ class DataSetManager(BrowserView):
                 gcm = unicode(gcm) if gcm else None
                 emsc = dsgraph.value(dsgraph.identifier, BCCPROP['emissionscenario'])
                 emsc = unicode(emsc) if emsc else None
+                species = dsgraph.value(dsgraph.identifier, DWC['scientificName'])
+                species = unicode(species) if species else None
                 datasets.append({
                     # passible fields on brain:
                     #   Description, BCCResolution
@@ -248,15 +250,15 @@ class DataSetManager(BrowserView):
                     "year":  year,  # int or string?
                     "gcm":  gcm,  # URI? title? both?-> ui can fetch vocab to get titles
                     "emsc": emsc,  # URI
-                    "species":  ds.species,   # species for this file ...
+                    "species": species,   # species for this file ...
                 })
-                agg_species.add(ds.species)
+                agg_species.add(species)
                 agg_years.add(year)
             # TODO: could also aggregate all data on projections result:
             #       e.g. list all years, grms, emsc, aggregated from datasets
             projections.append({
                 "name": projbrain.Title,  # TODO: rename to title
-                "id":  projbrain.UID,   # TODO: rename to uuid
+                "uuid":  projbrain.UID,   # TODO: rename to uuid
                 "species":  tuple(agg_species),
                 "years": tuple(agg_years),
                 "result": datasets
