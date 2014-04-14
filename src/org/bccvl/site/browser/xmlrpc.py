@@ -468,8 +468,9 @@ class DataMover(BrowserView):
         getUtility(IORDF).getHandler().put(md.graph)
 
         # 2. create and push alaimport job for dataset
+        # TODO: make this named adapter
         jt = IJobTracker(ds)
-        status, message = jt.start_ala_job()
+        status, message = jt.start_job()
         return (status, message)
 
     @returnwrapper
