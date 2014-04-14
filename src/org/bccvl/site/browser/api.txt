@@ -72,8 +72,7 @@ Let's try to to log in to find some datasets.
     >>> proxy = xmlrpclib.ServerProxy(urlunsplit(urlparts))
     >>> res = proxy.getProjectionDatasets()
     >>> pprint(res)
-    {'projections': [{'uuid': '...',
-                      'name': 'Test Projection',
+    {'projections': [{'name': 'Test Projection',
                       'result': [{'emsc': 'http://namespaces.bccvl.org.au/emsc#RCP3D',
                                   'files': ['Result_file.tiff'],
                                   'gcm': 'http://namespaces.bccvl.org.au/gcm#cccma-cgcm31',
@@ -82,6 +81,7 @@ Let's try to to log in to find some datasets.
                                   'uuid': '...',
                                   'year': '2014'}],
                       'species': ['Result species'],
+                      'uuid': '...',
                       'years': ['2014']}]}
 
 

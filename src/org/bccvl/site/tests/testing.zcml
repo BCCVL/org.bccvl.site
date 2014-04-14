@@ -17,10 +17,16 @@ overrides anything else in a stacked component registry scenario -->
 
     <include package="plone.app.caching"/>
     <include package="plone.app.folderui"/>
-    <include package="org.bccvl.site"/>
+    <include package="org.bccvl.site"/> <!-- this loads all
+    dependencies as well, should get rid of it or use only in
+    integration tests -->
     <include package="gu.transmogrifier"/>
 
     <includeOverrides package="org.bccvl.site" file="overrides.zcml"/>
+
+    <utility
+        component=".compute.testalgorithm"
+        name="org.bccvl.site.content.interfaces.ISDMExperiment"/>
 
     <genericsetup:registerProfile
         name="testing"

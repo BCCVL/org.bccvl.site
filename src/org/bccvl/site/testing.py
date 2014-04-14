@@ -75,11 +75,6 @@ class BCCVLLayer(PloneSandboxLayer):
         context.reindexObject()
 
     def addTestContent(self, portal):
-        # TODO get rid of this modue hack
-        from org.bccvl import compute
-        from org.bccvl.site.tests.compute import testalgorithm
-        compute.testalgorithm = testalgorithm
-
         transmogrifier = Transmogrifier(portal)
         transmogrifier(u'org.bccvl.site.dataimport',
                        source={'path': 'org.bccvl.site.tests:data'})

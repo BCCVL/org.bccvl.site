@@ -4,7 +4,7 @@ from org.bccvl.site import defaults
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from plone.testing import layered
 from gu.z3cform.rdf.interfaces import IGraph
-from org.bccvl.site.namespace import BCCVOCAB, BCCPROP, BCCEMSC, BCCGCM
+from org.bccvl.site.namespace import BCCVOCAB, BCCPROP, BCCEMSC, BCCGCM, DWC
 from ordf.namespace import DC
 from rdflib import Literal
 from gu.z3cform.rdf.interfaces import IORDF
@@ -36,7 +36,6 @@ def setUpApiTests(doctest):
     rds = result.invokeFactory('org.bccvl.content.dataset',
                                id='rds',
                                title=u'Result Test',
-                               species=u'Result species',
                                file=NamedFile(filename=u'Result_file.tiff'))
     rds = result[rds]
     # set metadata on rds
@@ -45,6 +44,7 @@ def setUpApiTests(doctest):
     rdsgraph.add((rdsgraph.identifier, DC['temporal'], Literal(u"start=2014;")))
     rdsgraph.add((rdsgraph.identifier, BCCPROP['gcm'], BCCGCM['cccma-cgcm31']))
     rdsgraph.add((rdsgraph.identifier, BCCPROP['emissionscenario'], BCCEMSC['RCP3D']))
+    rdsgraph.add((rdsgraph.identifier, DWC['scientificName'], Literal(u"Result species")))
     handler = getUtility(IORDF).getHandler()
     handler.put(rdsgraph)
     # update index with data from graph

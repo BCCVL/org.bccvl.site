@@ -4,7 +4,9 @@ import shutil
 import time
 from plone.app.async.interfaces import IAsyncService
 from zope.component import getUtility
+from zope.interface import provider
 from org.bccvl.compute.utils import WorkEnvLocal
+from org.bccvl.site.interfaces import IComputeMethod
 from zc.async import local
 
 
@@ -38,7 +40,8 @@ def testjob(experiment, jobid, env):
         shutil.rmtree(tmpdir)
 
 
-def testalgorithm(experiment, toolkit, request):
+@provider(IComputeMethod)
+def testalgorithm(experiment, toolkit):
     # submit test_job into queue
     async = getUtility(IAsyncService)
     queues = async.getQueues()
