@@ -399,6 +399,7 @@ class BiodiverseAdd(Add):
                 thname = '{}.{}.threshold'.format(prefix, x)
                 # try to parse value as float... parsing as Decimal throws an unsupported error
                 _ = float(self.request.get(thname))
+                # FIXME: may raise TypeError ... not caught below
                 projdata.append({'dataset': self.request.get(dsname),
                                  'threshold': Decimal(self.request.get(thname))})
             if not projdata:
