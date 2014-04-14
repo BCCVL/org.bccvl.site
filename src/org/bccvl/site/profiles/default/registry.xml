@@ -63,6 +63,26 @@
     </field>
     <value>True</value>
   </record>
+  <record name="plone.caching.interfaces.ICacheSettings.operationMapping" interface="plone.caching.interfaces.ICacheSettings" field="operationMapping">
+    <field type="plone.registry.field.Dict">
+      <description>Maps rule set names to operation names</description>
+      <key_type type="plone.registry.field.DottedName">
+        <title>Rule set name</title>
+      </key_type>
+      <title>Rule set/operation mapping</title>
+      <value_type type="plone.registry.field.DottedName">
+        <title>Caching operation name</title>
+      </value_type>
+    </field>
+    <value>
+      <element key="plone.resource">plone.app.caching.strongCaching</element>
+      <element key="plone.stableResource">plone.app.caching.strongCaching</element>
+      <element key="plone.content.itemView">plone.app.caching.weakCaching</element>
+      <element key="plone.content.feed">plone.app.caching.moderateCaching</element>
+      <element key="plone.content.folderView">plone.app.caching.weakCaching</element>
+      <element key="plone.content.file">plone.app.caching.moderateCaching</element>
+    </value>
+  </record>
   <!-- plone.cachepurging settings -->
   <record name="plone.cachepurging.interfaces.ICachePurgingSettings.cachingProxies" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="cachingProxies">
     <field type="plone.registry.field.Tuple">
