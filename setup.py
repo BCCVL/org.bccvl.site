@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.9.0-rc1'
+version = '0.9.0-rc2'
 
 setup(
     name='org.bccvl.site',
@@ -46,7 +46,6 @@ setup(
         'collective.quickupload',
         'collective.onlogin',
         'collective.z3cform.widgets',
-        'collective.z3cform.wizard',
         #'collective.z3cform.chosen',
         'gu.plone.rdf',
         'plone.app.folderui',
