@@ -7,7 +7,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.publisher.interfaces import NotFound
 #from functools import wraps
 from decorator import decorator
-from plone.app.uuid.utils import uuidToObject
+from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IProjectionExperiment
@@ -286,6 +286,37 @@ class DataSetManager(BrowserView):
         for term in vocab:
             result.append({'token': term.token,
                            'title': term.title})
+        return result
+
+    def getThresholds(self, projections, thresholds=None):
+        if not isinstance(projections, list):
+            projections = [projections]
+        pc = getToolByName(self.context, 'portal_catalog')
+        result = {}
+        for projection in projections:
+            # 1. try to find sdm for projection
+            projobj = uuidToObject(projection)
+            if projobj is None:
+                continue
+            sdm = uuidToCatalogBrain(projobj.species_distribution_models)
+            if sdm is None:
+                continue
+            # 2. thresholds can be found on sibling datasets with genre DataGenreSDMEval
+            path = '/'.join(sdm.getPath().split('/')[:-1])
+            for brain in pc.searchResults(
+                    path={'query': path, 'depth': 1},
+                    BCCDataGenre=BCCVOCAB['DataGenreSDMEval']
+                    ):
+                dsobj = brain.getObject()
+                if not getattr(dsobj, 'thresholds', None):
+                    continue
+                if projection not in result:
+                    result[projection] = {}
+                # filter thresholds
+                ths = dsobj.thresholds
+                if thresholds:
+                    ths = dict((k, v) for k, v in ths.iteritems() if k in thresholds)
+                result[projection].update(ths)
         return result
 
 

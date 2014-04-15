@@ -16,6 +16,13 @@ class IDataset(form.Schema):
         description=_(u"Data content"),
         required=True)
 
+    form.omitted('thresholds')
+    thresholds = Dict(
+        title=_(u"Thresholds"),
+        default=None,
+        required=False
+        )
+
         # fixed fields
         # RDFURIChoiceField(
         #     __name__='format',
