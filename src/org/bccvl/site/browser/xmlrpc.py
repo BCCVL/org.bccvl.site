@@ -78,8 +78,8 @@ def returnwrapper(f, *args, **kw):
 
     # if we don't have xmlrpc we serialise to json
     if not isxmlrpc:
-        ret = json.dumps(ret)
-        view.request.response['CONTENT-TYPE'] = 'text/json'
+        ret = json.dumps(ret, default=decimal_encoder)
+        view.request.response['CONTENT-TYPE'] = 'application/json'
     return ret
 
 
