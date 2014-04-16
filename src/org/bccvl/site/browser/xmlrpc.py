@@ -315,8 +315,11 @@ class DataSetManager(BrowserView):
                     result[projection] = {}
                 # filter thresholds
                 ths = dsobj.thresholds
+                # TODO: doubled up code
                 if thresholds:
-                    ths = dict((k, v) for k, v in ths.iteritems() if k in thresholds)
+                    ths = dict((k, str(v)) for k, v in ths.iteritems() if k in thresholds)
+                else:
+                    ths = dict((k, str(v)) for k, v in ths.iteritems())
                 result[projection].update(ths)
         return result
 
