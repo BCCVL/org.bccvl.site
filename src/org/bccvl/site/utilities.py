@@ -329,7 +329,8 @@ class ALAJobTracker(JobTracker):
 # TODO: move stuff below to separate module
 def alaimport(dataset, lsid):
     # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
-    status = local.getLiveAnnotation('bccvl.status')
+    status = local.getLiveAnnotation('bccvl.status', default={},
+                                     timeout=5)
     status['task'] = 'Running'
     local.setLiveAnnotation('bccvl.status', status)
     import time

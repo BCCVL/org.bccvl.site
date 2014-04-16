@@ -19,7 +19,8 @@ def testjob(experiment, jobid, env):
     env.tmpimport = tmpdir
     env.workdir = tmpdir
     env.jobid = jobid
-    status = local.getLiveAnnotation('bccvl.status')
+    status = local.getLiveAnnotation('bccvl.status', default={},
+                                     timeout=5)
     try:
         # 2. create some result files
         for fname in ('testfile1.txt', ):
