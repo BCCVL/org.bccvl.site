@@ -29,9 +29,21 @@ from plone.dexterity.utils import createContentInContainer
 from rdflib.resource import Resource
 from rdflib import Literal, URIRef
 from gu.z3cform.rdf.utils import Period
+from decimal import Decimal
 
 
 LOG = logging.getLogger(__name__)
+
+
+def decimal_encoder(o):
+    """ converts Decimal to something the json module can serialize.
+    Usually with python 2.7 float rounding this creates nice representations
+    of numbers, but there might be cases where rounding may cause problems.
+    E.g. if precision required is higher than default float rounding.
+    """
+    if isinstance(o, Decimal):
+        return float(o)
+    raise TypeError(repr(o) + " is not JSON serializable")
 
 
 # self passed in as *args
@@ -315,11 +327,9 @@ class DataSetManager(BrowserView):
                     result[projection] = {}
                 # filter thresholds
                 ths = dsobj.thresholds
-                # TODO: doubled up code
                 if thresholds:
-                    ths = dict((k, str(v)) for k, v in ths.iteritems() if k in thresholds)
-                else:
-                    ths = dict((k, str(v)) for k, v in ths.iteritems())
+                    ths = dict((k, v) for k, v in ths.iteritems()
+                               if k in thresholds)
                 result[projection].update(ths)
         return result
 
