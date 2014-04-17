@@ -4,9 +4,13 @@ from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from org.bccvl.site.vocabularies import envirolayer_source
 from org.bccvl.site.api import QueryAPI
+from org.bccvl.site.namespace import DWC, BCCPROP
 from collections import defaultdict
 from zope.component import getUtility
 from zope.schema.interfaces import IContextSourceBinder
+from gu.z3cform.rdf.interfaces import IGraph
+from gu.z3cform.rdf.utils import Period
+from ordf.namespace import DC
 
 
 def get_title_from_uuid(uuid):
@@ -89,11 +93,32 @@ class ExperimentsListingView(BrowserView):
             })
         elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
             # FIXME: implement this
+            exp = expbrain.getObject()
+            species = set()
+            years = set()
+            emscs = set()
+            gcms = set()
+            for dsuuid in (x['dataset'] for x in exp.projection):
+                dsobj = uuidToObject(dsuuid)
+                dsmd = IGraph(dsobj)
+                species.add(unicode(dsmd.value(dsmd.identifier,
+                                               DWC['scientificName'])))
+                period = dsmd.value(dsmd.identifier, DC['temporal'])
+                if period:
+                    years.add(Period(period).start)
+                gcm = dsmd.value(dsmd.identifier, BCCPROP['gcm'])
+                if gcm:
+                    gcms.add(gcm.split('#', 1)[-1])
+                emsc = dsmd.value(dsmd.identifier, BCCPROP['emissionscenario'])
+                if emsc:
+                    emscs.add(emsc.split('#', 1)[-1])
+
             details.update({
                 'type': 'BIODIVERSE',
-                'functions': 'biodiverse options',
-                'species_occurrence': 'Species1, Species2, Species3',
-                'species_absence': '',
-                'environmental_layers': '2015, 2020, 2025'  # should be years?
+                'functions': 'endemism, redundancy',
+                'species_occurrence': ', '.join(sorted(species)),
+                'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
+                                                   ', '.join(sorted(gcms))),
+                'environmental_layers': ', '.join(sorted(years)),
             })
         return details
