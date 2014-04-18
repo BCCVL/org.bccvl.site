@@ -7,8 +7,8 @@ be:EMSC a owl:Class ;
     rdfs:label "Emission Scenario" ;
     .
 
-be:RCP3D a be:EMSC ;
-    rdfs:label "RCP3D" ;
+be:RCP3PD a be:EMSC ;
+    rdfs:label "RCP3PD" ;
     .
 
 be:RCP45 a be:EMSC ;

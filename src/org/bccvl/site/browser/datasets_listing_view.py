@@ -2,8 +2,8 @@ from Products.Five import BrowserView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
-from org.bccvl.site.api import QueryAPI
 from org.bccvl.site.utilities import IJobTracker
+from org.bccvl.site.content.interfaces import IDataset
 from Products.CMFCore.utils import getToolByName
 from zope.security import checkPermission
 from zope.component import getMultiAdapter
@@ -23,13 +23,20 @@ def get_title_from_uuid(uuid):
 @implementer(IFolderContentsView)
 class DatasetsListingView(BrowserView):
 
-    def datasets(self):
-        api = QueryAPI(self.context)
-        path = '/'.join(self.context.getPhysicalPath())
-        return api.getDatasets(path={'query': path,
-                                     'depth': -1},
-                               sort_on='modified',
-                               sort_order='descending')
+    def contentFilter(self):
+        # the default folder_contents template/macro could take this filter
+        # from the request as well...
+        # TODO: maybe we can simply parse the request here to change
+        #       sort_order, or do batching?
+        return {
+            'path': {
+                'query': '/'.join(self.context.getPhysicalPath()),
+                'depth': -1
+            },
+            'sort_on': 'modified',
+            'sort_order': 'descending',
+            'object_provides': IDataset.__identifier__,
+        }
 
     def local_roles_action(self, itemobj):
         context_state = getMultiAdapter((itemobj, self.request),
@@ -40,9 +47,11 @@ class DatasetsListingView(BrowserView):
         return {}
 
     def job_status(self, ds):
-        states = IJobTracker(ds).status()
-        if states:
-            return states[0][1]
+        jt = IJobTracker(ds, None)
+        if jt:
+            states = jt.status()
+            if states:
+                return states[0][1]
         return None
 
     def get_transition(self, itemob):
@@ -61,38 +70,3 @@ class DatasetsListingView(BrowserView):
 
     def can_modify(self, itemob):
         return checkPermission('cmf.ModifyPortalContent', itemob)
-
-    # def experiment_details(self, expbrain):
-    #     details = {}
-
-    #     if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
-    #         details['type'] = 'PROJECTION'
-    #     elif expbrain.portal_type == 'org.bccvl.content.sdmexperiment':
-    #         # this is ripe for optimising so it doesn't run every time
-    #         # experiments are listed
-    #         envirolayer_vocab = envirolayer_source(self.context)
-    #         environmental_layers = defaultdict(list)
-    #         exp = expbrain.getObject()
-    #         if exp.environmental_datasets:
-    #             for dataset, layers in exp.environmental_datasets.items():
-    #                 for layer in layers:
-    #                     environmental_layers[dataset].append(
-    #                         envirolayer_vocab.getTermByToken(str(layer)).title
-    #                     )
-
-    #         details.update({
-    #             'type': 'SDM',
-    #             'functions': ', '.join(
-    #                 get_title_from_uuid(func) for func in exp.functions
-    #             ),
-    #             'species_occurrence': get_title_from_uuid(
-    #                 exp.species_occurrence_dataset),
-    #             'species_absence': get_title_from_uuid(
-    #                 exp.species_absence_dataset),
-    #             'environmental_layers': ', '.join(
-    #                 '{}: {}'.format(get_title_from_uuid(dataset),
-    #                                 ', '.join(layers))
-    #                 for dataset, layers in environmental_layers.items()
-    #             ),
-    #         })
-    #     return details

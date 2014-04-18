@@ -9,7 +9,7 @@
 <body>
 
 <metal:content-core fill-slot="body"
-	            tal:define="folderContents view/datasets">
+	            tal:define="contentFilter view/contentFilter">
 
     <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
 
@@ -107,7 +107,7 @@
                         </td>
                         <!-- Download -->
                         <td
-                             tal:define="file item_obj/file">
+                             tal:define="file item_obj/file|nothing">
                           <a href="#"
                              tal:condition="file"
                              tal:attributes="href string:${item_url}/@@download/file/${file/filename}">Download</a>

@@ -1,6 +1,7 @@
 from zope.component import adapter, getMultiAdapter, getUtility
 from zope.interface import implementer, alsoProvides
-from zope.schema.interfaces import ISequence, ITitledTokenizedTerm, IContextSourceBinder
+from zope.schema.interfaces import (ISequence, ITitledTokenizedTerm,
+                                    IVocabularyFactory)
 from z3c.form import util
 from z3c.form.interfaces import (IFieldWidget,  IFormLayer,
                                  ITerms, IFormAware, NO_VALUE)
@@ -11,7 +12,6 @@ from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
 from zope.i18n import translate
 from .interfaces import (IDatasetsWidget, IDatasetsRadioWidget,
                          IOrderedCheckboxWidget)
-from Products.CMFCore.utils import getToolByName
 from plone.app.uuid.utils import uuidToCatalogBrain
 
 
@@ -154,25 +154,31 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
     def get_item_details(self, item):
         # TODO: code duplication see: experiments_listing_view.py:45
         # TODO: fetch additional data for item here
-        pc = getToolByName(self.context, 'portal_catalog')
-        brain = pc.searchResults(UID=item['value'])[0]
+        brain = uuidToCatalogBrain(item['value'])
         sdm = brain.getObject()
         # TODO: we might have two options here sdm could be uploaded,
         #       then we'll show other data; for now ignore this case
         #       and consider only results for sdm experiments
+        # TODO: may this fail if access to parents is not possible?
         result = sdm.__parent__
         exp = result.__parent__
+        # TODO: What if we don't have access to secies occurrence dataset?
+        #       should user still be able to start projection?
+        #       would we miss out on species info or so?
+        #       Dos SDM have species infos attached?
         occurbrain = uuidToCatalogBrain(exp.species_occurrence_dataset)
-        #TODO:  need function for this specific str
-        envlayervocab = getUtility(IContextSourceBinder,
-                                   name='envirolayer_source')(self.context)
         # TODO: absence data
-        envlayers = ', '.join(
-            '{}: {}'.format(uuidToCatalogBrain(envuuid).Title,
-                            ', '.join(envlayervocab.getTerm(envlayer).title
-                                      for envlayer in sorted(layers)))
-            for (envuuid, layers) in sorted(exp.environmental_datasets.items()))
+        envlayers = []
+        for envuuid, layers in sorted(exp.environmental_datasets.items()):
+            envbrain = uuidToCatalogBrain(envuuid)
+            envtitle = envbrain.Title if envbrain else u'Missing dataset'
+            envlayers.append(
+                '{}: {}'.format(envtitle,
+                                ', '.join(self.envlayervocab.getTerm(envlayer).title
+                                          for envlayer in sorted(layers)))
+            )
 
+        # TODO: occurbrain might be None
         return {
             'model': brain,
             'experiment': exp,
@@ -182,6 +188,10 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
         }
 
     def update(self):
+        envvocab = getUtility(IVocabularyFactory,
+                              name='org.bccvl.site.BioclimVocabulary')
+        # TODO: could also cache the next call per request?
+        self.envlayervocab = envvocab(self.context)
         super(DatasetsRadioWidget, self).update()
         addFieldClass(self)
 
