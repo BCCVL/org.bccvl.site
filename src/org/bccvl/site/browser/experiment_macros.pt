@@ -52,5 +52,27 @@
          </tal:block>
          </fieldset>
     </metal:block>
+
+    <metal:block define-macro="experiment_state">
+        <div id="experiment_state" class="note"
+             tal:define="state view/job_state;
+                         klass python: {'Queued': 'note', 'Running': 'note', 'Completed': 'note', 'Failed': 'error'}.get(state);"
+             tal:attributes="class klass;
+                             data-status state">
+          <tal:black tal:condition="python: state in ('Queued', 'New')">
+            <p>This experiment is <strong>queued</strong>.</p>
+          </tal:black>
+          <tal:black tal:condition="python: state in ('Running',)">
+            <p>This experiment is <strong class="">running</strong>.</p>
+          </tal:black>
+          <tal:black tal:condition="python: state in ('Completed',)">
+            <p>This experiment is <strong>complete</strong>. The
+            results are available below</p>
+          </tal:black>
+          <tal:black tal:condition="python: state in ('Failed',)">
+            <p>This experiment stopped with an  <strong>error</strong>.</p>
+          </tal:black>
+        </div>
+    </metal:block>
   </body>
 </html>

@@ -10,7 +10,10 @@
       <!--<h1 tal:content="view/label">View Title</h1>-->
     <!--</metal:slot>-->
     <metal:main fill-slot="main">
-        <h1 class="documentFirstHeading" tal:content="context/title">Title</h1>
+        <h1 class="documentFirstHeading"
+            tal:content="context/title">Title</h1>
+
+        <metal:block use-macro="context/@@experiment-macros/experiment_state"/>
 
         <div id="bccvl-experiment-view">
             <metal:block use-macro="context/@@ploneform-macros/titlelessform" />

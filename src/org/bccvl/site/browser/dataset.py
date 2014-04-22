@@ -9,7 +9,6 @@ from zope.lifecycleevent import modified
 from org.bccvl.site.content.dataset import (ISpeciesDataset,
                                             ILayerDataset)
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
-from org.bccvl.site.browser.job import IJobStatus
 #from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -30,7 +29,6 @@ class DatasetFieldMixin(object):
             yield ISpeciesDataset
         elif genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreE']):
             yield ILayerDataset
-        yield IJobStatus
 
     # def updateFields(self):
     #     md = IGraph(self.context)

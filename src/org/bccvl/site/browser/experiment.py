@@ -8,7 +8,6 @@ from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit
 from org.bccvl.site import MessageFactory as _
 from org.bccvl.site.browser.xmlrpc import getdsmetadata
-from org.bccvl.site.browser.job import IJobStatus
 from zope.interface import Invalid
 from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
@@ -143,13 +142,47 @@ class View(edit.DefaultEditForm):
 
     extends(dexterity.DisplayForm)
 
-    additionalSchemata = (IJobStatus, )
-
     template = ViewPageTemplateFile("experiment_view.pt")
 
     label = ''
 
-    #@button.handler(IJobStatus.apply
+    def job_state(self):
+        """
+        Return single status across all jobs for this experiment.
+
+        Failed -> in case one snigle job failed
+          bccvl-status-error, alert-error
+        New -> in case there is a job in state New
+          bccvl-status-running (maps onto queued)
+        Queued -> in case there is a job queued
+          bccvl-status-running
+        Completed -> in case all jobs completed successfully
+          bccvl-status-complete, alert-success
+        All other states -> running
+          bccvl-status-running
+        """
+        jt = IJobTracker(self.context)
+        # filter out states only and ignore algorithm
+        states = jt.status()
+        if states:
+            states = set((state for _, state in states))
+        else:
+            return None
+        # are all jobs completed?
+        completed = all((state in ('Completed', 'Failed') for state in states))
+        # do we have failed jobs if all completed?
+        if completed:
+            if 'Failed' in states:
+                return u'Failed'
+            else:
+                return u'Completed'
+        # is everything still in Nem or Queued?
+        queued = all((state in ('Queued', 'New') for state in states))
+        if queued:
+            return u'Queued'
+        return u'Running'
+
+
     # condition=lambda form: form.showApply)
     @button.buttonAndHandler(u'Start Job')
     def handleStartJob(self, action):
@@ -159,7 +192,6 @@ class View(edit.DefaultEditForm):
             self.status = self.formErrorsMessage
             return
 
-        #msgtype, msg = IJobStatus(self.context)
         msgtype, msg = IJobTracker(self.context).start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
