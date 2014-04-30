@@ -1,33 +1,26 @@
+from datetime import datetime
 from gu.plone.rdf.interfaces import IRDFContentTransform
-from rdflib import RDF, RDFS, Literal, OWL
+from gu.plone.rdf.namespace import CVOCAB
+from gu.repository.content.interfaces import IRepositoryContainer, IRepositoryItem
+from gu.z3cform.rdf.interfaces import IGraph
+from gu.z3cform.rdf.interfaces import IRDFTypeMapper
+from gu.z3cform.rdf.utils import Period
+from ordf.namespace import DC as DCTERMS
 from ordf.namespace import FOAF
-from org.bccvl.site.content.user import IBCCVLUser
-from org.bccvl.site.content.group import IBCCVLGroup
+from org.bccvl.site.browser.ws import IDataMover
 from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment
+from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod
 from org.bccvl.site.namespace import DWC, BCCPROP
-from org.bccvl.site.browser.ws import IDataMover
-from gu.repository.content.interfaces import (
-    IRepositoryContainer,
-    IRepositoryItem,
-    )
-from plone.app.uuid.utils import uuidToObject
-from zc.async.interfaces import COMPLETED
-from zope.interface import implementer
-from zope.dottedname.resolve import resolve
-from gu.plone.rdf.namespace import CVOCAB
-from ordf.namespace import DC as DCTERMS
-from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 from plone.app.contenttypes.interfaces import IFile
-from plone.app.async.interfaces import IAsyncService
-from plone.app.async import service
-from zope.component import getUtility, adapter, queryUtility
-from gu.z3cform.rdf.interfaces import IGraph
-from gu.z3cform.rdf.utils import Period
-from zc.async import local
+from plone.app.uuid.utils import uuidToObject
 from plone.dexterity.utils import createContentInContainer
-from datetime import datetime
+from rdflib import RDF, RDFS, Literal, OWL
+from zope.component import getUtility, adapter, queryUtility
+from zope.dottedname.resolve import resolve
+from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
 import logging
 

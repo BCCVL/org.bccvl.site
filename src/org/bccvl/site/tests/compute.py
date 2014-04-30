@@ -2,12 +2,10 @@ from tempfile import mkdtemp
 import os.path
 import shutil
 import time
-from plone.app.async.interfaces import IAsyncService
 from zope.component import getUtility
 from zope.interface import provider
 from org.bccvl.compute.utils import WorkEnvLocal
 from org.bccvl.site.interfaces import IComputeMethod
-from zc.async import local
 
 
 def testjob(experiment, jobid, env):

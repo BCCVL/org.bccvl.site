@@ -16,8 +16,6 @@ from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from org.bccvl.site.testing import BCCVL_ASYNC_FUNCTIONAL_TESTING
 from org.bccvl.site.namespace import BIOCLIM, BCCVOCAB
 
-from zc.async.testing import wait_for_result
-
 
 # do somebrowser testing here:
 # 1. test new template

@@ -10,9 +10,6 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
-# from plone.app.async.testing import AsyncLayer
-# from plone.app.async.testing import AsyncFunctionalTesting
-from plone.app.async.testing import registerAsyncLayers
 # from plone.app.async.testing import PLONE_APP_ASYNC_FIXTURE
 from org.bccvl.site.namespace import BCCVOCAB, BCCPROP, NFO
 from org.bccvl.site import defaults
