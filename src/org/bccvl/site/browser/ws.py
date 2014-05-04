@@ -1,5 +1,4 @@
 from zope.interface import Interface, implementer
-from xmlrpclib import ServerProxy
 from urllib import urlencode, urlopen
 
 
@@ -36,32 +35,6 @@ class IALAService(Interface):
         """
         ALA's search service
         """
-
-
-@implementer(IDataMover)
-class DataMover(object):
-    # TODO: depending on url discovery it wolud be possible
-    #       to register this as utility factory and keep a
-    #       serverproxy instance for the lifetime of this utility
-    # TODO: call to xmlrpc server might also throw socket
-    #       errors. (e.g. socket.error: [Errno 61] Connection refused)
-
-    url = u'http://127.0.0.1:10700/data_mover'
-
-    def __init__(self):
-        # TODO: get data_mover location from config file
-        #       or some other discovery mechanism
-        pass
-
-    def move(self, source, dest):
-        proxy = ServerProxy(self.url)
-        ret = proxy.move(source, dest)
-        return ret
-
-    def check_move_status(self, job_id):
-        proxy = ServerProxy(self.url)
-        ret = proxy.check_move_status(job_id)
-        return ret
 
 
 @implementer(IALAService)
