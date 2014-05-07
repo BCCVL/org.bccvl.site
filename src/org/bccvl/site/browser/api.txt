@@ -73,7 +73,7 @@ Let's try to to log in to find some datasets.
     >>> res = proxy.getProjectionDatasets()
     >>> pprint(res)
     {'projections': [{'name': 'Test Projection',
-                      'result': [{'emsc': 'http://namespaces.bccvl.org.au/emsc#RCP3D',
+                      'result': [{'emsc': 'http://namespaces.bccvl.org.au/emsc#RCP3PD',
                                   'files': ['Result_file.tiff'],
                                   'gcm': 'http://namespaces.bccvl.org.au/gcm#cccma-cgcm31',
                                   'species': 'Result species',
@@ -125,7 +125,7 @@ Vocabulary endpoint:
       'token': 'http://namespaces.bccvl.org.au/gcm#ncar-pcm1'}]
 
    >>> pprint(proxy.getVocabulary('org.bccvl.site.EMSCVocabulary'))
-    [{'title': 'RCP3D', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP3D'},
+    [{'title': 'RCP3PD', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP3PD'},
      {'title': 'RCP45', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP45'},
      {'title': 'RCP6', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP6'},
      {'title': 'RCP85', 'token': 'http://namespaces.bccvl.org.au/emsc#RCP85'},

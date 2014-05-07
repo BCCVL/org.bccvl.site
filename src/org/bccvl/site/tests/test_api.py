@@ -43,7 +43,7 @@ def setUpApiTests(doctest):
     rdsgraph.add((rdsgraph.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreFP']))
     rdsgraph.add((rdsgraph.identifier, DC['temporal'], Literal(u"start=2014;")))
     rdsgraph.add((rdsgraph.identifier, BCCPROP['gcm'], BCCGCM['cccma-cgcm31']))
-    rdsgraph.add((rdsgraph.identifier, BCCPROP['emissionscenario'], BCCEMSC['RCP3D']))
+    rdsgraph.add((rdsgraph.identifier, BCCPROP['emissionscenario'], BCCEMSC['RCP3PD']))
     rdsgraph.add((rdsgraph.identifier, DWC['scientificName'], Literal(u"Result species")))
     handler = getUtility(IORDF).getHandler()
     handler.put(rdsgraph)

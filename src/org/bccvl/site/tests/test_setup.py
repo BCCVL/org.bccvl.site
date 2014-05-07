@@ -45,7 +45,7 @@ class SiteSetupTest(unittest.TestCase):
         self.assertEqual(['Document', 'org.bccvl.content.function'],
                          [fti.id for fti in ff.allowedContentTypes()])
         # let's be Member again
-        setRoles(portal, TEST_USER_ID, ['Member'])
+        setRoles(portal, TEST_USER_ID, [])
 
     def test_permissions_for_roles(self):
         portal = self.layer['portal']

@@ -54,6 +54,11 @@ class BCCVLLayer(PloneSandboxLayer):
         # login(portal, TEST_USER_NAME)
         # do stuff
         # setRoles(portal, TEST_USER_ID, ['Member'])
+        # FIXME: for testing we access the site via localhost,
+        #        so we can't use the localscript extraction plugin
+        from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
+        portal.acl_users.plugins.deactivatePlugin(IAuthenticationPlugin, 'localscript')
+
         app = portal.getPhysicalRoot()
         z2.login(app['acl_users'], SITE_OWNER_NAME)
         self.addTestContent(portal)
