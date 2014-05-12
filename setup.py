@@ -33,6 +33,7 @@ setup(
         'sc.social.like',
         'gu.repository.content',
         'gu.transmogrifier',
+        'plone.api',
         'collective.js.jqueryui',
         'collective.js.uix.multiselect',
         'collective.geo.contentlocations',
