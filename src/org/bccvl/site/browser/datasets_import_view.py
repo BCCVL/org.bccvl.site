@@ -111,14 +111,7 @@ class DatasetsImportView(BrowserView):
             ret = view(lsid=self.params['lsid'],
                        taxon=self.params['taxon'],
                        common=self.params.get('common'))
-            # FIXME: ret shouldn't be json
-            ret = json.loads(ret)
             # TODO: check ret for errors?
-            # TODO: dataset created should be added in pullOccurenceFromALA
-            IStatusMessage(self.request).add("New Dataset created",
-                                             type='info')
-            IStatusMessage(self.request).add(ret[1], type=ret[0])
-            # TODO: what is ret? json? html? tuple?
             # TODO: redirect to dataset or listing view?
             # everything went fine until here .. so let's redirect
             nexturl = portal[defaults.DATASETS_FOLDER_ID].absolute_url()

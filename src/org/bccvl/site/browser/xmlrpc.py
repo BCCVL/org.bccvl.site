@@ -512,10 +512,16 @@ class DataMover(BrowserView):
 
         getUtility(IORDF).getHandler().put(md.graph)
 
+        IStatusMessage(self.request).add('New Dataset created',
+                                         type='info')
+
         # 2. create and push alaimport job for dataset
         # TODO: make this named adapter
         jt = IJobTracker(ds)
         status, message = jt.start_job()
+        # Job submission state notifier
+        IStatusMessage(self.request).add(message, type=status)
+
         return (status, message)
 
     @returnwrapper
