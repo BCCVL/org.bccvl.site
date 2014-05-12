@@ -170,10 +170,9 @@ class JobTracker(object):
         raise NotImplementedError()
 
 
-# TODO: should this be named adapter as well in case there are multiple
-#       different jobs for experiments
-@adapter(ISDMExperiment)
-class SDMJobTracker(JobTracker):
+class MultiJobTracker(JobTracker):
+    # used for content objects that don't track jobs directly, but may have
+    # multiple child objects with separate jobs
 
     #override is_active, state
     @property
@@ -191,6 +190,12 @@ class SDMJobTracker(JobTracker):
     def is_active(self):
         return any(x not in (None, 'COMPLETED', 'FAILED')
                    for _, x in self.state)
+
+
+# TODO: should this be named adapter as well in case there are multiple
+#       different jobs for experiments
+@adapter(ISDMExperiment)
+class SDMJobTracker(MultiJobTracker):
 
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
@@ -240,7 +245,7 @@ class SDMJobTracker(JobTracker):
 
 # TODO: should this be named adapter as well
 @adapter(IProjectionExperiment)
-class ProjectionJobTracker(JobTracker):
+class ProjectionJobTracker(MultiJobTracker):
 
     def start_job(self, request):
         if not self.is_active():
@@ -300,7 +305,7 @@ class ProjectionJobTracker(JobTracker):
 
 # TODO: should this be named adapter as well
 @adapter(IBiodiverseExperiment)
-class BiodiverseJobTracker(JobTracker):
+class BiodiverseJobTracker(MultiJobTracker):
 
     def start_job(self, request):
         # TODO: split biodiverse job across years, gcm, emsc
