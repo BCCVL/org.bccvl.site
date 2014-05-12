@@ -104,6 +104,10 @@
     <!--     name="DCTemporal" -->
     <!-- /> -->
 
+    <adapter
+        for="gu.repository.content.interfaces.IRepositoryItem"
+        factory=".utilities.JobTracker" />
+
 
     <adapter
         factory=".utilities.SDMJobTracker"/>

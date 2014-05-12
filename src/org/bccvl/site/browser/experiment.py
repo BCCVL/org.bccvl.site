@@ -163,24 +163,24 @@ class View(edit.DefaultEditForm):
         """
         jt = IJobTracker(self.context)
         # filter out states only and ignore algorithm
-        states = jt.status()
+        states = jt.state
         if states:
             states = set((state for _, state in states))
         else:
             return None
         # are all jobs completed?
-        completed = all((state in ('Completed', 'Failed') for state in states))
+        completed = all((state in ('COMPLETED', 'FAILED') for state in states))
         # do we have failed jobs if all completed?
         if completed:
-            if 'Failed' in states:
-                return u'Failed'
+            if 'FAILED' in states:
+                return u'FAILED'
             else:
-                return u'Completed'
+                return u'COMPLETED'
         # is everything still in Nem or Queued?
-        queued = all((state in ('Queued', 'New') for state in states))
+        queued = all((state in ('QUEUED', ) for state in states))
         if queued:
-            return u'Queued'
-        return u'Running'
+            return u'QUEUED'
+        return u'RUNNING'
 
 
     # condition=lambda form: form.showApply)

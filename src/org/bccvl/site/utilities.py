@@ -14,14 +14,20 @@ from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperim
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod
 from org.bccvl.site.namespace import DWC, BCCPROP
+from org.bccvl.tasks.ala_import import ala_import
+from persistent.dict import PersistentDict
+from plone import api
 from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject
 from plone.dexterity.utils import createContentInContainer
 from rdflib import RDF, RDFS, Literal, OWL
+import tempfile
+from zope.annotation.interfaces import IAnnotations
 from zope.component import getUtility, adapter, queryUtility
 from zope.dottedname.resolve import resolve
 from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
+import transaction
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -90,36 +96,75 @@ class RDFDataMapper(object):
             if not graph.value(graph.identifier, prop):
                 graph.add((graph.identifier, prop, val))
 
+# FIXME: update JOB Info stuff.... for message queueing
+#
+# FIXME: define job state dictionary and possible states (esp. FINISHED states)
+
 
 @implementer(IJobTracker)
 class JobTracker(object):
+    # TODO: maybe split state and progress....
+    #       state ... used as internal state tracking
+    #       progress ... used to track steps a task walks through
+    #                    maybe even percentage?
+    # job_info:
+    #   - taskid ... unique id of task
+    #   - name ... task name
+    #   - state ... QUEUED, RUNNING, COMPLETED, FAILED
+    #   - progress ... a dict with task specific progress
+    #     - state ... short note of activity
+    #     - message ... short descr of activity
+    #     - .... could be more here; e.g. percent complete, steps, etc..
+
+    _states = ('QUEUED', 'RUNNING', 'COMPLETED', 'FAILED')
 
     def __init__(self, context):
         self.context = context
+        annots = IAnnotations(self.context)
+        # FIXME: this is not the place to set the annotation dictionary
+        #        in case we only read from here we don't want to write'
+        self._state = annots.get('org.bccvl.state', None)
+        if self._state is None:
+            self._state = annots['org.bccvl.state'] = PersistentDict()
 
-    def status(self):
-        status = []
-        for job in self.get_jobs():
-            status.append((job.jobid, job.annotations['bccvl.status']['task']))
-        return status
+    def _comparestate(self, state1, state2):
+        """
+        -1 if state1 < state2
+        0  if state1 == state2
+        1  if state1 > state2
+        """
+        # TODO: may raise ValueError if state not in list
+        idx1 = self._states.index(state1)
+        idx2 = self._states.index(state2)
+        return cmp(idx1, idx2)
 
-    def get_jobs(self):
-        return getattr(self.context, 'current_jobs', [])
+    @property
+    def state(self):
+        return self._state.get('state', None)
 
-    def has_active_jobs(self):
-        # FIXME: check all results for active jobs
-        active = False
-        for job in self.get_jobs():
-            if job.status not in (None, COMPLETED):
-                active = True
-                break
-        return active
+    @state.setter
+    def state(self, state):
+        # make sure we can only move forward in state
+        if self._comparestate(self.state, state):
+            self._state['state'] = state
 
-    def clear_jobs(self):
-        self.context.current_jobs = []
+    def is_active(self):
+        return (self.state not in
+                (None, 'COMPLETED', 'FAILED'))
 
-    def add_job(self, job):
-        self.context.current_jobs.append(job)
+    def new_job(self, taskid, name):
+        self._state.clear()
+        self._state.update({
+            'state': 'QUEUED',
+            'taskid': taskid,
+            'name': name})
+
+    def set_progress(self, state, message, **kw):
+        self._state['progress'] = dict(
+            state=state,
+            message=message,
+            **kw
+        )
 
     def start_job(self, request):
         raise NotImplementedError()
@@ -130,12 +175,28 @@ class JobTracker(object):
 @adapter(ISDMExperiment)
 class SDMJobTracker(JobTracker):
 
+    #override is_active, state
+    @property
+    def state(self):
+        states = []
+        for item in self.context.values():
+            jt = IJobTracker(item, None)
+            if jt is None:
+                continue
+            state = jt.state
+            if state:
+                states.append((item.getId(), state))
+        return states
+
+    def is_active(self):
+        return any(x not in (None, 'COMPLETED', 'FAILED')
+                   for _, x in self.state)
+
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and multiple species input datasets
         # TODO: rethink and maybe split jobs based on enviro input datasets?
-        if not self.has_active_jobs():
-            self.clear_jobs()
+        if not self.is_active():
             for func in (uuidToObject(f) for f in self.context.functions):
                 # get utility to execute this experiment
                 method = queryUtility(IComputeMethod,
@@ -166,9 +227,13 @@ class SDMJobTracker(JobTracker):
                 result.job_params.update(self.context.parameters[func.getId()])
                 # submit job
                 LOG.info("Submit JOB %s to queue", func.getId())
-                job = method(result, func)
-                self.add_job(job)
-            return 'info', u'Job submitted {}'.format(self.status())
+                method(result, func)
+                resultjt = IJobTracker(result)
+                resultjt.new_job('TODO: generate id',
+                                 'generate taskname: sdm_experiment')
+                resultjt.set_progress('PENDING',
+                                      u'{} pending'.format(func.getId()))
+            return 'info', u'Job submitted {}'.format(self.state)
         else:
             return 'error', u'Current Job is still running'
 
@@ -178,9 +243,8 @@ class SDMJobTracker(JobTracker):
 class ProjectionJobTracker(JobTracker):
 
     def start_job(self, request):
-        if not self.has_active_jobs():
+        if not self.is_active():
             # split jobs across future climate datasets
-            self.clear_jobs()
             for dsbrain in self.context.future_climate_datasets():
                 # get utility to execute this experiment
                 method = queryUtility(IComputeMethod,
@@ -221,9 +285,13 @@ class ProjectionJobTracker(JobTracker):
 
                 # submit job
                 LOG.info("Submit JOB project to queue")
-                job = method(result, "project")  # TODO: wrong interface
-                self.add_job(job)
-            return 'info', u'Job submitted {}'.format(self.status())
+                method(result, "project")  # TODO: wrong interface
+                resultjt = IJobTracker(result)
+                resultjt.new_job('TODO: generate id',
+                                 'generate taskname: projection experiment')
+                resultjt.set_progress('PENDING',
+                                      u'projection pending')
+            return 'info', u'Job submitted {}'.format(self.state)
         else:
             # TODO: in case there is an error should we abort the transaction
             #       to cancel previously submitted jobs?
@@ -236,8 +304,7 @@ class BiodiverseJobTracker(JobTracker):
 
     def start_job(self, request):
         # TODO: split biodiverse job across years, gcm, emsc
-        if not self.has_active_jobs():
-            self.clear_jobs()
+        if not self.is_active():
             # get utility to execute this experiment
             method = queryUtility(IComputeMethod,
                                   name=IBiodiverseExperiment.__identifier__)
@@ -284,8 +351,12 @@ class BiodiverseJobTracker(JobTracker):
 
                 # submit job to queue
                 LOG.info("Submit JOB Biodiverse to queue")
-                job = method(result, "biodiverse")  # TODO: wrong interface
-                self.add_job(job)
+                method(result, "biodiverse")  # TODO: wrong interface
+                resultjt = IJobTracker(result)
+                resultjt.new_job('TODO: generate id',
+                                 'generate taskname: biodiverse')
+                resultjt.set_progress('PENDING',
+                                      'biodiverse pending')
             return 'info', u'Job submitted {}'.format(self.status())
         else:
             return 'error', u'Current Job is still running'
@@ -296,88 +367,29 @@ class BiodiverseJobTracker(JobTracker):
 class ALAJobTracker(JobTracker):
 
     def start_job(self):
-        if self.has_active_jobs():
+        if self.is_active():
             return 'error', u'Current Job is still running'
-        self.context.current_jobs = []
-        async = getUtility(IAsyncService)
         md = IGraph(self.context)
         # TODO: this assumes we have an lsid in the metadata
         #       should check for it
         lsid = md.value(md.identifier, DWC['taxonID'])
 
-        jobinfo = (alaimport, self.context, (unicode(lsid), ), {})
-        queue = async.getQueues()['']
-        job = async.wrapJob(jobinfo)
-        job = queue.put(job)
-        job.jobid = 'alaimport'
-        job.annotations['bccvl.status'] = {
-            'step': 0,
-            'task': u'Queued'}
-        job.addCallbacks(success=service.job_success_callback,
-                         failure=service.job_failure_callback)
-        self.context.current_jobs = [job]
-        return 'info', u'Job submitted {}'.format(self.status())
+        # we need site-path, context-path and lsid for this job
+        #site_path = '/'.join(api.portal.get().getPhysicalPath())
+        context_path = '/'.join(self.context.getPhysicalPath())
+        user_id = api.user.get_current().getId()
+        # a folder for the datamover to place files in
+        tmpdir = tempfile.mkdtemp()
 
+        # ala_import will be submitted after commit, so we won't get a
+        # result here
+        ala_import.delay(lsid, tmpdir, {'context': context_path,
+                                        'userid': user_id})
 
-# TODO: move stuff below to separate module
-def alaimport(dataset, lsid):
-    # jobstatus e.g. {'id': 2, 'status': 'PENDING'}
-    status = local.getLiveAnnotation('bccvl.status', default={},
-                                     timeout=5)
-    status['task'] = 'Running'
-    local.setLiveAnnotation('bccvl.status', status)
-    import time
-    from collective.transmogrifier.transmogrifier import Transmogrifier
-    import os
-    from tempfile import mkdtemp
-    path = mkdtemp()
-    try:
-        dm = getUtility(IDataMover)
-        # TODO: fix up params
-        jobstatus = dm.move({'type': 'ala', 'lsid': lsid},
-                            {'host': 'plone', 'path': path})
-        # TODO: do we need some timeout here?
-        while jobstatus['status'] in ('PENDING', "IN_PROGRESS"):
-            time.sleep(1)
-            jobstatus = dm.check_move_status(jobstatus['id'])
-        if jobstatus['status'] in ("FAILED",  "REJECTED"):
-            # TODO: Do something useful here; how to notify user about failure?
-            LOG.fatal("ALA import failed %s: %s", jobstatus['status'],
-                      jobstatus['reason'])
-            return
+        # FIXME: we don't have a backend task id here as it will be started
+        #        after commit, when we shouldn't write anything to the db
+        #        maybe add another callback to set task_id?
+        self.new_job('TODO: generate id', 'generate taskname: ala_import')
+        self.set_progress('PENDING', u'ALA import pending')
 
-        #transmogrify.dexterity.schemaupdater needs a REQUEST on context????
-        from ZPublisher.HTTPResponse import HTTPResponse
-        from ZPublisher.HTTPRequest import HTTPRequest
-        import sys
-        response = HTTPResponse(stdout=sys.stdout)
-        env = {'SERVER_NAME': 'fake_server',
-               'SERVER_PORT': '80',
-               'REQUEST_METHOD': 'GET'}
-        request = HTTPRequest(sys.stdin, env, response)
-
-        # Set values from original request
-        # original_request = kwargs.get('original_request')
-        # if original_request:
-        #     for k,v in original_request.items():
-        #       request.set(k, v)
-        context = dataset.__parent__
-        context.REQUEST = request
-
-        metadata_file = 'ala_dataset.json'
-        status['task'] = 'Transferring'
-        local.setLiveAnnotation('bccvl.status', status)
-        transmogrifier = Transmogrifier(context)
-        transmogrifier(u'org.bccvl.site.alaimport',
-                       alasource={'file': os.path.join(path, metadata_file),
-                                  'lsid': lsid,
-                                  'id': dataset.getId()})
-
-        # cleanup fake request
-        del context.REQUEST
-        # TODO: catch errors and create state Failed annotation
-    finally:
-        import shutil
-        shutil.rmtree(path)
-        status['task'] = 'Completed'
-        local.setLiveAnnotation('bccvl.status', status)
+        return 'info', u'Job submitted {}'.format(self.state)

@@ -75,6 +75,15 @@ def returnwrapper(f, *args, **kw):
     # request.setBody ... would need to replace response instance of
     # request.response. (see ZPublisher.xmlprc.response, which wraps a
     # default Response)
+    # FIXME: this is a bad workaround for
+    #        we call these wrapped functions internally, from templates and
+    #        as ajax calls and xmlrpc calls, and expect different return encoding.
+    #        ajax: json
+    #        xmlrpc: xml, done by publisher
+    #        everything else: python
+    if not view.request['URL'].endswith(f.__name__):
+        # not called directly, so return ret as is
+        return ret
 
     # if we don't have xmlrpc we serialise to json
     if not isxmlrpc:
@@ -393,8 +402,7 @@ class JobManagerAPI(BrowserView):
 
     @returnwrapper
     def getJobStatus(self):
-        status = IJobTracker(self.context).status()
-        return status
+        return IJobTracker(self.context).state
 
 
 class ExperimentManager(BrowserView):
