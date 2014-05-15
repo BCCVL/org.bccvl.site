@@ -62,6 +62,7 @@ setup(
         'transmogrify.dexterity',
         'quintagroup.transmogrifier',
         'org.bccvl.compute',
+        'org.bccvl.tasks',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
