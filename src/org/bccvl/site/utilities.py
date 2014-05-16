@@ -389,9 +389,10 @@ class ALAJobTracker(JobTracker):
 
         # ala_import will be submitted after commit, so we won't get a
         # result here
-        after_commit_task(ala_import, lsid, tmpdir,
-                          {'context': context_path,
-                           'userid': user_id})
+        ala_import_task = ala_import(lsid, tmpdir,
+                                     {'context': context_path,
+                                      'userid': user_id})
+        after_commit_task(ala_import_task)
 
         # FIXME: we don't have a backend task id here as it will be started
         #        after commit, when we shouldn't write anything to the db
