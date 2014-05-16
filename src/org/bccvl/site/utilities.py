@@ -15,7 +15,7 @@ from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod
 from org.bccvl.site.namespace import DWC, BCCPROP
 from org.bccvl.tasks.ala_import import ala_import
-from org.bccvl.tasks import after_commit_task
+from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
 from plone import api
 from plone.app.contenttypes.interfaces import IFile
