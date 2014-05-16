@@ -15,6 +15,7 @@ from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod
 from org.bccvl.site.namespace import DWC, BCCPROP
 from org.bccvl.tasks.ala_import import ala_import
+from org.bccvl.tasks import after_commit_task
 from persistent.dict import PersistentDict
 from plone import api
 from plone.app.contenttypes.interfaces import IFile
@@ -388,8 +389,9 @@ class ALAJobTracker(JobTracker):
 
         # ala_import will be submitted after commit, so we won't get a
         # result here
-        ala_import.delay(lsid, tmpdir, {'context': context_path,
-                                        'userid': user_id})
+        after_commit_task(ala_import, lsid, tmpdir,
+                          {'context': context_path,
+                           'userid': user_id})
 
         # FIXME: we don't have a backend task id here as it will be started
         #        after commit, when we shouldn't write anything to the db
