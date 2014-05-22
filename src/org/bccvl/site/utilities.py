@@ -348,12 +348,11 @@ class BiodiverseJobTracker(MultiJobTracker):
                     title=title)
 
                 # build job_params and store on result
-                job_params = {
+                result.job_params = {
                     # datasets is a list of dicts with 'threshold' and 'uuid'
                     'projections': datasets,
                     'cluster_size': self.context.cluster_size,
                 }
-                result.job_params = job_params
 
                 # submit job to queue
                 LOG.info("Submit JOB Biodiverse to queue")
@@ -363,7 +362,7 @@ class BiodiverseJobTracker(MultiJobTracker):
                                  'generate taskname: biodiverse')
                 resultjt.set_progress('PENDING',
                                       'biodiverse pending')
-            return 'info', u'Job submitted {}'.format(self.status())
+            return 'info', u'Job submitted {}'.format(self.state)
         else:
             return 'error', u'Current Job is still running'
 
