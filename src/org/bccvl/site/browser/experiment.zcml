@@ -128,4 +128,19 @@
     <!--     permission="org.bccvl.AddExperiment" -->
     <!-- /> -->
 
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.FunctionalResponseAddView"
+        name="org.bccvl.content.functionalresponseexperiment"
+        />
+    <class class=".experiment.FunctionalResponseAddView">
+        <require
+            permission="org.bccvl.AddExperiment"
+            interface="zope.publisher.interfaces.browser.IBrowserPage"
+            />
+    </class>
+
 </configure>

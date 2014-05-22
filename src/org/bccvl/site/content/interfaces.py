@@ -189,3 +189,8 @@ class IBiodiverseExperiment(IExperiment):
     # ->  interface,  content class? , profile,  add / edit / display / result view
     # ->  perl script ... exec env
     # =>  species metadata filenaming
+
+
+class IFunctionalResponseExperiment(IExperiment):
+
+    pass

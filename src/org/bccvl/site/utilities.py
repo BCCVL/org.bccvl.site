@@ -10,7 +10,7 @@ from ordf.namespace import FOAF
 from org.bccvl.site.browser.ws import IDataMover
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.group import IBCCVLGroup
-from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment
+from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment, IFunctionalResponseExperiment
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod
 from org.bccvl.site.namespace import DWC, BCCPROP
@@ -365,6 +365,14 @@ class BiodiverseJobTracker(MultiJobTracker):
             return 'info', u'Job submitted {}'.format(self.state)
         else:
             return 'error', u'Current Job is still running'
+
+
+@adapter(IFunctionalResponseExperiment)
+class FunctionalResponseJobTracker(MultiJobTracker):
+
+    def start_job(self, request):
+        # TODO: split biodiverse job across years, gcm, emsc
+        return 'error', u'Not yet implemented'
 
 
 # TODO: named adapter

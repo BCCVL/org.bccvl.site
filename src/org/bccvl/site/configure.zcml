@@ -119,6 +119,9 @@
         factory=".utilities.BiodiverseJobTracker"/>
 
     <adapter
+        factory=".utilities.FunctionalResponseJobTracker"/>
+
+    <adapter
         factory=".utilities.ALAJobTracker"/>
 
   <utility

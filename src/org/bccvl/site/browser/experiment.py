@@ -467,3 +467,15 @@ class SDMAddView(add.DefaultAddView):
 class BiodiverseAddView(add.DefaultAddView):
 
     form = BiodiverseAdd
+
+
+class FunctionalResponseAdd(Add):
+
+    def validateAction(self, data):
+        # TODO: check data ...
+        pass
+
+
+class FunctionalResponseAddView(add.DefaultAddView):
+
+    form = FunctionalResponseAdd
