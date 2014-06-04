@@ -382,15 +382,20 @@ class ALAJobTracker(JobTracker):
         # we need site-path, context-path and lsid for this job
         #site_path = '/'.join(api.portal.get().getPhysicalPath())
         context_path = '/'.join(self.context.getPhysicalPath())
-        user_id = api.user.get_current().getId()
+        member = api.user.get_current()
         # a folder for the datamover to place files in
         tmpdir = tempfile.mkdtemp()
 
         # ala_import will be submitted after commit, so we won't get a
         # result here
-        ala_import_task = ala_import(lsid, tmpdir,
-                                     {'context': context_path,
-                                      'userid': user_id})
+        ala_import_task = ala_import(
+            lsid, tmpdir, {'context': context_path,
+                           'user': {
+                               'id': member.getUserName(),
+                               'email': member.getProperty('email'),
+                               'fullname': member.getProperty('fullname')
+                           }})
+        # TODO: add title, and url for dataset? (like with experiments?)
         after_commit_task(ala_import_task)
 
         # FIXME: we don't have a backend task id here as it will be started
