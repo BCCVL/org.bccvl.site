@@ -7,7 +7,8 @@ from org.bccvl.site.namespace import BCCVOCAB
 
 # BBB: backwards compatible import
 from .interfaces import (
-    ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment, IFunctionalResponseExperiment)
+    ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
+    IFunctionalResponseExperiment,  IEnsembleExperiment)
 
 
 @implementer(ISDMExperiment)
@@ -55,3 +56,9 @@ class BiodiverseExperiment(Container):
 class FunctionalResponseExperiment(Container):
 
     functions = ('org.bccvl.compute.functresp.execute', )
+
+
+@implementer(IEnsembleExperiment)
+class EnsembleExperiment(Container):
+
+    functions = ('org.bccvl.compute.ensemble.execute', )

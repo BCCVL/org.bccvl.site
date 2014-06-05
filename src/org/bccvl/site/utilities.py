@@ -1,16 +1,18 @@
 from datetime import datetime
 from gu.plone.rdf.interfaces import IRDFContentTransform
 from gu.plone.rdf.namespace import CVOCAB
-from gu.repository.content.interfaces import IRepositoryContainer, IRepositoryItem
+from gu.repository.content.interfaces import (
+    IRepositoryContainer, IRepositoryItem)
 from gu.z3cform.rdf.interfaces import IGraph
 from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 from gu.z3cform.rdf.utils import Period
 from ordf.namespace import DC as DCTERMS
 from ordf.namespace import FOAF
-from org.bccvl.site.browser.ws import IDataMover
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.group import IBCCVLGroup
-from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment, IFunctionalResponseExperiment
+from org.bccvl.site.content.interfaces import (
+    ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
+    IFunctionalResponseExperiment, IEnsembleExperiment)
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod
 from org.bccvl.site.namespace import DWC, BCCPROP
@@ -24,11 +26,8 @@ from plone.dexterity.utils import createContentInContainer
 from rdflib import RDF, RDFS, Literal, OWL
 import tempfile
 from zope.annotation.interfaces import IAnnotations
-from zope.component import getUtility, adapter, queryUtility
-from zope.dottedname.resolve import resolve
+from zope.component import adapter, queryUtility
 from zope.interface import implementer
-from zope.schema.interfaces import IVocabularyFactory
-import transaction
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -369,6 +368,14 @@ class BiodiverseJobTracker(MultiJobTracker):
 
 @adapter(IFunctionalResponseExperiment)
 class FunctionalResponseJobTracker(MultiJobTracker):
+
+    def start_job(self, request):
+        # TODO: split biodiverse job across years, gcm, emsc
+        return 'error', u'Not yet implemented'
+
+
+@adapter(IEnsembleExperiment)
+class EnsembleJobTracker(MultiJobTracker):
 
     def start_job(self, request):
         # TODO: split biodiverse job across years, gcm, emsc

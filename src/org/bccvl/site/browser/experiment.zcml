@@ -143,4 +143,20 @@
             />
     </class>
 
+
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.EnsembleAddView"
+        name="org.bccvl.content.ensemble"
+        />
+    <class class=".experiment.EnsembleAddView">
+        <require
+            permission="org.bccvl.AddExperiment"
+            interface="zope.publisher.interfaces.browser.IBrowserPage"
+            />
+    </class>
+
 </configure>

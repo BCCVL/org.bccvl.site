@@ -156,5 +156,14 @@ class ExperimentsListingView(BrowserView):
                 'species_absence': '',
                 'environmental_layers': '',
             })
+        elif expbrain.portal_type == 'org.bccvl.content.ensemble':
+            # FIXME: implement this
+            details.update({
+                'type': 'ENSEMBLE',
+                'functions': '',
+                'species_occurrence': '',
+                'species_absence': '',
+                'environmental_layers': '',
+            })
 
         return details

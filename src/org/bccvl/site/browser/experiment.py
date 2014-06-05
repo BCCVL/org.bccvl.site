@@ -479,3 +479,15 @@ class FunctionalResponseAdd(Add):
 class FunctionalResponseAddView(add.DefaultAddView):
 
     form = FunctionalResponseAdd
+
+
+class EnsembleAdd(Add):
+
+    def validateAction(self, data):
+        # TODO: check data ...
+        pass
+
+
+class EnsembleAddView(add.DefaultAddView):
+
+    form = EnsembleAdd
