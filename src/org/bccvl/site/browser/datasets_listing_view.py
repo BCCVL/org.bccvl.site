@@ -49,9 +49,9 @@ class DatasetsListingView(BrowserView):
     def job_status(self, ds):
         jt = IJobTracker(ds, None)
         if jt:
-            states = jt.status()
+            states = jt.state
             if states:
-                return states[0][1]
+                return states
         return None
 
     def get_transition(self, itemob):
