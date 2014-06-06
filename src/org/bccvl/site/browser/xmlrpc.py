@@ -11,6 +11,7 @@ from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IProjectionExperiment
+from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.experiment import find_projections
 from org.bccvl.site import defaults
@@ -227,6 +228,20 @@ class DataSetManager(BrowserView):
         # 5. search
         res = find_projections(self.context, emsc, gcms, years)
         return len(res)
+
+    @returnwrapper
+    def getSDMDatasets(self):
+        pc = getToolByName(self.context, 'portal_catalog')
+        sdmbrains = pc.searchResults(
+            object_provides=ISDMExperiment.__identifier__,
+            sort_on='sortable_title')  # date?
+        sdms = []
+        for sdmbrain in sdmbrains:
+            sdms.append({
+                "name": sdmbrain.Title,
+                "uuid": sdmbrain.UID,
+            })
+        return {'sdms': sdms}
 
     @returnwrapper
     def getProjectionDatasets(self):
