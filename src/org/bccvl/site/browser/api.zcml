@@ -25,6 +25,7 @@
         class=".xmlrpc.DataSetManager"
         allowed_attributes="getMetadata queryDataset getVocabulary
                             getFutureClimateDatasets getSDMDatasets
+                            getBiodiverseDatasets
                             getProjectionDatasets getThresholds"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="zope2.View" >
@@ -48,6 +49,10 @@
        <browser:page
             name="getSDMDatasets"
             attribute="getSDMDatasets"/>
+
+       <browser:page
+            name="getBiodiverseDatasets"
+            attribute="getBiodiverseDatasets"/>
 
        <browser:page
             name="getProjectionDatasets"

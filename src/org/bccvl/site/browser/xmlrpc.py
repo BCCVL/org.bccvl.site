@@ -12,6 +12,7 @@ from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
+from org.bccvl.site.content.interfaces import IBiodiverseExperiment
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.experiment import find_projections
 from org.bccvl.site import defaults
@@ -242,6 +243,20 @@ class DataSetManager(BrowserView):
                 "uuid": sdmbrain.UID,
             })
         return {'sdms': sdms}
+
+    @returnwrapper
+    def getBiodiverseDatasets(self):
+        pc = getToolByName(self.context, 'portal_catalog')
+        biodiversebrains = pc.searchResults(
+            object_provides=IBiodiverseExperiment.__identifier__,
+            sort_on='sortable_title')  # date?
+        biodiverses = []
+        for biodiversebrain in biodiversebrains:
+            biodiverses.append({
+                "name": biodiversebrain.Title,
+                "uuid": biodiversebrain.UID,
+            })
+        return {'biodiverses': biodiverses}
 
     @returnwrapper
     def getProjectionDatasets(self):
