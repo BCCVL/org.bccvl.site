@@ -1,6 +1,9 @@
 import unittest2 as unittest
 from urlparse import urljoin
 import re
+import time
+
+import transaction
 
 from zope.component import createObject
 from zope.component import queryUtility
@@ -13,7 +16,6 @@ from plone.testing.z2 import Browser
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
-from org.bccvl.site.testing import BCCVL_ASYNC_FUNCTIONAL_TESTING
 from org.bccvl.site.namespace import BIOCLIM, BCCVOCAB
 
 
@@ -25,7 +27,7 @@ from org.bccvl.site.namespace import BIOCLIM, BCCVOCAB
 
 class ExperimentAddTest(unittest.TestCase):
 
-    layer = BCCVL_ASYNC_FUNCTIONAL_TESTING
+    layer = BCCVL_FUNCTIONAL_TESTING
 
     def setUp(self):
         app = self.layer['app']
@@ -134,16 +136,17 @@ class ExperimentAddTest(unittest.TestCase):
         # start experiment
         self.browser.getControl('Create and start').click()
         self.assertTrue('Item created' in self.browser.contents)
+
         self.assertTrue('Job submitted' in self.browser.contents)
         new_exp_url = urljoin(self.experiments_add_url, 'my-experiment/view')
         self.assertEquals(self.browser.url, new_exp_url)
         self.assertTrue('My Experiment' in self.browser.contents)
         self.assertTrue('This is my experiment description' in self.browser.contents)
-        self.assertTrue("Job submitted [('testalgorithm', u'Queued')]" in self.browser.contents)
+        self.assertRegexpMatches(self.browser.contents, r"Job submitted \[\('my-experiment-.*', 'QUEUED'\)\]")
         # wait for job to finish
         self._wait_for_job('my-experiment')
         self.browser.open(new_exp_url)
-        self.assertTrue('Completed' in self.browser.contents)
+        self.assertTrue('COMPLETED' in self.browser.contents)
         # TODO:
         # check for submit button; should be grayed?
 
@@ -153,25 +156,27 @@ class ExperimentAddTest(unittest.TestCase):
         # start experiment
         self.browser.getControl('Create and start').click()
         self.assertTrue('Item created' in self.browser.contents)
+
         self.assertTrue('Job submitted' in self.browser.contents)
         new_exp_url = urljoin(self.experiments_add_url, 'my-experiment/view')
         self.assertEquals(self.browser.url, new_exp_url)
-        self.assertTrue("Job submitted [('testalgorithm', u'Queued')]" in self.browser.contents)
+        self.assertRegexpMatches(self.browser.contents, r"Job submitted \[\('my-experiment-.*', 'QUEUED'\)\]")
         # wait for result
         self._wait_for_job('my-experiment')
         # reload exp page and check for status on page
         self.browser.open(new_exp_url)
-        self.assertTrue('Completed' in self.browser.contents)
+        self.assertTrue('COMPLETED' in self.browser.contents)
         # TODO: check Result list
         results = re.findall(r'<a href=.*My Experiment - bioclim.*</a>', self.browser.contents)
         self.assertEqual(len(results), 1)
         # start again
         self.browser.getControl('Start Job').click()
+
         self.assertTrue('Job submitted' in self.browser.contents)
         self._wait_for_job('my-experiment')
         # reload experiment page
         self.browser.open(new_exp_url)
-        self.assertTrue('Completed' in self.browser.contents)
+        self.assertTrue('COMPLETED' in self.browser.contents)
         # We should have two results now
         results = re.findall(r'<a href=.*My Experiment - bioclim.*</a>', self.browser.contents)
         self.assertEqual(len(results), 2)
@@ -194,9 +199,18 @@ class ExperimentAddTest(unittest.TestCase):
 
     def _wait_for_job(self, expid):
         exp = self.portal[defaults.EXPERIMENTS_FOLDER_ID][expid]
-        jobs = IJobTracker(exp).get_jobs()
-        for job in jobs:
-            wait_for_result(job, seconds=30)
+        count = 3
+        timeout = True
+        while count:
+            transaction.begin()
+            state = IJobTracker(exp).state
+            if state[0][1] in ('COMPLETED', 'FAILED'):
+                timeout = False
+                break
+            time.sleep(10)
+            count -= 1
+        # if timeout:
+        #     import ipdb; ipdb.set_trace()
         # TODO: check if we only have error messages if at all?
         # if job.result is not None:
         #     job.result.raiseException()

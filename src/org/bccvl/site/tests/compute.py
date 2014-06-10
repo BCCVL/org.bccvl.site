@@ -1,24 +1,20 @@
-from tempfile import mkdtemp
+import tempfile
 import os.path
-import shutil
 import time
-from zope.component import getUtility
 from zope.interface import provider
-from org.bccvl.compute.utils import WorkEnvLocal
+from plone import api
 from org.bccvl.site.interfaces import IComputeMethod
+from org.bccvl.tasks.celery import app
+from org.bccvl.tasks.plone import import_result, import_cleanup, set_progress, after_commit_task
 
 
-def testjob(experiment, jobid, env):
+@app.task()
+def testjob(params, context):
     """
     An algorithm mack function, that generates some test result data.
     """
-    # 1. create tempfolder for result files
-    tmpdir = mkdtemp()
-    env.tmpimport = tmpdir
-    env.workdir = tmpdir
-    env.jobid = jobid
-    status = local.getLiveAnnotation('bccvl.status', default={},
-                                     timeout=5)
+    # 1. write file into results_dir
+    tmpdir = params['result']['results_dir']
     try:
         # 2. create some result files
         for fname in ('testfile1.txt', ):
@@ -27,34 +23,46 @@ def testjob(experiment, jobid, env):
             f.close()
             time.sleep(1)
         # 3. store results
-        env.import_output(experiment, env, {})
-        status['task'] = 'Completed'
-        local.setLiveAnnotation('bccvl.status', status)
+        # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
+        import_result(params, context)
+        import_cleanup(params['result']['results_dir'], context)
+        set_progress('COMPLETED', 'Test Task succeeded', context)
     except:
-        status['task'] = 'Failed'
-        local.setLiveAnnotation('bccvl.status', status)
+        # 4. clean up if problem otherwise import task cleans up
+        #    TODO: should be done by errback or whatever
+        import_cleanup(params['result']['results_dir'], context)
+        set_progress('FAILED', 'Test Task failed', context)
         raise
-    finally:
-        # 4. clean up tmpdir
-        shutil.rmtree(tmpdir)
 
 
-@provider(IComputeMethod)
-def testalgorithm(experiment, toolkit):
+@provider(IComputeMethod) # TODO: would expect result as first argument?
+def testalgorithm(result, toolkit):
     # submit test_job into queue
-    async = getUtility(IAsyncService)
-    queues = async.getQueues()
-    env = WorkEnvLocal('localhost')
-    job = async.wrapJob((testjob, experiment, ('testalgorithm', env), {}))
-    job.jobid = 'testalgorithm'
-    job.quota_names = ('default', )
-    job.annotations['bccvl.status'] = {
-        'step': 0,
-        'task': u'Queued'}
-    queue = queues['']
-    return queue.put(job)
+    member = api.user.get_current()
+    params = {
+        'result': {
+            'results_dir': tempfile.mkdtemp(),
+            'outputs': {}
+        },
+    }
+    context = {
+        'context': '/'.join(result.getPhysicalPath()),
+        'user': {
+            'id': member.getUserName(),
+            'email': member.getProperty('email'),
+            'fullname': member.getProperty('fullname'),
+        },
+        'experiment': {
+            'title': result.__parent__.title,
+            'url': result.__parent__.absolute_url()
+        }
+    }
+    # TODO: create chain with import task?
+    # ...  check what happens if task fails (e.g. remove 'experiment' in context)
+    after_commit_task(testjob, params, context)
 
 
+@app.task()
 def failingtestalgorithm(experiment, request):
     """
     An algorithm that always fails.
