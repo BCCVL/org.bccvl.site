@@ -1,6 +1,5 @@
 import unittest2 as unittest
 import doctest
-from org.bccvl.site import defaults
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from plone.testing import layered
 from gu.z3cform.rdf.interfaces import IGraph

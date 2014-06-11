@@ -11,6 +11,8 @@ from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IProjectionExperiment
+from org.bccvl.site.content.interfaces import ISDMExperiment
+from org.bccvl.site.content.interfaces import IBiodiverseExperiment
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.experiment import find_projections
 from org.bccvl.site import defaults
@@ -75,6 +77,15 @@ def returnwrapper(f, *args, **kw):
     # request.setBody ... would need to replace response instance of
     # request.response. (see ZPublisher.xmlprc.response, which wraps a
     # default Response)
+    # FIXME: this is a bad workaround for
+    #        we call these wrapped functions internally, from templates and
+    #        as ajax calls and xmlrpc calls, and expect different return encoding.
+    #        ajax: json
+    #        xmlrpc: xml, done by publisher
+    #        everything else: python
+    if not view.request['URL'].endswith(f.__name__):
+        # not called directly, so return ret as is
+        return ret
 
     # if we don't have xmlrpc we serialise to json
     if not isxmlrpc:
@@ -218,6 +229,34 @@ class DataSetManager(BrowserView):
         # 5. search
         res = find_projections(self.context, emsc, gcms, years)
         return len(res)
+
+    @returnwrapper
+    def getSDMDatasets(self):
+        pc = getToolByName(self.context, 'portal_catalog')
+        sdmbrains = pc.searchResults(
+            object_provides=ISDMExperiment.__identifier__,
+            sort_on='sortable_title')  # date?
+        sdms = []
+        for sdmbrain in sdmbrains:
+            sdms.append({
+                "name": sdmbrain.Title,
+                "uuid": sdmbrain.UID,
+            })
+        return {'sdms': sdms}
+
+    @returnwrapper
+    def getBiodiverseDatasets(self):
+        pc = getToolByName(self.context, 'portal_catalog')
+        biodiversebrains = pc.searchResults(
+            object_provides=IBiodiverseExperiment.__identifier__,
+            sort_on='sortable_title')  # date?
+        biodiverses = []
+        for biodiversebrain in biodiversebrains:
+            biodiverses.append({
+                "name": biodiversebrain.Title,
+                "uuid": biodiversebrain.UID,
+            })
+        return {'biodiverses': biodiverses}
 
     @returnwrapper
     def getProjectionDatasets(self):
@@ -393,8 +432,7 @@ class JobManagerAPI(BrowserView):
 
     @returnwrapper
     def getJobStatus(self):
-        status = IJobTracker(self.context).status()
-        return status
+        return IJobTracker(self.context).state
 
 
 class ExperimentManager(BrowserView):
@@ -512,10 +550,16 @@ class DataMover(BrowserView):
 
         getUtility(IORDF).getHandler().put(md.graph)
 
+        IStatusMessage(self.request).add('New Dataset created',
+                                         type='info')
+
         # 2. create and push alaimport job for dataset
         # TODO: make this named adapter
         jt = IJobTracker(ds)
         status, message = jt.start_job()
+        # Job submission state notifier
+        IStatusMessage(self.request).add(message, type=status)
+
         return (status, message)
 
     @returnwrapper

@@ -7,7 +7,8 @@ from org.bccvl.site.namespace import BCCVOCAB
 
 # BBB: backwards compatible import
 from .interfaces import (
-    ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment)
+    ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
+    IFunctionalResponseExperiment,  IEnsembleExperiment)
 
 
 @implementer(ISDMExperiment)
@@ -49,3 +50,15 @@ def find_projections(ctx, emission_scenarios, climate_models, years):
 class BiodiverseExperiment(Container):
 
     functions = ('org.bccvl.compute.biodiverse.execute', )
+
+
+@implementer(IFunctionalResponseExperiment)
+class FunctionalResponseExperiment(Container):
+
+    functions = ('org.bccvl.compute.functresp.execute', )
+
+
+@implementer(IEnsembleExperiment)
+class EnsembleExperiment(Container):
+
+    functions = ('org.bccvl.compute.ensemble.execute', )

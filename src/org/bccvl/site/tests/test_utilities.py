@@ -6,12 +6,9 @@ from zope.interface.verify import verifyObject
 from zope.component import getUtility, getGlobalSiteManager
 from plone.app.z3cform.interfaces import IPloneFormLayer
 from z3c.form.interfaces import IAddForm
-from z3c.form.interfaces import ISubformFactory
 from org.bccvl.site.utilities import RDFDataMapper, RDFTypeMapper
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from zope.interface import Interface
-from gu.z3cform.rdf.interfaces import IRDFObjectPropertyField
-from gu.z3cform.rdf.widgets.interfaces import IRDFObjectPropertyWidget
 
 
 # TODO: test this one in gu.plone.rdf

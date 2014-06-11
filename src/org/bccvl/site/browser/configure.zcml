@@ -24,9 +24,6 @@
    <include file="toolkit.zcml"/>
 
     <utility
-        factory=".ws.DataMover"/>
-
-    <utility
         factory=".ws.ALAService"/>
 
     <browser:resource

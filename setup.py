@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.9.1-rc1'
+version = '1.5.0-rc1'
 
 setup(
     name='org.bccvl.site',
@@ -33,6 +33,7 @@ setup(
         'sc.social.like',
         'gu.repository.content',
         'gu.transmogrifier',
+        'plone.api',
         'collective.js.jqueryui',
         'collective.js.uix.multiselect',
         'collective.geo.contentlocations',
@@ -46,6 +47,7 @@ setup(
         'collective.quickupload',
         'collective.onlogin',
         'collective.z3cform.widgets',
+        #'collective.deletepermission', careful it interfers with delete buttons when not activated
         #'collective.z3cform.chosen',
         'gu.plone.rdf',
         'plone.app.folderui',
@@ -60,6 +62,7 @@ setup(
         'transmogrify.dexterity',
         'quintagroup.transmogrifier',
         'org.bccvl.compute',
+        'org.bccvl.tasks',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',

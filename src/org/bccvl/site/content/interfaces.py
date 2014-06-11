@@ -1,7 +1,7 @@
 from zope.interface import Interface
 from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
-from zope.schema import Choice, List, Dict, Bool, Int, Decimal
+from zope.schema import Choice, List, Dict, Bool, Int
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from org.bccvl.site import vocabularies
 from org.bccvl.site import MessageFactory as _
@@ -189,3 +189,13 @@ class IBiodiverseExperiment(IExperiment):
     # ->  interface,  content class? , profile,  add / edit / display / result view
     # ->  perl script ... exec env
     # =>  species metadata filenaming
+
+
+class IFunctionalResponseExperiment(IExperiment):
+
+    pass
+
+
+class IEnsembleExperiment(IExperiment):
+
+    pass

@@ -147,4 +147,23 @@ class ExperimentsListingView(BrowserView):
                                                    ', '.join(sorted(gcms))),
                 'environmental_layers': ', '.join(sorted(years)),
             })
+        elif expbrain.portal_type == 'org.bccvl.content.functionalresponseexperiment':
+            # FIXME: implement this
+            details.update({
+                'type': 'FUNCTIONAL RESPONSE',
+                'functions': '',
+                'species_occurrence': '',
+                'species_absence': '',
+                'environmental_layers': '',
+            })
+        elif expbrain.portal_type == 'org.bccvl.content.ensemble':
+            # FIXME: implement this
+            details.update({
+                'type': 'ENSEMBLE',
+                'functions': '',
+                'species_occurrence': '',
+                'species_absence': '',
+                'environmental_layers': '',
+            })
+
         return details
