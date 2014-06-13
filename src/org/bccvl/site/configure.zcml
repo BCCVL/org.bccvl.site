@@ -97,6 +97,24 @@
         name="BCCResolution"
         />
 
+    <adapter
+        for=".content.interfaces.IExperiment"
+        factory=".indexers.job_state"
+        name="job_state"
+        />
+
+    <adapter
+        for=".content.interfaces.IDataset"
+        factory=".indexers.job_state"
+        name="job_state"
+        />
+
+    <adapter
+        for="gu.repository.content.interfaces.IRepositoryItem"
+        factory=".indexers.job_state"
+        name="job_state"
+        />
+
 
     <!-- TODO: index temporal coverage someday -->
     <!-- <adapter -->

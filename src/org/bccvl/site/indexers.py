@@ -1,6 +1,7 @@
 from plone.indexer.decorator import indexer
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.interfaces import IExperiment
+from org.bccvl.site.interfaces import IJobTracker
 from gu.z3cform.rdf.interfaces import IGraph
 from org.bccvl.site.browser.xmlrpc import getbiolayermetadata
 from .namespace import BCCPROP, BCCVOCAB, BIOCLIM
@@ -59,3 +60,17 @@ def dataset_environmental_layer(object, **kw):
     if layers:
         return tuple(layers.keys())
     return None
+
+
+def job_state(object,  **kw):
+    jt = IJobTracker(object)
+    # TODO: if state is empty check if there is a downloadable file
+    #       Yes: COMPLETED
+    #       No: FAILED
+    state = jt.state
+    if not state and IDataset.providedBy(object):
+        # we have no state, may happen for imported datasets,
+        # let's check if we have a file
+        if object.file is not None:
+            state = 'COMPLETED'
+    return state
