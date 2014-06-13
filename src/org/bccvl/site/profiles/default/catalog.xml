@@ -21,6 +21,10 @@
     <index name="DCTemporal" meta_type="DateRangeIndex">
         <indexed_attr value="DCTemporal"/>
     </index>
+    <index name="job_state" meta_type="FieldIndex">
+        <indexed_attr value="job_state"/>
+    </index>
 
     <column value="BCCResolution" />
+    <column value="job_state" />
 </object>
