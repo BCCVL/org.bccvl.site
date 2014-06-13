@@ -204,7 +204,7 @@ class ExperimentAddTest(unittest.TestCase):
         while count:
             transaction.begin()
             state = IJobTracker(exp).state
-            if state[0][1] in ('COMPLETED', 'FAILED'):
+            if state in ('COMPLETED', 'FAILED'):
                 timeout = False
                 break
             time.sleep(10)
