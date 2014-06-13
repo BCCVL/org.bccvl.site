@@ -434,6 +434,10 @@ class JobManagerAPI(BrowserView):
     def getJobStatus(self):
         return IJobTracker(self.context).state
 
+    @returnwrapper
+    def getJobStates(self):
+        return IJobTracker(self.context).states
+
 
 class ExperimentManager(BrowserView):
 

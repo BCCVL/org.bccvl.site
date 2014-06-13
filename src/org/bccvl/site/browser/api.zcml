@@ -88,13 +88,17 @@
     <browser:view
         class=".xmlrpc.JobManagerAPI"
         name="jm"
-        allowed_attributes="getJobStatus"
+        allowed_attributes="getJobStatus getJobStates"
         for="org.bccvl.site.content.interfaces.IExperiment"
         permission="zope2.View" >
 
         <browser:page
             name="getJobStatus"
             attribute="getJobStatus"/>
+
+        <browser:page
+            name="getJobStates"
+            attribute="getJobStates"/>
 
     </browser:view>
 
