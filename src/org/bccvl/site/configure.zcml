@@ -100,24 +100,21 @@
     <adapter
         for=".content.interfaces.IExperiment
              Products.ZCatalog.interfaces.IZCatalog"
-        provides="plone.indexer.interfaces.IIndexer"
-        factory=".indexers.job_state"
+        factory=".indexers.JobStateIndexer"
         name="job_state"
         />
 
     <adapter
         for=".content.interfaces.IDataset
              Products.ZCatalog.interfaces.IZCatalog"
-        provides="plone.indexer.interfaces.IIndexer"
-        factory=".indexers.job_state"
+        factory=".indexers.JobStateIndexer"
         name="job_state"
         />
 
     <adapter
         for="gu.repository.content.interfaces.IRepositoryItem
              Products.ZCatalog.interfaces.IZCatalog"
-        provides="plone.indexer.interfaces.IIndexer"
-        factory=".indexers.job_state"
+        factory=".indexers.JobStateIndexer"
         name="job_state"
         />
 

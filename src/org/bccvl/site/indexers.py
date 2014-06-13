@@ -1,4 +1,6 @@
 from plone.indexer.decorator import indexer
+from plone.indexer.interfaces import IIndexer
+from zope.interface import implementer
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.interfaces import IJobTracker
@@ -62,15 +64,22 @@ def dataset_environmental_layer(object, **kw):
     return None
 
 
-def job_state(object,  **kw):
-    jt = IJobTracker(object)
-    # TODO: if state is empty check if there is a downloadable file
-    #       Yes: COMPLETED
-    #       No: FAILED
-    state = jt.state
-    if not state and IDataset.providedBy(object):
-        # we have no state, may happen for imported datasets,
-        # let's check if we have a file
-        if object.file is not None:
-            state = 'COMPLETED'
-    return state
+@implementer(IIndexer)
+class JobStateIndexer(object):
+
+    def __init__(self, context, catalog):
+        self.context = context
+        self.catalog = catalog
+
+    def __call__(self, **kw):
+        jt = IJobTracker(self.context)
+        # TODO: if state is empty check if there is a downloadable file
+        #       Yes: COMPLETED
+        #       No: FAILED
+        state = jt.state
+        if not state and IDataset.providedBy(object):
+            # we have no state, may happen for imported datasets,
+            # let's check if we have a file
+            if object.file is not None:
+                state = 'COMPLETED'
+        return state
