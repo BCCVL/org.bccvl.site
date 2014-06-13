@@ -174,9 +174,44 @@ class MultiJobTracker(JobTracker):
     # used for content objects that don't track jobs directly, but may have
     # multiple child objects with separate jobs
 
-    #override is_active, state
     @property
     def state(self):
+        """
+        Return single status across all jobs for this experiment.
+
+        Failed -> in case one snigle job failed
+          bccvl-status-error, alert-error
+        New -> in case there is a job in state New
+          bccvl-status-running (maps onto queued)
+        Queued -> in case there is a job queued
+          bccvl-status-running
+        Completed -> in case all jobs completed successfully
+          bccvl-status-complete, alert-success
+        All other states -> running
+          bccvl-status-running
+        """
+        states = self.states
+        # filter out states only and ignore algorithm
+        if states:
+            states = set((state for _, state in states))
+        else:
+            return None
+        # are all jobs completed?
+        completed = all((state in ('COMPLETED', 'FAILED') for state in states))
+        # do we have failed jobs if all completed?
+        if completed:
+            if 'FAILED' in states:
+                return u'FAILED'
+            else:
+                return u'COMPLETED'
+        # is everything still in Nem or Queued?
+        queued = all((state in ('QUEUED', ) for state in states))
+        if queued:
+            return u'QUEUED'
+        return u'RUNNING'
+
+    @property
+    def states(self):
         states = []
         for item in self.context.values():
             jt = IJobTracker(item, None)
@@ -186,10 +221,6 @@ class MultiJobTracker(JobTracker):
             if state:
                 states.append((item.getId(), state))
         return states
-
-    def is_active(self):
-        return any(x not in (None, 'COMPLETED', 'FAILED')
-                   for _, x in self.state)
 
 
 # TODO: should this be named adapter as well in case there are multiple
