@@ -147,41 +147,7 @@ class View(edit.DefaultEditForm):
     label = ''
 
     def job_state(self):
-        """
-        Return single status across all jobs for this experiment.
-
-        Failed -> in case one snigle job failed
-          bccvl-status-error, alert-error
-        New -> in case there is a job in state New
-          bccvl-status-running (maps onto queued)
-        Queued -> in case there is a job queued
-          bccvl-status-running
-        Completed -> in case all jobs completed successfully
-          bccvl-status-complete, alert-success
-        All other states -> running
-          bccvl-status-running
-        """
-        jt = IJobTracker(self.context)
-        # filter out states only and ignore algorithm
-        states = jt.state
-        if states:
-            states = set((state for _, state in states))
-        else:
-            return None
-        # are all jobs completed?
-        completed = all((state in ('COMPLETED', 'FAILED') for state in states))
-        # do we have failed jobs if all completed?
-        if completed:
-            if 'FAILED' in states:
-                return u'FAILED'
-            else:
-                return u'COMPLETED'
-        # is everything still in Nem or Queued?
-        queued = all((state in ('QUEUED', ) for state in states))
-        if queued:
-            return u'QUEUED'
-        return u'RUNNING'
-
+        return IJobTracker(self.context).state
 
     # condition=lambda form: form.showApply)
     @button.buttonAndHandler(u'Start Job')
