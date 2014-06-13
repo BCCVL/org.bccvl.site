@@ -33,12 +33,14 @@ class QueryAPI(object):
         return brains
 
     def getSpeciesOccurrenceDatasets(self):
-        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSO'])
+        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSO'],
+                                job_state='COMPLETED')
 
     def getSpeciesPresenceDatasets(self):
         return self.getDatasets(
             BCCDataGenre=BCCVOCAB['DataGenreSO'],
-            BCCSpeciesLayer=BCCVOCAB['SpeciesLayerP']
+            BCCSpeciesLayer=BCCVOCAB['SpeciesLayerP'],
+            job_state='COMPLETED'
         )
 
     def getSpeciesAbsenceDatasets(self):
