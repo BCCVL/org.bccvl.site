@@ -2,7 +2,6 @@ from Products.Five import BrowserView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
-from org.bccvl.site.utilities import IJobTracker
 from org.bccvl.site.content.interfaces import IDataset
 from Products.CMFCore.utils import getToolByName
 from zope.security import checkPermission
@@ -45,14 +44,6 @@ class DatasetsListingView(BrowserView):
             if action.get('id') == 'local_roles':
                 return action
         return {}
-
-    def job_status(self, ds):
-        jt = IJobTracker(ds, None)
-        if jt:
-            states = jt.state
-            if states:
-                return states
-        return None
 
     def get_transition(self, itemob):
         #return checkPermission('cmf.RequestReview', self.context)

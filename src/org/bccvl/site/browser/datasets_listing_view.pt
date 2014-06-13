@@ -10,6 +10,12 @@
 
 <metal:content-core fill-slot="body"
 	            tal:define="contentFilter view/contentFilter">
+<!-- other view/request parameters:
+        limit_display ... batch_size
+        more_url
+        folderContents ... either passed in or queried from catalog
+        b_start
+        -->
 
     <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
 
@@ -43,8 +49,7 @@
                         <metal:entry fill-slot="entry">
 
                     <tr metal:define-macro="listitem"
-                        tal:define="oddrow repeat/item/odd;
-                                    item_obj item/getObject;"
+                        tal:define="oddrow repeat/item/odd;"
                         tal:attributes="class python: oddrow and 'even' or 'odd'">
                             <!-- Title -->
                             <td>
@@ -87,15 +92,19 @@
                           August 16, 2001 at 23:35:59
                         </td>
                         <!-- job state -->
-                        <td tal:condition="show_about"
-                            tal:define="state python:view.job_status(item.getObject())">
-                            <tal:state tal:replace="python: state or 'Available'"/>
+                        <td tal:condition="show_about">
+                            <tal:state tal:replace="item/job_state"/>
                         </td>
                         <!-- Actions -->
                         <!-- TODO: expects simple publication workflow
                         publish/retract -->
+                        <!-- TODO: change this to some sort of popup to let user change review_state
+                                   and show review_state here ... would need permissions again to check if link is available to user :(
+                             TODO: check review_state and permission ... need permission here
+                             TODO: indexing won't work as this is per user
+                        -->
                         <td tal:condition="show_about"
-                            tal:define="action python:view.get_transition(item_obj)">
+                            tal:define="action python:view.get_transition(item.getObject())">
                           <a href="#"
                              tal:attributes="href string:${item_url}/dm/share"
                              tal:condition="python: action == 'publish'"
@@ -104,13 +113,13 @@
                              tal:attributes="href string:${item_url}/dm/unshare"
                              tal:condition="python: action == 'retract'"
                              >Un-share</a>
+                          <i tal:content="item/review_state"></i>
                         </td>
                         <!-- Download -->
-                        <td
-                             tal:define="file item_obj/file|nothing">
+                        <td>
                           <a href="#"
-                             tal:condition="file"
-                             tal:attributes="href string:${item_url}/@@download/file/${file/filename}">Download</a>
+                             tal:condition="python: item.job_state in ('COMPLETED',)"
+                             tal:attributes="href string:${item_url}/@@download/file">Download</a>
                         </td>
                     </tr>
 
