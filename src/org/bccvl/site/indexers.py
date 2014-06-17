@@ -77,9 +77,9 @@ class JobStateIndexer(object):
         #       Yes: COMPLETED
         #       No: FAILED
         state = jt.state
-        if not state and IDataset.providedBy(object):
+        if not state and IDataset.providedBy(self.context):
             # we have no state, may happen for imported datasets,
             # let's check if we have a file
-            if object.file is not None:
+            if self.context.file is not None:
                 state = 'COMPLETED'
         return state
