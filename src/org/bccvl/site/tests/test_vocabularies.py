@@ -123,7 +123,7 @@ class FutureSourceTest(unittest.TestCase):
         data = ds[defaults.DATASETS_CLIMATE_FOLDER_ID]['future']
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
-        self.assertEqual(len(source), 1)
+        self.assertEqual(len(source), 2)
 
 
 class FunctionsSourceTest(unittest.TestCase):
