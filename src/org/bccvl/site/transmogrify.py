@@ -257,7 +257,7 @@ class FileMetadataUpdater(object):
                 yield item
                 continue
 
-            anns = IAnnotations(object)
+            anns = IAnnotations(obj)
             anns['org.bccvl.site.filemetadata'] = filemd
 
             yield item
