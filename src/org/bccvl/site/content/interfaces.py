@@ -57,6 +57,7 @@ class IRemoteDataset(IDataset):
         title=_(u'Content location'),
         description=u'',
         required=True,
+        default=u'http://',
         )
 
 

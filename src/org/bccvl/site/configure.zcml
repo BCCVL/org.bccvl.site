@@ -169,7 +169,7 @@
 
     <utility
         component=".transmogrify.FileMetadataUpdater"
-        name="org.bccvl.compute.transmogrify.filemetadataupdater"
+        name="org.bccvl.site.transmogrify.filemetadataupdater"
         />
 
     <utility

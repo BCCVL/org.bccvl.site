@@ -256,7 +256,6 @@ class FileMetadataUpdater(object):
                 # no filemetadata (delete or leave untouched?)
                 yield item
                 continue
-
             anns = IAnnotations(obj)
             anns['org.bccvl.site.filemetadata'] = filemd
 
