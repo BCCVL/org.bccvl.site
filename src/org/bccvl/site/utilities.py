@@ -38,6 +38,7 @@ LOG = logging.getLogger(__name__)
 
 @implementer(IRDFTypeMapper)
 class RDFTypeMapper(object):
+    """Used for content creation (esp. Add Views), where there is content yet."""
 
     def __init__(self, context, request, form):
         self.context = context
@@ -49,6 +50,7 @@ class RDFTypeMapper(object):
         typemap = {'org.bccvl.content.user': FOAF['Person'],
                    'org.bccvl.content.group': FOAF['Group'],
                    'org.bccvl.content.dataset': CVOCAB['Dataset'],
+                   'org.bccvl.content.remotedataset': CVOCAB['Dataset'],
                    # TODO: remove types below someday
                    'gu.repository.content.RepositoryItem': CVOCAB['Item'],
                    'gu.repository.content.RepositoryContainer': CVOCAB['Collection'],
@@ -59,6 +61,7 @@ class RDFTypeMapper(object):
 
 @implementer(IRDFContentTransform)
 class RDFContentBasedTypeMapper(object):
+    """Add rdf:type to existing content object based on Interfaces provided."""
 
     def tordf(self, content, graph):
         # We might have a newly generated empty graph here, so let's apply the
@@ -82,6 +85,7 @@ class RDFContentBasedTypeMapper(object):
 
 @implementer(IRDFContentTransform)
 class RDFDataMapper(object):
+    """Add additional metadata about existing content."""
 
     def tordf(self, content, graph):
         # FIXME: use only one way to describe things ....

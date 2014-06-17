@@ -6,12 +6,12 @@ from gu.z3cform.rdf.schema import (RDFURIChoiceField,
                                    RDFLiteralLineField,
                                    RDFDateRangeField)
 from org.bccvl.site.namespace import BCCPROP, DWC
-from org.bccvl.site.content.interfaces import IDataset
+from org.bccvl.site.content.interfaces import IDataset, IBlobDataset
 from ordf.namespace import DC as DCTERMS
 from org.bccvl.site import MessageFactory as _
 
 
-@implementer(IDataset, IFile)
+@implementer(IBlobDataset, IFile)
 class Dataset(Item):
 
     pass

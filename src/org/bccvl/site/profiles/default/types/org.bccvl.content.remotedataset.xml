@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
-<object name="org.bccvl.content.dataset"
+<object name="org.bccvl.content.remotedataset"
    meta_type="Dexterity FTI"
    i18n:domain="org.bccvl" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Basic metadata -->
-  <property name="title" i18n:translate="">Dataset</property>
+  <property name="title" i18n:translate="">Remote Dataset</property>
   <property name="description"
-    i18n:translate="">Dataset</property>
+    i18n:translate="">Remote Dataset</property>
   <property name="icon_expr">string:${portal_url}/++resource++dataset.png</property>-->
   <property name="global_allow">True</property>
   <property name="allow_discussion">False</property>
 
- <property name="schema">org.bccvl.site.content.interfaces.IBlobDataset</property>
+ <property name="schema">org.bccvl.site.content.interfaces.IRemoteDataset</property>
 
  <!-- class used for content items -->
- <property name="klass">org.bccvl.site.content.dataset.Dataset</property>
+ <property name="klass">org.bccvl.site.content.remotedataset.RemoteDataset</property>
  <property name="add_permission">org.bccvl.AddDataset</property>
  <property name="behaviors">
      <element value="plone.app.dexterity.behaviors.metadata.IDublinCore" />
-     <element value="plone.app.dexterity.behaviors.filename.INameFromFileName"/>
      <element value="plone.app.dexterity.behaviors.discussion.IAllowDiscussion"/>
+     <element value="plone.app.content.interfaces.INameFromTitle"/>
      <element value="plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigation"/>
      <element value="plone.app.relationfield.behavior.IRelatedItems"/>
      <element value="plone.app.versioningbehavior.behaviors.IVersionable" />
@@ -29,9 +29,9 @@
   <property name="default_view">view</property>
   <property name="default_view_fallback">False</property>
   <property name="view_methods">
-    <element value="file_view" />
+    <!-- <element value="link_redirect_view" /> -->
     <element value="view" />
-    <element value="display-file" />
+    <!-- <element value="display-file" /> -->
   </property>
 
   <!-- Method aliases -->

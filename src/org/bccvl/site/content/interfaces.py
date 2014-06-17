@@ -1,13 +1,17 @@
 from zope.interface import Interface
 from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
-from zope.schema import Choice, List, Dict, Bool, Int
+from zope.schema import Choice, List, Dict, Bool, Int, TextLine
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from org.bccvl.site import vocabularies
 from org.bccvl.site import MessageFactory as _
 
 
 class IDataset(form.Schema):
+    """Interface all datasets inherit from"""
+
+
+class IBlobDataset(IDataset):
 
     # TODO: a primary field should not be required. possible bug in plone core
     form.primary('file')
@@ -23,28 +27,37 @@ class IDataset(form.Schema):
         required=False
         )
 
-        # fixed fields
-        # RDFURIChoiceField(
-        #     __name__='format',
-        #     prop=BCCPROP['format'],
-        #     required=False,
-        #     title=u'Format',
-        #     vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetFormatVocabulary')
+    # fixed fields
+    # RDFURIChoiceField(
+    #     __name__='format',
+    #     prop=BCCPROP['format'],
+    #     required=False,
+    #     title=u'Format',
+    #     vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetFormatVocabulary')
+
+    # layer
+    # RDFURIChoiceField(
+    #     __name__='datatype',
+    #     prop=BCCPROP['datatype'],
+    #     required=False,
+    #     title=u'Type of Dataset',
+    #     vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetTypeVocabulary'),
+    # # not needed?
+    # RDFLiteralLineField(
+    #     __name__='formato',
+    #     prop=DCTERMS['format'],
+    #     required=False,
+    #     title=u'Data format (other)'),
 
 
-        # layer
-        # RDFURIChoiceField(
-        #     __name__='datatype',
-        #     prop=BCCPROP['datatype'],
-        #     required=False,
-        #     title=u'Type of Dataset',
-        #     vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetTypeVocabulary'),
-        # # not needed?
-        # RDFLiteralLineField(
-        #     __name__='formato',
-        #     prop=DCTERMS['format'],
-        #     required=False,
-        #     title=u'Data format (other)'),
+class IRemoteDataset(IDataset):
+    """A dateset hosted externally"""
+
+    remoteUrl = TextLine(
+        title=_(u'Content location'),
+        description=u'',
+        required=True,
+        )
 
 
 class IExperiment(Interface):
