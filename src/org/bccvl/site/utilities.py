@@ -1,4 +1,6 @@
 from datetime import datetime
+from urlparse import urlsplit
+import os.path
 from gu.plone.rdf.interfaces import IRDFContentTransform
 from gu.plone.rdf.namespace import CVOCAB
 from gu.repository.content.interfaces import (
@@ -9,12 +11,13 @@ from gu.z3cform.rdf.utils import Period
 from ordf.namespace import DC as DCTERMS
 from ordf.namespace import FOAF
 from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IFunctionalResponseExperiment, IEnsembleExperiment)
 from org.bccvl.site.content.user import IBCCVLUser
-from org.bccvl.site.interfaces import IJobTracker, IComputeMethod
+from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
 from org.bccvl.site.namespace import DWC, BCCPROP
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
@@ -99,6 +102,47 @@ class RDFDataMapper(object):
 # FIXME: update JOB Info stuff.... for message queueing
 #
 # FIXME: define job state dictionary and possible states (esp. FINISHED states)
+
+
+@implementer(IDownloadInfo)
+@adapter(IDataset)
+def DatasetDownloadInfo(context):
+    # TODO: get rid of INTERNAL_URL
+    import os
+    INTERNAL_URL = 'http://127.0.0.1:8201'
+    int_url = os.environ.get("INTERNAL_URL", INTERNAL_URL)
+    if context.file is None or context.file.filename is None:
+        # TODO: What to do here? the download url doesn't make sense
+        #        for now use id as filename
+        filename = context.getId()
+    else:
+        filename = context.file.filename
+    # generate downloaurl
+    downloadurl = '{}/@@download/file/{}'.format(
+        context.absolute_url(),
+        filename
+    )
+    internalurl = '{}{}/@@download/file/{}'.format(
+        int_url,
+        "/".join(context.getPhysicalPath()),
+        filename
+    )
+    return {
+        'url': downloadurl,
+        'alturl': (internalurl,),
+        'filename': filename
+    }
+
+
+@implementer(IDownloadInfo)
+@adapter(IRemoteDataset)
+def RemoteDatasetDownloadInfo(context):
+    url = urlsplit(context.remoteUrl)
+    return {
+        'url': context.remoteUrl,
+        'alturl': (context.remoteUrl,),
+        'filename': os.path.basename(url.path)
+    }
 
 
 @implementer(IJobTracker)

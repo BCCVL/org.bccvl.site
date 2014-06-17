@@ -9,7 +9,7 @@ from zope.publisher.interfaces import NotFound
 from decorator import decorator
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.uuid.interfaces import IUUID
-from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.interfaces import IJobTracker, IDownloadInfo
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
@@ -105,16 +105,13 @@ def getdsmetadata(ds):
         'file': None,
         'layers': getbiolayermetadata(ds)
         }
+    info = IDownloadInfo(ds)
     if ds.file:
         md.update({
             'mimetype': ds.file.contentType,
             'filename': ds.file.filename,
-            'file': '{}/@@download/file/{}'.format(ds.absolute_url(),
-                                                   ds.file.filename),
-            'vizurl': '{}{}/@@download/file/{}'.format(
-                'http://127.0.0.1:8201',
-                '/'.join(ds.getPhysicalPath()),
-                ds.file.filename),
+            'file': info['url'],
+            'vizurl': info['alturl'][0]
         })
     return md
 

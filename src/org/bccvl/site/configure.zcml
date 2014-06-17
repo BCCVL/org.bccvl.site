@@ -61,6 +61,15 @@
         <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
     </class>
 
+    <!-- download info adapters -->
+    <adapter
+        factory=".utilities.DatasetDownloadInfo"
+        />
+
+    <adapter
+        factory=".utilities.RemoteDatasetDownloadInfo"
+        />
+
     <!-- index relevant RDF properties -->
     <adapter
         factory=".indexers.dataset_BCCDataGenre"
