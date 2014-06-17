@@ -12,6 +12,7 @@ from rdflib.resource import Resource
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, TN
 from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
+from zope.annotation.interfaces import IAnnotations
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 import logging
 
@@ -205,6 +206,61 @@ class RDFMetadataUpdater(object):
             yield item
 
 
+# TODO: maybe turn this into a RDF updater section.
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class FileMetadataUpdater(object):
+    """Store item['_filemetadata']
+
+    Takes whatever it is in item['_filemetadata'] and stores it as annotation
+    on the content object.
+    """
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.name = name
+        self.options = options
+        self.previous = previous
+        self.context = transmogrifier.context
+
+        # keys for sections further down the chain
+        self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
+        self.filemetadatakey = options.get('filemetadata-key',
+                                           '_filemetadata').strip()
+
+    def __iter__(self):
+        # exhaust previous iterator
+        for item in self.previous:
+            pathkey = self.pathkey(*item.keys())[0]
+            # no path .. can't do anything
+            if not pathkey:
+                yield item
+                continue
+
+            path = item[pathkey]
+            # Skip the Plone site object itself
+            if not path:
+                yield item
+                continue
+
+            obj = self.context.unrestrictedTraverse(
+                path.encode().lstrip('/'), None)
+
+            # path doesn't exist
+            if obj is None:
+                yield item
+                continue
+
+            filemd = item.get(self.filemetadatakey)
+            if not filemd:
+                # no filemetadata (delete or leave untouched?)
+                yield item
+                continue
+
+            anns = IAnnotations(object)
+            anns['org.bccvl.site.filemetadata'] = filemd
+
+            yield item
 
 
 

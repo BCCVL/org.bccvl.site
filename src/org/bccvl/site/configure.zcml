@@ -1,11 +1,11 @@
 <configure
-        xmlns="http://namespaces.zope.org/zope"
-        xmlns:plone="http://namespaces.plone.org/plone"
-        xmlns:transmogrifier="http://namespaces.plone.org/transmogrifier"
-        xmlns:cmf="http://namespaces.zope.org/cmf"
-       xmlns:i18n="http://namespaces.zope.org/i18n"
-        i18n_domain="org.bccvl"
-        >
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:transmogrifier="http://namespaces.plone.org/transmogrifier"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="org.bccvl"
+    >
 
     <i18n:registerTranslations directory="locales" />
 
@@ -157,15 +157,20 @@
     <adapter
         factory=".utilities.ALAJobTracker"/>
 
-  <utility
-     component=".transmogrify.ALASource"
-     name="org.bccvl.site.transmogrify.alasource"
-     />
+    <utility
+        component=".transmogrify.ALASource"
+        name="org.bccvl.site.transmogrify.alasource"
+        />
 
-  <utility
-     component=".transmogrify.RDFMetadataUpdater"
-     name="org.bccvl.site.transmogrify.rdfmetadata"
-     />
+    <utility
+        component=".transmogrify.RDFMetadataUpdater"
+        name="org.bccvl.site.transmogrify.rdfmetadata"
+        />
+
+    <utility
+        component=".transmogrify.FileMetadataUpdater"
+        name="org.bccvl.compute.transmogrify.filemetadataupdater"
+        />
 
     <utility
       component=".vocabularies.species_presence_datasets_source"
