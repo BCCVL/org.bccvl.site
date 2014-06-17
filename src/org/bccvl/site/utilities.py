@@ -269,7 +269,7 @@ class SDMJobTracker(MultiJobTracker):
                                  'generate taskname: sdm_experiment')
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
-            return 'info', u'Job submitted {}'.format(self.state)
+            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
 
@@ -327,7 +327,7 @@ class ProjectionJobTracker(MultiJobTracker):
                                  'generate taskname: projection experiment')
                 resultjt.set_progress('PENDING',
                                       u'projection pending')
-            return 'info', u'Job submitted {}'.format(self.state)
+            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             # TODO: in case there is an error should we abort the transaction
             #       to cancel previously submitted jobs?
@@ -392,7 +392,7 @@ class BiodiverseJobTracker(MultiJobTracker):
                                  'generate taskname: biodiverse')
                 resultjt.set_progress('PENDING',
                                       'biodiverse pending')
-            return 'info', u'Job submitted {}'.format(self.state)
+            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
 
@@ -450,4 +450,5 @@ class ALAJobTracker(JobTracker):
         self.new_job('TODO: generate id', 'generate taskname: ala_import')
         self.set_progress('PENDING', u'ALA import pending')
 
-        return 'info', u'Job submitted {}'.format(self.state)
+        return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+
