@@ -1,4 +1,5 @@
 #from plone.dexaterity.browser.view import DefaultView (template override in plone.app.dexterity.browser)
+from rdflib.resource import Resource
 from plone.dexterity.browser.edit import DefaultEditForm
 from plone.dexterity.browser.view import DefaultView
 from z3c.form import form, field, button
@@ -86,7 +87,7 @@ from zope.interface import Interface
 import gu.z3cform.rdf.schema as rdfschema
 from rdflib import RDF, Graph, Literal
 from zope.component import getUtility
-from gu.z3cform.rdf.interfaces import IORDF, IGraph
+from gu.z3cform.rdf.interfaces import IORDF, IGraph, IResource
 import zipfile
 from org.bccvl.site.namespace import BIOCLIM, NFO
 
@@ -95,7 +96,7 @@ class IFileItemMetadata(Interface):
 
     name = rdfschema.RDFLiteralLineField(
         title=u"File name",
-        prop = NFO['fileName'],
+        prop=NFO['fileName'],
         description=u'The file name within the archive',
         readonly=True)
 
@@ -196,7 +197,10 @@ class EditFileMetadataForm(crud.EditForm):
             #if not subform.content_id: # we had no filename
             #    import ipdb; ipdb.set_trace()
             urilist.append(subform.content.identifier)
-            handler.put(subform.content)
+            if IResource.providedBy(subform.content):
+                handler.put(subform.content.graph)
+            else:
+                handler.put(subform.content)
         data = {self.context.property: urilist}
         # here we applyData to the context (actually Crud context)
         # should be fine but cleaner solution would be better?
@@ -263,25 +267,27 @@ class CrudFileMetadataForm(crud.CrudForm):
 
     def get_items(self):
         g = self.getContent()
+        r = Resource(g, g.identifier)
         if not self._items:
             handler = getUtility(IORDF).getHandler()
             items = {}
             try:
-                for ref in g.objects(g.identifier, self.property):
-                    item = handler.get(ref)
-                    itemid = item.value(item.identifier,
-                                        NFO['fileName']).toPython()
-                    items[str(itemid)] = item
+                for ref in r.objects(self.property):
+                    obj = next(ref.objects(), None)
+                    if obj is None:
+                        ref = Resource(handler.get(ref.identifier), ref.identifier)
+                    itemid = ref.value(NFO['fileName']).toPython()
+                    items[str(itemid)] = ref
             except:
                 # something wrong with file metadata ... regenerate it
                 items = {}
             if not items:  # was empty
+                # FIXME: remove this, not practicable with remote datasets
                 items = getFileGraph(self.context)
             self._items = items
         # TODO: sort key configurable
         return sorted(self._items.items(),
-                      key=lambda x: x[1].value(x[1].identifier,
-                                               NFO['fileName']))
+                      key=lambda x: x[0])
 
     def add(self, data):
         #import ipdb; ipdb.set_trace()
