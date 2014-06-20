@@ -1,6 +1,7 @@
 from zope.interface import implementer, provider
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from collective.transmogrifier.interfaces import ISection
+import re
 import os
 import os.path
 from collective.transmogrifier.utils import defaultMatcher
@@ -9,10 +10,9 @@ from ordf.graph import Graph
 from ordf.namespace import DC
 from rdflib import RDF, URIRef, Literal, OWL
 from rdflib.resource import Resource
-from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, TN
+from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GLM, EPSG, BIOCLIM)
 from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
-from zope.annotation.interfaces import IAnnotations
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 import logging
 
@@ -193,6 +193,7 @@ class RDFMetadataUpdater(object):
             rdfgraph = Graph()
             rdfgraph.parse(data=rdfdata, format='turtle')
             mdgraph = IGraph(obj)
+            # FIXME: replace data or not?
             for p, o in rdfgraph.predicate_objects(None):
                 mdgraph.add((mdgraph.identifier, p, o))
             rdfhandler = getUtility(IORDF).getHandler()
@@ -209,11 +210,11 @@ class RDFMetadataUpdater(object):
 # TODO: maybe turn this into a RDF updater section.
 @provider(ISectionBlueprint)
 @implementer(ISection)
-class FileMetadataUpdater(object):
-    """Store item['_filemetadata']
+class FileMetadataToRDF(object):
+    """Generates all sorts of metadata out of item.
 
-    Takes whatever it is in item['_filemetadata'] and stores it as annotation
-    on the content object.
+    All metadata generated will be stored via ordf in the triple store
+    associated with the current content object.
     """
 
     def __init__(self, transmogrifier, name, options, previous):
@@ -227,43 +228,144 @@ class FileMetadataUpdater(object):
         self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
         self.filemetadatakey = options.get('filemetadata-key',
                                            '_filemetadata').strip()
+        self.fileskey = options.get('files-key', '_files').strip()
+        self.rdfkey = options.get('rdf-key', '_rdf').strip()
 
     def __iter__(self):
         # exhaust previous iterator
         for item in self.previous:
+
+            filename = None
+            if 'remoteUrl' in item:
+                # TODO: assumse, that there is a _file entry to it which has
+                #       the name for _filemetadata dictionary
+                filename = item.get('_files', {}).get(item.get('remoteUrl'), {}).get('filename')
+            elif 'file' in item:
+                filename = item.get('file', {}).get('file')  # TODO: or is this filename?
+            if not filename:
+                # there should be no other None key
+                yield item
+                continue
+
+            filemd = item.get(self.filemetadatakey, {})
+            filemd = filemd.get(filename)
+            if not filemd:
+                # no filemetadata (delete or leave untouched?)
+                yield item
+                continue
+
+            # we'll also need a content object
             pathkey = self.pathkey(*item.keys())[0]
-            # no path .. can't do anything
             if not pathkey:
                 yield item
                 continue
 
             path = item[pathkey]
-            # Skip the Plone site object itself
+            # skip import context
             if not path:
                 yield item
                 continue
 
-            obj = self.context.unrestrictedTraverse(
+            content = self.context.unrestrictedTraverse(
                 path.encode().lstrip('/'), None)
 
-            # path doesn't exist
-            if obj is None:
+            if content is None:
                 yield item
                 continue
 
-            filemd = item.get(self.filemetadatakey)
-            if not filemd:
-                # no filemetadata (delete or leave untouched?)
-                yield item
-                continue
-            anns = IAnnotations(obj)
-            anns['org.bccvl.site.filemetadata'] = filemd
+            # get or create rdf graph
+            self.update_archive_items(content, filemd)
+            self.update_metadata(content, filemd)
 
+            # continue pipe line
             yield item
 
+    def update_archive_items(self, content, md):
+        graph = IGraph(content)
+        res = Resource(graph, graph.identifier)
 
+        if (res.value(BCCPROP['hasArchiveItem'])):
+            # We delete old archive items and create new ones
+            ordf = getUtility(IORDF).getHandler()
+            # delete from graph
+            for uri in res.objects(BCCPROP['hasArchiveItem']):
+                # delete subgraphs from graph
+                graph.remove((uri.identifier, None, None))
+                # BBB: delete from store (old method)
+                ordf.remove(uri.identifier)
+            res.remove(BCCPROP['hasArchiveItem'])
 
+        for key, submd in md.items():
+            if not isinstance(submd, dict):
+                continue
+            if 'metadata' not in submd:
+                # skip non sub file items
+                continue
+            # generate new archive item
+            ordf = getUtility(IORDF)
+            ares = Resource(graph, ordf.generateURI())
+            # size (x, y on file)
+            ares.add(NFO['fileName'], Literal(submd['filename']))
+            ares.add(NFO['fileSize'], Literal(submd['file_size']))
+            ares.add(RDF['type'], NFO['ArchiveItem'])
+            # bonuds
+            # date
+            # csv: headers, rows, species (set)
+            amd = submd.get('metadata', {})
+            # SRS
+            if 'srs' in amd:
+                srs = amd['srs']
+                if srs.lower().startswith('epsg:'):
+                    srs = EPSG[srs[len("epsg:"):]]
+                else:
+                    srs = URIRef(srs)
+                ares.add(GLM['srsName'], srs)
+            # band metadata
+            bandmd = amd.get('band')
+            if bandmd:
+                bandmd = bandmd[0]
+                # mean, STATISTICS_MEAN
+                # stddev, STATISTICS_STDDEV
+                # size (x, y on band)
+                min = bandmd.get('min') or bandmd.get('STATISTICS_MINIMUM')
+                max = bandmd.get('ax') or bandmd.get('STATISTICS_MAXIMUM')
+                width, height = bandmd.get('size', (None, None))
+                if min:
+                    ares.add(BCCPROP['min'], Literal(min))
+                if max:
+                    ares.add(BCCPROP['max'], Literal(max))
+                if width and height:
+                    ares.add(BCCPROP['width'], Literal(width))
+                    ares.add(BCCPROP['height'], Literal(height))
+                # Layer
+                layer = bandmd.get('layer')
+                if layer:
+                    match = re.match(r'.*bioclim.*(\d\d)', layer)
+                    if match:
+                        bid = match.group(1)
+                        ares.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
+                    else:
+                        # TODO: really write something?
+                        ares.add(BIOCLIM['bioclimVariable'], BIOCLIM[layer])
+                else:
+                    match = re.match(r'.*bioclim.*(\d\d).tif', submd['filename'])
+                    if match:
+                        bid = match.group(1)
+                        ares.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
+                # emsc, gcm, year, layer
+            # origin, 'Pixel Size', bounds
+            res.add(BCCPROP['hasArchiveItem'], ares)
 
+    def update_metadata(self, content, md):
+        # CSV: bounds, headers, rows, species (set)
+        graph = IGraph(content)
+        res = Resource(graph, graph.identifier)
+
+        #bounds = md.get('boutds')
+        rows = md.get('rows')
+        if rows:
+            res.add(BCCPROP['rows'], Literal(rows))
+        pass
 
 
 # '_files': {u'_field_file_bkgd.csv':

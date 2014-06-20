@@ -10,3 +10,5 @@ TN = Namespace(u"http://rs.tdwg.org/ontology/voc/TaxonName#")
 # DWC Terms
 DWC = Namespace(u"http://rs.tdwg.org/dwc/terms/")
 # DWC Core http://rs.tdwg.org/dwc/dwcore/
+GLM = Namespace(u"http://www.opengis.net/gml/")
+EPSG = Namespace(u"http://www.opengis.net/def/crs/EPSG/0/")
