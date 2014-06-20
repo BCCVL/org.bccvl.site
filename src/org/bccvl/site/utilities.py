@@ -26,6 +26,7 @@ from plone import api
 from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject
 from plone.dexterity.utils import createContentInContainer
+from Products.ZCatalog.interfaces import ICatalogBrain
 from rdflib import RDF, RDFS, Literal, OWL
 import tempfile
 from zope.annotation.interfaces import IAnnotations
@@ -147,6 +148,13 @@ def RemoteDatasetDownloadInfo(context):
         'alturl': (context.remoteUrl,),
         'filename': os.path.basename(url.path)
     }
+
+@implementer(IDownloadInfo)
+@adapter(ICatalogBrain)
+def CatalogBrainDownloadInfo(brain):
+    context = brain.getObject()
+    return IDownloadInfo(context)
+    # brain has at least getURL, getRemoteUrl
 
 
 @implementer(IJobTracker)

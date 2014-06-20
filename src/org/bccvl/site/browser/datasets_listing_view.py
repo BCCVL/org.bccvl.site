@@ -3,6 +3,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
 from org.bccvl.site.content.interfaces import IDataset
+from org.bccvl.site.interfaces import IDownloadInfo
 from Products.CMFCore.utils import getToolByName
 from zope.security import checkPermission
 from zope.component import getMultiAdapter
@@ -56,8 +57,8 @@ class DatasetsListingView(BrowserView):
             if wf.isActionSupported(itemob, transition):
                 return transition
 
-    def download_url(self):
-        pass
+    def get_download_info(self, item):
+        return IDownloadInfo(item)
 
     def can_modify(self, itemob):
         return checkPermission('cmf.ModifyPortalContent', itemob)

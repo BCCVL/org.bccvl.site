@@ -70,6 +70,10 @@
         factory=".utilities.RemoteDatasetDownloadInfo"
         />
 
+    <adapter
+        factory=".utilities.CatalogBrainDownloadInfo"
+        />
+
     <!-- index relevant RDF properties -->
     <adapter
         factory=".indexers.dataset_BCCDataGenre"
