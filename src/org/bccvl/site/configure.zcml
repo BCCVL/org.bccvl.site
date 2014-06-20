@@ -172,8 +172,8 @@
         />
 
     <utility
-        component=".transmogrify.FileMetadataUpdater"
-        name="org.bccvl.site.transmogrify.filemetadataupdater"
+        component=".transmogrify.FileMetadataToRDF"
+        name="org.bccvl.site.transmogrify.filemetadatardf"
         />
 
     <utility
