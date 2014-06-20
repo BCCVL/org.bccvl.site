@@ -10,12 +10,12 @@
 
 <metal:content-core fill-slot="body"
 	            tal:define="contentFilter view/contentFilter">
-<!-- other view/request parameters:
+    <!-- other view/request parameters:
         limit_display ... batch_size
         more_url
         folderContents ... either passed in or queried from catalog
         b_start
-        -->
+    -->
 
     <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
 
@@ -118,8 +118,9 @@
                         <!-- Download -->
                         <td>
                           <a href="#"
-                             tal:condition="python: item.job_state in ('COMPLETED',)"
-                             tal:attributes="href string:${item_url}/@@download/file">Download</a>
+                             tal:condition="python: item.job_state in ('COMPLETED', None, '')"
+                             tal:define="dlinfo python: view.get_download_info(item)"
+                             tal:attributes="href dlinfo/url">Download</a>
                         </td>
                     </tr>
 

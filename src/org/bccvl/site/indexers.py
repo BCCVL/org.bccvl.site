@@ -3,6 +3,8 @@ from plone.indexer.interfaces import IIndexer
 from zope.interface import implementer
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.interfaces import IExperiment
+from org.bccvl.site.content.interfaces import IBlobDataset
+from org.bccvl.site.content.interfaces import IRemoteDataset
 from org.bccvl.site.interfaces import IJobTracker
 from gu.z3cform.rdf.interfaces import IGraph
 from org.bccvl.site.browser.xmlrpc import getbiolayermetadata
@@ -77,9 +79,13 @@ class JobStateIndexer(object):
         #       Yes: COMPLETED
         #       No: FAILED
         state = jt.state
-        if not state and IDataset.providedBy(self.context):
-            # we have no state, may happen for imported datasets,
-            # let's check if we have a file
-            if self.context.file is not None:
-                state = 'COMPLETED'
+        if not state:
+            if IBlobDataset.providedBy(self.context):
+                # we have no state, may happen for imported datasets,
+                # let's check if we have a file
+                if self.context.file is not None:
+                    state = 'COMPLETED'
+            elif IRemoteDataset.providedBy(self.context):
+                if self.context.remoteUrl:
+                    state = 'COMPLETED'
         return state
