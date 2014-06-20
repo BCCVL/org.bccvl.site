@@ -151,7 +151,7 @@ SELECT ?bvar ?blabel ?fnam WHERE {{
                             'filename': unicode(row['fnam'])}
     return ret
 
-
+# TODO: this gets called to often... cache? optimise?
 def getbiolayermetadata(ds):
     # TODO: use a sparql query to get all infos in one go...
     #       could get layer friendly names as well
@@ -161,12 +161,19 @@ def getbiolayermetadata(ds):
     biovocab = getUtility(IVocabularyFactory,
                           name='org.bccvl.site.BioclimVocabulary')(ds)
     g = IGraph(ds)
-    for ref in g.objects(g.identifier, BCCPROP['hasArchiveItem']):
-        item = handler.get(ref)
-        bvar = item.value(item.identifier, BIOCLIM['bioclimVariable'])
-        ret[bvar] = {'label': unicode(biovocab.getTerm(bvar).title),
-                     'filename': unicode(item.value(item.identifier,
-                                                    NFO['fileName']))}
+    r = Resource(g, g.identifier)
+    for ref in r.objects(BCCPROP['hasArchiveItem']):
+        # TODO: is this a good test for empty resource?
+        obj = next(ref.objects(), None)
+        if obj is None:
+            ref = Resource(handler.get(ref.identifier), ref.identifier)
+        bvar = ref.value(BIOCLIM['bioclimVariable'])
+        if bvar:
+            ret[bvar.identifier] = {
+                'filename': unicode(ref.value(NFO['fileName'])),
+                'label': unicode(biovocab.getTerm(bvar.identifier).title)
+            }
+
     return ret
 
 
