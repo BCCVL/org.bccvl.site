@@ -145,6 +145,7 @@ class DataSetManager(BrowserView):
                            'title': brain.Title})
         return result
 
+    # TODO: specific for one view (add projection)
     @returnwrapper
     def getFutureClimateDatasets(self):
         # TODO: should move this to Projection Add Form and let form
@@ -181,6 +182,25 @@ class DataSetManager(BrowserView):
             sort_on='sortable_title')  # date?
         sdms = []
         for sdmbrain in sdmbrains:
+            # TODO: this loop over loop is inefficient
+            # TODO: this pattern is all the same across, get XXXDatasets
+            datasets = []
+            for dsbrain in pc.searchResults(
+                    path=sdmbrain.getPath(),
+                    BCCDataGenre=BCCVOCAB['DataGenreFP']):
+                # get required metadata about dataset
+                datasets.append({
+                    "title": dsbrain.Title,
+                    "uuid": dsbrain.UID,
+                    "url": dsbrain.getURL(),
+                })
+            sdms.append({
+                "title": sdmbrain.Title,
+                "uuid": sdmbrain.UID,
+                "url": sdmbrain.getURL(),
+                "datasets": datasets
+            })
+
             sdms.append({
                 "name": sdmbrain.Title,
                 "uuid": sdmbrain.UID,
@@ -190,15 +210,29 @@ class DataSetManager(BrowserView):
     # TODO: this is rather experiment API
     @returnwrapper
     def getBiodiverseDatasets(self):
+        # TODO: there must be a way to do this with lfewer queries
         pc = getToolByName(self.context, 'portal_catalog')
         biodiversebrains = pc.searchResults(
             object_provides=IBiodiverseExperiment.__identifier__,
             sort_on='sortable_title')  # date?
         biodiverses = []
         for biodiversebrain in biodiversebrains:
+            # search for datasets with this experiment
+            datasets = []
+            for dsbrain in pc.searchResults(
+                    path=biodiversebrain.getPath(),
+                    BCCDataGenre=BCCVOCAB['DataGenreFP']):
+                # get required metadata about dataset
+                datasets.append({
+                    "title": dsbrain.Title,
+                    "uuid": dsbrain.UID,
+                    "url": dsbrain.getURL(),
+                })
             biodiverses.append({
-                "name": biodiversebrain.Title,
+                "title": biodiversebrain.Title,
                 "uuid": biodiversebrain.UID,
+                "url": biodiversebrain.getURL(),
+                "datasets": datasets
             })
         return {'biodiverses': biodiverses}
 
