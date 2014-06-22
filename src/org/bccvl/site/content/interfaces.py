@@ -18,14 +18,15 @@ class IBlobDataset(IDataset):
     file = NamedBlobFile(
         title=_(u"File"),
         description=_(u"Data content"),
-        required=True)
+        required=True
+    )
 
     form.omitted('thresholds')
     thresholds = Dict(
         title=_(u"Thresholds"),
         default=None,
         required=False
-        )
+    )
 
     # fixed fields
     # RDFURIChoiceField(
@@ -58,7 +59,7 @@ class IRemoteDataset(IDataset):
         description=u'',
         required=True,
         default=u'http://',
-        )
+    )
 
 
 class IExperiment(Interface):
@@ -72,7 +73,7 @@ class ISDMExperiment(IExperiment):
         default=None,
         vocabulary='org.bccvl.site.ResolutionVocabulary',
         required=True,
-        )
+    )
 
     form.widget(functions=CheckBoxFieldWidget)
     functions = List(
@@ -119,7 +120,7 @@ class ISDMExperiment(IExperiment):
         value_type=List(Choice(source=vocabularies.envirolayer_source),
                         unique=False),
         required=True,
-        )
+    )
 
 
 class IProjectionExperiment(IExperiment):
@@ -130,7 +131,7 @@ class IProjectionExperiment(IExperiment):
         default=None,
         vocabulary='org.bccvl.site.ResolutionVocabulary',
         required=False,
-        )
+    )
 
     form.widget(species_distribution_models=
                 'org.bccvl.site.browser.widgets.DatasetsRadioFieldWidget')
@@ -180,7 +181,7 @@ class IBiodiverseExperiment(IExperiment):
         default=None,
         vocabulary='org.bccvl.site.ResolutionVocabulary',
         required=False,
-        )
+    )
 
     # options: use dicts or other things here
     #          number of items in both lists must match
@@ -198,7 +199,7 @@ class IBiodiverseExperiment(IExperiment):
         default=5000,
         required=True,
         values=(5000, 10000, 20000, 50000),
-        )
+    )
 
     # ->  interface,  content class? , profile,  add / edit / display / result view
     # ->  perl script ... exec env
@@ -211,5 +212,10 @@ class IFunctionalResponseExperiment(IExperiment):
 
 
 class IEnsembleExperiment(IExperiment):
+
+    pass
+
+
+class ISpeciesTraitsExperiment(IExperiment):
 
     pass

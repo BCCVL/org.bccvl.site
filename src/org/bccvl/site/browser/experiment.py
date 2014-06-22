@@ -456,3 +456,15 @@ class EnsembleAdd(Add):
 class EnsembleAddView(add.DefaultAddView):
 
     form = EnsembleAdd
+
+
+class SpeciesTraitsAdd(Add):
+
+    def validateAction(self, data):
+        # TODO: check data ...
+        pass
+
+
+class SpeciesTraitsAddView(add.DefaultAddView):
+
+    form = SpeciesTraitsAdd

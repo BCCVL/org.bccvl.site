@@ -159,4 +159,19 @@
             />
     </class>
 
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             Products.CMFDefault.interfaces.ICMFDefaultSkin
+             plone.dexterity.interfaces.IDexterityFTI"
+        provides="zope.publisher.interfaces.browser.IBrowserPage"
+        factory=".experiment.SpeciesTraitsAddView"
+        name="org.bccvl.content.speciestraitsexperiment"
+        />
+    <class class=".experiment.SpeciesTraitsAddView">
+        <require
+            permission="org.bccvl.AddExperiment"
+            interface="zope.publisher.interfaces.browser.IBrowserPage"
+            />
+    </class>
+
 </configure>

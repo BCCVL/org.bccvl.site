@@ -15,7 +15,8 @@ from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
-    IFunctionalResponseExperiment, IEnsembleExperiment)
+    IFunctionalResponseExperiment, IEnsembleExperiment,
+    ISpeciesTraitsExperiment)
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
 from org.bccvl.site.namespace import DWC, BCCPROP
@@ -468,6 +469,14 @@ class FunctionalResponseJobTracker(MultiJobTracker):
 
 @adapter(IEnsembleExperiment)
 class EnsembleJobTracker(MultiJobTracker):
+
+    def start_job(self, request):
+        # TODO: split biodiverse job across years, gcm, emsc
+        return 'error', u'Not yet implemented'
+
+
+@adapter(ISpeciesTraitsExperiment)
+class SpeciesTraitsJobTracker(MultiJobTracker):
 
     def start_job(self, request):
         # TODO: split biodiverse job across years, gcm, emsc
