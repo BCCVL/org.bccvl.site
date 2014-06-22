@@ -121,7 +121,9 @@ def getbiolayermetadata(ds):
                 label = unicode(bvar.idetifier)
             ret[bvar.identifier] = {
                 'filename': unicode(ref.value(NFO['fileName'])),
-                'label': label
+                'label': label,
+                'min': ref.value(BCCPROP['min'], None),
+                'max': ref.value(BCCPROP['max'], None)
             }
 
     return ret
