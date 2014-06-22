@@ -23,12 +23,21 @@
     <browser:view
         name="dm"
         class=".xmlrpc.DataSetManager"
-        allowed_attributes="getMetadata queryDataset getVocabulary
+        allowed_attributes="query metadata
+                            getMetadata queryDataset getVocabulary
                             getFutureClimateDatasets getSDMDatasets
                             getBiodiverseDatasets
                             getProjectionDatasets getThresholds"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="zope2.View" >
+
+        <browser:page
+            name="query"
+            attribute="query"/>
+
+        <browser:page
+            name="metadata"
+            attribute="metadata"/>
 
         <browser:page
             name="getMetadata"

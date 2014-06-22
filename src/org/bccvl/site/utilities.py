@@ -104,10 +104,6 @@ class RDFDataMapper(object):
             if not graph.value(graph.identifier, prop):
                 graph.add((graph.identifier, prop, val))
 
-# FIXME: update JOB Info stuff.... for message queueing
-#
-# FIXME: define job state dictionary and possible states (esp. FINISHED states)
-
 
 @implementer(IDownloadInfo)
 @adapter(IDataset)
@@ -120,8 +116,11 @@ def DatasetDownloadInfo(context):
         # TODO: What to do here? the download url doesn't make sense
         #        for now use id as filename
         filename = context.getId()
+        contenttype = context.format
     else:
         filename = context.file.filename
+        # TODO: context.format should look at file.contentType
+        contenttype = context.file.contentType
     # generate downloaurl
     downloadurl = '{}/@@download/file/{}'.format(
         context.absolute_url(),
@@ -135,7 +134,8 @@ def DatasetDownloadInfo(context):
     return {
         'url': downloadurl,
         'alturl': (internalurl,),
-        'filename': filename
+        'filename': filename,
+        'contenttype': contenttype or 'application/octet-stream',
     }
 
 
@@ -146,8 +146,10 @@ def RemoteDatasetDownloadInfo(context):
     return {
         'url': context.remoteUrl,
         'alturl': (context.remoteUrl,),
-        'filename': os.path.basename(url.path)
+        'filename': os.path.basename(url.path),
+        'contenttype': context.format or 'application/octet-stream'
     }
+
 
 @implementer(IDownloadInfo)
 @adapter(ICatalogBrain)
@@ -157,6 +159,9 @@ def CatalogBrainDownloadInfo(brain):
     # brain has at least getURL, getRemoteUrl
 
 
+# FIXME: update JOB Info stuff.... for message queueing
+#
+# FIXME: define job state dictionary and possible states (esp. FINISHED states)
 @implementer(IJobTracker)
 class JobTracker(object):
     # TODO: maybe split state and progress....

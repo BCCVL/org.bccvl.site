@@ -10,7 +10,8 @@ from ordf.graph import Graph
 from ordf.namespace import DC
 from rdflib import RDF, URIRef, Literal, OWL
 from rdflib.resource import Resource
-from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GLM, EPSG, BIOCLIM)
+from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GLM, EPSG,
+                                      BIOCLIM)
 from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
@@ -107,20 +108,22 @@ class ALASource(object):
                     'file': 'data.csv',
                     'contentype': 'text/csv',
                     'filename': '{}.csv'.format(self.lsid),
-                    },
+                },
+                # TODO: not necessary to use '_files' with '_rdf';
+                #       _rdf is custom already
+                #       -> same for _filemetadata ?
                 '_rdf': {
                     'file': 'rdf.ttl',
                     'contenttype': 'text/turtle',
-                    },
+                },
                 '_files': {
                     'data.csv': {
                         'data': open(csv).read()
-                        },
+                    },
                     'rdf.ttl': {
                         'data': rdf.serialize(format='turtle')
-                        }
                     }
-                }
+                }}
         # if we have an id use it to possibly update existing content
         if self.id:
             item['_path'] = self.id
@@ -239,9 +242,12 @@ class FileMetadataToRDF(object):
             if 'remoteUrl' in item:
                 # TODO: assumse, that there is a _file entry to it which has
                 #       the name for _filemetadata dictionary
-                filename = item.get('_files', {}).get(item.get('remoteUrl'), {}).get('filename')
+                _files = item.get('_files', {}).get(item.get('remoteUrl'), {})
+                filename = _files.get('filename')
+                contenttype = _files.get('contenttype', 'application/octet-stream')
             elif 'file' in item:
                 filename = item.get('file', {}).get('file')  # TODO: or is this filename?
+                contenttype = item.get('file', {}).get('contenttype')
             if not filename:
                 # there should be no other None key
                 yield item
@@ -274,6 +280,11 @@ class FileMetadataToRDF(object):
                 continue
 
             # get or create rdf graph
+            # TODO: Ending up here means we have a file as main content
+            #       let's set the format attribute to this mime type
+            #       ? if there is none set yet?
+            if contenttype and content.format != contenttype:
+                content.format = contenttype
             self.update_archive_items(content, filemd)
             self.update_metadata(content, filemd)
 
@@ -356,6 +367,9 @@ class FileMetadataToRDF(object):
             # origin, 'Pixel Size', bounds
             res.add(BCCPROP['hasArchiveItem'], ares)
 
+        # mark graph as modified
+        getUtility(IORDF).getHandler().put(graph)
+
     def update_metadata(self, content, md):
         # CSV: bounds, headers, rows, species (set)
         graph = IGraph(content)
@@ -365,7 +379,11 @@ class FileMetadataToRDF(object):
         rows = md.get('rows')
         if rows:
             res.add(BCCPROP['rows'], Literal(rows))
-        pass
+            # mark graph as modified - we have a copy of the graph... if anyone else
+            #     wants to see changes we have to put our copy back
+            getUtility(IORDF).getHandler().put(graph)
+            import transaction
+            transaction.commit()
 
 
 # '_files': {u'_field_file_bkgd.csv':

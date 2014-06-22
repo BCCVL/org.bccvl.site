@@ -1,5 +1,4 @@
 import unittest2 as unittest
-from zope.annotation.interfaces import IAnnotations
 from org.bccvl.site import defaults
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from org.bccvl.site.content.interfaces import IDataset
@@ -73,9 +72,12 @@ class DatasetSetupTest(unittest.TestCase):
     def test_filemetadata(self):
         ds = self.get_dataset(defaults.DATASETS_SPECIES_FOLDER_ID,
                               'ABT', 'occurrence.csv')
-        md = IAnnotations(ds).get('org.bccvl.site.filemetadata', {}).get('occurrence.csv')
-        self.assertEqual(md['rows'], 3)
-        self.assertEqual(len(md['bounds']), 4)
-        self.assertEqual(md['headers'], ['Name', 'lon', 'lat'])
-        self.assertIn('species', md)
-
+        from gu.z3cform.rdf.interfaces import IGraph
+        from rdflib.resource import Resource
+        from org.bccvl.site.namespace import BCCPROP
+        graph = IGraph(ds)
+        mdres = Resource(graph, graph.identifier)
+        self.assertEqual(mdres.value(BCCPROP['rows']).toPython(), 3)
+        #self.assertEqual(md.value(BCCPROP['bounds']), len(bounds)==4)
+        #self.assertEqual(md.value(BCCPROP['headers']), ['Name', 'lon', 'lat'])
+        #self.assertIn('species', md) # check if species attribute exists

@@ -16,6 +16,14 @@ class Dataset(Item):
 
     pass
 
+    @property
+    def format(self):
+        if self.file is not None:
+            return self.file.contentType
+        # TODO: is this a good fallback?
+        #       that one is used in RFC822 marshaller
+        return self.conent_type()
+
 
 class ISpeciesDataset(form.Schema):
     """
