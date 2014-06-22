@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <ontologies>
-  <local file="fresnel.ttl"
-         uri="http://namespaces.gu.edu.au/z3cform/fresnel#" />
   <external file="bccprop.ttl"
             uri="http://namespaces.bccvl.org.au/prop#" />
   <external file="bccvocab.ttl"

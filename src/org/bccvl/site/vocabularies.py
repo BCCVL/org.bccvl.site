@@ -217,7 +217,7 @@ class SparqlDataSetSourceBinder(object):
             # TODO: uri could be None???
             # TODO: maybe rebuild this query to fetch all labels from rdf
             #       and fetch all uris from catalog and do a set intersection
-            #       all layers could be a 2nd vocabulary? (fresnel vocab?)
+            #       all layers could be a 2nd vocabulary?
             # FIXME: order in sparqlquery instead of sorted call afterwards
             for uri in urirefs:
                 query.append('{ BIND(%(uri)s as ?uri) '

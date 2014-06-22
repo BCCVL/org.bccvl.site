@@ -140,13 +140,6 @@
       <element key="Folder">plone.content.folderView</element>
     </value>
   </record>
-  <!-- gu.plone.rdf settings -->
-  <record name="gu.plone.rdf.interfaces.IRDFSettings.fresnel_graph_uri" interface="gu.plone.rdf.interfaces.IRDFSettings" field="fresnel_graph_uri">
-    <field type="plone.registry.field.URI">
-      <title>Fresnel Graph URI</title>
-    </field>
-    <value>http://namespaces.gu.edu.au/z3cform/fresnel#</value>
-  </record>
   <!-- dexterity.membrane settings -->
   <record name="dexterity.membrane.behavior.settings.IDexterityMembraneSettings.use_email_as_username">
     <field type="plone.registry.field.Bool">

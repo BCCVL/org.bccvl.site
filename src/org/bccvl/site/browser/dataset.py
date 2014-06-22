@@ -59,7 +59,7 @@ class DatasetDisplayView(DatasetFieldMixin, DefaultView):
 
 # FIXME: Turn this whole form into something re-usable
 #        e.g. could be used within a widget that renders a button
-#             and won't show up on add forms. (could easily be configure via Fresnel)
+#             and won't show up on add forms.
 #             js turns the button into an ajax form and non-js uses redirects
 
 
