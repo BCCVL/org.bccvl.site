@@ -123,16 +123,6 @@ class BCCVLLayer(PloneSandboxLayer):
         z2.uninstallProduct(app, 'plone.app.folderui')
         z2.uninstallProduct(app, 'Products.membrane')
 
-    def updateMetadata(self, context, mdgraph):
-        rdfhandler = getUtility(IORDF).getHandler()
-        # TODO: the transaction should take care of
-        #       donig the diff
-        cc = rdfhandler.context(user='Importer',
-                                reason='Test data')
-        cc.add(mdgraph)
-        cc.commit()
-        context.reindexObject()
-
     def addTestContent(self, portal):
         transmogrifier = Transmogrifier(portal)
         transmogrifier(u'org.bccvl.site.dataimport',
