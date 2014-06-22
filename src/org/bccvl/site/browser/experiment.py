@@ -13,7 +13,7 @@ from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
 from plone.autoform.utils import processFields
 from plone.supermodel import loadString
-from org.bccvl.site.api import QueryAPI
+from org.bccvl.site.vocabularies import QueryAPI
 from z3c.form.interfaces import DISPLAY_MODE
 from z3c.form.error import MultipleErrors
 from zope.component import getMultiAdapter
@@ -290,7 +290,6 @@ class SDMAdd(ParamGroupMixin, Add):
 
     def occurrences_mapping(self):
         import json
-        from org.bccvl.site.api import QueryAPI
         api = QueryAPI(self.context)
         mapping = dict()
         for brain in api.getSpeciesOccurrenceDatasets():
