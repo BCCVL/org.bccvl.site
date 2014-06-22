@@ -7,7 +7,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit
 from org.bccvl.site import MessageFactory as _
-from org.bccvl.site.browser.xmlrpc import getdsmetadata
+from org.bccvl.site.api.dataset import getdsmetadata
 from zope.interface import Invalid
 from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
@@ -360,7 +360,7 @@ class ProjectionAdd(Add):
                                         BCCPROP['resolution'])
             data['resolution'] = resolution
 
-        from org.bccvl.site.content.experiment import find_projections
+        from org.bccvl.site.api.dataset import find_projections
         result = find_projections(self.context, data.get('emission_scenarios'),
                                   data.get('climate_models'),
                                   data.get('years'))

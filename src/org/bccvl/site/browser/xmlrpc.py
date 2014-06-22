@@ -14,7 +14,6 @@ from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
 from org.bccvl.site.content.dataset import IDataset
-from org.bccvl.site.content.experiment import find_projections
 from org.bccvl.site import defaults
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO
 from ordf.namespace import DC
@@ -23,7 +22,6 @@ from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from zope.component import getUtility, queryUtility
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
-from gu.plone.rdf.repositorymetadata import getContentUri
 import json
 from Products.statusmessages.interfaces import IStatusMessage
 from org.bccvl.site.browser.ws import IDataMover, IALAService
@@ -32,6 +30,8 @@ from rdflib.resource import Resource
 from rdflib import Literal, URIRef
 from gu.z3cform.rdf.utils import Period
 from decimal import Decimal
+from org.bccvl.site.api.dataset import getdsmetadata
+from org.bccvl.site.api import dataset
 
 
 LOG = logging.getLogger(__name__)
@@ -94,98 +94,24 @@ def returnwrapper(f, *args, **kw):
     return ret
 
 
-def getdsmetadata(ds):
-    # extract info about files
-    md = {
-        'url': ds.absolute_url(),
-        'id': IUUID(ds),
-        'description': ds.description,
-        'mimetype': None,
-        'filename': None,
-        'file': None,
-        'layers': getbiolayermetadata(ds)
-        }
-    info = IDownloadInfo(ds)
-    if ds.file:
-        md.update({
-            'mimetype': ds.file.contentType,
-            'filename': ds.file.filename,
-            'file': info['url'],
-            'vizurl': info['alturl'][0]
-        })
-    return md
-
-
-def getbiolayermetadata_query(ds):
-    # TODO: use a sparql query to get all infos in one go...
-    #       could get layer friendly names as well
-    # FIXME: this here does not respect uncomitted changes
-    query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ns: <http://www.bccvl.org.au/individual/>
-PREFIX cvocab: <http://namespaces.griffith.edu.au/collection_vocab#>
-PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
-PREFIX bioclim: <http://namespaces.bccvl.org.au/bioclim#>
-PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
-
-
-SELECT ?bvar ?blabel ?fnam WHERE {{
-  Graph ?g {{
-  <{subject}> a cvocab:Dataset .
-  <{subject}> bccprop:hasArchiveItem ?ar .
-  }}
-  Graph ?a {{
-    ?ar bioclim:bioclimVariable ?bvar .
-    ?ar nfo:fileName ?fnam .
-  }}
-  Graph ?b {{
-    ?bvar rdfs:label ?blabel .
-  }}
-}}"""
-    # FIXME: need to clean up getContentUri function
-    uri = getContentUri(ds)
-    q = query.format(subject=uri)
-    ret = {}
-    handler = getUtility(IORDF).getHandler()
-    for row in handler.query(q):
-        ret[row['bvar']] = {'label': unicode(row['blabel']),
-                            'filename': unicode(row['fnam'])}
-    return ret
-
-# TODO: this gets called to often... cache? optimise?
-def getbiolayermetadata(ds):
-    # TODO: use a sparql query to get all infos in one go...
-    #       could get layer friendly names as well
-    # FIXME: this here is slow compared to the query version above
-    ret = {}
-    handler = getUtility(IORDF).getHandler()
-    biovocab = getUtility(IVocabularyFactory,
-                          name='org.bccvl.site.BioclimVocabulary')(ds)
-    g = IGraph(ds)
-    r = Resource(g, g.identifier)
-    for ref in r.objects(BCCPROP['hasArchiveItem']):
-        # TODO: is this a good test for empty resource?
-        obj = next(ref.objects(), None)
-        if obj is None:
-            ref = Resource(handler.get(ref.identifier), ref.identifier)
-        bvar = ref.value(BIOCLIM['bioclimVariable'])
-        if bvar:
-            ret[bvar.identifier] = {
-                'filename': unicode(ref.value(NFO['fileName'])),
-                'label': unicode(biovocab.getTerm(bvar.identifier).title)
-            }
-
-    return ret
-
-
 class DataSetManager(BrowserView):
     # DS Manager API on Site Root
 
     @returnwrapper
-    def getMetadata(self, datasetid):
-        ds = uuidToObject(datasetid)
+    # TODO: this method can be removed and use query(UID='') instead
+    def metadata(self, datasetid):
+        query = {'UID': datasetid}
+        ds = dataset.query(self.context, **query)
+        if ds:
+            # we have a generator, let's pick the first result
+            # metadata is extracted by query
+            ds = next(ds, None)
         if ds is None:
             raise NotFound(self.context,  datasetid,  self.request)
-        return getdsmetadata(ds)
+        return ds
+
+    # TODO: backwards compatible name
+    getMetadata = metadata
 
     @returnwrapper
     def queryDataset(self, genre=None, layers=None):
@@ -202,7 +128,7 @@ class DataSetManager(BrowserView):
             params['BCCEnviroLayer'] = {'query': [URIRef(l) for l in layers],
                                         'operator': 'and'}
         result = []
-        for brain in pc.searchResults(**params):
+        for brain in dataset.query(self.context, True, **params):
             result.append({'uuid': brain.UID,
                            'title': brain.Title})
         return result
@@ -231,9 +157,10 @@ class DataSetManager(BrowserView):
         emsc = [URIRef(x) for x in emsc]
         gcms = [URIRef(x) for x in gcms]
         # 5. search
-        res = find_projections(self.context, emsc, gcms, years)
+        res = dataset.find_projections(self.context, emsc, gcms, years)
         return len(res)
 
+    # TODO: this is rather experiment API
     @returnwrapper
     def getSDMDatasets(self):
         pc = getToolByName(self.context, 'portal_catalog')
@@ -248,6 +175,7 @@ class DataSetManager(BrowserView):
             })
         return {'sdms': sdms}
 
+    # TODO: this is rather experiment API
     @returnwrapper
     def getBiodiverseDatasets(self):
         pc = getToolByName(self.context, 'portal_catalog')
@@ -262,6 +190,8 @@ class DataSetManager(BrowserView):
             })
         return {'biodiverses': biodiverses}
 
+    # TODO: This method is very specific to UI in use,...
+    #       maybe move to UI specific part?
     @returnwrapper
     def getProjectionDatasets(self):
         pc = getToolByName(self.context, 'portal_catalog')
@@ -321,6 +251,7 @@ class DataSetManager(BrowserView):
         # wrap in projections neccesarry?
         return {'projections': projections}
 
+    # TODO: this is generic api ....
     @returnwrapper
     def getVocabulary(self, name):
         # TODO: check if there are vocabularies that need to be protected

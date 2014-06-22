@@ -7,7 +7,7 @@ from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
 from org.bccvl.site.interfaces import IJobTracker
 from gu.z3cform.rdf.interfaces import IGraph
-from org.bccvl.site.browser.xmlrpc import getbiolayermetadata
+from org.bccvl.site.api.dataset import getbiolayermetadata
 from .namespace import BCCPROP, BCCVOCAB, BIOCLIM
 
 

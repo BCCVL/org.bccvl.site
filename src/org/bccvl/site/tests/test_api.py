@@ -68,5 +68,11 @@ def test_suite():
                                      tearDown=tearDownApiTests,
                                      optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE),
                 layer=BCCVL_FUNCTIONAL_TESTING),
+        layered(doctest.DocFileSuite('dataset.txt',
+                                     package='org.bccvl.site.api',
+                                     setUp=setUpApiTests,
+                                     tearDown=tearDownApiTests,
+                                     optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE),
+                layer=BCCVL_FUNCTIONAL_TESTING),
     ])
     return suite

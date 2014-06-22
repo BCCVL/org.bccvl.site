@@ -1,0 +1,34 @@
+
+First import some necessary stuff.
+
+    >>> import xmlrpclib
+    >>> from pprint import pprint
+    >>> from org.bccvl.site import defaults
+    >>> from plone.uuid.interfaces import IUUID
+    >>> portal = layer['portal']
+
+Get our dataset object set up in the test fixture.
+
+    >>> abt = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']['occurrence.csv']
+    >>> abtuid = IUUID(abt)
+
+
+Now we can call some methods on the dataset object. We can access the
+API at the absolute url of the object + '/dm' appended to it.
+Once we have a XMLRPC proxy we can just call the available methods.
+
+    >>> abt.absolute_url()
+    'http://localhost:.../plone/datasets/species/ABT/occurrence.csv'
+    >>> proxy = xmlrpclib.ServerProxy(abt.absolute_url() + '/dm')
+    >>> res = proxy.getMetadata()
+    >>> pprint(res)
+    {'description': '',
+     'file': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
+     'filename': 'occurrence.csv',
+     'id': '...',
+     'layers': {},
+     'mimetype': 'text/csv',
+     'url': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv',
+     'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
+    >>> res['id'] == abtuid
+    True
