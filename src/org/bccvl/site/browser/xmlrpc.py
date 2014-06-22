@@ -8,8 +8,7 @@ from zope.publisher.interfaces import NotFound
 #from functools import wraps
 from decorator import decorator
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
-from plone.uuid.interfaces import IUUID
-from org.bccvl.site.interfaces import IJobTracker, IDownloadInfo
+from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
@@ -21,7 +20,7 @@ import logging
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from zope.component import getUtility, queryUtility
 from zope.schema.vocabulary import getVocabularyRegistry
-from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
+from zope.schema.interfaces import IContextSourceBinder
 import json
 from Products.statusmessages.interfaces import IStatusMessage
 from org.bccvl.site.browser.ws import IDataMover, IALAService
@@ -114,8 +113,21 @@ class DataSetManager(BrowserView):
     getMetadata = metadata
 
     @returnwrapper
+    def query(self):
+        # TODO: remove some parameters from request?
+        #       e.g only matching with catalog indices
+        #           only certain indices
+        #       remove batching and internal parameters like brains
+        query = self.request.form
+        # TODO: should optimise this. e.g. return generator,
+        objs = []
+        for item in dataset.query(self.context, **query):
+            objs.append(item)
+        return objs
+
+    @returnwrapper
+    # TODO: need a replacement for this. it's a convenience function for UI
     def queryDataset(self, genre=None, layers=None):
-        pc = getToolByName(self.context, 'portal_catalog')
         params = {'object_provides': IDataset.__identifier__}
         if genre:
             if not isinstance(genre, (tuple, list)):
