@@ -5,8 +5,7 @@ from org.bccvl.site.api import dataset
 # BBB: backwards compatible import
 from .interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
-    IFunctionalResponseExperiment,  IEnsembleExperiment,
-    ISpeciesTraitsExperiment)
+    IEnsembleExperiment, ISpeciesTraitsExperiment)
 
 
 @implementer(ISDMExperiment)
@@ -30,12 +29,6 @@ class ProjectionExperiment(Container):
 class BiodiverseExperiment(Container):
 
     functions = ('org.bccvl.compute.biodiverse.execute', )
-
-
-@implementer(IFunctionalResponseExperiment)
-class FunctionalResponseExperiment(Container):
-
-    functions = ('org.bccvl.compute.functresp.execute', )
 
 
 @implementer(IEnsembleExperiment)

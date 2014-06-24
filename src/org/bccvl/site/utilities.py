@@ -15,8 +15,7 @@ from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
-    IFunctionalResponseExperiment, IEnsembleExperiment,
-    ISpeciesTraitsExperiment)
+    IEnsembleExperiment, ISpeciesTraitsExperiment)
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
 from org.bccvl.site.namespace import DWC, BCCPROP
@@ -457,14 +456,6 @@ class BiodiverseJobTracker(MultiJobTracker):
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
-
-
-@adapter(IFunctionalResponseExperiment)
-class FunctionalResponseJobTracker(MultiJobTracker):
-
-    def start_job(self, request):
-        # TODO: split biodiverse job across years, gcm, emsc
-        return 'error', u'Not yet implemented'
 
 
 @adapter(IEnsembleExperiment)

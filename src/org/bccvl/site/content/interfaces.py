@@ -206,11 +206,6 @@ class IBiodiverseExperiment(IExperiment):
     # =>  species metadata filenaming
 
 
-class IFunctionalResponseExperiment(IExperiment):
-
-    pass
-
-
 class IEnsembleExperiment(IExperiment):
 
     pass

@@ -153,15 +153,6 @@
         factory=".utilities.BiodiverseJobTracker"/>
 
     <adapter
-        factory=".utilities.FunctionalResponseJobTracker"/>
-
-    <adapter
-        factory=".utilities.EnsembleJobTracker"/>
-
-    <adapter
-        factory=".utilities.SpeciesTraitsJobTracker"/>
-
-    <adapter
         factory=".utilities.ALAJobTracker"/>
 
     <utility

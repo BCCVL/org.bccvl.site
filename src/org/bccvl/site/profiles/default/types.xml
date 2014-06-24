@@ -5,7 +5,6 @@
   <object name="org.bccvl.content.sdmexperiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.projectionexperiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.biodiverseexperiment" meta_type="Dexterity FTI"/>
-  <object name="org.bccvl.content.functionalresponseexperiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.ensemble" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.speciestraitsexperiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.function" meta_type="Dexterity FTI"/>
@@ -13,4 +12,5 @@
   <object name="org.bccvl.content.dataset" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.remotedataset" meta_type="Dexterity FTI"/>
   <object name="Folder" meta_type="Dexterity FTI"/>
+  <object name="org.bccvl.content.functionalresponseexperiment" meta_type="Dexterity FTI" remove="True" />
 </object>
