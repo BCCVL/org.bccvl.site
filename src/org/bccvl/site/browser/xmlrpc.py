@@ -110,7 +110,9 @@ class DataSetManager(BrowserView):
         return ds
 
     # TODO: backwards compatible name
-    getMetadata = metadata
+    @returnwrapper
+    def getMetadata(self, datasetid):
+        return self.metadata(datasetid)
 
     @returnwrapper
     def query(self):
