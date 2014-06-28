@@ -26,8 +26,7 @@
             menu, title
          Page:
             Pages, PagesPage -->
-    <!-- TODO: check if Public macros would allow unauthenticated
-    acces? -->
+    <!-- TODO: check if Public permission is correct here -->
     <browser:page
         name="dataset_tools"
         for="*"
@@ -39,12 +38,18 @@
     <browser:page
         name="datasets-macros"
         for="*"
+        class="plone.z3cform.templates.Macros"
         template="datasets_macros.pt"
+        allowed_interface="zope.interface.common.mapping.IItemMapping"
         permission="zope.Public"
     />
-    <!--         class=".templates.Macro"
-        allowed_interface="zope.interface.common.mapping.IItemMapping"
--->
+
+    <browser:page
+        name="datasets_list_item"
+        for="org.bccvl.site.content.interfaces.IDataset"
+        template="dataset_listing_item.pt"
+        permission="zope2.View"
+        />
 
     <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
     <browser:page
