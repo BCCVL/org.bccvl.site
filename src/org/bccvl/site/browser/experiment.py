@@ -350,15 +350,17 @@ class ProjectionAdd(Add):
         # whatever the sdm has if not there
         resolution = data.get("resolution")
         if resolution is None:
-            uuid = data.get('species_distribution_models')
-            from plone.app.uuid.utils import uuidToObject
-            from gu.z3cform.rdf.interfaces import IGraph
+            uuids = data.get('species_distribution_models')
+            from plone.app.uuid.utils import uuidToCatalogBrain
+            from gu.z3cform.rdf.interfaces import IResource
             from org.bccvl.site.namespace import BCCPROP
-            sdm = uuidToObject(uuid)
-            sdmgraph = IGraph(sdm)
-            resolution = sdmgraph.value(sdmgraph.identifier,
-                                        BCCPROP['resolution'])
-            data['resolution'] = resolution
+            for sdm in (uuidToCatalogBrain(uuid) for uuid in uuids):
+                sdmgraph = IResource(sdm)
+                resolution = sdmgraph.value(BCCPROP['resolution'])
+                # TODO: looks just at first sdm, but should also validate
+                #       tha they have all the same resolution
+                data['resolution'] = resolution.identifier
+                break
 
         from org.bccvl.site.api.dataset import find_projections
         result = find_projections(self.context, data.get('emission_scenarios'),

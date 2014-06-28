@@ -339,14 +339,14 @@ class SDMJobTracker(MultiJobTracker):
 @adapter(IProjectionExperiment)
 class ProjectionJobTracker(MultiJobTracker):
 
-    def _get_job_params(self, year, emsc, gcm, dsbrain):
+    def _get_job_params(self, sdm, year, emsc, gcm, dsbrain):
         # sdm ... sdm projection result model
         # climds ... future climate dataset brain
 
         # build job_params and store on result
         return {
             'resolution': self.context.resolution,
-            'species_distribution_models': self.context.species_distribution_models,
+            'species_distribution_models': sdm,
             # TODO: URI values or titles?
             'year': year,
             'emission_scenario': emsc,
@@ -374,7 +374,7 @@ class ProjectionJobTracker(MultiJobTracker):
             self.context,
             'gu.repository.content.RepositoryItem',
             title=title)
-        result.job_params = self._get_job_params(year, emsc, gcm, climds)
+        result.job_params = self._get_job_params(sdm, year, emsc, gcm, climds)
         return result
 
     def start_job(self, request):
