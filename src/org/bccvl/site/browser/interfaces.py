@@ -42,3 +42,8 @@ class IDatasetsWidget(IWidget):
 class IDatasetsRadioWidget(IWidget):
 
     pass
+
+
+class IDatasetsMultiSelectWidget(IWidget):
+
+    pass

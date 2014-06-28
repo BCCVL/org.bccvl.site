@@ -11,7 +11,7 @@ from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
                                      addFieldClass)
 from zope.i18n import translate
 from .interfaces import (IDatasetsWidget, IDatasetsRadioWidget,
-                         IOrderedCheckboxWidget)
+                         IOrderedCheckboxWidget, IDatasetsMultiSelectWidget)
 from plone.app.uuid.utils import uuidToCatalogBrain
 
 
@@ -37,6 +37,7 @@ class DatasetsWidget(HTMLFormElement, Widget):
     render a list of checkboxes for keys in dictionary.
     render a default widget for values per key
     """
+    # TODO: where is this used? SDMExperiment?
     # TODO: assumes that values are independent of keys for now.
 
     items = ()
@@ -198,3 +199,79 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
 
 def DatasetsRadioFieldWidget(field, request):
     return FieldWidget(field, DatasetsRadioWidget(request))
+
+
+@implementer(IDatasetsMultiSelectWidget)
+class DatasetsMultiSelectWidget(HTMLInputWidget, SequenceWidget):
+
+    klass = u'radio-widget'
+    css = u'radio'
+
+    def isChecked(self, term):
+        return term.token in self.value
+
+    @property
+    def items(self):
+        # TODO: could this be a generator?
+        items = []
+        for count, term in enumerate(self.terms):
+            checked = self.isChecked(term)
+            id = '%s-%i' % (self.id, count)
+            if ITitledTokenizedTerm.providedBy(term):
+                label = translate(term.title, context=self.request,
+                                  default=term.title)
+            else:
+                label = util.toUnicode(term.value)
+            # do catalog query for additional infos
+            items.append(
+                {'id': id, 'name': self.name, 'value': term.token,
+                 'label': label, 'checked': checked})
+        return items
+
+    def get_item_details(self, item):
+        # TODO: code duplication see: experiments_listing_view.py:45
+        # TODO: fetch additional data for item here
+        brain = uuidToCatalogBrain(item['value'])
+        sdm = brain.getObject()
+        # TODO: we might have two options here sdm could be uploaded,
+        #       then we'll show other data; for now ignore this case
+        #       and consider only results for sdm experiments
+        # TODO: may this fail if access to parents is not possible?
+        result = sdm.__parent__
+        exp = result.__parent__
+        # TODO: What if we don't have access to secies occurrence dataset?
+        #       should user still be able to start projection?
+        #       would we miss out on species info or so?
+        #       Dos SDM have species infos attached?
+        occurbrain = uuidToCatalogBrain(exp.species_occurrence_dataset)
+        # TODO: absence data
+        envlayers = []
+        for envuuid, layers in sorted(exp.environmental_datasets.items()):
+            envbrain = uuidToCatalogBrain(envuuid)
+            envtitle = envbrain.Title if envbrain else u'Missing dataset'
+            envlayers.append(
+                '{}: {}'.format(envtitle,
+                                ', '.join(self.envlayervocab.getTerm(envlayer).title
+                                          for envlayer in sorted(layers)))
+            )
+
+        # TODO: occurbrain might be None
+        return {
+            'model': brain,
+            'experiment': exp,
+            'function': result.job_params['function'],
+            'species': occurbrain,
+            'layers': envlayers
+        }
+
+    def update(self):
+        envvocab = getUtility(IVocabularyFactory,
+                              name='org.bccvl.site.BioclimVocabulary')
+        # TODO: could also cache the next call per request?
+        self.envlayervocab = envvocab(self.context)
+        super(DatasetsMultiSelectWidget, self).update()
+        addFieldClass(self)
+
+
+def DatasetsMultiSelectFieldWidget(field, request):
+    return FieldWidget(field, DatasetsMultiSelectWidget(request))

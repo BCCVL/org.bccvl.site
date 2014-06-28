@@ -5,7 +5,7 @@ from gu.plone.rdf.interfaces import IRDFContentTransform
 from gu.plone.rdf.namespace import CVOCAB
 from gu.repository.content.interfaces import (
     IRepositoryContainer, IRepositoryItem)
-from gu.z3cform.rdf.interfaces import IGraph
+from gu.z3cform.rdf.interfaces import IGraph, IResource
 from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 from gu.z3cform.rdf.utils import Period
 from ordf.namespace import DC as DCTERMS
@@ -339,55 +339,66 @@ class SDMJobTracker(MultiJobTracker):
 @adapter(IProjectionExperiment)
 class ProjectionJobTracker(MultiJobTracker):
 
+    def _get_job_params(self, year, emsc, gcm, dsbrain):
+        # sdm ... sdm projection result model
+        # climds ... future climate dataset brain
+
+        # build job_params and store on result
+        return {
+            'resolution': self.context.resolution,
+            'species_distribution_models': self.context.species_distribution_models,
+            # TODO: URI values or titles?
+            'year': year,
+            'emission_scenario': emsc,
+            'climate_models': gcm,
+            'future_climate_datasets': dsbrain.UID,
+        }
+
+    def _create_result_container(self, sdm, climds):
+        # create result object:
+        # get more metadata about dataset
+        dsmd = IResource(climds)
+        emsc = dsmd.value(BCCPROP['emissionscenario'])
+        gcm = dsmd.value(BCCPROP['gcm'])
+        period = dsmd.value(DCTERMS['temporal'])
+        # get display values for metadata
+        # TODO: get proper labels?
+        emsc = emsc.identifier.split('#', 1)[-1] if emsc else None
+        gcm = gcm.identifier.split('#', 1)[-1] if gcm else None
+        year = Period(period).start if period else None
+
+        title = u'{} - project {}_{}_{} {}'.format(
+            self.context.title, emsc, gcm, year,
+            datetime.now().isoformat())
+        result = createContentInContainer(
+            self.context,
+            'gu.repository.content.RepositoryItem',
+            title=title)
+        result.job_params = self._get_job_params(year, emsc, gcm, climds)
+        return result
+
     def start_job(self, request):
         if not self.is_active():
-            # split jobs across future climate datasets
-            for dsbrain in self.context.future_climate_datasets():
-                # get utility to execute this experiment
-                method = queryUtility(IComputeMethod,
-                                      name=IProjectionExperiment.__identifier__)
-                if method is None:
-                    return ('error',
-                            u"Can't find method to run Projection Experiment")
-                # create result object:
-                # get more metadata about dataset
-                dsobj = dsbrain.getObject()
-                dsmd = IGraph(dsobj)
-                emsc = dsmd.value(dsmd.identifier, BCCPROP['emissionscenario'])
-                gcm = dsmd.value(dsmd.identifier, BCCPROP['gcm'])
-                period = dsmd.value(dsmd.identifier, DCTERMS['temporal'])
-                # get display values for metadata
-                emsc = emsc.split('#', 1)[-1] if emsc else None
-                gcm = gcm.split('#', 1)[-1] if gcm else None
-                year = Period(period).start if period else None
+            # get utility to execute this experiment
+            method = queryUtility(IComputeMethod,
+                                  name=IProjectionExperiment.__identifier__)
+            if method is None:
+                # TODO: lookup by script type (Perl, Python, etc...)
+                return ('error',
+                        u"Can't find method to run Projection Experiment")
 
-                title = u'{} - project {}_{}_{} {}'.format(
-                    self.context.title, emsc, gcm, year,
-                    datetime.now().isoformat())
-                result = createContentInContainer(
-                    self.context,
-                    'gu.repository.content.RepositoryItem',
-                    title=title)
-
-                # build job_params and store on result
-                result.job_params = {
-                    'resolution': self.context.resolution,
-                    'species_distribution_models': self.context.species_distribution_models,
-                    # TODO: URI values or titles?
-                    'year': year,
-                    'emission_scenario': emsc,
-                    'climate_models': gcm,
-                    'future_climate_datasets': dsbrain.UID,
-                }
-
-                # submit job
-                LOG.info("Submit JOB project to queue")
-                method(result, "project")  # TODO: wrong interface
-                resultjt = IJobTracker(result)
-                resultjt.new_job('TODO: generate id',
-                                 'generate taskname: projection experiment')
-                resultjt.set_progress('PENDING',
-                                      u'projection pending')
+            # split jobs across future climate datasets and sdms
+            for sdm in self.context.species_distribution_models:
+                for dsbrain in self.context.future_climate_datasets():
+                    result = self._create_result_container(sdm, dsbrain)
+                    # submit job
+                    LOG.info("Submit JOB project to queue")
+                    method(result, "project")  # TODO: wrong interface
+                    resultjt = IJobTracker(result)
+                    resultjt.new_job('TODO: generate id',
+                                     'generate taskname: projection experiment')
+                    resultjt.set_progress('PENDING',
+                                          u'projection pending')
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             # TODO: in case there is an error should we abort the transaction
