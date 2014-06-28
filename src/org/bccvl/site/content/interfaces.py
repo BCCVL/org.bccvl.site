@@ -5,6 +5,8 @@ from zope.schema import Choice, List, Dict, Bool, Int, TextLine
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from org.bccvl.site import vocabularies
 from org.bccvl.site import MessageFactory as _
+# next import may cause circular import problems
+from org.bccvl.site.browser.widgets import SequenceCheckboxFieldWidget
 
 
 class IDataset(form.Schema):
@@ -146,28 +148,32 @@ class IProjectionExperiment(IExperiment):
     #       updateWidgets?  form hint affects all forms ... using
     #       updateWidgets would require to customise every form where
     #       we wanta custom widget
-    form.widget(years=
-                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    # TODO: could add parsley-attributes to the widget here
+    form.widget('years',
+                SequenceCheckboxFieldWidget,
+                errmsg=u"Please select at least 1 year.")
     years = List(
-        title=u'Projection Point: Years',
+        title=u'Years',
         value_type=Choice(source=vocabularies.fc_years_source),
         default=None,
         required=True,
     )
 
-    form.widget(emission_scenarios=
-                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    form.widget('emission_scenarios',
+                SequenceCheckboxFieldWidget,
+                errmsg=u"Please select at least 1 emmission scenario.")
     emission_scenarios = List(
-        title=u'Projection Point: Emission Scenarios',
+        title=u'Emission Scenarios',
         value_type=Choice(source=vocabularies.emission_scenarios_source),
         default=None,
         required=True,
     )
 
-    form.widget(climate_models=
-                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    form.widget('climate_models',
+                SequenceCheckboxFieldWidget,
+                errmsg=u"Please select at least 1 climate model.")
     climate_models = List(
-        title=u'Projection Point: Climate Models',
+        title=u'Climate Models',
         value_type=Choice(source=vocabularies.global_climate_models_source),
         default=None,
         required=True,
