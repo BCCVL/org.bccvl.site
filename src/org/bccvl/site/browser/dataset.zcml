@@ -29,6 +29,14 @@
     <!-- TODO: check if Public macros would allow unauthenticated
     acces? -->
     <browser:page
+        name="dataset_tools"
+        for="*"
+        permission="zope.Public"
+        class=".datasets_listing_view.DatasetTools"
+        allowed_interface=".interfaces.IDatasetTools"
+        />
+
+    <browser:page
         name="datasets-macros"
         for="*"
         template="datasets_macros.pt"
