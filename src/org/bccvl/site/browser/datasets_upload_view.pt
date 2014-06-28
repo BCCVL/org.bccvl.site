@@ -10,7 +10,7 @@
 
 <metal:content-core fill-slot="body">
 
-    <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
+    <tal:tabs metal:use-macro="context/datasets-macros/datasets_tabs"></tal:tabs>
 
     <tal:form tal:replace="structure view/addspeciesform"/>
 

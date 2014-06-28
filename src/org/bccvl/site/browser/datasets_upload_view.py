@@ -6,7 +6,7 @@ from Products.CMFCore.utils import getToolByName
 from plone.app.dexterity.behaviors.metadata import IBasic
 from z3c.form.field import Fields
 from org.bccvl.site import defaults
-from org.bccvl.site.content.dataset import (IDataset,
+from org.bccvl.site.content.dataset import (IBlobDataset,
                                             ISpeciesDataset,
                                             ILayerDataset)
 #from zope.pagetemplate.pagetemplatefile import PageTemplateFile
@@ -23,7 +23,7 @@ class SpeciesAddForm(DefaultAddForm):
     description = (u"<p>Upload occurrences or abundance data for single species</p>"
                    u"<p>An occurrence dataset is expected to be in CSV format."
                    u" BCCVL will only try to interpret columns with labels 'lon' and 'lat'.</p>" )
-    fields = Fields(IBasic, IDataset, ISpeciesDataset)
+    fields = Fields(IBasic, IBlobDataset, ISpeciesDataset)
 
     template = ViewPageTemplateFile('dataset_upload_subform.pt')
 
@@ -48,7 +48,7 @@ class RasterAddForm(DefaultAddForm):
                    u" within the GeoTiff itself. In case of missing map projection"
                    u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
-    fields = Fields(IBasic, IDataset, ILayerDataset)
+    fields = Fields(IBasic, IBlobDataset, ILayerDataset)
 
     template = ViewPageTemplateFile('dataset_upload_subform.pt')
 
