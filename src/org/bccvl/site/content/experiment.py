@@ -16,9 +16,6 @@ class SDMExperiment(Container):
 @implementer(IProjectionExperiment)
 class ProjectionExperiment(Container):
 
-    # TODO: get rid of these functions tuples
-    functions = ('org.bccvl.compute.predict.execute', )
-
     # TODO: remove this method, it's global API
     def future_climate_datasets(self):
         return dataset.find_projections(self, self.emission_scenarios,
@@ -28,16 +25,16 @@ class ProjectionExperiment(Container):
 @implementer(IBiodiverseExperiment)
 class BiodiverseExperiment(Container):
 
-    functions = ('org.bccvl.compute.biodiverse.execute', )
+    pass
 
 
 @implementer(IEnsembleExperiment)
 class EnsembleExperiment(Container):
 
-    functions = ('org.bccvl.compute.ensemble.execute', )
+    pass
 
 
 @implementer(ISpeciesTraitsExperiment)
 class SpeciesTraitsExperiment(Container):
 
-    functions = ('org.bccvl.compute.speciestraits.execute', )
+    pass
