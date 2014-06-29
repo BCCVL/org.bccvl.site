@@ -171,28 +171,28 @@
         />
 
     <utility
-      component=".vocabularies.species_presence_datasets_source"
-      name="species_presence_datasets_source"
+      component=".vocabularies.species_presence_datasets_vocab"
+      name="species_presence_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.species_absence_datasets_source"
-      name="species_absence_datasets_source"
+      component=".vocabularies.species_absence_datasets_vocab"
+      name="species_absence_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.species_abundance_datasets_source"
-      name="species_abundance_datasets_source"
+      component=".vocabularies.species_abundance_datasets_vocab"
+      name="species_abundance_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.environmental_datasets_source"
-      name="environmental_datasets_source"
+      component=".vocabularies.environmental_datasets_vocab"
+      name="environmental_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.future_climate_datasets_source"
-      name="future_climate_datasets_source"
+      component=".vocabularies.future_climate_datasets_vocab"
+      name="future_climate_datasets_vocab"
     />
 
     <utility

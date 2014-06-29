@@ -1,12 +1,12 @@
 from zope.interface import Interface
 from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
-from zope.schema import Choice, List, Dict, Bool, Int, TextLine
+from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from org.bccvl.site import vocabularies
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
-from org.bccvl.site.browser.widgets import SequenceCheckboxFieldWidget
+from org.bccvl.site.browser.widgets import SequenceCheckboxFieldWidget, DatasetsRadioFieldWidget
 
 
 class IDataset(form.Schema):
@@ -85,16 +85,24 @@ class ISDMExperiment(IExperiment):
         required=True,
     )
 
+    form.widget('species_occurrence_dataset',
+                DatasetsRadioFieldWidget,
+                errmsg=u"Please select at least 1 emmission scenario.",
+                vizclass=u'fine bccvl-occurrence-viz')
     species_occurrence_dataset = Choice(
         title=u'Species Occurrence Datasets',
-        source=vocabularies.species_presence_datasets_source,
+        vocabulary='species_presence_datasets_vocab',
         default=None,
         required=False,
     )
 
+    form.widget('species_absence_dataset',
+                DatasetsRadioFieldWidget,
+                errmsg=u"Please select at least 1 emmission scenario.",
+                vizclass=u'fine')  # bccvl-absence-viz')
     species_absence_dataset = Choice(
         title=u'Species Absence Datasets',
-        source=vocabularies.species_absence_datasets_source,
+        source='species_absence_datasets_vocab',
         default=None,
         required=False,
     )
@@ -115,10 +123,10 @@ class ISDMExperiment(IExperiment):
     # store dataset + layer (or file within zip)
     # e.g. ... basic key and value_types .... and widget does heavy work?
     # FIXME: would be best if widget supplies only possible values (at least for key_type)
-    form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetsFieldWidget')
+    form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetLayersFieldWidget')
     environmental_datasets = Dict(
         title=u'Environmental Datasets',
-        key_type=Choice(source=vocabularies.environmental_datasets_source),
+        key_type=Choice(vocabulary='environmental_datasets_vocab'),
         value_type=List(Choice(source=vocabularies.envirolayer_source),
                         unique=False),
         required=True,
@@ -139,7 +147,7 @@ class IProjectionExperiment(IExperiment):
                 'org.bccvl.site.browser.widgets.DatasetsMultiSelectFieldWidget')
     species_distribution_models = List(
         title=u'Species Distribution Models',
-        value_type=Choice(source=vocabularies.species_distributions_models_source),
+        value_type=Choice(vocabulary='species_distributions_models_vocab'),
         default=None,
         required=True,
     )

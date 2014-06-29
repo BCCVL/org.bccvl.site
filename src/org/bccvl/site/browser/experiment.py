@@ -13,12 +13,13 @@ from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
 from plone.autoform.utils import processFields
 from plone.supermodel import loadString
-from org.bccvl.site.vocabularies import QueryAPI
 from z3c.form.interfaces import DISPLAY_MODE
 from z3c.form.error import MultipleErrors
 from zope.component import getMultiAdapter
 from plone.app.uuid.utils import uuidToCatalogBrain
 from decimal import Decimal
+from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
+from zope.component import getUtility
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -55,10 +56,11 @@ class ParamGroupMixin(object):
     param_groups = ()
 
     def addToolkitFields(self):
-        api = QueryAPI(self.context)
         groups = []
+        # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
+        func_source = getUtility(IContextSourceBinder, name='functions_source')
         functions = getattr(self.context, 'functions', None) or ()
-        for toolkit in (brain.getObject() for brain in api.getFunctions()):
+        for toolkit in (term.value.getObject() for term in func_source.getTerms(self.context)):
             if self.mode == DISPLAY_MODE and toolkit.UID() not in functions:
                 # filter out unused algorithms in display mode
                 continue
@@ -290,9 +292,9 @@ class SDMAdd(ParamGroupMixin, Add):
 
     def occurrences_mapping(self):
         import json
-        api = QueryAPI(self.context)
+        occur_vocab = getUtility(IVocabularyFactory, 'species_presence_datasets_vocab')(self.context)
         mapping = dict()
-        for brain in api.getSpeciesOccurrenceDatasets():
+        for brain in (term.value for term in occur_vocab):
             dataset_info = getdsmetadata(brain.getObject())
 
             mapping[dataset_info['id']] = {
@@ -320,6 +322,7 @@ class SDMAdd(ParamGroupMixin, Add):
         resolution = None
         datasets = data.get('environmental_datasets', {}).keys()
         if not datasets:
+            # FIXME: Make this a widget error, currently shown as form wide error
             raise ActionExecutionError(Invalid('No environmental dataset selected'))
         # FIXME: index resolution for faster access
         #        or use dsbrain.subjecturi to get info
@@ -329,6 +332,7 @@ class SDMAdd(ParamGroupMixin, Add):
                 resolution = dsbrain.BCCResolution
                 continue
             if dsbrain.BCCResolution != resolution:
+                # FIXME: Make this a widget error, currently shown as form wide error
                 raise ActionExecutionError(Invalid("All datasets must have the same resolution"))
 
 
