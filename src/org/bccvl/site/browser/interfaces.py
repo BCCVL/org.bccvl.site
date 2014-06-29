@@ -34,7 +34,7 @@ class IOrderedCheckboxWidget(IOrderedSelectWidget):
     """
 
 
-class IDatasetsWidget(IWidget):
+class IDatasetLayersWidget(IWidget):
 
     pass
 

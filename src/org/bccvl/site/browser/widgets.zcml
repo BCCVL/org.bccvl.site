@@ -14,16 +14,16 @@
 
     <z3c:widgetTemplate
       mode="input"
-      widget=".interfaces.IDatasetsWidget"
+      widget=".interfaces.IDatasetLayersWidget"
       layer="z3c.form.interfaces.IFormLayer"
-      template="datasets_input.pt"
+      template="datasetlayers_input.pt"
       />
 
     <z3c:widgetTemplate
       mode="display"
-      widget=".interfaces.IDatasetsWidget"
+      widget=".interfaces.IDatasetLayersWidget"
       layer="z3c.form.interfaces.IFormLayer"
-      template="datasets_display.pt"
+      template="datasetlayers_display.pt"
       />
 
     <z3c:widgetTemplate

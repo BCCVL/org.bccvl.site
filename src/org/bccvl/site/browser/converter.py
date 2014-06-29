@@ -1,12 +1,12 @@
 from zope.interface import alsoProvides
 from zope.component import adapter, getMultiAdapter
 from zope.schema.interfaces import IDict
-from .interfaces import IDatasetsWidget
+from .interfaces import IDatasetLayersWidget
 from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import IFieldWidget, IFormAware, IDataConverter
 
 
-@adapter(IDict, IDatasetsWidget)
+@adapter(IDict, IDatasetLayersWidget)
 class DatasetsConverter(BaseDataConverter):
     """
     Dataconverter used to glue datasets_layer dict and datasetswidget together
