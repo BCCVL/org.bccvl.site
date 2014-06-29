@@ -38,10 +38,6 @@
                          checked python: checked and 'checked' or None"
          />
     <span class="label" tal:content="item/label">Label</span>
-    <tal:block tal:define="itemdetails python:view.get_item_details(item)">
-    <p class="discreet"
-       tal:content="itemdetails/model/Title"></p>
-    </tal:block>
   </label>
 </span>
 <input name="field-empty-marker" type="hidden" value="1"
