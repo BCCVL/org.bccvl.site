@@ -33,6 +33,7 @@ from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter, queryUtility
 from zope.interface import implementer
 import logging
+from plone.uuid.interfaces import IUUID
 
 LOG = logging.getLogger(__name__)
 
@@ -321,7 +322,7 @@ class SDMJobTracker(MultiJobTracker):
                     'environmental_datasets': self.context.environmental_datasets,
                 }
                 # add toolkit params:
-                result.job_params.update(self.context.parameters[func.getId()])
+                result.job_params.update(self.context.parameters[IUUID(func)])
                 # submit job
                 LOG.info("Submit JOB %s to queue", func.getId())
                 method(result, func)
@@ -509,7 +510,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                 'data_table': self.context.data_table,
             }
             # add toolkit params:
-            result.job_params.update(self.context.parameters[algorithm.getId()])
+            result.job_params.update(self.context.parameters[IUUID(algorithm)])
             # submit job
             LOG.info("Submit JOB %s to queue", algorithm.getId())
             method(result, algorithm)
