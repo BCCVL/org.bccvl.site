@@ -14,6 +14,7 @@
     <include file="profiles.zcml"/>
     <include package=".content"/>
     <include package=".browser"/>
+    <include package=".api"/>
 
     <cmf:registerDirectory name="bccvl_skin" />
 
@@ -151,6 +152,9 @@
 
     <adapter
         factory=".utilities.BiodiverseJobTracker"/>
+
+    <adapter
+        factory=".utilities.SpeciesTraitsJobTracker"/>
 
     <adapter
         factory=".utilities.ALAJobTracker"/>

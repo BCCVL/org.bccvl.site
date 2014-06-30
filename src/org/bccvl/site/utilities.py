@@ -24,7 +24,7 @@ from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
 from plone import api
 from plone.app.contenttypes.interfaces import IFile
-from plone.app.uuid.utils import uuidToObject
+from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from Products.ZCatalog.interfaces import ICatalogBrain
 from rdflib import RDF, RDFS, Literal, OWL
@@ -481,8 +481,46 @@ class EnsembleJobTracker(MultiJobTracker):
 class SpeciesTraitsJobTracker(MultiJobTracker):
 
     def start_job(self, request):
-        # TODO: split biodiverse job across years, gcm, emsc
-        return 'error', u'Not yet implemented'
+        raise NotImplementedError
+        if not self.is_active():
+            # get utility to execute this experiment
+            method = queryUtility(IComputeMethod,
+                                  name=ISpeciesTraitsExperiment.__identifier__)
+            if method is None:
+                return ('error',
+                        u"Can't find method to run Biodiverse Experiment")
+
+            # iterate over all datasets and group them by emsc,gcm,year
+            algorithm = uuidToCatalogBrain(self.context.algorithm)
+
+            # create result object:
+            # TODO: refactor this out into helper method
+            title = u'%s - %s %s' % (self.context.title, algorithm.getId(),
+                                     datetime.now().isoformat())
+            result = createContentInContainer(
+                self.context,
+                'gu.repository.content.RepositoryItem',
+                title=title)
+
+            # Build job_params store them on result and submit job
+            result.job_params = {
+                'algorithm': algorithm.getId(),
+                'formula': self.context.formula,
+                'data_table': self.context.data_table,
+            }
+            # add toolkit params:
+            result.job_params.update(self.context.parameters[algorithm.getId()])
+            # submit job
+            LOG.info("Submit JOB %s to queue", algorithm.getId())
+            method(result, algorithm)
+            resultjt = IJobTracker(result)
+            resultjt.new_job('TODO: generate id',
+                             'generate taskname: sdm_experiment')
+            resultjt.set_progress('PENDING',
+                                  u'{} pending'.format(algorithm.getId()))
+            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+        else:
+            return 'error', u'Current Job is still running'
 
 
 # TODO: named adapter
