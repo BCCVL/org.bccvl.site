@@ -482,21 +482,19 @@ class EnsembleJobTracker(MultiJobTracker):
 class SpeciesTraitsJobTracker(MultiJobTracker):
 
     def start_job(self, request):
-        raise NotImplementedError
         if not self.is_active():
             # get utility to execute this experiment
             method = queryUtility(IComputeMethod,
                                   name=ISpeciesTraitsExperiment.__identifier__)
             if method is None:
                 return ('error',
-                        u"Can't find method to run Biodiverse Experiment")
-
+                        u"Can't find method to run Species Traits Experiment")
             # iterate over all datasets and group them by emsc,gcm,year
             algorithm = uuidToCatalogBrain(self.context.algorithm)
 
             # create result object:
             # TODO: refactor this out into helper method
-            title = u'%s - %s %s' % (self.context.title, algorithm.getId(),
+            title = u'%s - %s %s' % (self.context.title, algorithm.id,
                                      datetime.now().isoformat())
             result = createContentInContainer(
                 self.context,
@@ -505,20 +503,20 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
             # Build job_params store them on result and submit job
             result.job_params = {
-                'algorithm': algorithm.getId(),
+                'algorithm': algorithm.id,
                 'formula': self.context.formula,
                 'data_table': self.context.data_table,
             }
             # add toolkit params:
-            result.job_params.update(self.context.parameters[IUUID(algorithm)])
+            result.job_params.update(self.context.parameters[algorithm.UID])
             # submit job
-            LOG.info("Submit JOB %s to queue", algorithm.getId())
-            method(result, algorithm)
+            LOG.info("Submit JOB %s to queue", algorithm.id)
+            method(result, algorithm.getObject())
             resultjt = IJobTracker(result)
             resultjt.new_job('TODO: generate id',
                              'generate taskname: sdm_experiment')
             resultjt.set_progress('PENDING',
-                                  u'{} pending'.format(algorithm.getId()))
+                                  u'{} pending'.format(algorithm.id))
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
