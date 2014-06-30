@@ -5,6 +5,7 @@ from Products.CMFCore.utils import getToolByName
 
 from plone.app.dexterity.behaviors.metadata import IBasic
 from z3c.form.field import Fields
+from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import defaults
 from org.bccvl.site.content.dataset import (IBlobDataset,
                                             ISpeciesDataset,
@@ -64,13 +65,18 @@ class RasterAddForm(DefaultAddForm):
 
 
 class SpeciesTraitsAddForm(DefaultAddForm):
+    # TODO: these wolud be schema forms... sholud try it
 
     title = u"Upload Species Traits"
     description = u"<p>Upload CSV file to use for species traits modelling.</p>"
 
-    fields = Fields(IBasic, IBlobDataset, ITraitsDataset).omit('thresholds', 'datagenre')
+    fields = Fields(IBasic, IBlobDataset, ITraitsDataset).omit('thresholds')
 
     template = ViewPageTemplateFile('dataset_upload_subform.pt')
+
+    def updateWidgets(self):
+        super(SpeciesTraitsAddForm, self).updateWidgets()
+        self.widgets['datagenre'].mode = HIDDEN_MODE
 
     def updateFields(self):
         # don't fetch plone default fields'

@@ -115,7 +115,7 @@ class ILayerDataset(form.Schema):
 
 class ITraitsDataset(form.Schema):
 
-    form.omitted('datagenre')
+    form.mode(datagenre='hidden')
     datagenre = RDFURIRefField(
         prop=BCCPROP['datagenre'],
         title=_(u'Data Genre'),
