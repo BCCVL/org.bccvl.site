@@ -3,6 +3,7 @@ from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
 from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
+from z3c.form.browser.radio import RadioFieldWidget
 from org.bccvl.site import vocabularies
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
@@ -227,4 +228,29 @@ class IEnsembleExperiment(IExperiment):
 
 class ISpeciesTraitsExperiment(IExperiment):
 
-    pass
+    form.widget(algorithm=RadioFieldWidget)
+    algorithm = Choice(
+        title=u'Algorithm',
+        source=vocabularies.traits_functions_source,
+        required=True,
+        default=None,
+    )
+
+    formula = Text(
+        title=u'Formula',
+        description=u'Please see <a href="http://stat.ethz.ch/R-manual/R-devel/library/stats/html/lm.htm">R:Fitting Linear Models</a> for details.',
+        required=True,
+        default=None,
+    )
+
+    form.widget('data_table',
+                DatasetsRadioFieldWidget,
+                errmsg=u"Please select at least 1 data set.",
+                vizclass=u'fine')  # bccvl-absence-viz')
+    data_table = Choice(
+        title=u'Dataset',
+        vocabulary='species_traits_datasets_vocab',
+        default=None,
+        required=True,
+    )
+
