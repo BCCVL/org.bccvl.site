@@ -293,22 +293,30 @@ class SDMAdd(ParamGroupMixin, Add):
 
     # TODO: is this still necessary?
     def occurrences_mapping(self):
+
+        def _add_ds_to_map(vocab, map):
+            # TODO: relies on BrainsVocabulary terms
+            for brain in (term.brain for term in vocab):
+                dataset_info = getdsmetadata(brain.getObject())
+
+                mapping[dataset_info['id']] = {
+                    'object': dataset_info['url'],
+                    'file': dataset_info['file'],
+                }
+
+                if 'vizurl' in dataset_info:
+                    mapping[dataset_info['id']].update({
+                        'vizurl': dataset_info['vizurl']
+                    })
+
         import json
         occur_vocab = getUtility(IVocabularyFactory, 'species_presence_datasets_vocab')(self.context)
+        abs_vocab = getUtility(IVocabularyFactory, 'species_absence_datasets_vocab')(self.context)
+
         mapping = dict()
-        # TODO: relies on BrainsVocabulary terms
-        for brain in (term.brain for term in occur_vocab):
-            dataset_info = getdsmetadata(brain.getObject())
+        _add_ds_to_map(occur_vocab, mapping)
+        _add_ds_to_map(abs_vocab, mapping)
 
-            mapping[dataset_info['id']] = {
-                'object': dataset_info['url'],
-                'file': dataset_info['file'],
-            }
-
-            if 'vizurl' in dataset_info:
-                mapping[dataset_info['id']].update({
-                    'vizurl': dataset_info['vizurl']
-                })
         # FIXME: this does look bad, and should probably be handled by a proper widget
         js_tmpl = """
             window.bccvl || (window.bccvl = {});
