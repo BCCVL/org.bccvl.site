@@ -100,7 +100,7 @@ class ISDMExperiment(IExperiment):
     form.widget('species_absence_dataset',
                 DatasetsRadioFieldWidget,
                 errmsg=u"Please select at least 1 emmission scenario.",
-                vizclass=u'fine')  # bccvl-absence-viz')
+                vizclass=u'fine bccvl-absence-viz')
     species_absence_dataset = Choice(
         title=u'Species Absence Datasets',
         source='species_absence_datasets_vocab',
@@ -246,11 +246,10 @@ class ISpeciesTraitsExperiment(IExperiment):
     form.widget('data_table',
                 DatasetsRadioFieldWidget,
                 errmsg=u"Please select at least 1 data set.",
-                vizclass=u'fine')  # bccvl-absence-viz')
+                vizclass=u'fine bccvl-auto-viz')
     data_table = Choice(
         title=u'Dataset',
         vocabulary='species_traits_datasets_vocab',
         default=None,
         required=True,
     )
-
