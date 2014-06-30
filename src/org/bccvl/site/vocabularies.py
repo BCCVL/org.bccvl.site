@@ -10,7 +10,6 @@ from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
 from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB
 from rdflib import RDF
 from Products.CMFPlone.interfaces import IPloneSiteRoot
-from Products.ZCatalog.interfaces import ICatalogBrain
 
 
 class QueryAPI(object):
@@ -65,44 +64,30 @@ class QueryAPI(object):
 
 
 # species occurrence datasets
-from plone.app.vocabularies.catalog import CatalogVocabulary as BaseCatalogVocabulary
 from zope.site.hooks import getSite
 
+
 # TODO: optimize catalog vocabulary for lazy sliced access
-class CatalogVocabulary(BaseCatalogVocabulary):
+class BrainsVocabulary(SimpleVocabulary):
+    # term.value ... UUID
+    # term.token ... UUID
+    # term.title ... Title
+    # term.brain ... the brain
+
     # implements IVocaburaryTokenized
 
     @classmethod
     def createTerm(cls, brain, context):
-        return SimpleTerm(value=brain,
-                          token=brain.UID,
+        term = SimpleTerm(value=brain['UID'],
+                          token=brain['UID'],
                           title=brain.Title)
+        term.brain = brain
+        return term
 
-    def getTermByToken(self, token):
-        # FIXME: shouldn't need to iterate here
-        for term in self:
-            if term.token == token:
-                return term
-        # TODO: should raise an excetpnio here?
-        raise LookupError
-
-    def __contains__(self, value):
-        if isinstance(value, basestring):
-            # perhaps it's already a uid
-            uid = value
-        elif ICatalogBrain.providedBy(value):
-            uid = value.UID
-        else:
-            uid = IUUID(value)
-        for term in self._terms:
-            try:
-                term_uid = term.value.UID
-            except AttributeError:
-                term_uid = term.value
-            if uid == term_uid:
-                return True
-        return False
-
+    @classmethod
+    def fromBrains(cls, brains, context, *interfaces):
+        terms = [cls.createTerm(brain, context) for brain in brains]
+        return cls(terms, *interfaces)
 
 
 @implementer(IVocabularyFactory)
@@ -118,30 +103,32 @@ class CatalogVocabularyFactory(object):
         except AttributeError:
             catalog = getToolByName(getSite(), 'portal_catalog')
         brains = catalog(**self.query)
-        return CatalogVocabulary.fromItems(brains, context)
+        return BrainsVocabulary.fromBrains(brains, context)
 
 
 @implementer(IContextSourceBinder)
 class CatalogSourceBinder(object):
 
-    def __init__(self, name, query, tokenKey='UID'):
+    def __init__(self, name, query):
         self.__name__ = name
         self.query = query
-        self.tokenKey = tokenKey
 
-    def getTerms(self, context):
+    def _getBrains(self, context):
         try:
             catalog = getToolByName(context, 'portal_catalog')
         except AttributeError:
             catalog = getToolByName(getSite(), 'portal_catalog')
-        brains = catalog(**self.query)
-        terms = [SimpleTerm(value=brain, token=brain[self.tokenKey], title=brain.Title)
+        return catalog(**self.query)
+
+    def getTerms(self, context):
+        brains = self._getBrains(context)
+        terms = [BrainsVocabulary.createTerm(brain, context)
                  for brain in brains]  # has to be a list will be iterated more than once
         return terms
 
     def __call__(self, context):
-        terms = self.getTerms(context)
-        return SimpleVocabulary(terms)
+        brains = self._getBrains(context)
+        return BrainsVocabulary.fromBrains(brains, context)
 
 
 species_presence_datasets_vocab = CatalogVocabularyFactory(
@@ -208,29 +195,53 @@ species_projection_datasets_vocab = CatalogVocabularyFactory(
         'job_state': 'COMPLETED',
     })
 
+species_traits_datasets_vocab = CatalogVocabularyFactory(
+    'species_traits_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreTraits'],
+        'job_state': 'COMPLETED',
+    })
+
 # TODO: Need either two vocabs to separate sdm and traits scripts,
 #       or a contextsourcebinder that filters the correct scrips
-functions_source = CatalogSourceBinder(
-    'functions_source',
+sdm_functions_source = CatalogSourceBinder(
+    'sdm_functions_source',
     query={
         # TODO: could use a path restriction to toolkits folder
         # 'path': {
         #     'query': '/'.join([self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID])
         # },
         'object_provides': 'org.bccvl.site.content.function.IFunction',
+        # FIXME: find another way to separate SDM and traits "functions"
+        'id': ['ann', 'bioclim', 'brt', 'circles', 'convhull', 'cta', 'domain',
+               'fda', 'gam', 'gbm', 'glm', 'maxent'],
         'sort_on': 'sortable_title',
     },
-    tokenKey='id',
+)
+
+
+traits_functions_source = CatalogSourceBinder(
+    'traits_functions_source',
+    query={
+        # TODO: could use a path restriction to toolkits folder
+        # 'path': {
+        #     'query': '/'.join([self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID])
+        # },
+        'object_provides': 'org.bccvl.site.content.function.IFunction',
+        # FIXME: find another way to separate SDM and traits "functions"
+        'id': ['lm'],
+        'sort_on': 'sortable_title',
+    },
 )
 
 
 @implementer(IContextSourceBinder)
 class SparqlDataSetSourceBinder(object):
 
-    def __init__(self, name, apiFunc, tokenKey='UID'):
+    def __init__(self, name, apiFunc):
         self.__name__ = name
         self.apiFunc = apiFunc
-        self.tokenKey = tokenKey
 
     def __call__(self, context):
         if context is None:

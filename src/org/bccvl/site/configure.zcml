@@ -196,8 +196,28 @@
     />
 
     <utility
-      component=".vocabularies.functions_source"
-      name="functions_source"
+      component=".vocabularies.species_distributions_models_vocab"
+      name="species_distributions_models_vocab"
+    />
+
+    <utility
+      component=".vocabularies.species_projection_datasets_vocab"
+      name="species_projection_datasets_vocab"
+    />
+
+    <utility
+      component=".vocabularies.species_traits_datasets_vocab"
+      name="species_traits_datasets_vocab"
+    />
+
+    <utility
+      component=".vocabularies.sdm_functions_source"
+      name="sdm_functions_source"
+    />
+
+    <utility
+      component=".vocabularies.traits_functions_source"
+      name="traits_functions_source"
     />
 
     <utility

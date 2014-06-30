@@ -58,9 +58,10 @@ class ParamGroupMixin(object):
     def addToolkitFields(self):
         groups = []
         # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
-        func_source = getUtility(IContextSourceBinder, name='functions_source')
+        func_source = getUtility(IContextSourceBinder, name='sdm_functions_source')
         functions = getattr(self.context, 'functions', None) or ()
-        for toolkit in (term.value.getObject() for term in func_source.getTerms(self.context)):
+        # TODO: could also use uuidToObject(term.value) instead of relying on BrainsVocabluary terms
+        for toolkit in (term.brain.getObject() for term in func_source.getTerms(self.context)):
             if self.mode == DISPLAY_MODE and toolkit.UID() not in functions:
                 # filter out unused algorithms in display mode
                 continue
@@ -290,11 +291,13 @@ class SDMAdd(ParamGroupMixin, Add):
     # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
 
+    # TODO: is this still necessary?
     def occurrences_mapping(self):
         import json
         occur_vocab = getUtility(IVocabularyFactory, 'species_presence_datasets_vocab')(self.context)
         mapping = dict()
-        for brain in (term.value for term in occur_vocab):
+        # TODO: relies on BrainsVocabulary terms
+        for brain in (term.brain for term in occur_vocab):
             dataset_info = getdsmetadata(brain.getObject())
 
             mapping[dataset_info['id']] = {

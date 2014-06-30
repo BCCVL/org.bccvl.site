@@ -80,7 +80,7 @@ class ISDMExperiment(IExperiment):
     form.widget(functions=CheckBoxFieldWidget)
     functions = List(
         title=u'Algorithm',
-        value_type=Choice(source=vocabularies.functions_source),
+        value_type=Choice(source=vocabularies.sdm_functions_source),
         default=None,
         required=True,
     )
@@ -155,7 +155,7 @@ class IProjectionExperiment(IExperiment):
     # TODO: instead of form hints ... maybe set widgetfactory in form
     #       updateWidgets?  form hint affects all forms ... using
     #       updateWidgets would require to customise every form where
-    #       we wanta custom widget
+    #       we want a custom widget
     # TODO: could add parsley-attributes to the widget here
     form.widget('years',
                 SequenceCheckboxFieldWidget,

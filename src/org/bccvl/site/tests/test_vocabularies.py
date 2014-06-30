@@ -6,7 +6,7 @@ from org.bccvl.site.vocabularies import (
     species_abundance_datasets_source,
     environmental_datasets_source,
     future_climate_datasets_source,
-    functions_source,
+    sdm_functions_source,
     envirolayer_source)
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from plone.uuid.interfaces import IUUID
@@ -131,7 +131,7 @@ class FunctionsSourceTest(unittest.TestCase):
     layer = BCCVL_INTEGRATION_TESTING
 
     def _get_class(self):
-        return functions_source
+        return sdm_functions_source
 
     def _make_one(self):
         return self._get_class()(self.layer['portal'])
