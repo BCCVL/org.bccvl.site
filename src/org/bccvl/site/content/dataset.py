@@ -4,8 +4,9 @@ from zope.interface import implementer
 from plone.app.contenttypes.interfaces import IFile
 from gu.z3cform.rdf.schema import (RDFURIChoiceField,
                                    RDFLiteralLineField,
-                                   RDFDateRangeField)
-from org.bccvl.site.namespace import BCCPROP, DWC
+                                   RDFDateRangeField,
+                                   RDFURIRefField)
+from org.bccvl.site.namespace import BCCPROP, DWC, BCCVOCAB
 from org.bccvl.site.content.interfaces import IDataset, IBlobDataset
 from ordf.namespace import DC as DCTERMS
 from org.bccvl.site import MessageFactory as _
@@ -110,3 +111,15 @@ class ILayerDataset(form.Schema):
         required=False,
         title=u'Global Climate Model',
         vocabulary=u'org.bccvl.site.GCMVocabulary')
+
+
+class ITraitsDataset(form.Schema):
+
+    form.omitted('datagenre')
+    datagenre = RDFURIRefField(
+        prop=BCCPROP['datagenre'],
+        title=_(u'Data Genre'),
+        default=BCCVOCAB['DataGenreTraits'],
+        readonly=True,
+        required=True,
+    )

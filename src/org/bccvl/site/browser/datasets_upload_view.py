@@ -8,7 +8,8 @@ from z3c.form.field import Fields
 from org.bccvl.site import defaults
 from org.bccvl.site.content.dataset import (IBlobDataset,
                                             ISpeciesDataset,
-                                            ILayerDataset)
+                                            ILayerDataset,
+                                            ITraitsDataset)
 #from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -23,7 +24,7 @@ class SpeciesAddForm(DefaultAddForm):
     description = (u"<p>Upload occurrences or abundance data for single species</p>"
                    u"<p>An occurrence dataset is expected to be in CSV format."
                    u" BCCVL will only try to interpret columns with labels 'lon' and 'lat'.</p>" )
-    fields = Fields(IBasic, IBlobDataset, ISpeciesDataset)
+    fields = Fields(IBasic, IBlobDataset, ISpeciesDataset).omit('thresholds')
 
     template = ViewPageTemplateFile('dataset_upload_subform.pt')
 
@@ -48,7 +49,26 @@ class RasterAddForm(DefaultAddForm):
                    u" within the GeoTiff itself. In case of missing map projection"
                    u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
-    fields = Fields(IBasic, IBlobDataset, ILayerDataset)
+    fields = Fields(IBasic, IBlobDataset, ILayerDataset).omit('thresholds')
+
+    template = ViewPageTemplateFile('dataset_upload_subform.pt')
+
+    def updateFields(self):
+        # don't fetch plone default fields'
+        pass
+
+    def nextURL(self):
+        # redirect to default datasets page
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        return portal[defaults.DATASETS_FOLDER_ID].absolute_url()
+
+
+class SpeciesTraitsAddForm(DefaultAddForm):
+
+    title = u"Upload Species Traits"
+    description = u"<p>Upload CSV file to use for species traits modelling.</p>"
+
+    fields = Fields(IBasic, IBlobDataset, ITraitsDataset).omit('thresholds', 'datagenre')
 
     template = ViewPageTemplateFile('dataset_upload_subform.pt')
 
@@ -81,31 +101,28 @@ class DatasetsUploadView(BrowserView):
     #-> use defaultform, extend updateFields to select only wanted fileds?
     #-> use standard form, create fields manually
 
-    addspeciesform = None
-    addlayerform = None
+    subforms = None
 
     def update(self):
+        self.subforms = []
         ttool = getToolByName(self.context, 'portal_types')
         fti = ttool.getTypeInfo('org.bccvl.content.dataset')
 
-        self.addspeciesform = SpeciesAddForm(aq_inner(self.context),
-                                             self.request, fti)
-        self.addspeciesform.__name__ = "addspeciesform"
-        self.addspeciesform.prefix = "addspecies"
-
-        self.addlayerform = RasterAddForm(aq_inner(self.context),
-                                          self.request, fti)
-        self.addlayerform.__name__ = "addlayerform"
-        self.addlayerform.prefix = "addlayer"
-
-        # always update both forms in case we return and want to preserve
-        # entered values
-        self.addspeciesform.update()
-        self.addlayerform.update()
+        for form_prefix, form_class in (('addspecies', SpeciesAddForm),
+                                        ('addlayer', RasterAddForm),
+                                        ('addtraits', SpeciesTraitsAddForm)):
+            form = form_class(aq_inner(self.context),
+                              self.request, fti)
+            form.__name__ = "{0}form".format(form_prefix)
+            form.prefix = form_prefix
+            self.subforms.append(form)
+            # always update all forms in case we return and want to preserve
+            # entered values
+            form.update()
 
         # render the forms for display or generate redirect
-        self.addspeciesform = self.addspeciesform.render()
-        self.addlayerform = self.addlayerform.render()
+        for idx, subform in enumerate(self.subforms):
+            self.subforms[idx] = subform.render()
 
     def __call__(self):
         self.update()

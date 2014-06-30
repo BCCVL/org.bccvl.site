@@ -12,9 +12,9 @@
 
     <tal:tabs metal:use-macro="context/datasets-macros/datasets_tabs"></tal:tabs>
 
-    <tal:form tal:replace="structure view/addspeciesform"/>
-
-    <tal:form tal:replace="structure view/addlayerform"/>
+    <tal:block tal:repeat="subform view/subforms">
+        <tal:form tal:replace="structure subform"></tal:form>
+    </tal:block>
 
 </metal:content-core>
 

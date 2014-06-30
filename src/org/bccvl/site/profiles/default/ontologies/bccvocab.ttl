@@ -71,12 +71,20 @@ bccvocab:DataGenreSDMEval a bccvocab:DataGenre ;
     rdfs:label "Species Distribution Model Evaluation" ;
     .
 
+bccvocab:DataGenreTraits a bccvocab:DataGenre ;
+    rdfs:label "Species Traits Data Genre" ;
+    .
+
 bccvocab:DataGenreSDMModel a bccvocab:DataGenre ;
     rdfs:label "Species Distribution Model";
     .
 
 bccvocab:DataGenreClampingMask a bccvocab:DataGenre ;
     rdfs:label "Clapming Mask";
+    .
+
+bccvocab:DataGenreSTModel a bccvocab:DataGenre ;
+    rdfs:label "Species Traits Model";
     .
 
 bccvocab:DataGenreFP a bccvocab:DataGenre ;
