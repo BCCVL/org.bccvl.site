@@ -163,7 +163,7 @@ environmental_datasets_vocab = CatalogVocabularyFactory(
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
         'BCCDataGenre': BCCVOCAB['DataGenreE'],
-        'job_state': 'COMPLETED',
+        #'job_state': 'COMPLETED',
     })
 
 future_climate_datasets_vocab = CatalogVocabularyFactory(
@@ -173,7 +173,7 @@ future_climate_datasets_vocab = CatalogVocabularyFactory(
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
         'BCCDataGenre': BCCVOCAB['DataGenreFC'],
-        'job_state': 'COMPLETED',
+        #'job_state': 'COMPLETED',
     })
 
 species_distributions_models_vocab = CatalogVocabularyFactory(
