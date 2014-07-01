@@ -1,5 +1,4 @@
 import unittest2 as unittest
-from zope.schema.interfaces import IContextSourceBinder, ISource
 from zope.schema.interfaces import IVocabularyFactory, IVocabulary
 from org.bccvl.site.vocabularies import (
     species_presence_datasets_vocab,
@@ -140,8 +139,8 @@ class SdmFunctionsSourceTest(unittest.TestCase):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
         source = self._make_one()
@@ -164,8 +163,8 @@ class TraitsFunctionsSourceTest(unittest.TestCase):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
         source = self._make_one()
@@ -188,12 +187,12 @@ class EnviroLayerSourceTest(unittest.TestCase):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_registration(self):
         one = self._get_class()
-        tool = getUtility(IContextSourceBinder, name='envirolayer_source')
+        tool = getUtility(IVocabularyFactory, name='envirolayer_source')
         self.assertIs(one, tool)
 
     def test_elements(self):

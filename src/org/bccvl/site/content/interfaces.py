@@ -4,7 +4,6 @@ from plone.namedfile.field import NamedBlobFile
 from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
-from org.bccvl.site import vocabularies
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
 from org.bccvl.site.browser.widgets import SequenceCheckboxFieldWidget, DatasetsRadioFieldWidget
@@ -81,7 +80,7 @@ class ISDMExperiment(IExperiment):
     form.widget(functions=CheckBoxFieldWidget)
     functions = List(
         title=u'Algorithm',
-        value_type=Choice(source=vocabularies.sdm_functions_source),
+        value_type=Choice(vocabulary='sdm_functions_source'),
         default=None,
         required=True,
     )
@@ -128,7 +127,7 @@ class ISDMExperiment(IExperiment):
     environmental_datasets = Dict(
         title=u'Environmental Datasets',
         key_type=Choice(vocabulary='environmental_datasets_vocab'),
-        value_type=List(Choice(source=vocabularies.envirolayer_source),
+        value_type=List(Choice(vocabulary='envirolayer_source'),
                         unique=False),
         required=True,
     )
@@ -163,7 +162,7 @@ class IProjectionExperiment(IExperiment):
                 errmsg=u"Please select at least 1 year.")
     years = List(
         title=u'Years',
-        value_type=Choice(source=vocabularies.fc_years_source),
+        value_type=Choice(source='fc_years_source'),
         default=None,
         required=True,
     )
@@ -173,7 +172,7 @@ class IProjectionExperiment(IExperiment):
                 errmsg=u"Please select at least 1 emmission scenario.")
     emission_scenarios = List(
         title=u'Emission Scenarios',
-        value_type=Choice(source=vocabularies.emission_scenarios_source),
+        value_type=Choice(vocabulary='emission_scenarios_source'),
         default=None,
         required=True,
     )
@@ -183,7 +182,7 @@ class IProjectionExperiment(IExperiment):
                 errmsg=u"Please select at least 1 climate model.")
     climate_models = List(
         title=u'Climate Models',
-        value_type=Choice(source=vocabularies.global_climate_models_source),
+        value_type=Choice(source='global_climate_models_source'),
         default=None,
         required=True,
     )
@@ -231,7 +230,7 @@ class ISpeciesTraitsExperiment(IExperiment):
     form.widget(algorithm=RadioFieldWidget)
     algorithm = Choice(
         title=u'Algorithm',
-        source=vocabularies.traits_functions_source,
+        vocabulary='traits_functions_source',
         required=True,
         default=None,
     )

@@ -305,6 +305,7 @@ class DataSetManager(BrowserView):
         # TODO: check if there are vocabularies that need to be protected
         vocab = ()
         try:
+            # TODO: getUtility(IVocabularyFactory???)
             vr = getVocabularyRegistry()
             vocab = vr.get(self.context, name)
         except:

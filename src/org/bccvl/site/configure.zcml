@@ -234,6 +234,21 @@
       />
 
     <utility
+        component=".vocabularies.emission_scenarios_source"
+        name="emission_scenarios_source"
+        />
+
+    <utility
+        component=".vocabularies.global_climate_models_source"
+        name="global_climate_models_source"
+        />
+
+    <utility
+        component=".vocabularies.fc_years_source"
+        name="fc_years_source"
+        />
+
+    <utility
         name="org.bccvl.site.GCMVocabulary"
         component=".vocabularies.GCMVocabularyFactory"
         />

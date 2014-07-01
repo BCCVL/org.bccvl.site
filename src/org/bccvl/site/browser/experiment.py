@@ -18,7 +18,7 @@ from z3c.form.error import MultipleErrors
 from zope.component import getMultiAdapter
 from plone.app.uuid.utils import uuidToCatalogBrain
 from decimal import Decimal
-from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
+from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
 import logging
 
@@ -58,10 +58,10 @@ class ParamGroupMixin(object):
     def addToolkitFields(self):
         groups = []
         # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
-        func_source = getUtility(IContextSourceBinder, name='sdm_functions_source')
+        func_vocab = getUtility(IVocabularyFactory, name='sdm_functions_source')
         functions = getattr(self.context, 'functions', None) or ()
         # TODO: could also use uuidToObject(term.value) instead of relying on BrainsVocabluary terms
-        for toolkit in (term.brain.getObject() for term in func_source.getTerms(self.context)):
+        for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
             if self.mode == DISPLAY_MODE and toolkit.UID() not in functions:
                 # filter out unused algorithms in display mode
                 continue
@@ -495,10 +495,9 @@ class SpeciesTraitsAdd(Add):
     def addAlgorithmFields(self):
         groups = []
         # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
-        func_source = getUtility(IContextSourceBinder, name='traits_functions_source')
+        func_vocab = getUtility(IVocabularyFactory, name='traits_functions_source')
         algorithm = getattr(self.context, 'algorithm', None) or ()
-        # TODO: could use uuidToObject(term.value) instead of relying on BrainsVocabulary terms
-        for toolkit in (term.brain.getObject() for term in func_source.getTerms(self.context)):
+        for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
             if self.mode == DISPLAY_MODE and toolkit.UID() != algorithm:
                 # filter out unused algorithms in display mode
                 continue
@@ -557,7 +556,6 @@ class SpeciesTraitsAdd(Add):
 
     def applyChanges(self, data):
         # FIXME: store only selected algos
-        import ipdb; ipdb.set_trace()
         changed = super(SpeciesTraitsAdd, self).applyChanges(data)
         # apply algo params:
         new_params = {}

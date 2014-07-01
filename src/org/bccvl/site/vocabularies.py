@@ -1,4 +1,4 @@
-from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
+from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from org.bccvl.site import defaults
 from zope.interface import implementer, provider
@@ -10,6 +10,7 @@ from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
 from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB
 from rdflib import RDF
 from Products.CMFPlone.interfaces import IPloneSiteRoot
+from org.bccvl.site.api import dataset
 
 
 class QueryAPI(object):
@@ -47,9 +48,6 @@ class QueryAPI(object):
     def getSpeciesDistributionModelEvaluationDatasets(self):
         return self.getDatasets(BCCDateGenre=BCCVOCAB['DataGenreSDMEval'])
 
-    def getEnviroLayers(self):
-        return self.portal_catalog.uniqueValuesFor('BCCEnviroLayer')
-
     def getExperiments(self):
         experiments_physical_path = '/'.join(
             [self.site_physical_path, defaults.EXPERIMENTS_FOLDER_ID]
@@ -65,10 +63,73 @@ class QueryAPI(object):
 
 # species occurrence datasets
 from zope.site.hooks import getSite
+from zope.interface import directlyProvides
+
+
+class BCCVLSimpleVocabulary(SimpleVocabulary):
+    """
+    A SimpleVocabulary, that takes advantage of terms
+    supplied as generators.
+    """
+
+    def __init__(self, terms, *interfaces):
+        """Initialize the vocabulary given an iterable of terms.
+
+        The vocabulary keeps a reference to the list of terms passed
+        in; it should never be modified while the vocabulary is used.
+
+        One or more interfaces may also be provided so that alternate
+        widgets may be bound without subclassing.
+        """
+        self.by_value = {}
+        self.by_token = {}
+        self._terms = []
+        for term in terms:
+            if term.value in self.by_value:
+                raise ValueError(
+                    'term values must be unique: %s' % repr(term.value))
+            if term.token in self.by_token:
+                raise ValueError(
+                    'term tokens must be unique: %s' % repr(term.token))
+            self.by_value[term.value] = term
+            self.by_token[term.token] = term
+            self._terms.append(term)
+        if interfaces:
+            directlyProvides(self, *interfaces)
+
+    @classmethod
+    def fromItems(cls, items, *interfaces):
+        """Construct a vocabulary from an iterable of (token, value) pairs.
+
+        The order of the items is preserved as the order of the terms
+        in the vocabulary.  Terms are created by calling the class
+        method createTerm() with the pair (value, token).
+
+        One or more interfaces may also be provided so that alternate
+        widgets may be bound without subclassing.
+        """
+        terms = (cls.createTerm(value, token) for (token, value) in items)
+        return cls(terms, *interfaces)
+
+    @classmethod
+    def fromValues(cls, values, *interfaces):
+        """Construct a vocabulary from a simple iterable list.
+
+        Values of the list become both the tokens and values of the
+        terms in the vocabulary.  The order of the values is preserved
+        as the order of the terms in the vocabulary.  Tokens are
+        created by calling the class method createTerm() with the
+        value as the only parameter.
+
+        One or more interfaces may also be provided so that alternate
+        widgets may be bound without subclassing.
+        """
+        terms = (cls.createTerm(value) for value in values)
+        return cls(terms, *interfaces)
 
 
 # TODO: optimize catalog vocabulary for lazy sliced access
-class BrainsVocabulary(SimpleVocabulary):
+class BrainsVocabulary(BCCVLSimpleVocabulary):
     # term.value ... UUID
     # term.token ... UUID
     # term.title ... Title
@@ -86,7 +147,7 @@ class BrainsVocabulary(SimpleVocabulary):
 
     @classmethod
     def fromBrains(cls, brains, context, *interfaces):
-        terms = [cls.createTerm(brain, context) for brain in brains]
+        terms = (cls.createTerm(brain, context) for brain in brains)
         return cls(terms, *interfaces)
 
 
@@ -103,31 +164,6 @@ class CatalogVocabularyFactory(object):
         except AttributeError:
             catalog = getToolByName(getSite(), 'portal_catalog')
         brains = catalog(**self.query)
-        return BrainsVocabulary.fromBrains(brains, context)
-
-
-@implementer(IContextSourceBinder)
-class CatalogSourceBinder(object):
-
-    def __init__(self, name, query):
-        self.__name__ = name
-        self.query = query
-
-    def _getBrains(self, context):
-        try:
-            catalog = getToolByName(context, 'portal_catalog')
-        except AttributeError:
-            catalog = getToolByName(getSite(), 'portal_catalog')
-        return catalog(**self.query)
-
-    def getTerms(self, context):
-        brains = self._getBrains(context)
-        terms = [BrainsVocabulary.createTerm(brain, context)
-                 for brain in brains]  # has to be a list will be iterated more than once
-        return terms
-
-    def __call__(self, context):
-        brains = self._getBrains(context)
         return BrainsVocabulary.fromBrains(brains, context)
 
 
@@ -205,7 +241,7 @@ species_traits_datasets_vocab = CatalogVocabularyFactory(
 
 # TODO: Need either two vocabs to separate sdm and traits scripts,
 #       or a contextsourcebinder that filters the correct scrips
-sdm_functions_source = CatalogSourceBinder(
+sdm_functions_source = CatalogVocabularyFactory(
     'sdm_functions_source',
     query={
         # TODO: could use a path restriction to toolkits folder
@@ -221,7 +257,7 @@ sdm_functions_source = CatalogSourceBinder(
 )
 
 
-traits_functions_source = CatalogSourceBinder(
+traits_functions_source = CatalogVocabularyFactory(
     'traits_functions_source',
     query={
         # TODO: could use a path restriction to toolkits folder
@@ -236,57 +272,41 @@ traits_functions_source = CatalogSourceBinder(
 )
 
 
-@implementer(IContextSourceBinder)
-class SparqlDataSetSourceBinder(object):
+@implementer(IVocabularyFactory)
+class DatasetLayerVocabularyFactory(object):
+    """
+    Fetches layers and labels for a context.
+    """
 
-    def __init__(self, name, apiFunc):
+    def __init__(self, name):
+        # key ... metadata field in catalog
         self.__name__ = name
-        self.apiFunc = apiFunc
 
     def __call__(self, context):
         if context is None:
-            # some widgets don't provide a context so let's fall back
-            # to site root
-            context = queryUtility(IPloneSiteRoot)
-        if context is None:
-            # if we have no site return empty
-            return SimpleVocabulary()
-        api = QueryAPI(context)
-        urirefs = getattr(api, self.apiFunc)()
-        if urirefs:
-            query = []
-            # TODO: uri could be None???
-            # TODO: maybe rebuild this query to fetch all labels from rdf
-            #       and fetch all uris from catalog and do a set intersection
-            #       all layers could be a 2nd vocabulary?
-            # FIXME: order in sparqlquery instead of sorted call afterwards
-            for uri in urirefs:
-                query.append('{ BIND(%(uri)s as ?uri) '
-                             '%(uri)s rdfs:label ?label }' %
-                             {'uri': uri.n3()})
-            query = ("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
-                     "SELECT ?uri ?label WHERE { Graph?g { %s } }" %
-                     "UNION".join(query))
-            handler = getUtility(IORDF).getHandler()
-            result = handler.query(query)
-            # FIXME: can I turn this into a generator?
-            terms = [SimpleTerm(value=item['uri'],
-                                token=str(item['uri']),
-                                title=unicode(item['label']))
-                     for item in result]
-            # TODO: get rid of sorted ... query should do it
-            terms = sorted(terms, key=lambda o: o.title)
-        else:
-            terms = [] # FIXME: should be a SimpleVocabulary?
-        return SimpleVocabulary(terms)
+            # we can't return anything useful if we don't have a context.
+            return []
+        # start with empty terms list
+        terms = []
+        # fetch layermetadata
+        lmd = dataset.getbiolayermetadata(context)
+        terms = (
+            SimpleTerm(value=layer,
+                       token=str(layer),
+                       title=info['label'])
+            for (layer, info) in lmd.items())
+        # TODO: get rid of sorted ... query should do it
+        terms = sorted(terms, key=lambda o: o.title)
+        return BCCVLSimpleVocabulary(terms)
 
 
-envirolayer_source = SparqlDataSetSourceBinder(
-    'envirolayer_source', 'getEnviroLayers')
+envirolayer_source = DatasetLayerVocabularyFactory(
+    'envirolayer_source',
+)
 
 
-@implementer(IContextSourceBinder)
-class SparqlValuesSourceBinder(object):
+@implementer(IVocabularyFactory)
+class SparqlValuesVocabularyFactory(object):
     # TODO: only return values relevant to the sdm?
 
     def __init__(self, name, query, title_getter=None):
@@ -307,19 +327,19 @@ class SparqlValuesSourceBinder(object):
         handler = getUtility(IORDF).getHandler()
         result = handler.query(self._query)
         # FIXME: generator?
-        terms = [
+        terms = (
             SimpleTerm(
                 value=item['uri'],
                 token=str(item['uri']),
                 title=unicode(self._get_term_title(item)),
             )
             for item in result
-        ]
+        )
         # TODO: get rid of sorted ... query should do it
         terms = sorted(terms, key=lambda o: o.title)
         return SimpleVocabulary(terms)
 
-emission_scenarios_source = SparqlValuesSourceBinder(
+emission_scenarios_source = SparqlValuesVocabularyFactory(
     'emission_scenarios_source',
     """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -338,7 +358,7 @@ emission_scenarios_source = SparqlValuesSourceBinder(
     """
 )
 
-global_climate_models_source = SparqlValuesSourceBinder(
+global_climate_models_source = SparqlValuesVocabularyFactory(
     'global_climate_models_source',
     """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -357,7 +377,7 @@ global_climate_models_source = SparqlValuesSourceBinder(
     """
 )
 
-fc_years_source = SparqlValuesSourceBinder(
+fc_years_source = SparqlValuesVocabularyFactory(
     'fc_years_source',
     """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
