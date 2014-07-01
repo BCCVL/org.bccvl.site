@@ -54,10 +54,12 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
 
     def getValueWidget(self, token, value, prefix=None):
         valueType = getattr(self.field, 'value_type')
-        # TODO: should initialise vocab for value_type with current value as context
         #widget = getMultiAdapter((valueType, self.request),
         #                         IFieldWidget)
         widget = SequenceCheckboxFieldWidget(valueType, self.request)
+        # we set the context so that the contextsourcebinder for choices can be set correctly.
+        # TODO: check if this is secure?
+        widget.context = uuidToCatalogBrain(value).getObject()  # TODO: IContextAware?
         self.setValueWidgetName(widget, token, prefix)
         widget.mode = self.mode
         if IFormAware.providedBy(self):

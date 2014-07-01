@@ -1,7 +1,7 @@
 from zope.interface import implementer
 from zope.publisher.interfaces import NotFound
 from zope.component import getUtility, queryUtility
-from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
+from zope.schema.interfaces import IVocabularyFactory
 from Products.Five.browser import BrowserView
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
