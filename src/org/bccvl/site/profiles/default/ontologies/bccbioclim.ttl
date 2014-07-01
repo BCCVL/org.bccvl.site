@@ -2,6 +2,10 @@
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix bv: <http://namespaces.bccvl.org.au/bioclim#> .
+@prefix nsg: <http://namespaces.bccvl.org.au/nationalsoilgrid#> .
+
+# TODO: this is all too focused on bioclim and should be much more generic as it
+#       is already used.
 
 bv:BioclimaticVariable a owl:Class ;
     rdfs:label "Bioclimatic Variable" ;
@@ -81,4 +85,24 @@ bv:B18 a bv:BioclimaticVariable ;
 
 bv:B19 a bv:BioclimaticVariable ;
     rdfs:label "B19 - Precipitation of Coldest Quarter" ;
+    .
+
+nsg:nsg-2011-250m-clay30 a bv:BioclimaticVariable ;
+    rdfs:label "Clay content percentage 0-30 cm" ;
+    .
+
+nsg:nsg-2011-250m-bd30 a bv:BioclimaticVariable ;
+    rdfs:label "Bulk density 0-30 cm";
+    .
+
+nsg:nsg-2011-250m-ph_0_30 a bv:BioclimaticVariable ;
+    rdfs:label "pH (Calcium Chloride 1:5) 0-30cm" ;
+    .
+
+nsg:nsg-2011-250m-pawc_1m a bv:BioclimaticVariable ;
+    rdfs:label "Plant available water capacity 0-1 m" ;
+    .
+
+nsg:nsg-2011-250m-asc a bv:BioclimaticVariable ;
+    rdfs:label "Australian Soil Classification" ;
     .
