@@ -13,6 +13,7 @@ from zope.i18n import translate
 from .interfaces import (IDatasetLayersWidget, IDatasetsRadioWidget,
                          IOrderedCheckboxWidget, IDatasetsMultiSelectWidget)
 from plone.app.uuid.utils import uuidToCatalogBrain
+from org.bccvl.site.interfaces import IDownloadInfo
 
 
 @implementer(IOrderedCheckboxWidget)
@@ -154,7 +155,8 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
             # do catalog query for additional infos
             items.append(
                 {'id': id, 'name': self.name, 'value': term.token,
-                 'label': label, 'checked': checked})
+                 'label': label, 'checked': checked,
+                 'dlinfo': IDownloadInfo(term.brain)})
         return items
 
     def update(self):

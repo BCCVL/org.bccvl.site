@@ -299,13 +299,13 @@ class SDMAdd(ParamGroupMixin, Add):
             for brain in (term.brain for term in vocab):
                 dataset_info = getdsmetadata(brain.getObject())
 
-                mapping[dataset_info['id']] = {
+                mapping[dataset_info['vizurl']] = {
                     'object': dataset_info['url'],
                     'file': dataset_info['file'],
                 }
 
                 if 'vizurl' in dataset_info:
-                    mapping[dataset_info['id']].update({
+                    mapping[dataset_info['vizurl']].update({
                         'vizurl': dataset_info['vizurl']
                     })
 
