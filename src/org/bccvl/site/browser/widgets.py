@@ -52,6 +52,7 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
         return '<input type="hidden" name="{}" value="1"/>'.format(
             self.markerName)
 
+    # TODO: can I cache the value widgets somewhere?
     def getValueWidget(self, token, value, prefix=None):
         valueType = getattr(self.field, 'value_type')
         #widget = getMultiAdapter((valueType, self.request),

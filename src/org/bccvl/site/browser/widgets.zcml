@@ -3,7 +3,7 @@
     xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="org.bccvl">
 
-    <adapter factory=".converter.DatasetsConverter"/>
+    <adapter factory=".converter.DatasetLayersConverter"/>
 
     <z3c:widgetTemplate
       mode="input"

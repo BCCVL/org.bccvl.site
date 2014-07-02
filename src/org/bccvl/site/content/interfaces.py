@@ -7,6 +7,7 @@ from z3c.form.browser.radio import RadioFieldWidget
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
 from org.bccvl.site.browser.widgets import SequenceCheckboxFieldWidget, DatasetsRadioFieldWidget
+from org.bccvl.site.browser.converter import DatasetLayersField
 
 
 class IDataset(form.Schema):
@@ -124,7 +125,7 @@ class ISDMExperiment(IExperiment):
     # e.g. ... basic key and value_types .... and widget does heavy work?
     # FIXME: would be best if widget supplies only possible values (at least for key_type)
     form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetLayersFieldWidget')
-    environmental_datasets = Dict(
+    environmental_datasets = DatasetLayersField(
         title=u'Environmental Datasets',
         key_type=Choice(vocabulary='environmental_datasets_vocab'),
         value_type=List(Choice(vocabulary='envirolayer_source'),
