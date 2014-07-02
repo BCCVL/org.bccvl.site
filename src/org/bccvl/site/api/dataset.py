@@ -4,7 +4,7 @@ from zope.component import getUtility, queryUtility
 from zope.schema.interfaces import IVocabularyFactory
 from Products.Five.browser import BrowserView
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
-from gu.z3cform.rdf.interfaces import IORDF, IGraph
+from gu.z3cform.rdf.interfaces import IORDF, IGraph, IResource
 from org.bccvl.site.api.interfaces import IAPIPublisher
 from org.bccvl.site.interfaces import IDownloadInfo
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO
@@ -102,8 +102,9 @@ def getbiolayermetadata(ds):
     handler = getUtility(IORDF).getHandler()
     biovocab = getUtility(IVocabularyFactory,
                           name='org.bccvl.site.BioclimVocabulary')(ds)
-    g = IGraph(ds)
-    r = Resource(g, g.identifier)
+    r = IResource(ds, None)
+    if r is None:
+        return ret
     for ref in r.objects(BCCPROP['hasArchiveItem']):
         # TODO: is this a good test for empty resource?
         obj = next(ref.objects(), None)
