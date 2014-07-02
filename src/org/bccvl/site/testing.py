@@ -12,9 +12,11 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
 from org.bccvl.site.namespace import BCCPROP, NFO
-from gu.z3cform.rdf.interfaces import IORDF, IGraph
+from gu.z3cform.rdf.interfaces import IORDF, IResource
 from collective.transmogrifier.transmogrifier import Transmogrifier
-from rdflib import Literal
+from rdflib import URIRef, Literal
+from rdflib.resource import Resource
+from org.bccvl.site.namespace import BIOCLIM
 
 
 TESTCSV = '\n'.join(['%s, %d, %d' % ('Name', x, x + 1) for x in range(1, 10)])
@@ -117,7 +119,6 @@ class BCCVLLayer(PloneSandboxLayer):
         # self.worker.stop()
         super(BCCVLLayer, self).tearDown()
 
-
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'Products.DateRecurringIndex')
         z2.uninstallProduct(app, 'plone.app.folderui')
@@ -129,19 +130,28 @@ class BCCVLLayer(PloneSandboxLayer):
                        source={'path': 'org.bccvl.site.tests:data'})
         # update metadata on imported content:
         # TODO: sholud be done in transomgrifier step
-        from rdflib import Graph, URIRef
-        from org.bccvl.site.namespace import BIOCLIM
         rdfhandler = getUtility(IORDF).getHandler()
         current = portal.datasets.environmental.current
-        g = IGraph(current)
+        r = IResource(current)
+
         for fid, i in ((URIRef("http://example.com/file%02d" % i), i)
-                    for i in range(1, 3)):
-            f = Graph(identifier=fid)
-            f.add((fid,  BIOCLIM['bioclimVariable'], BIOCLIM['B%02d' % i]))
-            f.add((fid,  NFO['fileName'], Literal('file%02d' % i)))
-            g.add((g.identifier, BCCPROP['hasArchiveItem'], f.identifier))
-            rdfhandler.put(f)
-        rdfhandler.put(g)
+                       for i in range(1, 3)):
+            f = Resource(r.graph, fid)
+            f.add(BIOCLIM['bioclimVariable'], BIOCLIM['B%02d' % i])
+            f.add(NFO['fileName'], Literal('file%02d' % i))
+            r.add(BCCPROP['hasArchiveItem'], f.identifier)
+        rdfhandler.put(r.graph)
+
+        current = portal.datasets.environmental.current_1k
+        r = IResource(current)
+        for fid, i in ((URIRef("http://example.com/file%02d" % i), i)
+                       for i in range(1, 3)):
+            f = Resource(r.graph, fid)
+            f.add(BIOCLIM['bioclimVariable'], BIOCLIM['B%02d' % i])
+            f.add(NFO['fileName'], Literal('file%02d' % i))
+            r.add(BCCPROP['hasArchiveItem'], f.identifier)
+        rdfhandler.put(r.graph)
+
         current.reindexObject()
 
 

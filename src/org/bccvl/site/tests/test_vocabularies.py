@@ -183,12 +183,12 @@ class EnviroLayerSourceTest(unittest.TestCase):
     def _get_class(self):
         return envirolayer_source
 
-    def _make_one(self):
-        return self._get_class()(self.layer['portal'])
+    def _make_one(self, context):
+        return self._get_class()(context)
 
     def test_interfaces(self):
         self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
-        self.assertTrue(IVocabulary.providedBy(self._make_one()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one(self.layer['portal'])))
 
     def test_registration(self):
         one = self._get_class()
@@ -196,9 +196,8 @@ class EnviroLayerSourceTest(unittest.TestCase):
         self.assertIs(one, tool)
 
     def test_elements(self):
-        source = self._make_one()
         ds = self.layer['portal'][defaults.DATASETS_FOLDER_ID]
         data = ds[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
-        data_uuid = IUUID(data)
+        source = self._make_one(data)
         self.assertIn(BIOCLIM['B01'], source)
         # FIXME: add tests with layers for data in source

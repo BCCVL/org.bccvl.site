@@ -35,7 +35,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.portal_url = self.portal.absolute_url()
         self.experiments_url = '/'.join((self.portal_url, defaults.EXPERIMENTS_FOLDER_ID))
         self.experiments_add_url = '/'.join((self.experiments_url,
-                                           '++add++org.bccvl.content.sdmexperiment'))
+                                            '++add++org.bccvl.content.sdmexperiment'))
         self.browser = Browser(app)
         # make publisher errors avilable
         self.browser.handleErrors = False
