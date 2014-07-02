@@ -289,7 +289,6 @@ class FileMetadataToRDF(object):
                 content.format = contenttype
             self.update_archive_items(content, filemd)
             self.update_metadata(content, filemd)
-            # FIXME: add handling for GDAL RAT
             # continue pipe line
             yield item
 

@@ -23,7 +23,7 @@
     <browser:view
         name="dm"
         class=".xmlrpc.DataSetManager"
-        allowed_attributes="query metadata
+        allowed_attributes="query metadata getRAT
                             getMetadata queryDataset getVocabulary
                             getFutureClimateDatasets getSDMDatasets
                             getBiodiverseDatasets
@@ -42,6 +42,10 @@
         <browser:page
             name="getMetadata"
             attribute="getMetadata"/>
+
+        <browser:page
+            name="getRAT"
+            attribute="getRAT"/>
 
         <browser:page
             name="queryDataset"

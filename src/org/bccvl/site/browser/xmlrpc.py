@@ -17,7 +17,7 @@ from org.bccvl.site import defaults
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO
 from ordf.namespace import DC
 import logging
-from gu.z3cform.rdf.interfaces import IORDF, IGraph
+from gu.z3cform.rdf.interfaces import IORDF, IGraph, IResource
 from zope.component import getUtility, queryUtility
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
@@ -113,6 +113,34 @@ class DataSetManager(BrowserView):
     @returnwrapper
     def getMetadata(self, datasetid):
         return self.metadata(datasetid)
+
+    @returnwrapper
+    def getRAT(self, datasetid, layer=None):
+        query = {'UID': datasetid}
+        if layer:
+            layer=URIRef(layer)
+        dsbrain = dataset.query(self.context, brains=True, **query)
+        if dsbrain:
+            dsbrain = next(dsbrain, None)
+        if not dsbrain:
+            raise NotFound(self.context, datasetid, self.request)
+        res = IResource(dsbrain)
+        rat = res.value(BCCPROP['rat'])
+        if not rat:
+            # nothing on dataset itself, maybe there are archive items?
+            for ai in res.objects(BCCPROP['hasArchiveItem']):
+                alayer = ai.value(BIOCLIM['bioclimVariable'])
+                if alayer and alayer.identifier == layer:
+                    rat = ai.value(BCCPROP['rat'])
+        # if we have a rat, let's try and parse it
+        if rat:
+            try:
+                rat = json.loads(unicode(rat))
+            except Exception as e:
+                LOG.warning("Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
+                rat = None
+        return rat
+
 
     @returnwrapper
     def query(self):
