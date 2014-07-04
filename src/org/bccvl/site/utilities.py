@@ -18,7 +18,7 @@ from org.bccvl.site.content.interfaces import (
     IEnsembleExperiment, ISpeciesTraitsExperiment)
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
-from org.bccvl.site.namespace import DWC, BCCPROP
+from org.bccvl.site.namespace import DWC, BCCPROP, BCCVOCAB
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
@@ -34,6 +34,7 @@ from zope.component import adapter, queryUtility
 from zope.interface import implementer
 import logging
 from plone.uuid.interfaces import IUUID
+from Products.CMFCore.utils import getToolByName
 
 LOG = logging.getLogger(__name__)
 
@@ -378,6 +379,34 @@ class ProjectionJobTracker(MultiJobTracker):
         result.job_params = self._get_job_params(sdm, year, emsc, gcm, climds)
         return result
 
+    def _store_experiment_metadata_on_result(self, result, sdm, dsbrain):
+        # result ... result container
+        # sdm ... sdm model dataset uuid?
+        # dsbrain ... future climate layer dataset
+        def getThresholdsForSdm(context, sdm):
+            pc = getToolByName(context, 'portal_catalog')
+            sdmbrain = uuidToCatalogBrain(sdm)
+            # sdmbrain is the model dataset, and we want it's sibling evaluation results
+            path = '/'.join(sdmbrain.getPath().split('/')[:-1])
+            thrs = {}
+            for brain in pc.searchResults(
+                    path={'query': path, 'depth': 1},
+                    BCCDataGenre=BCCVOCAB['DataGenreSDMEval']):
+                dsobj = brain.getObject()
+                if not getattr(dsobj, 'thresholds', None):
+                    continue
+                # TODO: this will overwrite duplicate threshold keys rom different datasets
+                # we make a copy and don't store a reference to the same dict
+                thrs = dict(dsobj.thresholds)
+            return thrs
+
+        result.experiment_infos = {
+            'sdm': {
+                'uuid': sdm,
+                'thresholds': getThresholdsForSdm(self.context, sdm),
+            }
+        }
+
     def start_job(self, request):
         if not self.is_active():
             # get utility to execute this experiment
@@ -392,6 +421,7 @@ class ProjectionJobTracker(MultiJobTracker):
             for sdm in self.context.species_distribution_models:
                 for dsbrain in self.context.future_climate_datasets():
                     result = self._create_result_container(sdm, dsbrain)
+                    self._store_experiment_metadata_on_result(result, sdm, dsbrain)
                     # submit job
                     LOG.info("Submit JOB project to queue")
                     method(result, "project")  # TODO: wrong interface
