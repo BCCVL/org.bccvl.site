@@ -38,6 +38,7 @@ class DatasetTools(BrowserView):
         for transition in ('publish', 'retract'):
             if wf.isActionSupported(itemob, transition):
                 return transition
+        return {}
 
     def get_download_info(self, item=None):
         if item is None:
