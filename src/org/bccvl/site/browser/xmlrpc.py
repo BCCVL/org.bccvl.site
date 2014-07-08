@@ -206,6 +206,7 @@ class DataSetManager(BrowserView):
     # TODO: this is rather experiment API
     @returnwrapper
     def getSDMDatasets(self):
+        # get all SDM current projection datasets
         pc = getToolByName(self.context, 'portal_catalog')
         sdmbrains = pc.searchResults(
             object_provides=ISDMExperiment.__identifier__,
@@ -217,23 +218,22 @@ class DataSetManager(BrowserView):
             datasets = []
             for dsbrain in pc.searchResults(
                     path=sdmbrain.getPath(),
-                    BCCDataGenre=BCCVOCAB['DataGenreFP']):
+                    BCCDataGenre=BCCVOCAB['DataGenreCP']):
                 # get required metadata about dataset
                 datasets.append({
+                    #"files": [raster file names],
                     "title": dsbrain.Title,
                     "uuid": dsbrain.UID,
                     "url": dsbrain.getURL(),
+                    #"year", "gcm", "msc", "species"
                 })
             sdms.append({
-                "title": sdmbrain.Title,
-                "uuid": sdmbrain.UID,
-                "url": sdmbrain.getURL(),
-                "datasets": datasets
-            })
-
-            sdms.append({
+                #"species": [],
+                #"years": [],
                 "name": sdmbrain.Title,
                 "uuid": sdmbrain.UID,
+                "url": sdmbrain.getURL(),
+                "result": datasets
             })
         return {'sdms': sdms}
 
@@ -249,9 +249,16 @@ class DataSetManager(BrowserView):
         for biodiversebrain in biodiversebrains:
             # search for datasets with this experiment
             datasets = []
+            # TODO: query for data genre class?
             for dsbrain in pc.searchResults(
                     path=biodiversebrain.getPath(),
-                    BCCDataGenre=BCCVOCAB['DataGenreFP']):
+                    BCCDataGenre=(BCCVOCAB['DataGenreENDW_CWE'],
+                                  BCCVOCAB['DataGenreENDW_WE'],
+                                  BCCVOCAB['DataGenreENDW_RICHNESS'],
+                                  BCCVOCAB['DataGenreENDW_SINGLE'],
+                                  BCCVOCAB['DataGenreREDUNDANCY_SET1'],
+                                  BCCVOCAB['DataGenreREDUNDANCY_SET2'],
+                                  BCCVOCAB['DataGenreREDUNDANCY_ALL'])):
                 # get required metadata about dataset
                 datasets.append({
                     "title": dsbrain.Title,
@@ -259,10 +266,10 @@ class DataSetManager(BrowserView):
                     "url": dsbrain.getURL(),
                 })
             biodiverses.append({
-                "title": biodiversebrain.Title,
+                "name": biodiversebrain.Title,
                 "uuid": biodiversebrain.UID,
                 "url": biodiversebrain.getURL(),
-                "datasets": datasets
+                "result": datasets
             })
         return {'biodiverses': biodiverses}
 
