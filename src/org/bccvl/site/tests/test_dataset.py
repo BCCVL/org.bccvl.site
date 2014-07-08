@@ -60,8 +60,7 @@ class DatasetSetupTest(unittest.TestCase):
         self.assertEqual(u'http://127.0.0.1:8201/plone/datasets/climate/future/@@download/file/future',
                          di['alturl'][0])
 
-        ds = self.get_dataset(defaults.DATASETS_CLIMATE_FOLDER_ID,
-                              'remote')
+        ds = self.get_dataset(defaults.DATASETS_CLIMATE_FOLDER_ID, 'remote')
         di = IDownloadInfo(ds)
         self.assertEqual(u'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677/australia_5km/RCP3PD_cccma-cgcm31_2015.zip',
                          di['url'])
@@ -72,11 +71,9 @@ class DatasetSetupTest(unittest.TestCase):
     def test_filemetadata(self):
         ds = self.get_dataset(defaults.DATASETS_SPECIES_FOLDER_ID,
                               'ABT', 'occurrence.csv')
-        from gu.z3cform.rdf.interfaces import IGraph
-        from rdflib.resource import Resource
+        from gu.z3cform.rdf.interfaces import IResource
         from org.bccvl.site.namespace import BCCPROP
-        graph = IGraph(ds)
-        mdres = Resource(graph, graph.identifier)
+        mdres = IResource(ds)
         self.assertEqual(mdres.value(BCCPROP['rows']).toPython(), 3)
         #self.assertEqual(md.value(BCCPROP['bounds']), len(bounds)==4)
         #self.assertEqual(md.value(BCCPROP['headers']), ['Name', 'lon', 'lat'])
