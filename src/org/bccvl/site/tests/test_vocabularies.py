@@ -173,7 +173,7 @@ class TraitsFunctionsSourceTest(unittest.TestCase):
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
         # TODO: this test depends on whatever is setup in org.bccvl.compute:content
-        self.assertEqual(len(source), 1)
+        self.assertEqual(len(source), 6)
 
 
 class EnviroLayerSourceTest(unittest.TestCase):
