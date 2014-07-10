@@ -120,9 +120,11 @@ class ALASource(object):
                 },
                 '_files': {
                     'data.csv': {
+                        'name': 'data.csv',
                         'data': open(csv).read()
                     },
                     'rdf.ttl': {
+                        'name': 'rdf.ttl',
                         'data': rdf.serialize(format='turtle')
                     }
                 }}
