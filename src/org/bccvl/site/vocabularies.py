@@ -163,7 +163,7 @@ class CatalogVocabularyFactory(object):
             catalog = getToolByName(context, 'portal_catalog')
         except AttributeError:
             catalog = getToolByName(getSite(), 'portal_catalog')
-        brains = catalog(**self.query)
+        brains = catalog.searchResults(**self.query)
         return BrainsVocabulary.fromBrains(brains, context)
 
 
