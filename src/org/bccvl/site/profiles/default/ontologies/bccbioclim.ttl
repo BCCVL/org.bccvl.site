@@ -3,6 +3,7 @@
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix bv: <http://namespaces.bccvl.org.au/bioclim#> .
 @prefix nsg: <http://namespaces.bccvl.org.au/nationalsoilgrid#> .
+@prefix vast: <http://namespaces.bccvl.org.au/vast#> .
 
 # TODO: this is all too focused on bioclim and should be much more generic as it
 #       is already used.
@@ -105,4 +106,8 @@ nsg:nsg-2011-250m-pawc_1m a bv:BioclimaticVariable ;
 
 nsg:nsg-2011-250m-asc a bv:BioclimaticVariable ;
     rdfs:label "Australian Soil Classification" ;
+    .
+
+vast:vastgridv2_1k a bv:BioclimaticVariable ;
+    rdfs:label "National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008" ;
     .
