@@ -11,7 +11,7 @@ from ordf.namespace import DC
 from rdflib import RDF, URIRef, Literal, OWL
 from rdflib.resource import Resource
 from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GLM, EPSG,
-                                      BIOCLIM, NSG)
+                                      BIOCLIM, BCCVLLAYER)
 from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
@@ -379,8 +379,8 @@ class FileMetadataToRDF(object):
                             if 'layers' in bmd:
                                 for layer in bmd['layers']:
                                     if layer['file_pattern'] in key:
-                                        # works for NSG atm.
-                                        ares.add(BIOCLIM['bioclimVariable'], NSG[layer['file_pattern']])
+                                        # works for non bioclim layers atm.
+                                        ares.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern']])
                                         # TODO check if two patterns would match?
                                         break
 
