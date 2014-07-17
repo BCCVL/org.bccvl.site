@@ -119,7 +119,7 @@ def getbiolayermetadata(ds):
             try:
                 label = unicode(biovocab.getTerm(bvar.identifier).title)
             except:
-                label = unicode(bvar.idetifier)
+                label = unicode(bvar.identifier)
             ret[bvar.identifier] = {
                 'filename': unicode(ref.value(NFO['fileName'])),
                 'label': label,
