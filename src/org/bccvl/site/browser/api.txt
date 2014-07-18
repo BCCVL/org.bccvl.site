@@ -138,7 +138,7 @@ Vocabulary endpoint:
 
    >>> pprint(proxy.getVocabulary('org.bccvl.site.BioclimVocabulary'))
     [{'title': 'Australian Soil Classification',
-      'token': 'http://namespaces.bccvl.org.au/nationalsoilgrid#nsg-2011-250m-asc'},
+      'token': 'http://namespaces.bccvl.org.au/layer#nsg-2011-250m-asc'},
      {'title': 'B01 - Annual Mean Temperature',
       'token': 'http://namespaces.bccvl.org.au/bioclim#B01'},
      {'title': 'B02 - Mean Diurnal Range (Mean of monthly (max temp - min temp))',
@@ -178,13 +178,15 @@ Vocabulary endpoint:
      {'title': 'B19 - Precipitation of Coldest Quarter',
       'token': 'http://namespaces.bccvl.org.au/bioclim#B19'},
      {'title': 'Bulk density 0-30 cm',
-      'token': 'http://namespaces.bccvl.org.au/nationalsoilgrid#nsg-2011-250m-bd30'},
+      'token': 'http://namespaces.bccvl.org.au/layer#nsg-2011-250m-bd30'},
      {'title': 'Clay content percentage 0-30 cm',
-      'token': 'http://namespaces.bccvl.org.au/nationalsoilgrid#nsg-2011-250m-clay30'},
+      'token': 'http://namespaces.bccvl.org.au/layer#nsg-2011-250m-clay30'},
+     {'title': 'National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008',
+      'token': 'http://namespaces.bccvl.org.au/layer#vastgridv2_1k'},
      {'title': 'Plant available water capacity 0-1 m',
-      'token': 'http://namespaces.bccvl.org.au/nationalsoilgrid#nsg-2011-250m-pawc_1m'},
+      'token': 'http://namespaces.bccvl.org.au/layer#nsg-2011-250m-pawc_1m'},
      {'title': 'pH (Calcium Chloride 1:5) 0-30cm',
-      'token': 'http://namespaces.bccvl.org.au/nationalsoilgrid#nsg-2011-250m-ph_0_30'}]
+      'token': 'http://namespaces.bccvl.org.au/layer#nsg-2011-250m-ph_0_30'}]
 
    >>> pprint(proxy.getVocabulary('org.bccvl.site.SpeciesDataGenreVocabulary'))
     [{'title': 'Abundance',
