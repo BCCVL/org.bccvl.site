@@ -1,4 +1,4 @@
-from zope.schema.interfaces import IContextSourceBinder, IVocabularyFactory
+from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from org.bccvl.site import defaults
 from zope.interface import implementer, provider
@@ -10,6 +10,7 @@ from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
 from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB
 from rdflib import RDF
 from Products.CMFPlone.interfaces import IPloneSiteRoot
+from org.bccvl.site.api import dataset
 
 
 class QueryAPI(object):
@@ -44,60 +45,8 @@ class QueryAPI(object):
         return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSO'],
                                 job_state='COMPLETED')
 
-    def getSpeciesPresenceDatasets(self):
-        return self.getDatasets(
-            BCCDataGenre=BCCVOCAB['DataGenreSO'],
-            BCCSpeciesLayer=BCCVOCAB['SpeciesLayerP'],
-            job_state='COMPLETED'
-        )
-
-    def getSpeciesAbsenceDatasets(self):
-        return self.getDatasets(
-            BCCDataGenre=BCCVOCAB['DataGenreSO'],
-            BCCSpeciesLayer=BCCVOCAB['SpeciesLayerX']
-        )
-
-    def getSpeciesAbundanceDatasets(self):
-        return self.getDatasets(
-            BCCDataGenre=BCCVOCAB['DataGenreSO'],
-            BCCSpeciesLayer=BCCVOCAB['SpeciesLayerA']
-        )
-
-    def getSpeciesDistributionModelDatasets(self):
-        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSDMModel'])
-
     def getSpeciesDistributionModelEvaluationDatasets(self):
         return self.getDatasets(BCCDateGenre=BCCVOCAB['DataGenreSDMEval'])
-
-    def getEnvironmentalDatasets(self):
-        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreE'])
-
-    def getFutureClimateDatasets(self, year=None, emission_scenario=None,
-                                 climate_model=None):
-        query = dict(BCCDataGenre=BCCVOCAB['DataGenreFC'])
-        # TODO: optional param selection goes here
-        return self.getDatasets(**query)
-
-    def getFutureProjectionDatasets(self):
-        # use context to restrict to only ones that match layers?
-        return self.getDatasets(
-            BCCDataGenre=BCCVOCAB['DataGenreFP'],
-        )
-
-    def getFunctions(self):
-        functions_physical_path = '/'.join(
-            [self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID]
-        )
-        brains = self.portal_catalog(
-            path={'query': functions_physical_path},
-            object_provides='org.bccvl.site.content.function.IFunction',
-            sort_on='sortable_title',
-
-        )
-        return brains
-
-    def getEnviroLayers(self):
-        return self.portal_catalog.uniqueValuesFor('BCCEnviroLayer')
 
     def getExperiments(self):
         experiments_physical_path = '/'.join(
@@ -112,140 +61,252 @@ class QueryAPI(object):
         return brains
 
 
-@implementer(IContextSourceBinder)
-class DataSetSourceBinder(object):
-
-    def __init__(self, name, apiFunc, tokenKey='UID'):
-        self.__name__ = name
-        self.apiFunc = apiFunc
-        self.tokenKey = tokenKey
-
-    def getTerms(self, context):
-        # FIXME: if nothing return []
-        api = QueryAPI(context)
-        brains = getattr(api, self.apiFunc)()
-        terms = [SimpleTerm(value=brain['UID'],
-                            token=brain[self.tokenKey],
-                            title=brain['Title'])
-                 for brain in brains]
-        # TODO: get rid of sorted ... let api.query do it (it partly does already)
-        return sorted(terms, key=lambda o: o.title)
-
-    def __call__(self, context):
-        terms = self.getTerms(context)
-        return SimpleVocabulary(terms)
-
-
-class DataSetSourceBinderTitleFromParent(DataSetSourceBinder):
-
-    def getTerms(self, context):
-        # FIXME: no context return []?
-        api = QueryAPI(context)
-        brains = getattr(api, self.apiFunc)()
-        pc = getToolByName(context, 'portal_catalog')
-        terms = []
-        for brain in brains:
-            parentpath, _ = brain.getPath().rsplit('/', 1)
-            parentbrain = pc.searchResults(path={'query': parentpath,
-                                                 'depth': 0})
-            if parentbrain:
-                title = parentbrain[0]['Title']
-            else:
-                title = brain['Title']
-            terms.append(SimpleTerm(value=brain['UID'],
-                                    token=brain[self.tokenKey],
-                                    title=title))
-        # TODO: get rid of sorted ... let query do it
-        return sorted(terms, key=lambda o: o.title)
-
-
 # species occurrence datasets
-species_presence_datasets_source = DataSetSourceBinder(
-    'species_presence_datasets_source', 'getSpeciesPresenceDatasets'
-)
-
-species_absence_datasets_source = DataSetSourceBinder(
-    'species_absence_datasets_source', 'getSpeciesAbsenceDatasets'
-)
-
-species_abundance_datasets_source = DataSetSourceBinder(
-    'species_abundance_datasets_source', 'getSpeciesAbundanceDatasets'
-)
-
-environmental_datasets_source = DataSetSourceBinder(
-    'environmental_datasets_source', 'getEnvironmentalDatasets'
-)
-
-future_climate_datasets_source = DataSetSourceBinder(
-    'future_climate_datasets_source', 'getFutureClimateDatasets'
-)
-
-species_distributions_models_source = DataSetSourceBinderTitleFromParent(
-    'species_distributions_models_source',
-    'getSpeciesDistributionModelDatasets'
-)
-
-species_projection_datasets_source = DataSetSourceBinder(
-    'species_projection_datasets_source',
-    'getFutureProjectionDatasets')
-
-functions_source = DataSetSourceBinder(
-    'functions_source', 'getFunctions', 'id'
-)
+from zope.site.hooks import getSite
+from zope.interface import directlyProvides
 
 
-@implementer(IContextSourceBinder)
-class SparqlDataSetSourceBinder(object):
+class BCCVLSimpleVocabulary(SimpleVocabulary):
+    """
+    A SimpleVocabulary, that takes advantage of terms
+    supplied as generators.
+    """
 
-    def __init__(self, name, apiFunc, tokenKey='UID'):
+    def __init__(self, terms, *interfaces):
+        """Initialize the vocabulary given an iterable of terms.
+
+        The vocabulary keeps a reference to the list of terms passed
+        in; it should never be modified while the vocabulary is used.
+
+        One or more interfaces may also be provided so that alternate
+        widgets may be bound without subclassing.
+        """
+        self.by_value = {}
+        self.by_token = {}
+        self._terms = []
+        for term in terms:
+            if term.value in self.by_value:
+                raise ValueError(
+                    'term values must be unique: %s' % repr(term.value))
+            if term.token in self.by_token:
+                raise ValueError(
+                    'term tokens must be unique: %s' % repr(term.token))
+            self.by_value[term.value] = term
+            self.by_token[term.token] = term
+            self._terms.append(term)
+        if interfaces:
+            directlyProvides(self, *interfaces)
+
+    @classmethod
+    def fromItems(cls, items, *interfaces):
+        """Construct a vocabulary from an iterable of (token, value) pairs.
+
+        The order of the items is preserved as the order of the terms
+        in the vocabulary.  Terms are created by calling the class
+        method createTerm() with the pair (value, token).
+
+        One or more interfaces may also be provided so that alternate
+        widgets may be bound without subclassing.
+        """
+        terms = (cls.createTerm(value, token) for (token, value) in items)
+        return cls(terms, *interfaces)
+
+    @classmethod
+    def fromValues(cls, values, *interfaces):
+        """Construct a vocabulary from a simple iterable list.
+
+        Values of the list become both the tokens and values of the
+        terms in the vocabulary.  The order of the values is preserved
+        as the order of the terms in the vocabulary.  Tokens are
+        created by calling the class method createTerm() with the
+        value as the only parameter.
+
+        One or more interfaces may also be provided so that alternate
+        widgets may be bound without subclassing.
+        """
+        terms = (cls.createTerm(value) for value in values)
+        return cls(terms, *interfaces)
+
+
+# TODO: optimize catalog vocabulary for lazy sliced access
+class BrainsVocabulary(BCCVLSimpleVocabulary):
+    # term.value ... UUID
+    # term.token ... UUID
+    # term.title ... Title
+    # term.brain ... the brain
+
+    # implements IVocaburaryTokenized
+
+    @classmethod
+    def createTerm(cls, brain, context):
+        term = SimpleTerm(value=brain['UID'],
+                          token=brain['UID'],
+                          title=brain.Title)
+        term.brain = brain
+        return term
+
+    @classmethod
+    def fromBrains(cls, brains, context, *interfaces):
+        terms = (cls.createTerm(brain, context) for brain in brains)
+        return cls(terms, *interfaces)
+
+
+@implementer(IVocabularyFactory)
+class CatalogVocabularyFactory(object):
+
+    def __init__(self, name, query):
         self.__name__ = name
-        self.apiFunc = apiFunc
-        self.tokenKey = tokenKey
+        self.query = query
+
+    def __call__(self, context):
+        try:
+            catalog = getToolByName(context, 'portal_catalog')
+        except AttributeError:
+            catalog = getToolByName(getSite(), 'portal_catalog')
+        brains = catalog.searchResults(**self.query)
+        return BrainsVocabulary.fromBrains(brains, context)
+
+
+species_presence_datasets_vocab = CatalogVocabularyFactory(
+    'species_presence_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreSO'],
+        'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerP'],
+        'job_state': 'COMPLETED'
+    })
+
+species_absence_datasets_vocab = CatalogVocabularyFactory(
+    'species_absence_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreSO'],
+        'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerX'],
+        'job_state': 'COMPLETED',
+    })
+
+species_abundance_datasets_vocab = CatalogVocabularyFactory(
+    'species_abundance_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreSO'],
+        'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerA'],
+        'job_state': 'COMPLETED',
+    })
+
+environmental_datasets_vocab = CatalogVocabularyFactory(
+    'environmental_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreE'],
+        #'job_state': 'COMPLETED',
+    })
+
+future_climate_datasets_vocab = CatalogVocabularyFactory(
+    # TODO: might be useful for this vocab to support additional parameters like
+    #       year, emsc, gcm, etc...
+    'future_climate_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreFC'],
+        #'job_state': 'COMPLETED',
+    })
+
+species_distributions_models_vocab = CatalogVocabularyFactory(
+    # TODO: would this here work better with path restrictions?
+    'species_distributions_models_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreSDMModel'],
+        'job_state': 'COMPLETED',
+    })
+
+
+species_projection_datasets_vocab = CatalogVocabularyFactory(
+    # TODO: would this here work better with path restrictions?
+    'species_projection_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreFP'],
+        'job_state': 'COMPLETED',
+    })
+
+species_traits_datasets_vocab = CatalogVocabularyFactory(
+    'species_traits_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': BCCVOCAB['DataGenreTraits'],
+        'job_state': 'COMPLETED',
+    })
+
+# TODO: Need either two vocabs to separate sdm and traits scripts,
+#       or a contextsourcebinder that filters the correct scrips
+sdm_functions_source = CatalogVocabularyFactory(
+    'sdm_functions_source',
+    query={
+        # TODO: could use a path restriction to toolkits folder
+        # 'path': {
+        #     'query': '/'.join([self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID])
+        # },
+        'object_provides': 'org.bccvl.site.content.function.IFunction',
+        # FIXME: find another way to separate SDM and traits "functions"
+        'id': ['ann', 'bioclim', 'brt', 'circles', 'convhull', 'cta', 'domain',
+               'fda', 'gam', 'gbm', 'glm', 'maxent'],
+        'sort_on': 'sortable_title',
+    },
+)
+
+
+traits_functions_source = CatalogVocabularyFactory(
+    'traits_functions_source',
+    query={
+        # TODO: could use a path restriction to toolkits folder
+        # 'path': {
+        #     'query': '/'.join([self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID])
+        # },
+        'object_provides': 'org.bccvl.site.content.function.IFunction',
+        # FIXME: find another way to separate SDM and traits "functions"
+        'id': ['lm', 'speciestrait_glm', 'speciestrait_gam', 'gamlss', 'anova', 'manova'],
+        'sort_on': 'sortable_title',
+    },
+)
+
+
+@implementer(IVocabularyFactory)
+class DatasetLayerVocabularyFactory(object):
+    """
+    Fetches layers and labels for a context.
+    """
+
+    def __init__(self, name):
+        # key ... metadata field in catalog
+        self.__name__ = name
 
     def __call__(self, context):
         if context is None:
-            # some widgets don't provide a context so let's fall back
-            # to site root
-            context = queryUtility(IPloneSiteRoot)
-        if context is None:
-            # if we have no site return empty
-            return SimpleVocabulary()
-        api = QueryAPI(context)
-        urirefs = getattr(api, self.apiFunc)()
-        if urirefs:
-            query = []
-            # TODO: uri could be None???
-            # TODO: maybe rebuild this query to fetch all labels from rdf
-            #       and fetch all uris from catalog and do a set intersection
-            #       all layers could be a 2nd vocabulary?
-            # FIXME: order in sparqlquery instead of sorted call afterwards
-            for uri in urirefs:
-                query.append('{ BIND(%(uri)s as ?uri) '
-                             '%(uri)s rdfs:label ?label }' %
-                             {'uri': uri.n3()})
-            query = ("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
-                     "SELECT ?uri ?label WHERE { Graph?g { %s } }" %
-                     "UNION".join(query))
-            handler = getUtility(IORDF).getHandler()
-            result = handler.query(query)
-            # FIXME: can I turn this into a generator?
-            terms = [SimpleTerm(value=item['uri'],
-                                token=str(item['uri']),
-                                title=unicode(item['label']))
-                     for item in result]
-            # TODO: get rid of sorted ... query should do it
-            terms = sorted(terms, key=lambda o: o.title)
-        else:
-            terms = [] # FIXME: should be a SimpleVocabulary?
-        return SimpleVocabulary(terms)
+            # we can't return anything useful if we don't have a context.
+            return []
+        # start with empty terms list
+        terms = []
+        # fetch layermetadata
+        lmd = dataset.getbiolayermetadata(context)
+        terms = (
+            SimpleTerm(value=layer,
+                       token=str(layer),
+                       title=info['label'])
+            for (layer, info) in lmd.items())
+        # TODO: get rid of sorted ... query should do it
+        terms = sorted(terms, key=lambda o: o.title)
+        return BCCVLSimpleVocabulary(terms)
 
 
-envirolayer_source = SparqlDataSetSourceBinder(
-    'envirolayer_source', 'getEnviroLayers')
+envirolayer_source = DatasetLayerVocabularyFactory(
+    'envirolayer_source',
+)
 
 
-@implementer(IContextSourceBinder)
-class SparqlValuesSourceBinder(object):
+@implementer(IVocabularyFactory)
+class SparqlValuesVocabularyFactory(object):
     # TODO: only return values relevant to the sdm?
 
     def __init__(self, name, query, title_getter=None):
@@ -266,19 +327,19 @@ class SparqlValuesSourceBinder(object):
         handler = getUtility(IORDF).getHandler()
         result = handler.query(self._query)
         # FIXME: generator?
-        terms = [
+        terms = (
             SimpleTerm(
                 value=item['uri'],
                 token=str(item['uri']),
                 title=unicode(self._get_term_title(item)),
             )
             for item in result
-        ]
+        )
         # TODO: get rid of sorted ... query should do it
         terms = sorted(terms, key=lambda o: o.title)
         return SimpleVocabulary(terms)
 
-emission_scenarios_source = SparqlValuesSourceBinder(
+emission_scenarios_source = SparqlValuesVocabularyFactory(
     'emission_scenarios_source',
     """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -297,7 +358,7 @@ emission_scenarios_source = SparqlValuesSourceBinder(
     """
 )
 
-global_climate_models_source = SparqlValuesSourceBinder(
+global_climate_models_source = SparqlValuesVocabularyFactory(
     'global_climate_models_source',
     """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -316,7 +377,7 @@ global_climate_models_source = SparqlValuesSourceBinder(
     """
 )
 
-fc_years_source = SparqlValuesSourceBinder(
+fc_years_source = SparqlValuesVocabularyFactory(
     'fc_years_source',
     """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>

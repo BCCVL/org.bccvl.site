@@ -1,10 +1,13 @@
 from zope.interface import Interface
 from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
-from zope.schema import Choice, List, Dict, Bool, Int, TextLine
+from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
-from org.bccvl.site import vocabularies
+from z3c.form.browser.radio import RadioFieldWidget
 from org.bccvl.site import MessageFactory as _
+# next import may cause circular import problems
+from org.bccvl.site.browser.widgets import SequenceCheckboxFieldWidget, DatasetsRadioFieldWidget
+from org.bccvl.site.browser.converter import DatasetLayersField
 
 
 class IDataset(form.Schema):
@@ -78,21 +81,29 @@ class ISDMExperiment(IExperiment):
     form.widget(functions=CheckBoxFieldWidget)
     functions = List(
         title=u'Algorithm',
-        value_type=Choice(source=vocabularies.functions_source),
+        value_type=Choice(vocabulary='sdm_functions_source'),
         default=None,
         required=True,
     )
 
+    form.widget('species_occurrence_dataset',
+                DatasetsRadioFieldWidget,
+                errmsg=u"Please select at least 1 emmission scenario.",
+                vizclass=u'fine bccvl-occurrence-viz')
     species_occurrence_dataset = Choice(
         title=u'Species Occurrence Datasets',
-        source=vocabularies.species_presence_datasets_source,
+        vocabulary='species_presence_datasets_vocab',
         default=None,
         required=False,
     )
 
+    form.widget('species_absence_dataset',
+                DatasetsRadioFieldWidget,
+                errmsg=u"Please select at least 1 emmission scenario.",
+                vizclass=u'fine bccvl-absence-viz')
     species_absence_dataset = Choice(
         title=u'Species Absence Datasets',
-        source=vocabularies.species_absence_datasets_source,
+        source='species_absence_datasets_vocab',
         default=None,
         required=False,
     )
@@ -113,11 +124,11 @@ class ISDMExperiment(IExperiment):
     # store dataset + layer (or file within zip)
     # e.g. ... basic key and value_types .... and widget does heavy work?
     # FIXME: would be best if widget supplies only possible values (at least for key_type)
-    form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetsFieldWidget')
-    environmental_datasets = Dict(
+    form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetLayersFieldWidget')
+    environmental_datasets = DatasetLayersField(
         title=u'Environmental Datasets',
-        key_type=Choice(source=vocabularies.environmental_datasets_source),
-        value_type=List(Choice(source=vocabularies.envirolayer_source),
+        key_type=Choice(vocabulary='environmental_datasets_vocab'),
+        value_type=List(Choice(vocabulary='envirolayer_source'),
                         unique=False),
         required=True,
     )
@@ -134,10 +145,10 @@ class IProjectionExperiment(IExperiment):
     )
 
     form.widget(species_distribution_models=
-                'org.bccvl.site.browser.widgets.DatasetsRadioFieldWidget')
-    species_distribution_models = Choice(
+                'org.bccvl.site.browser.widgets.DatasetsMultiSelectFieldWidget')
+    species_distribution_models = List(
         title=u'Species Distribution Models',
-        source=vocabularies.species_distributions_models_source,
+        value_type=Choice(vocabulary='species_distributions_models_vocab'),
         default=None,
         required=True,
     )
@@ -145,30 +156,34 @@ class IProjectionExperiment(IExperiment):
     # TODO: instead of form hints ... maybe set widgetfactory in form
     #       updateWidgets?  form hint affects all forms ... using
     #       updateWidgets would require to customise every form where
-    #       we wanta custom widget
-    form.widget(years=
-                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    #       we want a custom widget
+    # TODO: could add parsley-attributes to the widget here
+    form.widget('years',
+                SequenceCheckboxFieldWidget,
+                errmsg=u"Please select at least 1 year.")
     years = List(
-        title=u'Projection Point: Years',
-        value_type=Choice(source=vocabularies.fc_years_source),
+        title=u'Years',
+        value_type=Choice(source='fc_years_source'),
         default=None,
         required=True,
     )
 
-    form.widget(emission_scenarios=
-                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    form.widget('emission_scenarios',
+                SequenceCheckboxFieldWidget,
+                errmsg=u"Please select at least 1 emmission scenario.")
     emission_scenarios = List(
-        title=u'Projection Point: Emission Scenarios',
-        value_type=Choice(source=vocabularies.emission_scenarios_source),
+        title=u'Emission Scenarios',
+        value_type=Choice(vocabulary='emission_scenarios_source'),
         default=None,
         required=True,
     )
 
-    form.widget(climate_models=
-                'org.bccvl.site.browser.widgets.SequenceCheckboxFieldWidget')
+    form.widget('climate_models',
+                SequenceCheckboxFieldWidget,
+                errmsg=u"Please select at least 1 climate model.")
     climate_models = List(
-        title=u'Projection Point: Climate Models',
-        value_type=Choice(source=vocabularies.global_climate_models_source),
+        title=u'Climate Models',
+        value_type=Choice(source='global_climate_models_source'),
         default=None,
         required=True,
     )
@@ -213,4 +228,28 @@ class IEnsembleExperiment(IExperiment):
 
 class ISpeciesTraitsExperiment(IExperiment):
 
-    pass
+    form.widget(algorithm=RadioFieldWidget)
+    algorithm = Choice(
+        title=u'Algorithm',
+        vocabulary='traits_functions_source',
+        required=True,
+        default=None,
+    )
+
+    formula = Text(
+        title=u'Formula',
+        description=u'Please see <a href="http://stat.ethz.ch/R-manual/R-devel/library/stats/html/lm.htm">R:Fitting Linear Models</a> for details.',
+        required=True,
+        default=None,
+    )
+
+    form.widget('data_table',
+                DatasetsRadioFieldWidget,
+                errmsg=u"Please select at least 1 data set.",
+                vizclass=u'fine bccvl-auto-viz')
+    data_table = Choice(
+        title=u'Dataset',
+        vocabulary='species_traits_datasets_vocab',
+        default=None,
+        required=True,
+    )

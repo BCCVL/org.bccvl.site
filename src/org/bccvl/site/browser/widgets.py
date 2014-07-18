@@ -10,9 +10,10 @@ from z3c.form.browser.orderedselect import OrderedSelectWidget
 from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
                                      addFieldClass)
 from zope.i18n import translate
-from .interfaces import (IDatasetsWidget, IDatasetsRadioWidget,
-                         IOrderedCheckboxWidget)
+from .interfaces import (IDatasetLayersWidget, IDatasetsRadioWidget,
+                         IOrderedCheckboxWidget, IDatasetsMultiSelectWidget)
 from plone.app.uuid.utils import uuidToCatalogBrain
+from org.bccvl.site.interfaces import IDownloadInfo
 
 
 @implementer(IOrderedCheckboxWidget)
@@ -31,12 +32,13 @@ def SequenceCheckboxFieldWidget(field,  request):
     return FieldWidget(field,  OrderedCheckboxWidget(request))
 
 
-@implementer(IDatasetsWidget)
-class DatasetsWidget(HTMLFormElement, Widget):
+@implementer(IDatasetLayersWidget)
+class DatasetLayersWidget(HTMLFormElement, Widget):
     """
     render a list of checkboxes for keys in dictionary.
     render a default widget for values per key
     """
+    # TODO: where is this used? SDMExperiment?
     # TODO: assumes that values are independent of keys for now.
 
     items = ()
@@ -50,10 +52,15 @@ class DatasetsWidget(HTMLFormElement, Widget):
         return '<input type="hidden" name="{}" value="1"/>'.format(
             self.markerName)
 
+    # TODO: can I cache the value widgets somewhere?
     def getValueWidget(self, token, value, prefix=None):
         valueType = getattr(self.field, 'value_type')
-        widget = getMultiAdapter((valueType, self.request),
-                                 IFieldWidget)
+        #widget = getMultiAdapter((valueType, self.request),
+        #                         IFieldWidget)
+        widget = SequenceCheckboxFieldWidget(valueType, self.request)
+        # we set the context so that the contextsourcebinder for choices can be set correctly.
+        # TODO: check if this is secure?
+        widget.context = uuidToCatalogBrain(value).getObject()  # TODO: IContextAware?
         self.setValueWidgetName(widget, token, prefix)
         widget.mode = self.mode
         if IFormAware.providedBy(self):
@@ -65,11 +72,13 @@ class DatasetsWidget(HTMLFormElement, Widget):
         #       As it is now, the widget might re-set the value from request
         if self.value and value in self.value:
             widget.value = self.value[value]
+        # TODO: try to use current dataset / key as context for layers
+        #       vocabulary / source?
         widget.update()
         return widget
 
     def setValueWidgetName(self, widget, idx, prefix=None):
-        names = lambda id: [str(n) for n in [id]+[prefix, idx]
+        names = lambda id: [str(n) for n in [prefix, idx] + [id]
                             if n is not None]
         widget.name = '.'.join([str(self.name)]+names(None))
         widget.id = '-'.join([str(self.id)]+names(None))
@@ -89,7 +98,7 @@ class DatasetsWidget(HTMLFormElement, Widget):
                 'value_widget': value_widget}
 
     def update(self):
-        super(DatasetsWidget, self).update()
+        super(DatasetLayersWidget, self).update()
         addFieldClass(self)
         keyterms = getMultiAdapter(
             (self.context, self.request, self.form, self.field.key_type, self),
@@ -107,25 +116,64 @@ class DatasetsWidget(HTMLFormElement, Widget):
         # whether we should check for values from current context
         if not self.markerName in self.request:
             return NO_VALUE
+        # widget names are encoded as:
+        #    prefix.<dsuid>.layer = <uri>
         values = []
         for item in self.items:
-            cbname = '{}.select'.format(item['name'])
-            if cbname in self.request:
-                value_widget = self.getValueWidget(item['token'],
-                                                   item['value'])
-                values.append((item['value'], value_widget.value))
+            # extract layers for current dataset (item)
+            # let our sub widget decide how to do that
+            value_widget = item['value_widget']
+            values.append((item['value'], value_widget.value))
         return dict(values)
 
 
-def DatasetsFieldWidget(field, request):
+def DatasetLayersFieldWidget(field, request):
     """
     Widget to select datasets and layers
     """
-    return FieldWidget(field,  DatasetsWidget(request))
+    return FieldWidget(field,  DatasetLayersWidget(request))
 
 
 @implementer(IDatasetsRadioWidget)
 class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
+
+    klass = u'radio-widget'
+    css = u'radio'
+
+    def isChecked(self, term):
+        return term.token in self.value
+
+    @property
+    def items(self):
+        # TODO: could this be a generator?
+        items = []
+        for count, term in enumerate(self.terms):
+            checked = self.isChecked(term)
+            id = '%s-%i' % (self.id, count)
+            if ITitledTokenizedTerm.providedBy(term):
+                label = translate(term.title, context=self.request,
+                                  default=term.title)
+            else:
+                label = util.toUnicode(term.value)
+            # do catalog query for additional infos
+            items.append(
+                {'id': id, 'name': self.name, 'value': term.token,
+                 'label': label, 'checked': checked,
+                 'dlinfo': IDownloadInfo(term.brain)})
+        return items
+
+    def update(self):
+        super(DatasetsRadioWidget, self).update()
+        addFieldClass(self)
+
+
+@implementer(IFieldWidget)
+def DatasetsRadioFieldWidget(field, request):
+    return FieldWidget(field, DatasetsRadioWidget(request))
+
+
+@implementer(IDatasetsMultiSelectWidget)
+class DatasetsMultiSelectWidget(HTMLInputWidget, SequenceWidget):
 
     klass = u'radio-widget'
     css = u'radio'
@@ -192,9 +240,10 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
                               name='org.bccvl.site.BioclimVocabulary')
         # TODO: could also cache the next call per request?
         self.envlayervocab = envvocab(self.context)
-        super(DatasetsRadioWidget, self).update()
+        super(DatasetsMultiSelectWidget, self).update()
         addFieldClass(self)
 
 
-def DatasetsRadioFieldWidget(field, request):
-    return FieldWidget(field, DatasetsRadioWidget(request))
+@implementer(IFieldWidget)
+def DatasetsMultiSelectFieldWidget(field, request):
+    return FieldWidget(field, DatasetsMultiSelectWidget(request))

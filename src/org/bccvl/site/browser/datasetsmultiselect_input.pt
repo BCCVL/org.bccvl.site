@@ -7,7 +7,7 @@
          tal:attributes="for item/id">
 <input id="" name="" class="" alt="" title=""
          tabindex="" disabled="" readonly="" accesskey="" value=""
-         checked="" type="radio"
+         checked="" type="checkbox"
          tal:define="checked item/checked"
          tal:attributes="id item/id;
                          name item/name;
@@ -38,6 +38,10 @@
                          checked python: checked and 'checked' or None"
          />
     <span class="label" tal:content="item/label">Label</span>
+    <tal:block tal:define="itemdetails python:view.get_item_details(item)">
+    <p class="discreet"
+       tal:content="itemdetails/model/Title"></p>
+    </tal:block>
   </label>
 </span>
 <input name="field-empty-marker" type="hidden" value="1"

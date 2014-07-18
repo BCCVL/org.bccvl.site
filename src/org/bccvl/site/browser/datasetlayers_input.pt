@@ -8,17 +8,8 @@
     <tal:block repeat="key view/items">
       <div id="" class="row"
            tal:attributes="id string:${key/id}-row">
-        <span class="option">
-          <input id="" name=""
-                 class="datasets-widget-checkbox checkbox-widget"
-                 type="checkbox" value="1"
-                 tal:attributes="id string:${key/id}-select;
-                                 name string:${key/name}.select;
-                                 value key/value;
-                                 checked key/checked"/>
-          <label for="" tal:content="key/content"
-                 tal:attributes="for string:${key/id}-select">Label</label>
-        </span>
+        <label for="" tal:content="key/content"
+               tal:attributes="for string:${key/id}-select">Label</label>
         <div class="datasets-widget-layers"
              tal:content="structure key/value_widget/render">
             <input size="24" value="input element to be replaced" type="text"/>

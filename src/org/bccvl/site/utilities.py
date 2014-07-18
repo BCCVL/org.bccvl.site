@@ -5,7 +5,7 @@ from gu.plone.rdf.interfaces import IRDFContentTransform
 from gu.plone.rdf.namespace import CVOCAB
 from gu.repository.content.interfaces import (
     IRepositoryContainer, IRepositoryItem)
-from gu.z3cform.rdf.interfaces import IGraph
+from gu.z3cform.rdf.interfaces import IGraph, IResource
 from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 from gu.z3cform.rdf.utils import Period
 from ordf.namespace import DC as DCTERMS
@@ -18,13 +18,13 @@ from org.bccvl.site.content.interfaces import (
     IEnsembleExperiment, ISpeciesTraitsExperiment)
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
-from org.bccvl.site.namespace import DWC, BCCPROP
+from org.bccvl.site.namespace import DWC, BCCPROP, BCCVOCAB
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
 from plone import api
 from plone.app.contenttypes.interfaces import IFile
-from plone.app.uuid.utils import uuidToObject
+from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from Products.ZCatalog.interfaces import ICatalogBrain
 from rdflib import RDF, RDFS, Literal, OWL
@@ -33,6 +33,8 @@ from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter, queryUtility
 from zope.interface import implementer
 import logging
+from plone.uuid.interfaces import IUUID
+from Products.CMFCore.utils import getToolByName
 
 LOG = logging.getLogger(__name__)
 
@@ -321,7 +323,7 @@ class SDMJobTracker(MultiJobTracker):
                     'environmental_datasets': self.context.environmental_datasets,
                 }
                 # add toolkit params:
-                result.job_params.update(self.context.parameters[func.getId()])
+                result.job_params.update(self.context.parameters[IUUID(func)])
                 # submit job
                 LOG.info("Submit JOB %s to queue", func.getId())
                 method(result, func)
@@ -339,55 +341,95 @@ class SDMJobTracker(MultiJobTracker):
 @adapter(IProjectionExperiment)
 class ProjectionJobTracker(MultiJobTracker):
 
+    def _get_job_params(self, sdm, year, emsc, gcm, dsbrain):
+        # sdm ... sdm projection result model
+        # climds ... future climate dataset brain
+
+        # build job_params and store on result
+        return {
+            'resolution': self.context.resolution,
+            'species_distribution_models': sdm,
+            # TODO: URI values or titles?
+            'year': year,
+            'emission_scenario': emsc,
+            'climate_models': gcm,
+            'future_climate_datasets': dsbrain.UID,
+        }
+
+    def _create_result_container(self, sdm, climds):
+        # create result object:
+        # get more metadata about dataset
+        dsmd = IResource(climds)
+        emsc = dsmd.value(BCCPROP['emissionscenario'])
+        gcm = dsmd.value(BCCPROP['gcm'])
+        period = dsmd.value(DCTERMS['temporal'])
+        # get display values for metadata
+        # TODO: get proper labels?
+        emsc = emsc.identifier.split('#', 1)[-1] if emsc else None
+        gcm = gcm.identifier.split('#', 1)[-1] if gcm else None
+        year = Period(period).start if period else None
+
+        title = u'{} - project {}_{}_{} {}'.format(
+            self.context.title, emsc, gcm, year,
+            datetime.now().isoformat())
+        result = createContentInContainer(
+            self.context,
+            'gu.repository.content.RepositoryItem',
+            title=title)
+        result.job_params = self._get_job_params(sdm, year, emsc, gcm, climds)
+        return result
+
+    def _store_experiment_metadata_on_result(self, result, sdm, dsbrain):
+        # result ... result container
+        # sdm ... sdm model dataset uuid?
+        # dsbrain ... future climate layer dataset
+        def getThresholdsForSdm(context, sdm):
+            pc = getToolByName(context, 'portal_catalog')
+            sdmbrain = uuidToCatalogBrain(sdm)
+            # sdmbrain is the model dataset, and we want it's sibling evaluation results
+            path = '/'.join(sdmbrain.getPath().split('/')[:-1])
+            thrs = {}
+            for brain in pc.searchResults(
+                    path={'query': path, 'depth': 1},
+                    BCCDataGenre=BCCVOCAB['DataGenreSDMEval']):
+                dsobj = brain.getObject()
+                if not getattr(dsobj, 'thresholds', None):
+                    continue
+                # TODO: this will overwrite duplicate threshold keys rom different datasets
+                # we make a copy and don't store a reference to the same dict
+                thrs = dict(dsobj.thresholds)
+            return thrs
+
+        result.experiment_infos = {
+            'sdm': {
+                'uuid': sdm,
+                'thresholds': getThresholdsForSdm(self.context, sdm),
+            }
+        }
+
     def start_job(self, request):
         if not self.is_active():
-            # split jobs across future climate datasets
-            for dsbrain in self.context.future_climate_datasets():
-                # get utility to execute this experiment
-                method = queryUtility(IComputeMethod,
-                                      name=IProjectionExperiment.__identifier__)
-                if method is None:
-                    return ('error',
-                            u"Can't find method to run Projection Experiment")
-                # create result object:
-                # get more metadata about dataset
-                dsobj = dsbrain.getObject()
-                dsmd = IGraph(dsobj)
-                emsc = dsmd.value(dsmd.identifier, BCCPROP['emissionscenario'])
-                gcm = dsmd.value(dsmd.identifier, BCCPROP['gcm'])
-                period = dsmd.value(dsmd.identifier, DCTERMS['temporal'])
-                # get display values for metadata
-                emsc = emsc.split('#', 1)[-1] if emsc else None
-                gcm = gcm.split('#', 1)[-1] if gcm else None
-                year = Period(period).start if period else None
+            # get utility to execute this experiment
+            method = queryUtility(IComputeMethod,
+                                  name=IProjectionExperiment.__identifier__)
+            if method is None:
+                # TODO: lookup by script type (Perl, Python, etc...)
+                return ('error',
+                        u"Can't find method to run Projection Experiment")
 
-                title = u'{} - project {}_{}_{} {}'.format(
-                    self.context.title, emsc, gcm, year,
-                    datetime.now().isoformat())
-                result = createContentInContainer(
-                    self.context,
-                    'gu.repository.content.RepositoryItem',
-                    title=title)
-
-                # build job_params and store on result
-                result.job_params = {
-                    'resolution': self.context.resolution,
-                    'species_distribution_models': self.context.species_distribution_models,
-                    # TODO: URI values or titles?
-                    'year': year,
-                    'emission_scenario': emsc,
-                    'climate_models': gcm,
-                    'future_climate_datasets': dsbrain.UID,
-                }
-
-                # submit job
-                LOG.info("Submit JOB project to queue")
-                method(result, "project")  # TODO: wrong interface
-                resultjt = IJobTracker(result)
-                resultjt.new_job('TODO: generate id',
-                                 'generate taskname: projection experiment')
-                resultjt.set_progress('PENDING',
-                                      u'projection pending')
+            # split jobs across future climate datasets and sdms
+            for sdm in self.context.species_distribution_models:
+                for dsbrain in self.context.future_climate_datasets():
+                    result = self._create_result_container(sdm, dsbrain)
+                    self._store_experiment_metadata_on_result(result, sdm, dsbrain)
+                    # submit job
+                    LOG.info("Submit JOB project to queue")
+                    method(result, "project")  # TODO: wrong interface
+                    resultjt = IJobTracker(result)
+                    resultjt.new_job('TODO: generate id',
+                                     'generate taskname: projection experiment')
+                    resultjt.set_progress('PENDING',
+                                          u'projection pending')
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             # TODO: in case there is an error should we abort the transaction
@@ -470,8 +512,44 @@ class EnsembleJobTracker(MultiJobTracker):
 class SpeciesTraitsJobTracker(MultiJobTracker):
 
     def start_job(self, request):
-        # TODO: split biodiverse job across years, gcm, emsc
-        return 'error', u'Not yet implemented'
+        if not self.is_active():
+            # get utility to execute this experiment
+            method = queryUtility(IComputeMethod,
+                                  name=ISpeciesTraitsExperiment.__identifier__)
+            if method is None:
+                return ('error',
+                        u"Can't find method to run Species Traits Experiment")
+            # iterate over all datasets and group them by emsc,gcm,year
+            algorithm = uuidToCatalogBrain(self.context.algorithm)
+
+            # create result object:
+            # TODO: refactor this out into helper method
+            title = u'%s - %s %s' % (self.context.title, algorithm.id,
+                                     datetime.now().isoformat())
+            result = createContentInContainer(
+                self.context,
+                'gu.repository.content.RepositoryItem',
+                title=title)
+
+            # Build job_params store them on result and submit job
+            result.job_params = {
+                'algorithm': algorithm.id,
+                'formula': self.context.formula,
+                'data_table': self.context.data_table,
+            }
+            # add toolkit params:
+            result.job_params.update(self.context.parameters[algorithm.UID])
+            # submit job
+            LOG.info("Submit JOB %s to queue", algorithm.id)
+            method(result, algorithm.getObject())
+            resultjt = IJobTracker(result)
+            resultjt.new_job('TODO: generate id',
+                             'generate taskname: sdm_experiment')
+            resultjt.set_progress('PENDING',
+                                  u'{} pending'.format(algorithm.id))
+            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+        else:
+            return 'error', u'Current Job is still running'
 
 
 # TODO: named adapter

@@ -11,11 +11,13 @@ from ordf.namespace import DC
 from rdflib import RDF, URIRef, Literal, OWL
 from rdflib.resource import Resource
 from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GLM, EPSG,
-                                      BIOCLIM)
+                                      BIOCLIM, BCCVLLAYER)
 from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
+from gu.z3cform.rdf.utils import Period
 import logging
+import json
 
 
 LOG = logging.getLogger(__name__)
@@ -118,9 +120,11 @@ class ALASource(object):
                 },
                 '_files': {
                     'data.csv': {
+                        'name': 'data.csv',
                         'data': open(csv).read()
                     },
                     'rdf.ttl': {
+                        'name': 'rdf.ttl',
                         'data': rdf.serialize(format='turtle')
                     }
                 }}
@@ -287,7 +291,6 @@ class FileMetadataToRDF(object):
                 content.format = contenttype
             self.update_archive_items(content, filemd)
             self.update_metadata(content, filemd)
-
             # continue pipe line
             yield item
 
@@ -322,7 +325,7 @@ class FileMetadataToRDF(object):
             # bonuds
             # date
             # csv: headers, rows, species (set)
-            amd = submd.get('metadata', {})
+            amd = submd.get('metadata') or {}
             # SRS
             if 'srs' in amd:
                 srs = amd['srs']
@@ -348,7 +351,10 @@ class FileMetadataToRDF(object):
                 if width and height:
                     ares.add(BCCPROP['width'], Literal(width))
                     ares.add(BCCPROP['height'], Literal(height))
+                ##############################
                 # Layer
+                #    try to get a layer identifier from somewhere...
+                #    TODO: much too complicated at the moment.
                 layer = bandmd.get('layer')
                 if layer:
                     match = re.match(r'.*bioclim.*(\d\d)', layer)
@@ -363,7 +369,34 @@ class FileMetadataToRDF(object):
                     if match:
                         bid = match.group(1)
                         ares.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
-                # emsc, gcm, year, layer
+                    else:
+                        # TODO: this part may be better as separate md update step
+                        # check if we have _bccvlmetadata
+                        bmd = md.get('_bccvlmetadata')
+                        if bmd:
+                            # TODO: acknowledgement, bounding_box, external_url,
+                            #       license, temporal_coverage, title,
+                            if 'layers' in bmd:
+                                for layer in bmd['layers']:
+                                    if layer['file_pattern'] in key:
+                                        # works for non bioclim layers atm.
+                                        ares.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern']])
+                                        # TODO check if two patterns would match?
+                                        break
+
+                # End Layer
+                #############################
+                # TODO: emsc, gcm, year, layer, resolution, bounding box?
+                if bandmd.get('type') == 'categorical':
+                    ares.add(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
+                else:
+                    ares.add(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
+
+                rat = bandmd.get('rat')
+                if rat:
+                    # FIXME: really a good way to store this?
+                    ares.add(BCCPROP['rat'], Literal(json.dumps(rat)))
+
             # origin, 'Pixel Size', bounds
             res.add(BCCPROP['hasArchiveItem'], ares)
 
@@ -379,11 +412,30 @@ class FileMetadataToRDF(object):
         rows = md.get('rows')
         if rows:
             res.add(BCCPROP['rows'], Literal(rows))
-            # mark graph as modified - we have a copy of the graph... if anyone else
-            #     wants to see changes we have to put our copy back
-            getUtility(IORDF).getHandler().put(graph)
-            import transaction
-            transaction.commit()
+
+        # do general '_bccvlmetadata' here
+        bmd = md.get('_bccvlmetadata')
+        if bmd:
+            if 'resolution' in bmd:
+                resmap = {'9 arcsec': BCCVOCAB['Resolution9s']}
+                if bmd['resolution'] in resmap:
+                    res.add(BCCPROP['resolution'], resmap[bmd['resolution']])
+            if 'temporal_coverage' in bmd:
+                p = Period('')
+                p.start = bmd['temporal_coverage'].get('start')
+                p.end = bmd['temporal_coverage'].get('end')
+                p.scheme = 'W3C-DTF'
+                res.add(DC['temporal'], Literal(unicode(p), datatype=DC['Period']))
+            if 'genre' in bmd:
+                # It's a bit weird here, we have the genre
+                genremap = {'Environmental': BCCVOCAB['DataGenreE']}
+                if bmd['genre'] in genremap:
+                    res.add(BCCPROP['datagenre'], genremap[bmd['genre']])
+
+        # mark graph as modified - we have a copy of the graph... if anyone else
+        #     wants to see changes we have to put our copy back
+        getUtility(IORDF).getHandler().put(graph)
+
 
 
 # '_files': {u'_field_file_bkgd.csv':

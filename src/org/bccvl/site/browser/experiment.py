@@ -13,12 +13,13 @@ from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
 from plone.autoform.utils import processFields
 from plone.supermodel import loadString
-from org.bccvl.site.vocabularies import QueryAPI
 from z3c.form.interfaces import DISPLAY_MODE
 from z3c.form.error import MultipleErrors
 from zope.component import getMultiAdapter
 from plone.app.uuid.utils import uuidToCatalogBrain
 from decimal import Decimal
+from zope.schema.interfaces import IVocabularyFactory
+from zope.component import getUtility
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -55,10 +56,12 @@ class ParamGroupMixin(object):
     param_groups = ()
 
     def addToolkitFields(self):
-        api = QueryAPI(self.context)
         groups = []
+        # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
+        func_vocab = getUtility(IVocabularyFactory, name='sdm_functions_source')
         functions = getattr(self.context, 'functions', None) or ()
-        for toolkit in (brain.getObject() for brain in api.getFunctions()):
+        # TODO: could also use uuidToObject(term.value) instead of relying on BrainsVocabluary terms
+        for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
             if self.mode == DISPLAY_MODE and toolkit.UID() not in functions:
                 # filter out unused algorithms in display mode
                 continue
@@ -76,9 +79,9 @@ class ParamGroupMixin(object):
                 self.context,
                 self.request,
                 self)
-            param_group.__name__ = "parameters_{}".format(toolkit.id)
+            param_group.__name__ = "parameters_{}".format(toolkit.UID())
             #param_group.prefix = ''+ form.prefix?
-            param_group.toolkit = toolkit.getId()
+            param_group.toolkit = toolkit.UID()
             param_group.schema = parameters_schema
             #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
             #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
@@ -288,22 +291,32 @@ class SDMAdd(ParamGroupMixin, Add):
     # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
 
+    # TODO: is this still necessary?
     def occurrences_mapping(self):
+
+        def _add_ds_to_map(vocab, map):
+            # TODO: relies on BrainsVocabulary terms
+            for brain in (term.brain for term in vocab):
+                dataset_info = getdsmetadata(brain.getObject())
+
+                mapping[dataset_info['vizurl']] = {
+                    'object': dataset_info['url'],
+                    'file': dataset_info['file'],
+                }
+
+                if 'vizurl' in dataset_info:
+                    mapping[dataset_info['vizurl']].update({
+                        'vizurl': dataset_info['vizurl']
+                    })
+
         import json
-        api = QueryAPI(self.context)
+        occur_vocab = getUtility(IVocabularyFactory, 'species_presence_datasets_vocab')(self.context)
+        abs_vocab = getUtility(IVocabularyFactory, 'species_absence_datasets_vocab')(self.context)
+
         mapping = dict()
-        for brain in api.getSpeciesOccurrenceDatasets():
-            dataset_info = getdsmetadata(brain.getObject())
+        _add_ds_to_map(occur_vocab, mapping)
+        _add_ds_to_map(abs_vocab, mapping)
 
-            mapping[dataset_info['id']] = {
-                'object': dataset_info['url'],
-                'file': dataset_info['file'],
-            }
-
-            if 'vizurl' in dataset_info:
-                mapping[dataset_info['id']].update({
-                    'vizurl': dataset_info['vizurl']
-                })
         # FIXME: this does look bad, and should probably be handled by a proper widget
         js_tmpl = """
             window.bccvl || (window.bccvl = {});
@@ -320,6 +333,7 @@ class SDMAdd(ParamGroupMixin, Add):
         resolution = None
         datasets = data.get('environmental_datasets', {}).keys()
         if not datasets:
+            # FIXME: Make this a widget error, currently shown as form wide error
             raise ActionExecutionError(Invalid('No environmental dataset selected'))
         # FIXME: index resolution for faster access
         #        or use dsbrain.subjecturi to get info
@@ -329,6 +343,7 @@ class SDMAdd(ParamGroupMixin, Add):
                 resolution = dsbrain.BCCResolution
                 continue
             if dsbrain.BCCResolution != resolution:
+                # FIXME: Make this a widget error, currently shown as form wide error
                 raise ActionExecutionError(Invalid("All datasets must have the same resolution"))
 
 
@@ -350,15 +365,17 @@ class ProjectionAdd(Add):
         # whatever the sdm has if not there
         resolution = data.get("resolution")
         if resolution is None:
-            uuid = data.get('species_distribution_models')
-            from plone.app.uuid.utils import uuidToObject
-            from gu.z3cform.rdf.interfaces import IGraph
+            uuids = data.get('species_distribution_models')
+            from plone.app.uuid.utils import uuidToCatalogBrain
+            from gu.z3cform.rdf.interfaces import IResource
             from org.bccvl.site.namespace import BCCPROP
-            sdm = uuidToObject(uuid)
-            sdmgraph = IGraph(sdm)
-            resolution = sdmgraph.value(sdmgraph.identifier,
-                                        BCCPROP['resolution'])
-            data['resolution'] = resolution
+            for sdm in (uuidToCatalogBrain(uuid) for uuid in uuids):
+                sdmgraph = IResource(sdm)
+                resolution = sdmgraph.value(BCCPROP['resolution'])
+                # TODO: looks just at first sdm, but should also validate
+                #       tha they have all the same resolution
+                data['resolution'] = resolution.identifier
+                break
 
         from org.bccvl.site.api.dataset import find_projections
         result = find_projections(self.context, data.get('emission_scenarios'),
@@ -448,9 +465,107 @@ class EnsembleAddView(add.DefaultAddView):
 
 class SpeciesTraitsAdd(Add):
 
+    # TODO: almost same as in SDMAdd
+    def create(self, data):
+        # FIXME: store only selcted algos
+        # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
+        # we'll have to override it to find a place to apply our algo_group data'
+        newob = super(SpeciesTraitsAdd, self).create(data)
+        # apply values to algo dict manually to make sure we don't write data on read
+        new_params = {}
+        for group in self.param_groups:
+            content = group.getContent()
+            applyChanges(group, content, data)
+            new_params[group.toolkit] = content
+        newob.parameters = new_params
+        return newob
+
+    # TODO: deprecate once data mover/manager API is finished?
+    template = ViewPageTemplateFile("experiment_add.pt")
+
     def validateAction(self, data):
         # TODO: check data ...
         pass
+
+    # TODO: all below here is almost like ParmsGroupMixin ->merge
+    param_groups = ()
+
+    occurrences_mapping = u""
+
+    def addAlgorithmFields(self):
+        groups = []
+        # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
+        func_vocab = getUtility(IVocabularyFactory, name='traits_functions_source')
+        algorithm = getattr(self.context, 'algorithm', None) or ()
+        for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
+            if self.mode == DISPLAY_MODE and toolkit.UID() != algorithm:
+                # filter out unused algorithms in display mode
+                continue
+            # FIXME: need to cache
+            try:
+                # FIXME: do some caching here
+                parameters_model = loadString(toolkit.schema)
+            except Exception as e:
+                LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
+                continue
+
+            parameters_schema = parameters_model.schema
+
+            param_group = ExperimentParamGroup(
+                self.context,
+                self.request,
+                self)
+            param_group.__name__ = "parameters_{}".format(toolkit.UID())
+            #param_group.prefix = ''+ form.prefix?
+            param_group.toolkit = toolkit.UID()
+            param_group.schema = parameters_schema
+            #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
+            #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
+            param_group.label = u"configuration for {}".format(toolkit.title)
+            if len(parameters_schema.names()) == 0:
+                param_group.description = u"No configuration options"
+            groups.append(param_group)
+
+        self.param_groups = groups
+
+    def updateFields(self):
+        super(SpeciesTraitsAdd, self).updateFields()
+        self.addAlgorithmFields()
+
+    def updateWidgets(self):
+        super(SpeciesTraitsAdd, self).updateWidgets()
+        # update groups here
+        for group in self.param_groups:
+            try:
+                group.update()
+            except Exception as e:
+                LOG.info("Group %s failed: %s", group.__name__, e)
+        # should group generation happen here in updateFields or in update?
+
+    def extractData(self, setErrors=True):
+        data, errors = super(SpeciesTraitsAdd, self).extractData(setErrors)
+        for group in self.param_groups:
+            groupData, groupErrors = group.extractData(setErrors=setErrors)
+            data.update(groupData)
+            if groupErrors:
+                if errors:
+                    errors += groupErrors
+                else:
+                    errors = groupErrors
+        return data, errors
+
+    def applyChanges(self, data):
+        # FIXME: store only selected algos
+        changed = super(SpeciesTraitsAdd, self).applyChanges(data)
+        # apply algo params:
+        new_params = {}
+        for group in self.param_groups:
+            content = group.getContent()
+            param_changed = applyChanges(group, content, data)
+            new_params[group.toolkit] = content
+        self.context.parameters = new_params
+
+        return changed
 
 
 class SpeciesTraitsAddView(add.DefaultAddView):

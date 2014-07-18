@@ -17,7 +17,7 @@ from org.bccvl.site import defaults
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO
 from ordf.namespace import DC
 import logging
-from gu.z3cform.rdf.interfaces import IORDF, IGraph
+from gu.z3cform.rdf.interfaces import IORDF, IGraph, IResource
 from zope.component import getUtility, queryUtility
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
@@ -115,6 +115,34 @@ class DataSetManager(BrowserView):
         return self.metadata(datasetid)
 
     @returnwrapper
+    def getRAT(self, datasetid, layer=None):
+        query = {'UID': datasetid}
+        if layer:
+            layer=URIRef(layer)
+        dsbrain = dataset.query(self.context, brains=True, **query)
+        if dsbrain:
+            dsbrain = next(dsbrain, None)
+        if not dsbrain:
+            raise NotFound(self.context, datasetid, self.request)
+        res = IResource(dsbrain)
+        rat = res.value(BCCPROP['rat'])
+        if not rat:
+            # nothing on dataset itself, maybe there are archive items?
+            for ai in res.objects(BCCPROP['hasArchiveItem']):
+                alayer = ai.value(BIOCLIM['bioclimVariable'])
+                if alayer and alayer.identifier == layer:
+                    rat = ai.value(BCCPROP['rat'])
+        # if we have a rat, let's try and parse it
+        if rat:
+            try:
+                rat = json.loads(unicode(rat))
+            except Exception as e:
+                LOG.warning("Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
+                rat = None
+        return rat
+
+
+    @returnwrapper
     def query(self):
         # TODO: remove some parameters from request?
         #       e.g only matching with catalog indices
@@ -178,6 +206,7 @@ class DataSetManager(BrowserView):
     # TODO: this is rather experiment API
     @returnwrapper
     def getSDMDatasets(self):
+        # get all SDM current projection datasets
         pc = getToolByName(self.context, 'portal_catalog')
         sdmbrains = pc.searchResults(
             object_provides=ISDMExperiment.__identifier__,
@@ -189,23 +218,22 @@ class DataSetManager(BrowserView):
             datasets = []
             for dsbrain in pc.searchResults(
                     path=sdmbrain.getPath(),
-                    BCCDataGenre=BCCVOCAB['DataGenreFP']):
+                    BCCDataGenre=BCCVOCAB['DataGenreCP']):
                 # get required metadata about dataset
                 datasets.append({
+                    #"files": [raster file names],
                     "title": dsbrain.Title,
                     "uuid": dsbrain.UID,
                     "url": dsbrain.getURL(),
+                    #"year", "gcm", "msc", "species"
                 })
             sdms.append({
-                "title": sdmbrain.Title,
-                "uuid": sdmbrain.UID,
-                "url": sdmbrain.getURL(),
-                "datasets": datasets
-            })
-
-            sdms.append({
+                #"species": [],
+                #"years": [],
                 "name": sdmbrain.Title,
                 "uuid": sdmbrain.UID,
+                "url": sdmbrain.getURL(),
+                "result": datasets
             })
         return {'sdms': sdms}
 
@@ -221,9 +249,16 @@ class DataSetManager(BrowserView):
         for biodiversebrain in biodiversebrains:
             # search for datasets with this experiment
             datasets = []
+            # TODO: query for data genre class?
             for dsbrain in pc.searchResults(
                     path=biodiversebrain.getPath(),
-                    BCCDataGenre=BCCVOCAB['DataGenreFP']):
+                    BCCDataGenre=(BCCVOCAB['DataGenreENDW_CWE'],
+                                  BCCVOCAB['DataGenreENDW_WE'],
+                                  BCCVOCAB['DataGenreENDW_RICHNESS'],
+                                  BCCVOCAB['DataGenreENDW_SINGLE'],
+                                  BCCVOCAB['DataGenreREDUNDANCY_SET1'],
+                                  BCCVOCAB['DataGenreREDUNDANCY_SET2'],
+                                  BCCVOCAB['DataGenreREDUNDANCY_ALL'])):
                 # get required metadata about dataset
                 datasets.append({
                     "title": dsbrain.Title,
@@ -231,10 +266,10 @@ class DataSetManager(BrowserView):
                     "url": dsbrain.getURL(),
                 })
             biodiverses.append({
-                "title": biodiversebrain.Title,
+                "name": biodiversebrain.Title,
                 "uuid": biodiversebrain.UID,
                 "url": biodiversebrain.getURL(),
-                "datasets": datasets
+                "result": datasets
             })
         return {'biodiverses': biodiverses}
 
@@ -305,6 +340,7 @@ class DataSetManager(BrowserView):
         # TODO: check if there are vocabularies that need to be protected
         vocab = ()
         try:
+            # TODO: getUtility(IVocabularyFactory???)
             vr = getVocabularyRegistry()
             vocab = vr.get(self.context, name)
         except:
@@ -323,36 +359,39 @@ class DataSetManager(BrowserView):
         return result
 
     @returnwrapper
-    def getThresholds(self, projections, thresholds=None):
-        if not isinstance(projections, list):
-            projections = [projections]
-        pc = getToolByName(self.context, 'portal_catalog')
-        result = {}
-        for projection in projections:
+    def getThresholds(self, datasets, thresholds=None):
+        # datasets: a future projection dataset as a result of projectien experiment
+        # thresholds: list of names to retrieve or all
+
+        # FIXME FIXME: don't know which thresholds to pull from here
+        #       store on resultc when importing/creating?
+        #       store link to sdm on result?
+        #       -> maybe store all necessary info to create an experiment from result?
+        #       ->
+        if not isinstance(datasets, list):
+            datasets = [datasets]
+        result = {}  # we have to return per experiment, per dataset/result
+        for dataset in datasets:
             # 1. try to find sdm for projection
-            projobj = uuidToObject(projection)
+            projobj = uuidToObject(dataset)
             if projobj is None:
                 continue
-            sdm = uuidToCatalogBrain(projobj.species_distribution_models)
-            if sdm is None:
+            # 2. thresholds can be found on result containers
+            #      and associated sdm
+            expinf = getattr(projobj.__parent__, 'experiment_infos', None)
+            if not expinf:
                 continue
-            # 2. thresholds can be found on sibling datasets with genre DataGenreSDMEval
-            path = '/'.join(sdm.getPath().split('/')[:-1])
-            for brain in pc.searchResults(
-                    path={'query': path, 'depth': 1},
-                    BCCDataGenre=BCCVOCAB['DataGenreSDMEval']
-                    ):
-                dsobj = brain.getObject()
-                if not getattr(dsobj, 'thresholds', None):
-                    continue
-                if projection not in result:
-                    result[projection] = {}
-                # filter thresholds
-                ths = dsobj.thresholds
-                if thresholds:
-                    ths = dict((k, v) for k, v in ths.iteritems()
-                               if k in thresholds)
-                result[projection].update(ths)
+            ths = expinf.get('sdm', {}).get('thresholds', None)
+            if not ths:
+                continue
+
+            # ok we have thresholds, let's find the dataset uuid for this result
+            pc = getToolByName(self.context, 'portal_catalog')
+            if dataset not in result:
+                result[dataset] = {}
+            result[dataset].update(ths)
+        # FIXME: just broke usage of old experiments in biodiverse experiments
+        #        migrate? don't care? support both here?
         return result
 
 

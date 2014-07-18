@@ -17,7 +17,7 @@
         b_start
     -->
 
-    <tal:tabs metal:use-macro="context/datasets-macros/macros/datasets_tabs"></tal:tabs>
+    <tal:tabs metal:use-macro="context/datasets-macros/datasets_tabs"></tal:tabs>
 
     <metal:content-core  use-macro="context/folder_listing/content-core">
         <metal:entries fill-slot="entries">
@@ -46,84 +46,10 @@
 
                 <tbody>
                     <metal:block use-macro="context/folder_listing/macros/entries">
-                        <metal:entry fill-slot="entry">
-
-                    <tr metal:define-macro="listitem"
-                        tal:define="oddrow repeat/item/odd;"
-                        tal:attributes="class python: oddrow and 'even' or 'odd'">
-                            <!-- Title -->
-                            <td>
-                                <img width="16" height="16"
-                                     src="" alt=""
-                                     tal:condition="item_icon/url"
-                                     tal:attributes="src item_icon/url;
-                                                     alt item_icon/description;
-                                                     title item_icon/title;
-                                                     width item_icon/width;
-                                                     height item_icon/height;" />
-                                <a href="#"
-                                   tal:attributes="href python: item_type in use_view_action and item_url+'/view' or item_url;
-                                                   class string:$item_wf_state_class $item_type_class;
-                                                   title item_description;"
-                                   tal:content="item_title_or_id">
-                                    Item Title
-                                </a>
-                            </td>
-                            <!-- Author -->
-                            <td tal:condition="show_about">
-                                <tal:name tal:condition="item_creator"
-                                  tal:define="author python:pas_member.info(item_creator)">
-                                <a href="#"
-                                   tal:attributes="href string:${navigation_root_url}/author/${item_creator}"
-                                   tal:content="author/name_or_id"
-                                   tal:omit-tag="not:author">
-                                  Bob Dobalina
-                                </a>
-                                </tal:name>
-                            </td>
-                            <!-- Type -->
-                            <td tal:content="item_type_title"
-                                i18n:translate="">
-                                Page
-                            </td>
-                        <!-- Modified -->
-                        <td tal:condition="show_about"
-                            tal:content="python:toLocalizedTime(item_modified,long_format=1)">
-                          August 16, 2001 at 23:35:59
-                        </td>
-                        <!-- job state -->
-                        <td tal:condition="show_about">
-                            <tal:state tal:replace="item/job_state"/>
-                        </td>
-                        <!-- Actions -->
-                        <!-- TODO: expects simple publication workflow
-                        publish/retract -->
-                        <!-- TODO: change this to some sort of popup to let user change review_state
-                                   and show review_state here ... would need permissions again to check if link is available to user :(
-                             TODO: check review_state and permission ... need permission here
-                             TODO: indexing won't work as this is per user
-                        -->
-                        <td tal:condition="show_about"
-                            tal:define="action python:view.get_transition(item.getObject())">
-                          <a href="#"
-                             tal:attributes="href string:${item_url}/dm/share"
-                             tal:condition="python: action == 'publish'"
-                             >Share</a>
-                          <a href="#"
-                             tal:attributes="href string:${item_url}/dm/unshare"
-                             tal:condition="python: action == 'retract'"
-                             >Un-share</a>
-                          <i tal:content="item/review_state"></i>
-                        </td>
-                        <!-- Download -->
-                        <td>
-                          <a href="#"
-                             tal:condition="python: item.job_state in ('COMPLETED', None, '')"
-                             tal:define="dlinfo python: view.get_download_info(item)"
-                             tal:attributes="href dlinfo/url">Download</a>
-                        </td>
-                    </tr>
-
+                        <metal:entry fill-slot="entry"
+                                     tal:define="rowstyle python: repeat['item'].odd and 'even' or 'odd';
+                                                 item_obj item/getObject;">
+                            <metal:block use-macro="context/datasets-macros/datasets_listitem"></metal:block>
                         </metal:entry>
                     </metal:block>
                 </tbody>

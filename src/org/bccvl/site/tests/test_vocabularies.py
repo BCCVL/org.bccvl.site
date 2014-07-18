@@ -1,17 +1,19 @@
 import unittest2 as unittest
-from zope.schema.interfaces import IContextSourceBinder, ISource
+from zope.schema.interfaces import IVocabularyFactory, IVocabulary
 from org.bccvl.site.vocabularies import (
-    species_presence_datasets_source,
-    species_absence_datasets_source,
-    species_abundance_datasets_source,
-    environmental_datasets_source,
-    future_climate_datasets_source,
-    functions_source,
+    species_presence_datasets_vocab,
+    species_absence_datasets_vocab,
+    species_abundance_datasets_vocab,
+    environmental_datasets_vocab,
+    future_climate_datasets_vocab,
+    sdm_functions_source,
+    traits_functions_source,
     envirolayer_source)
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site import defaults
 from zope.component import getUtility
+from org.bccvl.site.namespace import BIOCLIM
 
 
 class PresenceSourceTest(unittest.TestCase):
@@ -19,14 +21,14 @@ class PresenceSourceTest(unittest.TestCase):
     layer = BCCVL_INTEGRATION_TESTING
 
     def _get_class(self):
-        return species_presence_datasets_source
+        return species_presence_datasets_vocab
 
     def _make_one(self):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
         source = self._make_one()
@@ -42,14 +44,14 @@ class AbsenceSourceTest(unittest.TestCase):
     layer = BCCVL_INTEGRATION_TESTING
 
     def _get_class(self):
-        return species_absence_datasets_source
+        return species_absence_datasets_vocab
 
     def _make_one(self):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
         source = self._make_one()
@@ -65,14 +67,14 @@ class AbundanceSourceTest(unittest.TestCase):
     layer = BCCVL_INTEGRATION_TESTING
 
     def _get_class(self):
-        return species_abundance_datasets_source
+        return species_abundance_datasets_vocab
 
     def _make_one(self):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
         source = self._make_one()
@@ -85,14 +87,14 @@ class EnvironmentalSourceTest(unittest.TestCase):
     layer = BCCVL_INTEGRATION_TESTING
 
     def _get_class(self):
-        return environmental_datasets_source
+        return environmental_datasets_vocab
 
     def _make_one(self):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
         source = self._make_one()
@@ -108,14 +110,14 @@ class FutureSourceTest(unittest.TestCase):
     layer = BCCVL_INTEGRATION_TESTING
 
     def _get_class(self):
-        return future_climate_datasets_source
+        return future_climate_datasets_vocab
 
     def _make_one(self):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
         source = self._make_one()
@@ -126,19 +128,19 @@ class FutureSourceTest(unittest.TestCase):
         self.assertEqual(len(source), 2)
 
 
-class FunctionsSourceTest(unittest.TestCase):
+class SdmFunctionsSourceTest(unittest.TestCase):
 
     layer = BCCVL_INTEGRATION_TESTING
 
     def _get_class(self):
-        return functions_source
+        return sdm_functions_source
 
     def _make_one(self):
         return self._get_class()(self.layer['portal'])
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
         source = self._make_one()
@@ -150,6 +152,30 @@ class FunctionsSourceTest(unittest.TestCase):
         self.assertEqual(len(source), 12)
 
 
+class TraitsFunctionsSourceTest(unittest.TestCase):
+
+    layer = BCCVL_INTEGRATION_TESTING
+
+    def _get_class(self):
+        return traits_functions_source
+
+    def _make_one(self):
+        return self._get_class()(self.layer['portal'])
+
+    def test_interfaces(self):
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
+
+    def test_elements(self):
+        source = self._make_one()
+        ds = self.layer['portal'][defaults.TOOLKITS_FOLDER_ID]
+        data = ds['lm']
+        data_uuid = IUUID(data)
+        self.assertIn(data_uuid, source)
+        # TODO: this test depends on whatever is setup in org.bccvl.compute:content
+        self.assertEqual(len(source), 6)
+
+
 class EnviroLayerSourceTest(unittest.TestCase):
 
     layer = BCCVL_INTEGRATION_TESTING
@@ -157,22 +183,21 @@ class EnviroLayerSourceTest(unittest.TestCase):
     def _get_class(self):
         return envirolayer_source
 
-    def _make_one(self):
-        return self._get_class()(self.layer['portal'])
+    def _make_one(self, context):
+        return self._get_class()(context)
 
     def test_interfaces(self):
-        self.assertTrue(IContextSourceBinder.providedBy(self._get_class()))
-        self.assertTrue(ISource.providedBy(self._make_one()))
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one(self.layer['portal'])))
 
     def test_registration(self):
         one = self._get_class()
-        tool = getUtility(IContextSourceBinder, name='envirolayer_source')
+        tool = getUtility(IVocabularyFactory, name='envirolayer_source')
         self.assertIs(one, tool)
 
     def test_elements(self):
-        source = self._make_one()
         ds = self.layer['portal'][defaults.DATASETS_FOLDER_ID]
         data = ds[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
-        data_uuid = IUUID(data)
-        # FIXME: need to add some asserts regarding expected contained data
-        #        URIRef's of layers
+        source = self._make_one(data)
+        self.assertIn(BIOCLIM['B01'], source)
+        # FIXME: add tests with layers for data in source

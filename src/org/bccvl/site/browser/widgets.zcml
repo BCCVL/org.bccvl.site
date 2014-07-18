@@ -3,7 +3,7 @@
     xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="org.bccvl">
 
-    <adapter factory=".converter.DatasetsConverter"/>
+    <adapter factory=".converter.DatasetLayersConverter"/>
 
     <z3c:widgetTemplate
       mode="input"
@@ -14,16 +14,16 @@
 
     <z3c:widgetTemplate
       mode="input"
-      widget=".interfaces.IDatasetsWidget"
+      widget=".interfaces.IDatasetLayersWidget"
       layer="z3c.form.interfaces.IFormLayer"
-      template="datasets_input.pt"
+      template="datasetlayers_input.pt"
       />
 
     <z3c:widgetTemplate
       mode="display"
-      widget=".interfaces.IDatasetsWidget"
+      widget=".interfaces.IDatasetLayersWidget"
       layer="z3c.form.interfaces.IFormLayer"
-      template="datasets_display.pt"
+      template="datasetlayers_display.pt"
       />
 
     <z3c:widgetTemplate
@@ -40,4 +40,17 @@
       template="datasetsradio_display.pt"
       />
 
+    <z3c:widgetTemplate
+      mode="input"
+      widget=".interfaces.IDatasetsMultiSelectWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="datasetsmultiselect_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="display"
+      widget=".interfaces.IDatasetsMultiSelectWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="datasetsmultiselect_display.pt"
+      />
 </configure>

@@ -12,6 +12,7 @@ bccvocab:DataGenre a owl:Class ;
     rdfs:label "Data Genre" ;
     .
 
+# TODO: app specific? -> app ontology?
 bccvocab:DataGenreClass a owl:Class ;
     rdfs:label "Class of Data Genre" ;
     rdfs:description "Classify data genre in higher level groups";
@@ -71,12 +72,20 @@ bccvocab:DataGenreSDMEval a bccvocab:DataGenre ;
     rdfs:label "Species Distribution Model Evaluation" ;
     .
 
+bccvocab:DataGenreTraits a bccvocab:DataGenre ;
+    rdfs:label "Species Traits Data Genre" ;
+    .
+
 bccvocab:DataGenreSDMModel a bccvocab:DataGenre ;
     rdfs:label "Species Distribution Model";
     .
 
 bccvocab:DataGenreClampingMask a bccvocab:DataGenre ;
     rdfs:label "Clapming Mask";
+    .
+
+bccvocab:DataGenreSTModel a bccvocab:DataGenre ;
+    rdfs:label "Species Traits Model";
     .
 
 bccvocab:DataGenreFP a bccvocab:DataGenre ;
@@ -91,6 +100,46 @@ bccvocab:DataGenreLog a bccvocab:DataGenre ;
     rdfs:label "Output log file" ;
     .
 
+# BioDiverse Data Genres?
+bccvocab:BiodiverseOutputDataGenre a bccvocab:DataGenreClass ;
+    rdfs:label "Biodiverse Output Data Genre" ;
+    .
+
+bccvocab:DataGenreBinaryImage a bccvocab:DataGenre ;
+    rdfs:label "Binar Input" ;
+    .
+
+bccvocab:DataGenreENDW_CWE a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Endemism whole - Corrected Weighted Endemism";
+  .
+
+bccvocab:DataGenreENDW_WE a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Endemism whole - Weighted Endemism";
+  .
+
+bccvocab:DataGenreENDW_RICHNESS a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Endemism whole - Richness used in ENDW_CWE";
+  .
+
+bccvocab:DataGenreENDW_SINGLE a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Endemism whole - Unweigthed by the number of neighbours";
+  .
+
+bccvocab:DataGenreREDUNDANCY_SET1 a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Redundancy - neigbour set 1";
+  .
+
+bccvocab:DataGenreREDUNDANCY_SET2 a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Redundancy - neigbour set 2";
+  .
+
+bccvocab:DataGenreREDUNDANCY_ALL a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Redundancy - both neigbour sets";
+  .
+
+bccvocab:BiodiverseModel a bccvocab:DataGenre ; # (Indices?)
+  rdfs:label "Biodiverse output";
+  .
 
 bccvocab:DataSetTypeC a bccvocab:DataSetType ;
     rdfs:label "continuous" ;
@@ -106,6 +155,11 @@ bccvocab:SpeciesLayerP a bccvocab:SpeciesLayer ;
 
 bccvocab:SpeciesLayerX a bccvocab:SpeciesLayer ;
     rdfs:label "Absence" ;
+    .
+
+bccvocab:Resolution9s a bccvocab:Resolution ;
+    rdfs:label "9\" (~250m)" ;
+    rdfs:value 9;
     .
 
 bccvocab:Resolution30s a bccvocab:Resolution ;

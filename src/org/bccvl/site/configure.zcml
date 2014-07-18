@@ -153,6 +153,9 @@
         factory=".utilities.BiodiverseJobTracker"/>
 
     <adapter
+        factory=".utilities.SpeciesTraitsJobTracker"/>
+
+    <adapter
         factory=".utilities.ALAJobTracker"/>
 
     <utility
@@ -171,33 +174,53 @@
         />
 
     <utility
-      component=".vocabularies.species_presence_datasets_source"
-      name="species_presence_datasets_source"
+      component=".vocabularies.species_presence_datasets_vocab"
+      name="species_presence_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.species_absence_datasets_source"
-      name="species_absence_datasets_source"
+      component=".vocabularies.species_absence_datasets_vocab"
+      name="species_absence_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.species_abundance_datasets_source"
-      name="species_abundance_datasets_source"
+      component=".vocabularies.species_abundance_datasets_vocab"
+      name="species_abundance_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.environmental_datasets_source"
-      name="environmental_datasets_source"
+      component=".vocabularies.environmental_datasets_vocab"
+      name="environmental_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.future_climate_datasets_source"
-      name="future_climate_datasets_source"
+      component=".vocabularies.future_climate_datasets_vocab"
+      name="future_climate_datasets_vocab"
     />
 
     <utility
-      component=".vocabularies.functions_source"
-      name="functions_source"
+      component=".vocabularies.species_distributions_models_vocab"
+      name="species_distributions_models_vocab"
+    />
+
+    <utility
+      component=".vocabularies.species_projection_datasets_vocab"
+      name="species_projection_datasets_vocab"
+    />
+
+    <utility
+      component=".vocabularies.species_traits_datasets_vocab"
+      name="species_traits_datasets_vocab"
+    />
+
+    <utility
+      component=".vocabularies.sdm_functions_source"
+      name="sdm_functions_source"
+    />
+
+    <utility
+      component=".vocabularies.traits_functions_source"
+      name="traits_functions_source"
     />
 
     <utility
@@ -209,6 +232,21 @@
       component=".vocabularies.programming_language_vocab_factory"
       name="org.bccvl.site.programming_language_vocab"
       />
+
+    <utility
+        component=".vocabularies.emission_scenarios_source"
+        name="emission_scenarios_source"
+        />
+
+    <utility
+        component=".vocabularies.global_climate_models_source"
+        name="global_climate_models_source"
+        />
+
+    <utility
+        component=".vocabularies.fc_years_source"
+        name="fc_years_source"
+        />
 
     <utility
         name="org.bccvl.site.GCMVocabulary"
