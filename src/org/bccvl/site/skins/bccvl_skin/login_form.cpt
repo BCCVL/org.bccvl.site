@@ -89,9 +89,10 @@
                   login_url python:test(came_from is not None,
                                         ssl_host_url + '/Shibboleth.sso/Login?target=%s' % came_from,
                                         ssl_host_url + '/Shibboleth.sso/Login')" >
+          <image src="aaf_410x100.png" width="250" alt="Log in with AAF credentials" style="margin-bottom:1em;"></image>
           <a i18n:translate="description_log_in_here"
-             tal:attributes="href login_url">
-            <image src="aaf_410x100.png" width="410" height="100" alt="Log in with AAF credentials"></image>
+             tal:attributes="href login_url"  class="aaf-logo-link btn btn-success">
+            Login with AAF <i class="icon-share-alt icon-white"></i>
           </a>
     </div>
     <div id="fieldset-site-login">
@@ -225,7 +226,7 @@
 
                     <div class="formControls">
 
-                        <input class="context btn btn-success btn-large"
+                        <input class="context btn btn-success"
                                type="submit"
                                name="submit"
                                value="Log in"
