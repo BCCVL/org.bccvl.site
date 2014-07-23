@@ -110,3 +110,11 @@ bccvllayer:nsg-2011-250m-asc a bv:BioclimaticVariable ;
 bccvllayer:vastgridv2_1k a bv:BioclimaticVariable ;
     rdfs:label "National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008" ;
     .
+
+bccvllayer:multi_res_ridge_top_flat a bv:BioclimaticVariable ;
+    rdfs:label "Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)" ;
+    .
+
+bccvllayer:multi_res_valley_bottom_flat a bv:BioclimaticVariable ;
+    rdfs:label "Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)" ;
+    .
