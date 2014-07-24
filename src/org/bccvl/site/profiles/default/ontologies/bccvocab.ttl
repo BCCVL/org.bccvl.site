@@ -141,6 +141,10 @@ bccvocab:BiodiverseModel a bccvocab:DataGenre ; # (Indices?)
   rdfs:label "Biodiverse output";
   .
 
+bccvocab:DataGenreEnsembleResult a bccvocab:DataGenre ;
+  rdfs:label "Ensembling output";
+  .
+
 bccvocab:DataSetTypeC a bccvocab:DataSetType ;
     rdfs:label "continuous" ;
     .
