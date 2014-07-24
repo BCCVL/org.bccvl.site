@@ -504,8 +504,38 @@ class BiodiverseJobTracker(MultiJobTracker):
 class EnsembleJobTracker(MultiJobTracker):
 
     def start_job(self, request):
-        # TODO: split biodiverse job across years, gcm, emsc
-        return 'error', u'Not yet implemented'
+        if not self.is_active():
+            # get utility to execute this experiment
+            method = queryUtility(IComputeMethod,
+                                  name=IEnsembleExperiment.__identifier__)
+            if method is None:
+                return ('error',
+                        u"Can't find method to run Ensemble Experiment")
+
+            # create result container
+            title = u'{} - ensemble {}'.format(
+                self.context.title, datetime.now().isoformat())
+            result = createContentInContainer(
+                self.context,
+                'gu.repository.content.RepositoryItem',
+                title=title)
+
+            # build job_params and store on result
+            result.job_params = {
+                'datasets': list(self.context.dataset)
+            }
+
+            # submit job to queue
+            LOG.info("Submit JOB Ensemble to queue")
+            method(result, "ensemble")  # TODO: wrong interface
+            resultjt = IJobTracker(result)
+            resultjt.new_job('TODO: generate id',
+                             'generate taskname: ensemble')
+            resultjt.set_progress('PENDING',
+                                  'ensemble pending')
+            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+        else:
+            return 'error', u'Current Job is still running'
 
 
 @adapter(ISpeciesTraitsExperiment)
@@ -590,4 +620,3 @@ class ALAJobTracker(JobTracker):
         self.set_progress('PENDING', u'ALA import pending')
 
         return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
-
