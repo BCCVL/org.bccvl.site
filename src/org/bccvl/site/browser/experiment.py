@@ -476,7 +476,7 @@ class EnsembleAdd(Add):
             count = int(count)
             datasets = []
             for x in xrange(count):
-                dsname = '{}.{}.dataset'.format(prefix, x)
+                dsname = '{}.{}'.format(prefix, x)
                 # try to parse value as float... parsing as Decimal throws an unsupported error
                 datasets.append(self.request.get(dsname))
             if not datasets:

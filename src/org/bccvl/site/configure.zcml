@@ -156,6 +156,9 @@
         factory=".utilities.SpeciesTraitsJobTracker"/>
 
     <adapter
+        factory=".utilities.EnsembleJobTracker"/>
+
+    <adapter
         factory=".utilities.ALAJobTracker"/>
 
     <utility
