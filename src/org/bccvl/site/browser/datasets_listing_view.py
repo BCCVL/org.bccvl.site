@@ -17,7 +17,6 @@ def get_title_from_uuid(uuid):
     return None
 
 
-
 @implementer(IDatasetTools)
 class DatasetTools(BrowserView):
     """A helper view to deal with datasets.
@@ -50,6 +49,7 @@ class DatasetTools(BrowserView):
             itemob = self.context
         return checkPermission('cmf.ModifyPortalContent', itemob)
 
+    # TODO: maybe move to different tools view? (not dataset specific)
     def local_roles_action(self, itemobj=None):
         if itemobj is None:
             itemobj = self.context
@@ -59,7 +59,6 @@ class DatasetTools(BrowserView):
             if action.get('id') == 'local_roles':
                 return action
         return {}
-
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -83,4 +82,3 @@ class DatasetsListingView(BrowserView):
             'sort_order': 'descending',
             'object_provides': IDataset.__identifier__,
         }
-
