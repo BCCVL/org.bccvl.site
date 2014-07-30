@@ -10,6 +10,8 @@
                   site_properties context/portal_properties/site_properties;
                   use_view_action site_properties/typesUseViewActionInListings|python:();
 
+                  dummy python:request.response.setHeader('X-Theme-Disabled', 'True');
+
                   isAnon context/@@plone_portal_state/anonymous;
                   show_about python:not isAnon or site_properties.allowAnonymousViewAbout;
                   pas_member context/@@pas_member;
