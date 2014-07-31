@@ -1,9 +1,13 @@
 from Acquisition import aq_inner
+import logging
 from Products.Five import BrowserView
 from plone.dexterity.browser.add import DefaultAddForm
 from Products.CMFCore.utils import getToolByName
-
+from collective.transmogrifier.transmogrifier import Transmogrifier
+from plone.dexterity.utils import addContentToContainer
 from plone.app.dexterity.behaviors.metadata import IBasic
+from plone.dexterity.interfaces import IDexterityFTI
+from zope.component import getUtility
 from z3c.form.field import Fields
 from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import defaults
@@ -11,8 +15,12 @@ from org.bccvl.site.content.dataset import (IBlobDataset,
                                             ISpeciesDataset,
                                             ILayerDataset,
                                             ITraitsDataset)
+from org.bccvl.compute.mdextractor import MetadataExtractor
 #from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+
+
+LOG = logging.getLogger(__name__)
 
 
 # TODO: provenance field:
@@ -57,6 +65,24 @@ class RasterAddForm(DefaultAddForm):
     def updateFields(self):
         # don't fetch plone default fields'
         pass
+
+    def add(self, object):
+        # FIXME: this is a workaround, which is fine for small uploaded files.
+        #        large uploads should go through another process anyway
+        # TODO: re implementing this method is the only way to know
+        #       the full path of the object. We need the path to apply
+        #       the transmogrifier chain.
+        #fti = getUtility(IDexterityFTI, name=self.portal_type)
+        container = aq_inner(self.context)
+        new_object = addContentToContainer(container, object)
+        # if fti.immediate_view:
+        #     self.immediate_view = "%s/%s/%s" % (container.absolute_url(), new_object.id, fti.immediate_view,)
+        # else:
+        #     self.immediate_view = "%s/%s" % (container.absolute_url(), new_object.id)
+        # run transmogrify md extraction here
+        # TODO: move this to an event listener?
+        tm = Transmogrifier(new_object)
+        tm('org.bccvl.site.add_file_metadata')
 
     def nextURL(self):
         # redirect to default datasets page

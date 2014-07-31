@@ -81,8 +81,11 @@ def getdsmetadata(ds):
         'mimetype': None,
         'filename': None,
         'file': None,
-        'layers': getbiolayermetadata(ds)
     }
+    if ds.format in ('application/zip', ):
+        md['layers'] = getbiolayermetadata(ds)
+    else:
+        md.update(getbiolayermetadata(ds))
     info = IDownloadInfo(ds)
     md.update({
         'mimetype': info['contenttype'],
@@ -126,6 +129,23 @@ def getbiolayermetadata(ds):
                 'min': ref.value(BCCPROP['min'], None),
                 'max': ref.value(BCCPROP['max'], None)
             }
+    # check for metadat for file itself:
+    ret.update({
+        'min': r.value(BCCPROP['min'], None),
+        'max': r.value(BCCPROP['max'], None)
+    })
+    # do we have layer metadata directly on the object? (no archive items)
+    bvar = r.value(BIOCLIM['bioclimVariable'])
+    if bvar:
+        # FIXME: checking for bioclimVariable is not a good test
+        try:
+            label = unicode(biovocab.getTerm(bvar.identifier).title)
+        except:
+            label = unicode(bvar.identifier)
+        ret.update({
+            'label': label,
+            'layer': bvar.identifier
+        })
 
     return ret
 

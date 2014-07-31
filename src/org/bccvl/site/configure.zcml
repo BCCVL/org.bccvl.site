@@ -177,6 +177,11 @@
         />
 
     <utility
+        component=".transmogrify.ContextSource"
+        name="org.bccvl.site.transmogrify.contextsource"
+        />
+
+    <utility
       component=".vocabularies.species_presence_datasets_vocab"
       name="species_presence_datasets_vocab"
     />
@@ -317,6 +322,13 @@
       title="Import ALA data"
       description="Import data form ALA put onto filesystem"
       configuration="import_ala.cfg"
+      />
+
+    <transmogrifier:registerConfig
+      name="org.bccvl.site.add_file_metadata"
+      title="Add File metadata"
+      description="Extract metadata from file and store on content object"
+      configuration="add_file_metadata.cfg"
       />
 
 </configure>

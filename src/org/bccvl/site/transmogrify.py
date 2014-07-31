@@ -98,10 +98,10 @@ class ALASource(object):
         rdfmd.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreSO'])
         rdfmd.add(BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP'])
         rdfmd.add(RDF['type'], CVOCAB['Dataset'])
-        # TODO: important thing ... date of export (import data in
+        # TODO: important thing ... date of export (import date in
         #       plone)/ date modified in ALA
 
-        # FIXME: important of the same guid changes current existing dataset
+        # FIXME: import of the same guid changes current existing dataset
         #_, id = json['taxonConcept']['guid'].rsplit(':', 1)
         item = {'_type': 'org.bccvl.content.dataset',
                 'title': title,
@@ -118,6 +118,7 @@ class ALASource(object):
                     'file': 'rdf.ttl',
                     'contenttype': 'text/turtle',
                 },
+                # FIXME: don't load files into ram
                 '_files': {
                     'data.csv': {
                         'name': 'data.csv',
@@ -129,9 +130,58 @@ class ALASource(object):
                     }
                 }}
         # if we have an id use it to possibly update existing content
+        # TODO: check if improt context is already correct folder, or
+        #       do we need full path here instead of just the id?
         if self.id:
             item['_path'] = self.id
 
+        yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class ContextSource(object):
+    """Generate an item for transmogrifier context.
+
+    This is useful to re-use transmogrifier blueprints on a single
+    existing content object.
+
+    """
+    # TODO: at the moment this is only useful for bccvl datasets,
+    #       but if used together with transmogrify.dexterity.schemareader
+    #       it may work well for any content type
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.name = name
+        self.options = options
+        self.previous = previous
+        self.context = transmogrifier.context
+
+        self.pathkey = options.get('path-key', '_path')
+
+    def __iter__(self):
+        # exhaust previous iterator
+        for item in self.previous:
+            yield item
+
+        filename = self.context.file.filename
+        item = {
+            self.pathkey: '/'.join(self.context.getPhysicalPath()),
+            '_type': self.context.portal_type,
+            'file': {
+                'file': filename,
+            },
+            '_files': {
+                filename: {
+                    # FIXME: there is some chaos here... do I really need name and filename?
+                    'name': self.context.file.filename,
+                    'filename': self.context.file.filename,
+                    'contenttype': self.context.file.contentType,
+                    'path': self.context.file.open('r').name
+                }
+            }
+        }
         yield item
 
 
@@ -257,6 +307,7 @@ class FileMetadataToRDF(object):
                 yield item
                 continue
 
+            # FIXME: this assumes, that the key in _files matches the filename, but the key may be arbitrary
             filemd = item.get(self.filemetadatakey, {})
             filemd = filemd.get(filename)
             if not filemd:
@@ -289,10 +340,96 @@ class FileMetadataToRDF(object):
             #       ? if there is none set yet?
             if contenttype and content.format != contenttype:
                 content.format = contenttype
-            self.update_archive_items(content, filemd)
+            if content.format in ('application/zip', ):
+                self.update_archive_items(content, filemd)
+            else:
+                self.update_file_metadata(content, filemd)
             self.update_metadata(content, filemd)
             # continue pipe line
             yield item
+
+    def update_resource_metadata(self, res, md, filename):
+        # bonuds
+        # date
+        # csv: headers, rows, species (set)
+        # SRS
+        if 'srs' in md:
+            srs = md['srs']
+            if srs.lower().startswith('epsg:'):
+                srs = EPSG[srs[len("epsg:"):]]
+            else:
+                srs = URIRef(srs)
+            res.add(GLM['srsName'], srs)
+        # band metadata
+        bandmd = md.get('band')
+        if bandmd:
+            bandmd = bandmd[0]
+            # mean, STATISTICS_MEAN
+            # stddev, STATISTICS_STDDEV
+            # size (x, y on band)
+            min = bandmd.get('min') or bandmd.get('STATISTICS_MINIMUM')
+            max = bandmd.get('ax') or bandmd.get('STATISTICS_MAXIMUM')
+            width, height = bandmd.get('size', (None, None))
+            if min:
+                res.add(BCCPROP['min'], Literal(min))
+            if max:
+                res.add(BCCPROP['max'], Literal(max))
+            if width and height:
+                res.add(BCCPROP['width'], Literal(width))
+                res.add(BCCPROP['height'], Literal(height))
+            # TODO: emsc, gcm, year, layer, resolution, bounding box?
+            if bandmd.get('type') == 'categorical':
+                res.add(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
+            else:
+                res.add(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
+
+            rat = bandmd.get('rat')
+            if rat:
+                # FIXME: really a good way to store this?
+                res.add(BCCPROP['rat'], Literal(json.dumps(rat)))
+            # origin, 'Pixel Size', bounds
+
+            ##############################
+            # Layer
+            #    try to get a layer identifier from somewhere...
+            #    TODO: much too complicated at the moment.
+            layer = bandmd.get('layer')
+            if layer:
+                match = re.match(r'.*bioclim.*(\d\d)', layer)
+                if match:
+                    bid = match.group(1)
+                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
+                else:
+                    # TODO: really write something?
+                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM[layer])
+            else:
+                match = re.match(r'.*bioclim.*(\d\d).tif', filename)
+                if match:
+                    bid = match.group(1)
+                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
+                else:
+                    # TODO: this part may be better as separate md update step
+                    # check if we have _bccvlmetadata
+                    bmd = md.get('_bccvlmetadata')
+                    if bmd:
+                        # TODO: acknowledgement, bounding_box, external_url,
+                        #       license, temporal_coverage, title,
+                        if 'layers' in bmd:
+                            for layer in bmd['layers']:
+                                if layer['file_pattern'] in filename:
+                                    # works for filenames matichng our layr vocabulary
+                                    res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern']])
+                                    # TODO check if two patterns would match?
+                                    break
+            # End Layer
+            #############################
+
+    def update_file_metadata(self, content, md):
+        graph = IGraph(content)
+        res = Resource(graph, graph.identifier)
+        self.update_resource_metadata(res, md, content.file.filename)
+        # mark graph as modified
+        getUtility(IORDF).getHandler().put(graph)
 
     def update_archive_items(self, content, md):
         graph = IGraph(content)
@@ -322,82 +459,9 @@ class FileMetadataToRDF(object):
             ares.add(NFO['fileName'], Literal(submd['filename']))
             ares.add(NFO['fileSize'], Literal(submd['file_size']))
             ares.add(RDF['type'], NFO['ArchiveItem'])
-            # bonuds
-            # date
-            # csv: headers, rows, species (set)
-            amd = submd.get('metadata') or {}
-            # SRS
-            if 'srs' in amd:
-                srs = amd['srs']
-                if srs.lower().startswith('epsg:'):
-                    srs = EPSG[srs[len("epsg:"):]]
-                else:
-                    srs = URIRef(srs)
-                ares.add(GLM['srsName'], srs)
-            # band metadata
-            bandmd = amd.get('band')
-            if bandmd:
-                bandmd = bandmd[0]
-                # mean, STATISTICS_MEAN
-                # stddev, STATISTICS_STDDEV
-                # size (x, y on band)
-                min = bandmd.get('min') or bandmd.get('STATISTICS_MINIMUM')
-                max = bandmd.get('ax') or bandmd.get('STATISTICS_MAXIMUM')
-                width, height = bandmd.get('size', (None, None))
-                if min:
-                    ares.add(BCCPROP['min'], Literal(min))
-                if max:
-                    ares.add(BCCPROP['max'], Literal(max))
-                if width and height:
-                    ares.add(BCCPROP['width'], Literal(width))
-                    ares.add(BCCPROP['height'], Literal(height))
-                ##############################
-                # Layer
-                #    try to get a layer identifier from somewhere...
-                #    TODO: much too complicated at the moment.
-                layer = bandmd.get('layer')
-                if layer:
-                    match = re.match(r'.*bioclim.*(\d\d)', layer)
-                    if match:
-                        bid = match.group(1)
-                        ares.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
-                    else:
-                        # TODO: really write something?
-                        ares.add(BIOCLIM['bioclimVariable'], BIOCLIM[layer])
-                else:
-                    match = re.match(r'.*bioclim.*(\d\d).tif', submd['filename'])
-                    if match:
-                        bid = match.group(1)
-                        ares.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
-                    else:
-                        # TODO: this part may be better as separate md update step
-                        # check if we have _bccvlmetadata
-                        bmd = md.get('_bccvlmetadata')
-                        if bmd:
-                            # TODO: acknowledgement, bounding_box, external_url,
-                            #       license, temporal_coverage, title,
-                            if 'layers' in bmd:
-                                for layer in bmd['layers']:
-                                    if layer['file_pattern'] in key:
-                                        # works for non bioclim layers atm.
-                                        ares.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern']])
-                                        # TODO check if two patterns would match?
-                                        break
+            #
+            self.update_resource_metadata(ares, submd.get('metadata', {}), key)
 
-                # End Layer
-                #############################
-                # TODO: emsc, gcm, year, layer, resolution, bounding box?
-                if bandmd.get('type') == 'categorical':
-                    ares.add(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
-                else:
-                    ares.add(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
-
-                rat = bandmd.get('rat')
-                if rat:
-                    # FIXME: really a good way to store this?
-                    ares.add(BCCPROP['rat'], Literal(json.dumps(rat)))
-
-            # origin, 'Pixel Size', bounds
             res.add(BCCPROP['hasArchiveItem'], ares)
 
         # mark graph as modified
