@@ -26,8 +26,9 @@ Once we have a XMLRPC proxy we can just call the available methods.
      'file': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',
      'id': '...',
-     'layers': {},
+     'max': None,
      'mimetype': 'text/csv',
+     'min': None,
      'url': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv',
      'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
     >>> res['id'] == abtuid

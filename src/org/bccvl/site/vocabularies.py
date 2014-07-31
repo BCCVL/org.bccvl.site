@@ -295,7 +295,7 @@ class DatasetLayerVocabularyFactory(object):
             SimpleTerm(value=layer,
                        token=str(layer),
                        title=info['label'])
-            for (layer, info) in lmd.items())
+            for (layer, info) in lmd.items() if info and 'label' in info)
         # TODO: get rid of sorted ... query should do it
         terms = sorted(terms, key=lambda o: o.title)
         return BCCVLSimpleVocabulary(terms)
