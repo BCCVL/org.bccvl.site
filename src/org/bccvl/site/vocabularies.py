@@ -291,11 +291,23 @@ class DatasetLayerVocabularyFactory(object):
         terms = []
         # fetch layermetadata
         lmd = dataset.getbiolayermetadata(context)
-        terms = (
-            SimpleTerm(value=layer,
-                       token=str(layer),
-                       title=info['label'])
-            for (layer, info) in lmd.items() if info and 'label' in info)
+        # TODO: check if both can happen (layerlist and single layer)
+        #       at the moment single layer overrides list
+        if lmd.get('layers'):
+            # we have multiple layers in this dataset
+            terms = (
+                SimpleTerm(value=layer,
+                           token=str(layer),
+                           title=info['label'])
+                for (layer, info) in lmd['layers'].items()
+                if info and 'label' in info)
+        if lmd.get('layer'):
+            # file itself is a layer on it's own
+            layer = lmd.get('layer')
+            terms = [
+                SimpleTerm(value=layer,
+                           token=str(layer),
+                           title=lmd.get('label', layer))]
         # TODO: get rid of sorted ... query should do it
         terms = sorted(terms, key=lambda o: o.title)
         return BCCVLSimpleVocabulary(terms)

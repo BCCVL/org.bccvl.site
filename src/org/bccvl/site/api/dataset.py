@@ -82,10 +82,7 @@ def getdsmetadata(ds):
         'filename': None,
         'file': None,
     }
-    if ds.format in ('application/zip', ):
-        md['layers'] = getbiolayermetadata(ds)
-    else:
-        md.update(getbiolayermetadata(ds))
+    md.update(getbiolayermetadata(ds))
     info = IDownloadInfo(ds)
     md.update({
         'mimetype': info['contenttype'],
@@ -101,7 +98,8 @@ def getbiolayermetadata(ds):
     # TODO: use a sparql query to get all infos in one go...
     #       could get layer friendly names as well
     # FIXME: this here is slow compared to the query version below
-    ret = {}
+    # FIXME: layers should only be added if we have multiple layers
+    ret = {'layers': {}}
     handler = getUtility(IORDF).getHandler()
     biovocab = getUtility(IVocabularyFactory,
                           name='org.bccvl.site.BioclimVocabulary')(ds)
@@ -123,7 +121,7 @@ def getbiolayermetadata(ds):
                 label = unicode(biovocab.getTerm(bvar.identifier).title)
             except:
                 label = unicode(bvar.identifier)
-            ret[bvar.identifier] = {
+            ret['layers'][bvar.identifier] = {
                 'filename': unicode(ref.value(NFO['fileName'])),
                 'label': label,
                 'min': ref.value(BCCPROP['min'], None),
@@ -150,40 +148,41 @@ def getbiolayermetadata(ds):
     return ret
 
 
-def getbiolayermetadata_query(ds):
-    # TODO: use a sparql query to get all infos in one go...
-    #       could get layer friendly names as well
-    # FIXME: this here does not respect uncomitted changes
-    query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ns: <http://www.bccvl.org.au/individual/>
-PREFIX cvocab: <http://namespaces.griffith.edu.au/collection_vocab#>
-PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
-PREFIX bioclim: <http://namespaces.bccvl.org.au/bioclim#>
-PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
+# TODO: update this method to new interface
+# def getbiolayermetadata_query(ds):
+#     # TODO: use a sparql query to get all infos in one go...
+#     #       could get layer friendly names as well
+#     # FIXME: this here does not respect uncomitted changes
+#     query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+# PREFIX ns: <http://www.bccvl.org.au/individual/>
+# PREFIX cvocab: <http://namespaces.griffith.edu.au/collection_vocab#>
+# PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
+# PREFIX bioclim: <http://namespaces.bccvl.org.au/bioclim#>
+# PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
 
-SELECT ?bvar ?blabel ?fnam WHERE {{
-  Graph ?g {{
-  <{subject}> a cvocab:Dataset .
-  <{subject}> bccprop:hasArchiveItem ?ar .
-  }}
-  Graph ?a {{
-    ?ar bioclim:bioclimVariable ?bvar .
-    ?ar nfo:fileName ?fnam .
-  }}
-  Graph ?b {{
-    ?bvar rdfs:label ?blabel .
-  }}
-}}"""
-    # FIXME: need to clean up getContentUri function
-    uri = getUtility(IORDF).getContentUri(ds)
-    q = query.format(subject=uri)
-    ret = {}
-    handler = getUtility(IORDF).getHandler()
-    for row in handler.query(q):
-        ret[row['bvar']] = {'label': unicode(row['blabel']),
-                            'filename': unicode(row['fnam'])}
-    return ret
+# SELECT ?bvar ?blabel ?fnam WHERE {{
+#   Graph ?g {{
+#   <{subject}> a cvocab:Dataset .
+#   <{subject}> bccprop:hasArchiveItem ?ar .
+#   }}
+#   Graph ?a {{
+#     ?ar bioclim:bioclimVariable ?bvar .
+#     ?ar nfo:fileName ?fnam .
+#   }}
+#   Graph ?b {{
+#     ?bvar rdfs:label ?blabel .
+#   }}
+# }}"""
+#     # FIXME: need to clean up getContentUri function
+#     uri = getUtility(IORDF).getContentUri(ds)
+#     q = query.format(subject=uri)
+#     ret = {}
+#     handler = getUtility(IORDF).getHandler()
+#     for row in handler.query(q):
+#         ret[row['bvar']] = {'label': unicode(row['blabel']),
+#                             'filename': unicode(row['fnam'])}
+#     return ret
 
 
 ############# ++api++<name>/ experiment

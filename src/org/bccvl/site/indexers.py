@@ -61,8 +61,11 @@ def dataset_environmental_layer(object, **kw):
     # if (graph.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSD']) in graph:
     #     return tuple(graph.objects(graph.identifier, BIOCLIM['bioclimVariable']))
     layers = getbiolayermetadata(object)
-    if layers:
-        return tuple(layers.keys())
+    if layers.get('layers'):
+        return tuple(layers['layers'].keys())
+    # TODO: can there be both?
+    if layers.get('layer'):
+        return (layers['layer'], )
     return None
 
 
