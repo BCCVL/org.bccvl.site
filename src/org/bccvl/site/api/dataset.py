@@ -136,6 +136,7 @@ def getbiolayermetadata(ds):
     bvar = r.value(BIOCLIM['bioclimVariable'])
     if bvar:
         # FIXME: checking for bioclimVariable is not a good test
+        #        some files wolud have multiple layers as metadat... (like R SDM data files)
         try:
             label = unicode(biovocab.getTerm(bvar.identifier).title)
         except:

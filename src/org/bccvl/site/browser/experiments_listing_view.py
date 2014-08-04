@@ -55,30 +55,32 @@ class ExperimentsListingView(BrowserView):
 
         if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
             # TODO: duplicate code here... see org.bccvl.site.browser.widget.py
+            # TODO: generated list here not very useful,.... all layers over all sdms are concatenated
             exp = expbrain.getObject()
-            sdm = uuidToObject(exp.species_distribution_models)
-            if sdm is not None:
-                # TODO: in theory it could fail when trying to access parents as well?
-                sdmresult = sdm.__parent__
-                sdmexp = sdmresult.__parent__
-                # TODO: absence data
-                envlayers = []
-                for envuuid, layers in sorted(sdmexp.environmental_datasets.items()):
-                    envbrain = uuidToCatalogBrain(envuuid)
-                    envtitle = envbrain.Title if envbrain else u'Missing dataset'
-                    envlayers.append(
-                        '{}: {}'.format(envtitle,
-                                        ', '.join(self.envlayervocab.getTerm(envlayer).title
-                                                  for envlayer in sorted(layers)))
-                    )
+            for sdmuuid in exp.species_distribution_models:
+                sdm = uuidToObject(sdmuuid)
+                if sdm is not None:
+                    # TODO: in theory it could fail when trying to access parents as well?
+                    sdmresult = sdm.__parent__
+                    sdmexp = sdmresult.__parent__
+                    # TODO: absence data
+                    envlayers = []
+                    for envuuid, layers in sorted(sdmexp.environmental_datasets.items()):
+                        envbrain = uuidToCatalogBrain(envuuid)
+                        envtitle = envbrain.Title if envbrain else u'Missing dataset'
+                        envlayers.append(
+                            '{}: {}'.format(envtitle,
+                                            ', '.join(self.envlayervocab.getTerm(envlayer).title
+                                                      for envlayer in sorted(layers)))
+                        )
 
-                toolkit = sdmresult.job_params['function']
-                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
-            else:
-                # FIXME: should we prevent users from deleting / unsharing?
-                toolkit = 'missing experiment'
-                species_occ = ''
-                envlayers = []
+                    toolkit = sdmresult.job_params['function']
+                    species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
+                else:
+                    # FIXME: should we prevent users from deleting / unsharing?
+                    toolkit = 'missing experiment'
+                    species_occ = ''
+                    envlayers = []
 
             details.update({
                 'type': 'PROJECTION',
