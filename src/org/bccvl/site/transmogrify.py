@@ -349,6 +349,8 @@ class FileMetadataToRDF(object):
             yield item
 
     def update_resource_metadata(self, res, md, filename):
+        if not md:
+            return
         # bonuds
         # date
         # csv: headers, rows, species (set)
