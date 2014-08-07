@@ -13,4 +13,11 @@
       template="plone-addsite.pt"
       />
 
+  <!-- override plone namedfiles default file object handler -->
+  <utility
+      name="__builtin__.file"
+      provides="plone.namedfile.interfaces.IStorage"
+      factory=".patch.FileDescriptorStorable"
+      />
+
 </configure>
