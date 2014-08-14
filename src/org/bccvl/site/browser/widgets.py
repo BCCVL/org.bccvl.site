@@ -14,6 +14,7 @@ from .interfaces import (IDatasetLayersWidget, IDatasetsRadioWidget,
                          IOrderedCheckboxWidget, IDatasetsMultiSelectWidget)
 from plone.app.uuid.utils import uuidToCatalogBrain
 from org.bccvl.site.interfaces import IDownloadInfo
+from plone.z3cform.interfaces import IDeferSecurityCheck
 
 
 @implementer(IOrderedCheckboxWidget)
@@ -140,13 +141,33 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
     klass = u'radio-widget'
     css = u'radio'
 
+    # Flag to check whether we have to update this widget before publishing
+    _widget_traversed = False
+
     def isChecked(self, term):
         return term.token in self.value
+
+    def __call__(self):
+        # FIXME: this is a workaround to fix a weirdness in ++widget++ traverser.
+        #        the traverser updates the widget during traversal, but at this stage
+        #        the user is not authenticated and therefore the vocabulary loaded
+        #        contains only entries visible to anonymous users.
+        #        the updateTerms function here checks this and won't update the terms
+        #        during ++widget++ traversal. We'll have to call update here though,
+        #        when the widget is being published.
+        if self._widget_traversed:
+            self.update()
+            # we deactivate diazo as well here
+            self.request.response.setHeader('X-Theme-Disabled',  'True')
+        return super(DatasetsRadioWidget, self).__call__()
 
     @property
     def items(self):
         # TODO: could this be a generator?
         items = []
+        # TODO: do we have a request here? (search, filter, paginate etc...)
+        #       add: species name, rows, bbox?, description, shared, owned, etc...
+        #            date, link?
         for count, term in enumerate(self.terms):
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
@@ -162,9 +183,12 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
                  'dlinfo': IDownloadInfo(term.brain)})
         return items
 
-    def update(self):
-        super(DatasetsRadioWidget, self).update()
-        addFieldClass(self)
+    def updateTerms(self):
+        if not IDeferSecurityCheck.providedBy(self.request):
+            return super(DatasetsRadioWidget, self).updateTerms()
+        else:
+            self._widget_traversed = True
+        return self.terms
 
 
 @implementer(IFieldWidget)
