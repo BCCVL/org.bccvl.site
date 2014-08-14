@@ -7,7 +7,7 @@ from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from gu.z3cform.rdf.interfaces import IORDF, IGraph, IResource
 from org.bccvl.site.api.interfaces import IAPIPublisher
 from org.bccvl.site.interfaces import IDownloadInfo
-from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO
+from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO, GML
 from org.bccvl.site.content.interfaces import IDataset
 from plone.uuid.interfaces import IUUID
 from rdflib.resource import Resource
@@ -83,6 +83,7 @@ def getdsmetadata(ds):
         'file': None,
     }
     md.update(getbiolayermetadata(ds))
+    md.update(getspeciesmetadata(ds))
     info = IDownloadInfo(ds)
     md.update({
         'mimetype': info['contenttype'],
@@ -91,6 +92,15 @@ def getdsmetadata(ds):
         'vizurl': info['alturl'][0]
     })
     return md
+
+
+def get_vocab_label(vocab, resource):
+    if resource is None:
+        return resource
+    try:
+        return unicode(vocab.getTerm(resource.identifier).title)
+    except:
+        return unicode(resource.identifier)
 
 
 # TODO: this gets called to often... cache? optimise?
@@ -103,6 +113,10 @@ def getbiolayermetadata(ds):
     handler = getUtility(IORDF).getHandler()
     biovocab = getUtility(IVocabularyFactory,
                           name='org.bccvl.site.BioclimVocabulary')(ds)
+    crsvocab = getUtility(IVocabularyFactory,
+                          name='org.bccvl.site.CRSVocabulary')(ds)
+    resvocab = getUtility(IVocabularyFactory,
+                          name='org.bccvl.site.ResolutionVocabulary')(ds)
     r = IResource(ds, None)
     if r is None:
         return ret
@@ -117,20 +131,28 @@ def getbiolayermetadata(ds):
             #        the vocab is still empty at that time because it queries
             #        the triple store directly. As this should only happen with
             #        new content, it's not that critical
-            try:
-                label = unicode(biovocab.getTerm(bvar.identifier).title)
-            except:
-                label = unicode(bvar.identifier)
             ret['layers'][bvar.identifier] = {
                 'filename': unicode(ref.value(NFO['fileName'])),
-                'label': label,
+                'label': get_vocab_label(biovocab, bvar),
                 'min': ref.value(BCCPROP['min'], None),
-                'max': ref.value(BCCPROP['max'], None)
+                'max': ref.value(BCCPROP['max'], None),
+                'width': ref.value(BCCPROP['width'], None),
+                'height': ref.value(BCCPROP['height'], None),
+                'crs': get_vocab_label(crsvocab, r.value(GML['srsName'], None)),
+                'datatype': r.value(BCCPROP['datatype'], None)  # FIXME: ttile (categorical, continuous)
             }
     # check for metadat for file itself:
     ret.update({
         'min': r.value(BCCPROP['min'], None),
-        'max': r.value(BCCPROP['max'], None)
+        'max': r.value(BCCPROP['max'], None),
+        'width': r.value(BCCPROP['width'], None),
+        'height': r.value(BCCPROP['height'], None),
+        'resolution': get_vocab_label(resvocab, r.value(BCCPROP['resolution'], None)),
+        'crs': get_vocab_label(crsvocab, r.value(GML['srsName'], None)),
+        'temporal': r.value(DCTERMS['temporal'], None), # FIXME: parse it
+        'emsc':  r.value(BCCPROP['emissionsscenario'], None), # FIXME: title
+        'gcm':  r.value(BCCPROP['gcm'], None), # FIXME: title
+        'datatype': r.value(BCCPROP['datatype'], None)  # FIXME: ttile (categorical, continuous)
     })
     # do we have layer metadata directly on the object? (no archive items)
     bvar = r.value(BIOCLIM['bioclimVariable'])
@@ -146,6 +168,28 @@ def getbiolayermetadata(ds):
             'layer': bvar.identifier
         })
 
+    return ret
+
+
+def getspeciesmetadata(ds):
+    res = IResource(ds, None)
+    ret = {
+        'scientificname': None,
+        'commonname': None,
+        'taxonid': None,
+        'rows': None
+    }
+        # bccprop: datagenre ->  bccvocab: DataGenreSO
+        # bccprop: specieslayer -> bccvocab: SpeciesLayerP, SpeciesLayerX
+    if res is None:
+        return ret
+    for key, prop in (('rows', BCCPROP['rows']),
+                      ('scientificname', DWC['scientificName']),
+                      ('taxonid', DWC['taxonID']),
+                      ('commonname', DWC['vernacularName'])):
+        val = res.value(prop)
+        if val:
+            ret[key] = unicode(val)
     return ret
 
 
