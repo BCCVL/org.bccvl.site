@@ -6,8 +6,6 @@ from Products.CMFCore.utils import getToolByName
 from collective.transmogrifier.transmogrifier import Transmogrifier
 from plone.dexterity.utils import addContentToContainer
 from plone.app.dexterity.behaviors.metadata import IBasic
-from plone.dexterity.interfaces import IDexterityFTI
-from zope.component import getUtility
 from z3c.form.field import Fields
 from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import defaults
@@ -27,44 +25,7 @@ LOG = logging.getLogger(__name__)
 #       -> created by experiment, imorted from ALA, uploaded by user,
 #          provided by system
 
-class SpeciesAddForm(DefaultAddForm):
-
-    title = u"Upload Species Data"
-    description = (u"<p>Upload occurrences or abundance data for single species</p>"
-                   u"<p>An occurrence dataset is expected to be in CSV format."
-                   u" BCCVL will only try to interpret columns with labels 'lon' and 'lat'.</p>" )
-    fields = Fields(IBasic, IBlobDataset, ISpeciesDataset).omit('thresholds')
-
-    template = ViewPageTemplateFile('dataset_upload_subform.pt')
-
-    def updateFields(self):
-        # don't fetch plone default fields'
-        pass
-
-    def nextURL(self):
-        # redirect to default datasets page
-        portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        return portal[defaults.DATASETS_FOLDER_ID].absolute_url()
-
-
-class RasterAddForm(DefaultAddForm):
-
-    title = u"Upload Environmental Data"
-    description = (u"<p>Upload current or future climate data</p>"
-                   u"<p>BCCVL can only deal with raster data in GeoTIFF format."
-                   u" Valid files are either single GeoTiff files or a number of"
-                   u" GeoTiff packaged within a zip file."
-                   u" Idealy the map projection information is embedded as metadata"
-                   u" within the GeoTiff itself. In case of missing map projection"
-                   u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
-
-    fields = Fields(IBasic, IBlobDataset, ILayerDataset).omit('thresholds')
-
-    template = ViewPageTemplateFile('dataset_upload_subform.pt')
-
-    def updateFields(self):
-        # don't fetch plone default fields'
-        pass
+class BCCVLUploadForm(DefaultAddForm):
 
     def add(self, object):
         # FIXME: this is a workaround, which is fine for small uploaded files.
@@ -90,11 +51,50 @@ class RasterAddForm(DefaultAddForm):
         return portal[defaults.DATASETS_FOLDER_ID].absolute_url()
 
 
-class SpeciesTraitsAddForm(DefaultAddForm):
+class SpeciesAddForm(BCCVLUploadForm):
+
+    title = u"Upload Species Data"
+    description = (
+        u"<p>Upload occurrences or abundance data for single species</p>"
+        u"<p>An occurrence dataset is expected to be in CSV format."
+        u" BCCVL will only try to interpret columns with labels"
+        u" 'lon' and 'lat'.</p>")
+    fields = Fields(IBasic, IBlobDataset, ISpeciesDataset).omit('thresholds')
+
+    template = ViewPageTemplateFile('dataset_upload_subform.pt')
+
+    def updateFields(self):
+        # don't fetch plone default fields'
+        pass
+
+
+class RasterAddForm(BCCVLUploadForm):
+
+    title = u"Upload Environmental Data"
+    description = (
+        u"<p>Upload current or future climate data</p>"
+        u"<p>BCCVL can only deal with raster data in GeoTIFF format."
+        u" Valid files are either single GeoTiff files or a number of"
+        u" GeoTiff packaged within a zip file."
+        u" Idealy the map projection information is embedded as metadata"
+        u" within the GeoTiff itself. In case of missing map projection"
+        u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
+
+    fields = Fields(IBasic, IBlobDataset, ILayerDataset).omit('thresholds')
+
+    template = ViewPageTemplateFile('dataset_upload_subform.pt')
+
+    def updateFields(self):
+        # don't fetch plone default fields'
+        pass
+
+
+class SpeciesTraitsAddForm(BCCVLUploadForm):
     # TODO: these wolud be schema forms... sholud try it
 
     title = u"Upload Species Traits"
-    description = u"<p>Upload CSV file to use for species traits modelling.</p>"
+    description = \
+        u"<p>Upload CSV file to use for species traits modelling.</p>"
 
     fields = Fields(IBasic, IBlobDataset, ITraitsDataset).omit('thresholds')
 
@@ -107,11 +107,6 @@ class SpeciesTraitsAddForm(DefaultAddForm):
     def updateFields(self):
         # don't fetch plone default fields'
         pass
-
-    def nextURL(self):
-        # redirect to default datasets page
-        portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        return portal[defaults.DATASETS_FOLDER_ID].absolute_url()
 
 
 # FIXME: this view needs to exist for default browser layer as well
