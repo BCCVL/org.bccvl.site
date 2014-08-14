@@ -96,7 +96,8 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
                 'token': term.token,
                 'value': term.token, 'content': content,
                 'checked': self.value and term.token in self.value,
-                'value_widget': value_widget}
+                'value_widget': value_widget,
+                'resolution': unicode(uuidToCatalogBrain(term.value).BCCResolution)}
 
     def update(self):
         super(DatasetLayersWidget, self).update()
