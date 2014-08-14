@@ -177,10 +177,13 @@ class DatasetsRadioWidget(HTMLInputWidget, SequenceWidget):
             else:
                 label = util.toUnicode(term.value)
             # do catalog query for additional infos
+            # FIXE: import here avoids circular import
+            from org.bccvl.site.api.dataset import getdsmetadata
             items.append(
                 {'id': id, 'name': self.name, 'value': term.token,
                  'label': label, 'checked': checked,
-                 'dlinfo': IDownloadInfo(term.brain)})
+                 'dlinfo': IDownloadInfo(term.brain),
+                 'md': getdsmetadata(uuidToCatalogBrain(term.value))})
         return items
 
     def updateTerms(self):
