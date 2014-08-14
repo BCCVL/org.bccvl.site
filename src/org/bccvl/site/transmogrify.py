@@ -10,7 +10,7 @@ from ordf.graph import Graph
 from ordf.namespace import DC
 from rdflib import RDF, URIRef, Literal, OWL
 from rdflib.resource import Resource
-from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GLM, EPSG,
+from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GML, EPSG,
                                       BIOCLIM, BCCVLLAYER)
 from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
@@ -361,7 +361,7 @@ class FileMetadataToRDF(object):
                 srs = EPSG[srs[len("epsg:"):]]
             else:
                 srs = URIRef(srs)
-            res.add(GLM['srsName'], srs)
+            res.add(GML['srsName'], srs)
         # band metadata
         bandmd = md.get('band')
         if bandmd:

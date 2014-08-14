@@ -294,7 +294,12 @@
     <utility
         name="org.bccvl.site.ResolutionVocabulary"
         component=".vocabularies.ResolutionVocabularyFactory"
-    />
+        />
+
+    <utility
+        name="org.bccvl.site.CRSVocabulary"
+        component=".vocabularies.CRSVocabularyFactory"
+        />
 
     <transmogrifier:registerConfig
         name="exportknowledgebase"

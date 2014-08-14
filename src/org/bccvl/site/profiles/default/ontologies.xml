@@ -22,4 +22,6 @@
             uri="http://purl.org/dc/dcmitype/" />
   <external file="foaf.ttl"
             uri="http://xmlns.com/foaf/0.1/" />
+  <external file="opengis.ttl"
+            uri="http://www.opengis.net/def/crs/EPSG/0/" />
 </ontologies>

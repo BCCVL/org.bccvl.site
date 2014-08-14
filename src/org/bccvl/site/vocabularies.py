@@ -7,7 +7,7 @@ from gu.z3cform.rdf.interfaces import IORDF
 from gu.z3cform.rdf.utils import Period
 from Products.CMFCore.utils import getToolByName
 from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
-from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB
+from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB, GML
 from rdflib import RDF
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from org.bccvl.site.api import dataset
@@ -421,7 +421,7 @@ EnvironmentalDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOC
 DatasetTypeVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['DataSetType'])
 ResolutionVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Resolution'],
                                                               RDF['value'])
-
+CRSVocabularyFactory = SparqlInstanceVocabularyFactory(GML['GeodeticCRS'])
 
 programming_language_vocab = SimpleVocabulary([
     SimpleTerm("R", "R", u'R'),
