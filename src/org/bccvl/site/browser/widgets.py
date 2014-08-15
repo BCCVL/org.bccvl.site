@@ -100,6 +100,7 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
                 'value': term.token, 'content': content,
                 'checked': self.value and term.token in self.value,
                 'value_widget': value_widget,
+                'dlinfo': IDownloadInfo(value_widget.context),
                 'resolution': unicode(uuidToCatalogBrain(term.value).BCCResolution),
                 'resolution_label': get_vocab_label(self.resvocab,
                                                     uuidToCatalogBrain(term.value).BCCResolution)}
