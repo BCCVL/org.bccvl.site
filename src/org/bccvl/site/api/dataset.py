@@ -117,6 +117,8 @@ def getbiolayermetadata(ds):
                           name='org.bccvl.site.CRSVocabulary')(ds)
     resvocab = getUtility(IVocabularyFactory,
                           name='org.bccvl.site.ResolutionVocabulary')(ds)
+    dstypevocab = getUtility(IVocabularyFactory,
+                             name='org.bccvl.site.DatasetTypeVocabulary')(ds)
     r = IResource(ds, None)
     if r is None:
         return ret
@@ -138,8 +140,10 @@ def getbiolayermetadata(ds):
                 'max': ref.value(BCCPROP['max'], None),
                 'width': ref.value(BCCPROP['width'], None),
                 'height': ref.value(BCCPROP['height'], None),
-                'crs': get_vocab_label(crsvocab, r.value(GML['srsName'], None)),
-                'datatype': r.value(BCCPROP['datatype'], None)  # FIXME: ttile (categorical, continuous)
+                'crs': get_vocab_label(crsvocab,
+                                       r.value(GML['srsName'], None)),
+                'datatype': get_vocab_label(dstypevocab,
+                                            r.value(BCCPROP['datatype'], None))
             }
     # check for metadat for file itself:
     ret.update({
@@ -149,10 +153,11 @@ def getbiolayermetadata(ds):
         'height': r.value(BCCPROP['height'], None),
         'resolution': get_vocab_label(resvocab, r.value(BCCPROP['resolution'], None)),
         'crs': get_vocab_label(crsvocab, r.value(GML['srsName'], None)),
-        'temporal': r.value(DCTERMS['temporal'], None), # FIXME: parse it
-        'emsc':  r.value(BCCPROP['emissionsscenario'], None), # FIXME: title
-        'gcm':  r.value(BCCPROP['gcm'], None), # FIXME: title
-        'datatype': r.value(BCCPROP['datatype'], None)  # FIXME: ttile (categorical, continuous)
+        'temporal': unicode(r.value(DCTERMS['temporal'], None)), # FIXME: parse it
+        'emsc': unicode(r.value(BCCPROP['emissionsscenario'], None)), # FIXME: title
+        'gcm': unicode(r.value(BCCPROP['gcm'], None)), # FIXME: title
+        'datatype': get_vocab_label(dstypevocab,
+                                    r.value(BCCPROP['datatype'], None))
     })
     # do we have layer metadata directly on the object? (no archive items)
     bvar = r.value(BIOCLIM['bioclimVariable'])
@@ -162,7 +167,7 @@ def getbiolayermetadata(ds):
         try:
             label = unicode(biovocab.getTerm(bvar.identifier).title)
         except:
-            label = unicode(bvar.identifier)
+            label = bvar.identifier
         ret.update({
             'label': label,
             'layer': bvar.identifier
