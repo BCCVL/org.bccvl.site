@@ -85,6 +85,9 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
         widget.id = '-'.join([str(self.id)]+names(None))
 
     def getItem(self, term):
+        # TODO: have to import here otherwise we'll have circular import problem
+        from org.bccvl.site.api.dataset import get_vocab_label
+
         id = '{}-{}'.format(self.id, term.token)
         name = '{}.{}'.format(self.name, term.token)
         if ITitledTokenizedTerm.providedBy(term):
@@ -97,9 +100,14 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
                 'value': term.token, 'content': content,
                 'checked': self.value and term.token in self.value,
                 'value_widget': value_widget,
-                'resolution': unicode(uuidToCatalogBrain(term.value).BCCResolution)}
+                'resolution': unicode(uuidToCatalogBrain(term.value).BCCResolution),
+                'resolution_label': get_vocab_label(self.resvocab,
+                                                    uuidToCatalogBrain(term.value).BCCResolution)}
 
     def update(self):
+        # TODO: move this to init?
+        self.resvocab = getUtility(IVocabularyFactory,
+                                   name='org.bccvl.site.ResolutionVocabulary')(self.context)
         super(DatasetLayersWidget, self).update()
         addFieldClass(self)
         keyterms = getMultiAdapter(

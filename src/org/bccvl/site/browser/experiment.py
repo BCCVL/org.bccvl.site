@@ -1,7 +1,7 @@
 from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
-from z3c.form.interfaces import ActionExecutionError, IErrorViewSnippet
+from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet
 from org.bccvl.site.interfaces import IJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -344,6 +344,8 @@ class SDMAdd(ParamGroupMixin, Add):
                 continue
             if dsbrain.BCCResolution != resolution:
                 # FIXME: Make this a widget error, currently shown as form wide error
+                #        -> needs template adaption to show selected values and parsey compatible error rendering
+                #raise WidgetActionExecutionError('environmental_datasets', Invalid("All datasets must have the same resolution"))
                 raise ActionExecutionError(Invalid("All datasets must have the same resolution"))
 
 

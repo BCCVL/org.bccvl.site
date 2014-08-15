@@ -95,12 +95,28 @@ def getdsmetadata(ds):
 
 
 def get_vocab_label(vocab, resource):
+    """Lookup up title for resource in vocabulary.
+
+    In case resource is a Resource the function tries to find a label
+    for resource.identifier, otherwise it assumes that resource is a
+    URIRef.
+
+    If there is no title in the vocabulary, it will return the value
+    passed as resource converted to unicode
+
+    """
     if resource is None:
         return resource
-    try:
-        return unicode(vocab.getTerm(resource.identifier).title)
-    except:
-        return unicode(resource.identifier)
+    if IResource.providedBy(resource):
+        try:
+            return unicode(vocab.getTerm(resource.identifier).title)
+        except:
+            return unicode(resource.identifier)
+    else:
+        try:
+            return unicode(vocab.getTerm(resource).title)
+        except:
+            return unicode(resource)
 
 
 # TODO: this gets called to often... cache? optimise?
