@@ -22,16 +22,28 @@ Once we have a XMLRPC proxy we can just call the available methods.
     >>> proxy = xmlrpclib.ServerProxy(abt.absolute_url() + '/dm')
     >>> res = proxy.getMetadata()
     >>> pprint(res)
-    {'description': '',
+    {'commonname': 'Australian Brush-turkey',
+     'crs': None,
+     'datatype': None,
+     'description': '',
+     'emsc': 'None',
      'file': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',
+     'gcm': 'None',
+     'height': None,
      'id': '...',
      'layers': {},
      'max': None,
      'mimetype': 'text/csv',
      'min': None,
+     'resolution': None,
+     'rows': '3',
+     'scientificname': 'Alectura lathami',
+     'taxonid': 'urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986',
+     'temporal': 'None',
      'url': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv',
-     'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
+     'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
+     'width': None}
     >>> res['id'] == abtuid
     True
 
@@ -43,16 +55,28 @@ have to pass in a parameter to tell it in which object we are interested.
     >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
     >>> res = proxy.getMetadata(abtuid)
     >>> pprint(res)
-    {'description': '',
+    {'commonname': 'Australian Brush-turkey',
+     'crs': None,
+     'datatype': None,
+     'description': '',
+     'emsc': 'None',
      'file': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',
+     'gcm': 'None',
+     'height': None,
      'id': '...',
      'layers': {},
      'max': None,
      'mimetype': 'text/csv',
      'min': None,
+     'resolution': None,
+     'rows': '3',
+     'scientificname': 'Alectura lathami',
+     'taxonid': 'urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986',
+     'temporal': 'None',
      'url': 'http://localhost:.../plone/datasets/species/ABT/occurrence.csv',
-     'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
+     'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
+     'width': None}
     >>> res['id'] == abtuid
     True
 
