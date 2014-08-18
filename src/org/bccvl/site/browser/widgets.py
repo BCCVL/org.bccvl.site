@@ -212,8 +212,8 @@ def DatasetsRadioFieldWidget(field, request):
 @implementer(IDatasetsMultiSelectWidget)
 class DatasetsMultiSelectWidget(HTMLInputWidget, SequenceWidget):
 
-    klass = u'radio-widget'
-    css = u'radio'
+    klass = u'checkbox-widget'
+    css = u'checkbox'
 
     def isChecked(self, term):
         return term.token in self.value
@@ -269,7 +269,7 @@ class DatasetsMultiSelectWidget(HTMLInputWidget, SequenceWidget):
             'experiment': exp,
             'function': result.job_params['function'],
             'species': occurbrain,
-            'layers': envlayers
+            'layers': ', '.join(envlayers)
         }
 
     def update(self):
