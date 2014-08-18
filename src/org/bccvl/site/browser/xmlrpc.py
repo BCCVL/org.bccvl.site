@@ -307,7 +307,8 @@ class DataSetManager(BrowserView):
                 emsc = unicode(emsc) if emsc else None
                 species = dsgraph.value(dsgraph.identifier, DWC['scientificName'])
                 species = unicode(species) if species else None
-                datasets.append({
+                resolution = unicode(dsbrain.BCCResolution)
+                dsinfo = {
                     # passible fields on brain:
                     #   Description, BCCResolution
                     #   ds.file.contentType
@@ -319,7 +320,19 @@ class DataSetManager(BrowserView):
                     "gcm":  gcm,  # URI? title? both?-> ui can fetch vocab to get titles
                     "emsc": emsc,  # URI
                     "species": species,   # species for this file ...
-                })
+                    "resolution": resolution
+                }
+                # add info about sdm
+                sdmuuid = ds.__parent__.job_params['species_distribution_models']
+                sdm = uuidToCatalogBrain(sdmuuid).getObject()
+                sdmresult = sdm.__parent__
+                sdmexp = sdmresult.__parent__
+                dsinfo['sdm'] = {
+                    'title': sdmexp.title,
+                    'algorithm': sdmresult.job_params['function'],
+                    'url': sdm.absolute_url()
+                }
+                datasets.append(dsinfo)
                 agg_species.add(species)
                 agg_years.add(year)
             # TODO: could also aggregate all data on projections result:
