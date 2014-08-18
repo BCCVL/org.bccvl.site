@@ -3,7 +3,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
 from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IDownloadInfo
+from org.bccvl.site.interfaces import IDownloadInfo, IJobTracker
 from org.bccvl.site.browser.interfaces import IDatasetTools
 from org.bccvl.site.api.dataset import getdsmetadata
 from Products.CMFCore.utils import getToolByName
@@ -65,6 +65,12 @@ class DatasetTools(BrowserView):
         if itemobj is None:
             itemobj = self.context
         return getdsmetadata(itemobj)
+
+    def job_state(self, itemobj=None):
+        if itemobj is None:
+            itemobj = self.context
+        # FIXME: assume we have a IContentListingObject
+        return itemobj._brain.job_state
 
 
 # FIXME: this view needs to exist for default browser layer as well
