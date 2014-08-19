@@ -118,3 +118,19 @@ bccvllayer:multi_res_ridge_top_flat a bv:BioclimaticVariable ;
 bccvllayer:multi_res_valley_bottom_flat a bv:BioclimaticVariable ;
     rdfs:label "Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)" ;
     .
+
+bccvllayer:mth_FWDis a bv:BioclimaticVariable ;
+    rdfs:label "Monthly Local Discharge (Runoff+Drainage)" ;
+    .
+
+bccvllayer:pcr_mth_FWDis a bv:BioclimaticVariable ;
+    rdfs:label "Monthly Local Discharge (Runoff+Drainage) (Percentile Rank Data)" ;
+    .
+
+bccvllayer:ann_FWDis a bv:BioclimaticVariable ;
+   rdfs:label "Annual Local Discharge (Runoff+Drainage)" ;
+   .
+
+bccvllayer:pcr_ann_FWDis a bv:BioclimaticVariable ;
+   rdfs:label "Annual Local Discharge (Runoff+Drainage) (Percentile Rank Data)" ;
+   .

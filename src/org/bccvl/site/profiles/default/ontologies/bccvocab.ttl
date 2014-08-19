@@ -176,6 +176,11 @@ bccvocab:Resolution2_5m a bccvocab:Resolution ;
     rdf:value 150 ;
     .
 
+bccvocab:Resolution3m a bccvocab:Resolution ;
+    rdfs:label "3' (~5km)" ;
+    rdf:value 180 ;
+    .
+
 bccvocab:Resolution5m a bccvocab:Resolution ;
     rdfs:label "5' (~10km)" ;
     rdf:value 300 ;

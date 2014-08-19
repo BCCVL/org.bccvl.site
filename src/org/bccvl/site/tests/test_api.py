@@ -9,6 +9,7 @@ from rdflib import Literal
 from gu.z3cform.rdf.interfaces import IORDF
 from zope.component import getUtility
 from plone.namedfile import NamedFile
+from plone.uuid.interfaces import IUUID
 
 # setup site with content
 # run doctest in xmlrpc package (rename to api or move to sep. package someday)
@@ -22,6 +23,23 @@ def setUpApiTests(doctest):
     # layer: app, portal, request,
     #        configurationContext, host, port, zodbDB
     portal = layer['portal']
+    # create a fake sdm experiment
+    sdm = portal.experiments.invokeFactory('org.bccvl.content.sdmexperiment',
+                                           id='sdm',
+                                           title=u'Test SDM')
+    sdm = portal.experiments[sdm]
+    result = sdm.invokeFactory('gu.repository.content.RepositoryItem',
+                               id='sdmresult')
+    result = sdm[result]
+    result.job_params = {
+        'function': 'bioclim',
+    }
+    sdmds = result.invokeFactory('org.bccvl.content.dataset',
+                                 id='sdmrds',
+                                 title=u'Result Test SDM RData',
+                                 file=NamedFile(filename=u'Result_file.Rdata'))
+    sdmds = result[sdmds]
+
     # create a fake projection experiment
     proj = portal.experiments.invokeFactory('org.bccvl.content.projectionexperiment',
                                             id='proj',
@@ -29,8 +47,11 @@ def setUpApiTests(doctest):
     proj = portal.experiments[proj]
     # create a result folder
     result = proj.invokeFactory('gu.repository.content.RepositoryItem',
-                                id='result')
-    result = proj['result']
+                                id='projresult')
+    result = proj[result]
+    result.job_params = {
+        'species_distribution_models': [IUUID(sdmds)],
+    }
     # create a result dataset
     rds = result.invokeFactory('org.bccvl.content.dataset',
                                id='rds',
