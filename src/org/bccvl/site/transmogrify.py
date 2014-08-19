@@ -485,7 +485,8 @@ class FileMetadataToRDF(object):
         bmd = md.get('_bccvlmetadata')
         if bmd:
             if 'resolution' in bmd:
-                resmap = {'9 arcsec': BCCVOCAB['Resolution9s']}
+                resmap = {'9 arcsec': BCCVOCAB['Resolution9s'],
+                          '180 arcsec': BCCVOCAB['Resolution3m']}
                 if bmd['resolution'] in resmap:
                     res.add(BCCPROP['resolution'], resmap[bmd['resolution']])
             if 'temporal_coverage' in bmd:
@@ -496,7 +497,8 @@ class FileMetadataToRDF(object):
                 res.add(DC['temporal'], Literal(unicode(p), datatype=DC['Period']))
             if 'genre' in bmd:
                 # It's a bit weird here, we have the genre
-                genremap = {'Environmental': BCCVOCAB['DataGenreE']}
+                genremap = {'Environmental': BCCVOCAB['DataGenreE'],
+                            'Climate': BCCVOCAB['DataGenreE']}
                 if bmd['genre'] in genremap:
                     res.add(BCCPROP['datagenre'], genremap[bmd['genre']])
 
