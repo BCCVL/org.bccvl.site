@@ -348,7 +348,7 @@ class FileMetadataToRDF(object):
             # continue pipe line
             yield item
 
-    def update_resource_metadata(self, res, md, filename):
+    def update_resource_metadata(self, res, filemd, md, filename):
         if not md:
             return
         # bonuds
@@ -369,13 +369,13 @@ class FileMetadataToRDF(object):
             # mean, STATISTICS_MEAN
             # stddev, STATISTICS_STDDEV
             # size (x, y on band)
-            min = bandmd.get('min') or bandmd.get('STATISTICS_MINIMUM')
-            max = bandmd.get('ax') or bandmd.get('STATISTICS_MAXIMUM')
+            min_ = bandmd.get('min') or bandmd.get('STATISTICS_MINIMUM')
+            max_ = bandmd.get('max') or bandmd.get('STATISTICS_MAXIMUM')
             width, height = bandmd.get('size', (None, None))
-            if min:
-                res.add(BCCPROP['min'], Literal(min))
-            if max:
-                res.add(BCCPROP['max'], Literal(max))
+            if min_:
+                res.add(BCCPROP['min'], Literal(min_))
+            if max_:
+                res.add(BCCPROP['max'], Literal(max_))
             if width and height:
                 res.add(BCCPROP['width'], Literal(width))
                 res.add(BCCPROP['height'], Literal(height))
@@ -412,15 +412,17 @@ class FileMetadataToRDF(object):
                 else:
                     # TODO: this part may be better as separate md update step
                     # check if we have _bccvlmetadata
-                    bmd = md.get('_bccvlmetadata')
+                    bmd = filemd.get('_bccvlmetadata')
                     if bmd:
                         # TODO: acknowledgement, bounding_box, external_url,
                         #       license, temporal_coverage, title,
                         if 'layers' in bmd:
-                            for layer in bmd['layers']:
+                            for layer in sorted(bmd['layers'],
+                                                key=lambda x: len(x['file_pattern']),
+                                                reverse=True):
                                 if layer['file_pattern'] in filename:
                                     # works for filenames matichng our layr vocabulary
-                                    res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern']])
+                                    res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern'].strip('_')])
                                     # TODO check if two patterns would match?
                                     break
             # End Layer
@@ -429,7 +431,7 @@ class FileMetadataToRDF(object):
     def update_file_metadata(self, content, md):
         graph = IGraph(content)
         res = Resource(graph, graph.identifier)
-        self.update_resource_metadata(res, md, content.file.filename)
+        self.update_resource_metadata(res, md, md, content.file.filename)
         # mark graph as modified
         getUtility(IORDF).getHandler().put(graph)
 
@@ -462,7 +464,7 @@ class FileMetadataToRDF(object):
             ares.add(NFO['fileSize'], Literal(submd['file_size']))
             ares.add(RDF['type'], NFO['ArchiveItem'])
             #
-            self.update_resource_metadata(ares, submd.get('metadata', {}), key)
+            self.update_resource_metadata(ares, md, submd.get('metadata', {}), key)
 
             res.add(BCCPROP['hasArchiveItem'], ares)
 
