@@ -43,6 +43,20 @@ class DatasetFieldMixin(object):
     #     else:
     #         self.fields += Fields(ILayerDataset)
 
+    def updateWidgets(self):
+        super(DatasetFieldMixin, self).updateWidgets()
+        from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
+        rightsfield = None
+        if 'IDublinCore.rights' in self.fields:
+            rightsfield = self.fields['IDublinCore.rigths']
+        else:
+            for group in self.groups:
+                if 'IDublinCore.rights' in group.fields:
+                    rightsfield = group.fields['IDublinCore.rights']
+                    break
+        if rightsfield is not None:
+            rightsfield.widgetFactory = WysiwygFieldWidget
+
 
 class DatasetDisplayView(DatasetFieldMixin, DefaultView):
 
