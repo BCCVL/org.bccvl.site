@@ -134,3 +134,19 @@ bccvllayer:ann_FWDis a bv:BioclimaticVariable ;
 bccvllayer:pcr_ann_FWDis a bv:BioclimaticVariable ;
    rdfs:label "Annual Local Discharge (Runoff+Drainage) (Percentile Rank Data)" ;
    .
+
+bccvllayer:DLCDv1_Class a bv:BioclimaticVariable ;
+   rdfs:label "Dynamic Land Cover Classification" ;
+   .
+
+bccvllayer:trend_evi_max a bv:BioclimaticVariable ;
+   rdfs:label "Max Annual Enhanced Vegetation Index (EVI) trend";
+   .
+
+bccvllayer:trend_evi_min a bv:BioclimaticVariable ;
+   rdfs:label "Min Annual Enhanced Vegetation Index (EVI) trend";
+   .
+
+bccvllayer:trend_evi_mean a bv:BioclimaticVariable ;
+   rdfs:label "Mean Annual Enhanced Vegetation Index (EVI) trend";
+   .
