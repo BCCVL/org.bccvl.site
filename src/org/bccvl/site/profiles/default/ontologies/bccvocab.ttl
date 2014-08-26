@@ -161,6 +161,11 @@ bccvocab:SpeciesLayerX a bccvocab:SpeciesLayer ;
     rdfs:label "Absence" ;
     .
 
+bccvocab:Resolution3s a bccvocab:Resolution ;
+    rdfs:label "3\" (~90m)" ;
+    rdfs:value 3;
+    .
+
 bccvocab:Resolution9s a bccvocab:Resolution ;
     rdfs:label "9\" (~250m)" ;
     rdfs:value 9;
