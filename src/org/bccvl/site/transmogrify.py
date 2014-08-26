@@ -414,8 +414,8 @@ class FileMetadataToRDF(object):
                     # check if we have _bccvlmetadata
                     bmd = filemd.get('_bccvlmetadata')
                     if bmd:
-                        # TODO: acknowledgement, bounding_box, external_url,
-                        #       license, temporal_coverage, title,
+                        # FIXME: acknowledgement, bounding_box, external_url,
+                        #        license, temporal_coverage, title,
                         if 'layers' in bmd:
                             for layer in sorted(bmd['layers'],
                                                 key=lambda x: len(x['file_pattern']),
@@ -501,6 +501,22 @@ class FileMetadataToRDF(object):
                             'Climate': BCCVOCAB['DataGenreE']}
                 if bmd['genre'] in genremap:
                     res.add(BCCPROP['datagenre'], genremap[bmd['genre']])
+            rights = []
+            if 'license' in bmd:
+                rights.append('<h4>License:</h4><p>{0}</p>'.format(bmd['license']))
+            if 'external_url' in bmd:
+                rights.append('<h4>External URL</h4><p><a href="{0}">{0}</a></p>'.format(bmd['external_url']))
+            if 'acknowledgement' in bmd:
+                acks = bmd['acknowledgement']
+                if not isinstance(acks, list):
+                    acks = [acks]
+                rights.append('<h4>Acknowledgement</h4><ul>')
+                for ack in acks:
+                    rights.append('<li>{0}</li>'.format(ack))
+                rights.append('</ul>')
+            if rights:
+                content.rights = '\n'.join(rights)
+
 
         # mark graph as modified - we have a copy of the graph... if anyone else
         #     wants to see changes we have to put our copy back
