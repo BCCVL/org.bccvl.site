@@ -12,6 +12,7 @@ from org.bccvl.site.content.dataset import (ISpeciesDataset,
 from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
 #from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Five.browser import BrowserView
 
 
 class DatasetFieldMixin(object):
@@ -69,6 +70,12 @@ class DatasetDisplayView(DatasetFieldMixin, DefaultView):
     def _update(self):
         # import ipdb; ipdb.set_trace()
         super(DatasetDisplayView, self)._update()
+
+
+class DatasetDetailsView(BrowserView):
+
+    def metadata(self):
+        return {}
 
 
 # FIXME: Turn this whole form into something re-usable

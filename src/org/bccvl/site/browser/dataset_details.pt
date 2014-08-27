@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      i18n:domain="plone.app.dexterity"
+      tal:omit-tag=""
+      tal:define="owner context/getOwner;
+                  user  owner/getUserName;
+                  dummy python:request.response.setHeader('X-Theme-Disabled', 'True');">
+
+  <h1 tal:content="context/title">Title</h1>
+  <tal:owner tal:condition="python: user != 'admin'">
+    <h2>Owner:</h2>
+    <p tal:content="owner/getUserName">Owner</p>
+  </tal:owner>
+  <tal:description tal:condition="context/description">
+    <h2>Description:</h2>
+    <p tal:content="context/description">Description</p>
+  </tal:description>
+  <h3>Rights:</h3>
+  <p tal:content="structure context/rights">Rights statement</p>
+  <hr/>
+  <p>If you are the owner of this dataset and believe it is
+  incorrectly used, please visit <a href="http://www.bccvl.org.au/contact-us">http://www.bccvl.org.au/contact-us</a></p>
+
+ </html>
