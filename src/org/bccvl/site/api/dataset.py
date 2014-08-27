@@ -157,9 +157,9 @@ def getbiolayermetadata(ds):
                 'width': ref.value(BCCPROP['width'], None),
                 'height': ref.value(BCCPROP['height'], None),
                 'crs': get_vocab_label(crsvocab,
-                                       r.value(GML['srsName'], None)),
+                                       ref.value(GML['srsName'], None)),
                 'datatype': get_vocab_label(dstypevocab,
-                                            r.value(BCCPROP['datatype'], None))
+                                            ref.value(BCCPROP['datatype'], None))
             }
     # check for metadat for file itself:
     ret.update({
