@@ -380,7 +380,7 @@ class FileMetadataToRDF(object):
                 res.set(BCCPROP['width'], Literal(width))
                 res.set(BCCPROP['height'], Literal(height))
             # TODO: emsc, gcm, year, layer, resolution, bounding box?
-            if bandmd.get('type') == 'categorical':
+            if bandmd.get('type') and bandmd.get('type').lower() == 'categorical':
                 res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
             else:
                 res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
