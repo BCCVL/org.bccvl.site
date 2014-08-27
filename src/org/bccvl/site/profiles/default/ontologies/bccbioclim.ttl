@@ -3,6 +3,7 @@
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix bv: <http://namespaces.bccvl.org.au/bioclim#> .
 @prefix bccvllayer: <http://namespaces.bccvl.org.au/layer#> .
+@prefix bccprop: <http://namespaces.bccvl.org.au/prop#> .
 
 # TODO: this is all too focused on bioclim and should be much more generic as it
 #       is already used.
@@ -13,140 +14,335 @@ bv:BioclimaticVariable a owl:Class ;
 
 bv:B01 a bv:BioclimaticVariable ;
     rdfs:label "B01 - Annual Mean Temperature" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B02 a bv:BioclimaticVariable ;
     rdfs:label "B02 - Mean Diurnal Range (Mean of monthly (max temp - min temp))" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B03 a bv:BioclimaticVariable ;
     rdfs:label "B03 - Isothermality (BIO2/BIO7) (* 100)";
+    bccprop:unit "%";
     .
 
 bv:B04 a bv:BioclimaticVariable ;
     rdfs:label "B04 - Temperature Seasonality (standard deviation *100)" ;
+    bccprop:unit "standard deviation (degrees C * 10) * 100";
     .
 
 bv:B05 a bv:BioclimaticVariable ;
     rdfs:label "B05 - Max Temperature of Warmest Month" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B06 a bv:BioclimaticVariable ;
     rdfs:label "B06 - Min Temperature of Coldest Month" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B07 a bv:BioclimaticVariable ;
     rdfs:label "B07 - Temperature Annual Range (BIO5-BIO6)" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B08 a bv:BioclimaticVariable ;
     rdfs:label "B08 - Mean Temperature of Wettest Quarter" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B09 a bv:BioclimaticVariable ;
     rdfs:label "B09 - Mean Temperature of Driest Quarter" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B10 a bv:BioclimaticVariable ;
     rdfs:label "B10 - Mean Temperature of Warmest Quarter" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B11 a bv:BioclimaticVariable ;
     rdfs:label "B11 - Mean Temperature of Coldest Quarter" ;
+    bccprop:unit "degrees C * 10";
     .
 
 bv:B12 a bv:BioclimaticVariable ;
     rdfs:label "B12 - Annual Precipitation" ;
+    bccprop:unit "mm";
     .
 
 bv:B13 a bv:BioclimaticVariable ;
     rdfs:label "B13 - Precipitation of Wettest Month" ;
+    bccprop:unit "mm";
     .
 
 bv:B14 a bv:BioclimaticVariable ;
     rdfs:label "B14 - Precipitation of Driest Month" ;
+    bccprop:unit "mm";
     .
 
 bv:B15 a bv:BioclimaticVariable ;
     rdfs:label "B15 - Precipitation Seasonality (Coefficient of Variation)";
+    bccprop:unit "dimensionless";
     .
 
 bv:B16 a bv:BioclimaticVariable ;
     rdfs:label "B16 - Precipitation of Wettest Quarter" ;
+    bccprop:unit "mm";
     .
 
 bv:B17 a bv:BioclimaticVariable ;
     rdfs:label "B17 - Precipitation of Driest Quarter" ;
+    bccprop:unit "mm";
     .
 
 bv:B18 a bv:BioclimaticVariable ;
     rdfs:label "B18 - Precipitation of Warmest Quarter" ;
+    bccprop:unit "mm";
     .
 
 bv:B19 a bv:BioclimaticVariable ;
     rdfs:label "B19 - Precipitation of Coldest Quarter" ;
+    bccprop:unit "mm";
     .
 
 bccvllayer:nsg-2011-250m-clay30 a bv:BioclimaticVariable ;
     rdfs:label "Clay content percentage 0-30 cm" ;
+    bccprop:unit "%";
     .
 
 bccvllayer:nsg-2011-250m-bd30 a bv:BioclimaticVariable ;
     rdfs:label "Bulk density 0-30 cm";
+    bccprop:unit "Mg/m3";
     .
 
 bccvllayer:nsg-2011-250m-ph_0_30 a bv:BioclimaticVariable ;
     rdfs:label "pH (Calcium Chloride 1:5) 0-30cm" ;
+    bccprop:unit "pH";
     .
 
 bccvllayer:nsg-2011-250m-pawc_1m a bv:BioclimaticVariable ;
     rdfs:label "Plant available water capacity 0-1 m" ;
+    bccprop:unit "mm";
     .
 
 bccvllayer:nsg-2011-250m-asc a bv:BioclimaticVariable ;
     rdfs:label "Australian Soil Classification" ;
+    bccprop:unit "Soil class";
     .
 
 bccvllayer:vastgridv2_1k a bv:BioclimaticVariable ;
     rdfs:label "National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008" ;
+    bccprop:unit "VAST classification";
     .
 
 bccvllayer:multi_res_ridge_top_flat a bv:BioclimaticVariable ;
     rdfs:label "Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)" ;
+    bccprop:unit "dimensionless";
     .
 
 bccvllayer:multi_res_valley_bottom_flat a bv:BioclimaticVariable ;
     rdfs:label "Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)" ;
+    bccprop:unit "dimensionless";
     .
 
 bccvllayer:mth_FWDis a bv:BioclimaticVariable ;
     rdfs:label "Monthly Local Discharge (Runoff+Drainage)" ;
+    bccprop:unit "mm/d";
     .
 
 bccvllayer:pcr_mth_FWDis a bv:BioclimaticVariable ;
     rdfs:label "Monthly Local Discharge (Runoff+Drainage) (Percentile Rank Data)" ;
+    bccprop:unit "%";
     .
 
 bccvllayer:ann_FWDis a bv:BioclimaticVariable ;
-   rdfs:label "Annual Local Discharge (Runoff+Drainage)" ;
-   .
+    rdfs:label "Annual Local Discharge (Runoff+Drainage)" ;
+    bccprop:unit "mm/d";
+    .
 
 bccvllayer:pcr_ann_FWDis a bv:BioclimaticVariable ;
-   rdfs:label "Annual Local Discharge (Runoff+Drainage) (Percentile Rank Data)" ;
+    rdfs:label "Annual Local Discharge (Runoff+Drainage) (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_FWE a bv:BioclimaticVariable ;
+    rdfs:label "Annual Total Evaporation (Soil+Vegetation)" ;
+    bccprop:unit "mm/d";
+    .
+
+bccvllayer:pcr_ann_FWE a bv:BioclimaticVariable ;
+    rdfs:label "Annual Total Evaporation (Soil+Vegetation) (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_FWLch2 a bv:BioclimaticVariable ;
+    rdfs:label "Annual Deep Drainage" ;
+    bccprop:unit "mm/d";
+    .
+
+bccvllayer:pcr_ann_FWLch2 a bv:BioclimaticVariable ;
+    rdfs:label "Annual Deep Drainage (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_FWPT a bv:BioclimaticVariable ;
+    rdfs:label "Annual Potential Evaporation" ;
+    bccprop:unit "mm/d";
+    .
+
+bccvllayer:pcr_ann_FWPT a bv:BioclimaticVariable ;
+    rdfs:label "Annual Potential Evaporation (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_FWRun a bv:BioclimaticVariable ;
+    rdfs:label "Annual Surface Runoff" ;
+    bccprop:unit "mm/d";
+    .
+
+bccvllayer:pcr_ann_FWRun a bv:BioclimaticVariable ;
+    rdfs:label "Annual Surface Runoff (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_FWSoil a bv:BioclimaticVariable ;
+    rdfs:label "Annual Soil Evaporation" ;
+    bccprop:unit "mm/d";
+    .
+
+bccvllayer:pcr_ann_FWSoil a bv:BioclimaticVariable ;
+    rdfs:label "Annual Soil Evaporation (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_FWTra a bv:BioclimaticVariable ;
+    rdfs:label "Annual Total Transpiration" ;
+    bccprop:unit "mm/d";
+    .
+
+bccvllayer:pcr_ann_FWTra a bv:BioclimaticVariable ;
+    rdfs:label "Annual Total Transpiration (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_FWWater a bv:BioclimaticVariable ;
+    rdfs:label "Annual Open Water Evaporation ('pan' equiv)" ;
+    bccprop:unit "mm/d";
+    .
+
+bccvllayer:pcr_ann_FWWater a bv:BioclimaticVariable ;
+    rdfs:label "Annual Open Water Evaporation ('pan' equiv) (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_PhiE a bv:BioclimaticVariable ;
+    rdfs:label "Annual Daily Latent Heat Flux" ;
+    bccprop:unit "W/m^2";
+    .
+
+bccvllayer:pcr_ann_PhiE a bv:BioclimaticVariable ;
+    rdfs:label "Annual Daily Latent Heat Flux (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_PhiH a bv:BioclimaticVariable ;
+    rdfs:label "Annual Daily Sensible Heat Flux" ;
+    bccprop:unit "W/m^2";
+    .
+
+bccvllayer:pcr_ann_PhiH a bv:BioclimaticVariable ;
+    rdfs:label "Annual Daily Sensible Heat Flux (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_SolarMJ a bv:BioclimaticVariable ;
+    rdfs:label "Annual Incident solar radiation" ;
+    bccprop:unit "MJ/m^2/d";
+    .
+
+bccvllayer:pcr_ann_SolarMJ a bv:BioclimaticVariable ;
+    rdfs:label "Annual Incident solar radiation (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_TempMax a bv:BioclimaticVariable ;
+    rdfs:label "Annual Daily maximum temperature" ;
+    bccprop:unit "degC";
+    .
+
+bccvllayer:pcr_ann_TempMax a bv:BioclimaticVariable ;
+    rdfs:label "Annual Daily maximum temperature (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_TempMin a bv:BioclimaticVariable ;
+    rdfs:label "Daily minimum temperature" ;
+    bccprop:unit "degC";
+    .
+
+bccvllayer:pcr_ann_TempMin a bv:BioclimaticVariable ;
+    rdfs:label "Daily minimum temperature (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_WRel1 a bv:BioclimaticVariable ;
+    rdfs:label "Annual Relative Soil Moisture (Upper Layer)" ;
+    bccprop:unit "Fraction (0-1)";
+    .
+
+bccvllayer:pcr_ann_WRel1 a bv:BioclimaticVariable ;
+    rdfs:label "Annual Relative Soil Moisture (Upper Layer) (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_WRel1End a bv:BioclimaticVariable ;
+   rdfs:label "Annual Relative Soil Moisture (Upper Layer) at end of aggregation period" ;
+    bccprop:unit "Fraction (0-1)";
    .
+
+bccvllayer:pcr_ann_WRel1End a bv:BioclimaticVariable ;
+    rdfs:label "Annual Relative Soil Moisture (Upper Layer) at end of aggregation period (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_WRel2 a bv:BioclimaticVariable ;
+   rdfs:label "Annual Relative Soil Moisture (Lower Layer)" ;
+    bccprop:unit "Fraction (0-1)";
+   .
+
+bccvllayer:pcr_ann_WRel2 a bv:BioclimaticVariable ;
+    rdfs:label "Annual Relative Soil Moisture (Lower Layer) (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_WRel2End a bv:BioclimaticVariable ;
+    rdfs:label "Annual Relative Soil Moisture (Lower Layer) at end of aggregation period" ;
+    bccprop:unit "Fraction (0-1)";
+    .
+
+bccvllayer:pcr_ann_WRel2End a bv:BioclimaticVariable ;
+    rdfs:label "Annual Relative Soil Moisture (Lower Layer) at end of aggregation period (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
 
 bccvllayer:DLCDv1_Class a bv:BioclimaticVariable ;
-   rdfs:label "Dynamic Land Cover Classification" ;
-   .
+    rdfs:label "Dynamic Land Cover Classification" ;
+    bccprop:unit "class";
+    .
 
 bccvllayer:trend_evi_max a bv:BioclimaticVariable ;
-   rdfs:label "Max Annual Enhanced Vegetation Index (EVI) trend";
-   .
+    rdfs:label "Max Annual Enhanced Vegetation Index (EVI) trend";
+    bccprop:unit "dimensionless";
+    .
 
 bccvllayer:trend_evi_min a bv:BioclimaticVariable ;
-   rdfs:label "Min Annual Enhanced Vegetation Index (EVI) trend";
-   .
+    rdfs:label "Min Annual Enhanced Vegetation Index (EVI) trend";
+    bccprop:unit "dimensionless";
+    .
 
 bccvllayer:trend_evi_mean a bv:BioclimaticVariable ;
-   rdfs:label "Mean Annual Enhanced Vegetation Index (EVI) trend";
-   .
+    rdfs:label "Mean Annual Enhanced Vegetation Index (EVI) trend";
+    bccprop:unit "dimensionless";
+    .
