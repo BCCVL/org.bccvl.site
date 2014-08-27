@@ -346,3 +346,20 @@ bccvllayer:trend_evi_mean a bv:BioclimaticVariable ;
     rdfs:label "Mean Annual Enhanced Vegetation Index (EVI) trend";
     bccprop:unit "dimensionless";
     .
+
+bccvllayer:ai_yr a bv:BioclimaticVariable ;
+    rdfs:label "Global Aridity - Annual" ;
+    bccprop:unit "Aridity Index" ;
+    # continuous
+    # < 0.03     ... Hyper Arid
+    # 0.03 - 0.2 ... Arid
+    # 0.2 - 0.5 ... Semi Arid
+    # 0.5 - 0.65 ... Dry sub-humid
+    # > 0.65 ... Humid
+    .
+
+bccvllayer:pet_he_yr a bv:BioclimaticVariable ;
+    rdfs:label "Global Potential Evapo-Transpiration (PET) - Annual" ;
+    bccprop:unit "mm/year" ;
+    # continuous
+    .
