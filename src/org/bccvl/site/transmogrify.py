@@ -71,7 +71,7 @@ class ALASource(object):
         for path, prop, obt in self.JSON_TO_RDFMAP:
             val = self.traverse_dict(json, path)
             if val:
-                resource.add(prop, obt(val))
+                resource.set(prop, obt(val))
 
     def __iter__(self):
         # exhaust previous iterator
@@ -95,8 +95,8 @@ class ALASource(object):
         rdf = Graph()
         rdfmd = Resource(rdf, rdf.identifier)
         self.map_json_to_resource(json,  rdfmd)
-        rdfmd.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreSO'])
-        rdfmd.add(BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP'])
+        rdfmd.set(BCCPROP['datagenre'], BCCVOCAB['DataGenreSO'])
+        rdfmd.set(BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP'])
         rdfmd.add(RDF['type'], CVOCAB['Dataset'])
         # TODO: important thing ... date of export (import date in
         #       plone)/ date modified in ALA
@@ -361,7 +361,7 @@ class FileMetadataToRDF(object):
                 srs = EPSG[srs[len("epsg:"):]]
             else:
                 srs = URIRef(srs)
-            res.add(GML['srsName'], srs)
+            res.set(GML['srsName'], srs)
         # band metadata
         bandmd = md.get('band')
         if bandmd:
@@ -373,22 +373,22 @@ class FileMetadataToRDF(object):
             max_ = bandmd.get('max') or bandmd.get('STATISTICS_MAXIMUM')
             width, height = bandmd.get('size', (None, None))
             if min_:
-                res.add(BCCPROP['min'], Literal(min_))
+                res.set(BCCPROP['min'], Literal(min_))
             if max_:
-                res.add(BCCPROP['max'], Literal(max_))
+                res.set(BCCPROP['max'], Literal(max_))
             if width and height:
-                res.add(BCCPROP['width'], Literal(width))
-                res.add(BCCPROP['height'], Literal(height))
+                res.set(BCCPROP['width'], Literal(width))
+                res.set(BCCPROP['height'], Literal(height))
             # TODO: emsc, gcm, year, layer, resolution, bounding box?
             if bandmd.get('type') == 'categorical':
-                res.add(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
+                res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
             else:
-                res.add(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
+                res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
 
             rat = bandmd.get('rat')
             if rat:
                 # FIXME: really a good way to store this?
-                res.add(BCCPROP['rat'], Literal(json.dumps(rat)))
+                res.set(BCCPROP['rat'], Literal(json.dumps(rat)))
             # origin, 'Pixel Size', bounds
 
             ##############################
@@ -400,15 +400,15 @@ class FileMetadataToRDF(object):
                 match = re.match(r'.*bioclim.*(\d\d)', layer)
                 if match:
                     bid = match.group(1)
-                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
+                    res.set(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
                 else:
                     # TODO: really write something?
-                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM[layer])
+                    res.set(BIOCLIM['bioclimVariable'], BIOCLIM[layer])
             else:
                 match = re.match(r'.*bioclim.*(\d\d).tif', filename)
                 if match:
                     bid = match.group(1)
-                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
+                    res.set(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
                 else:
                     # TODO: this part may be better as separate md update step
                     # check if we have _bccvlmetadata
@@ -422,7 +422,7 @@ class FileMetadataToRDF(object):
                                                 reverse=True):
                                 if layer['file_pattern'] in filename:
                                     # works for filenames matichng our layr vocabulary
-                                    res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern'].strip('_')])
+                                    res.set(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern'].strip('_')])
                                     # TODO check if two patterns would match?
                                     break
             # End Layer
@@ -460,8 +460,8 @@ class FileMetadataToRDF(object):
             ordf = getUtility(IORDF)
             ares = Resource(graph, ordf.generateURI())
             # size (x, y on file)
-            ares.add(NFO['fileName'], Literal(submd['filename']))
-            ares.add(NFO['fileSize'], Literal(submd['file_size']))
+            ares.set(NFO['fileName'], Literal(submd['filename']))
+            ares.set(NFO['fileSize'], Literal(submd['file_size']))
             ares.add(RDF['type'], NFO['ArchiveItem'])
             #
             self.update_resource_metadata(ares, md, submd.get('metadata', {}), key)
@@ -479,28 +479,32 @@ class FileMetadataToRDF(object):
         #bounds = md.get('boutds')
         rows = md.get('rows')
         if rows:
-            res.add(BCCPROP['rows'], Literal(rows))
+            res.set(BCCPROP['rows'], Literal(rows))
 
         # do general '_bccvlmetadata' here
         bmd = md.get('_bccvlmetadata')
         if bmd:
             if 'resolution' in bmd:
                 resmap = {'9 arcsec': BCCVOCAB['Resolution9s'],
-                          '180 arcsec': BCCVOCAB['Resolution3m']}
+                          '180 arcsec': BCCVOCAB['Resolution3m'],
+                          '2.5 arcmin': BCCVOCAB['Resolution2_5m']}
                 if bmd['resolution'] in resmap:
-                    res.add(BCCPROP['resolution'], resmap[bmd['resolution']])
+                    res.set(BCCPROP['resolution'], resmap[bmd['resolution']])
+                else:
+                    LOG.warn('Unknown resolution: %s', bmd['resolution'])
             if 'temporal_coverage' in bmd:
                 p = Period('')
                 p.start = bmd['temporal_coverage'].get('start')
                 p.end = bmd['temporal_coverage'].get('end')
                 p.scheme = 'W3C-DTF'
-                res.add(DC['temporal'], Literal(unicode(p), datatype=DC['Period']))
+                res.set(DC['temporal'], Literal(unicode(p), datatype=DC['Period']))
             if 'genre' in bmd:
                 # It's a bit weird here, we have the genre
                 genremap = {'Environmental': BCCVOCAB['DataGenreE'],
-                            'Climate': BCCVOCAB['DataGenreE']}
+                            'Climate': BCCVOCAB['DataGenreE'],
+                            'FutureClimate': BCCVOCAB['DataGenreFC']}
                 if bmd['genre'] in genremap:
-                    res.add(BCCPROP['datagenre'], genremap[bmd['genre']])
+                    res.set(BCCPROP['datagenre'], genremap[bmd['genre']])
             rights = []
             if 'license' in bmd:
                 rights.append('<h4>License:</h4><p>{0}</p>'.format(bmd['license']))
