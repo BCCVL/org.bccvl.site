@@ -486,6 +486,7 @@ class FileMetadataToRDF(object):
         if bmd:
             if 'resolution' in bmd:
                 resmap = {'9 arcsec': BCCVOCAB['Resolution9s'],
+                          '30 arcsec': BCCVOCAB['Resolution30s'],
                           '180 arcsec': BCCVOCAB['Resolution3m'],
                           '2.5 arcmin': BCCVOCAB['Resolution2_5m']}
                 if bmd['resolution'] in resmap:
