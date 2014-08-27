@@ -508,19 +508,19 @@ class FileMetadataToRDF(object):
                     res.set(BCCPROP['datagenre'], genremap[bmd['genre']])
             rights = []
             if 'license' in bmd:
-                rights.append('<h4>License:</h4><p>{0}</p>'.format(bmd['license']))
+                rights.append(u'<h4>License:</h4><p>{0}</p>'.format(bmd['license']))
             if 'external_url' in bmd:
-                rights.append('<h4>External URL</h4><p><a href="{0}">{0}</a></p>'.format(bmd['external_url']))
+                rights.append(u'<h4>External URL</h4><p><a href="{0}">{0}</a></p>'.format(bmd['external_url']))
             if 'acknowledgement' in bmd:
                 acks = bmd['acknowledgement']
                 if not isinstance(acks, list):
                     acks = [acks]
-                rights.append('<h4>Acknowledgement</h4><ul>')
+                rights.append(u'<h4>Acknowledgement</h4><ul>')
                 for ack in acks:
-                    rights.append('<li>{0}</li>'.format(ack))
-                rights.append('</ul>')
+                    rights.append(u'<li>{0}</li>'.format(ack))
+                rights.append(u'</ul>')
             if rights:
-                content.rights = '\n'.join(rights)
+                content.rights = u'\n'.join(rights)
 
 
         # mark graph as modified - we have a copy of the graph... if anyone else
