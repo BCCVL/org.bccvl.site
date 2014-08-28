@@ -400,15 +400,15 @@ class FileMetadataToRDF(object):
                 match = re.match(r'.*bioclim.*(\d\d)', layer)
                 if match:
                     bid = match.group(1)
-                    res.set(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
+                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
                 else:
                     # TODO: really write something?
-                    res.set(BIOCLIM['bioclimVariable'], BIOCLIM[layer])
+                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM[layer])
             else:
                 match = re.match(r'.*bioclim.*(\d\d).tif', filename)
                 if match:
                     bid = match.group(1)
-                    res.set(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
+                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
                 else:
                     # TODO: this part may be better as separate md update step
                     # check if we have _bccvlmetadata
@@ -422,7 +422,7 @@ class FileMetadataToRDF(object):
                                                 reverse=True):
                                 if layer['file_pattern'] in filename:
                                     # works for filenames matichng our layr vocabulary
-                                    res.set(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern'].strip('_')])
+                                    res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern'].strip('_')])
                                     # TODO check if two patterns would match?
                                     break
             # End Layer
