@@ -42,7 +42,15 @@
         template="datasets_macros.pt"
         allowed_interface="zope.interface.common.mapping.IItemMapping"
         permission="zope.Public"
-    />
+        />
+
+    <browser:page
+        name="datasets_list"
+        for="plone.app.contenttypes.interfaces.IFolder"
+        class=".datasets_listing_view.DatasetsListingView"
+        permission="zope2.View"
+        template="datasets_list.pt"
+        />
 
     <browser:page
         name="datasets_list_item"
