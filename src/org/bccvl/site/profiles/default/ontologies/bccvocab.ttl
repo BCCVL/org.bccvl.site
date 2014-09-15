@@ -18,6 +18,21 @@ bccvocab:DataGenreClass a owl:Class ;
     rdfs:description "Classify data genre in higher level groups";
    .
 
+bccvocab:SpeciesDataGenre a owl:Class ;
+    rdfs:subClassOf bccvocab:DataGenreClass ;
+    rdfs:label "Species Data Genre" ;
+    .
+
+bccvocab:EnvironmentalDataGenre a owl:Class ;
+    rdfs:subClassOf bccvocab:DataGenreClass ;
+    rdfs:label "Environmental Data Genre" ;
+    .
+
+bccvocab:SpeciesDistributionDataGenre a owl:Class;
+    rdfs:subClassOf bccvocab:SpeciesDataGenre;
+    rdfs:label "Species Distribution" ;
+    .
+
 bccvocab:DataSetType a owl:Class ;
     rdfs:label "Dataset Type" ;
     .
@@ -36,12 +51,8 @@ bccvocab:Resolution a owl:Class ;
 
 # instances
 
-bccvocab:SpeciesDataGenre a bccvocab:DataGenreClass ;
-    rdfs:label "Species Data Genre" ;
-    .
-
-bccvocab:EnvironmentalDataGenre a bccvocab:DataGenreClass ;
-    rdfs:label "Environmental Data Genre" ;
+bccvocab:DataGenreCC a bccvocab:DataGenre, bccvocab:EnvironmentalDataGenre ;
+    rdfs:label "Current Climate" ;
     .
 
 bccvocab:DataGenreFC a bccvocab:DataGenre, bccvocab:EnvironmentalDataGenre ;
@@ -56,17 +67,21 @@ bccvocab:DataGenreE a bccvocab:DataGenre, bccvocab:EnvironmentalDataGenre ;
 #        add comments to describe genre a bit further.. e.g.
 #        usually an RData file describing a computed model
 #        may have additional metadata like layers, resolution, species, etc...
-bccvocab:DataGenreSD a bccvocab:DataGenre ;
-    rdfs:label "Species Distribution" ;
-    .
-
-bccvocab:DataGenreSO a bccvocab:DataGenre, bccvocab:SpeciesDataGenre ;
+bccvocab:DataGenreSpeciesOccurrence a bccvocab:DataGenre, bccvocab:SpeciesDataGenre, bccvocab:SpeciesDistributionDataGenre ;
     rdfs:label "Species Occurrence" ;
     .
 
-bccvocab:DataGenreSA a bccvocab:DataGenre, bccvocab:SpeciesDataGenre ;
-    rdfs:label "Abundance" ;
+bccvocab:DataGenreSpeciesAbsence a bccvocab:DataGenre, bccvocab:SpeciesDataGenre, bccvocab:SpeciesDistributionDataGenre ;
+    rdfs:label "Species Absence" ;
     .
+
+bccvocab:DataGenreSpeciesAbundance a bccvocab:DataGenre, bccvocab:SpeciesDataGenre, bccvocab:SpeciesDistributionDataGenre ;
+    rdfs:label "Species Abundance" ;
+    .
+
+
+
+# Result Datasets
 
 bccvocab:DataGenreSDMEval a bccvocab:DataGenre ;
     rdfs:label "Species Distribution Model Evaluation" ;
