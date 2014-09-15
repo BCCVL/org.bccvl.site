@@ -395,9 +395,10 @@ class ProjectionJobTracker(MultiJobTracker):
                 dsobj = brain.getObject()
                 if not getattr(dsobj, 'thresholds', None):
                     continue
-                # TODO: this will overwrite duplicate threshold keys rom different datasets
+                # FIXME: this will overwrite duplicate threshold keys
+                #        from different datasets
                 # we make a copy and don't store a reference to the same dict
-                thrs = dict(dsobj.thresholds)
+                thrs.update(dsobj.thresholds)
             return thrs
 
         result.experiment_infos = {
