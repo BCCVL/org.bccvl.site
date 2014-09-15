@@ -42,6 +42,6 @@
                   rowstyle request/rowstyle|string:odd;"
       tal:omit-tag="">
 
-      <metal:block use-macro="context/datasets-macros/datasets_listitem"></metal:block>
+      <metal:block use-macro="context/datasets-listing-view/datasets_listitem"></metal:block>
 
 </html>

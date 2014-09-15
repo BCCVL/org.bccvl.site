@@ -36,15 +36,6 @@
         />
 
     <browser:page
-        name="datasets-macros"
-        for="*"
-        class="plone.z3cform.templates.Macros"
-        template="datasets_macros.pt"
-        allowed_interface="zope.interface.common.mapping.IItemMapping"
-        permission="zope.Public"
-        />
-
-    <browser:page
         name="datasets_list"
         for="plone.app.contenttypes.interfaces.IFolder"
         class=".datasets_listing_view.DatasetsListingView"

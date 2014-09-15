@@ -164,7 +164,6 @@ class DatasetsListingView(BrowserView):
             SimpleTerm('ala', 'ala', u'Imported from ALA'),
             SimpleTerm('shared', 'shared', 'Shared'),
         ))
-        import ipdb; ipdb.set_trace()
         return super(DatasetsListingView, self).__call__()
 
     # Various datasets listing helpers
