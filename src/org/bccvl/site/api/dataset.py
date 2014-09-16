@@ -214,55 +214,9 @@ def getspeciesmetadata(ds):
     return ret
 
 
-# TODO: update this method to new interface
-# def getbiolayermetadata_query(ds):
-#     # TODO: use a sparql query to get all infos in one go...
-#     #       could get layer friendly names as well
-#     # FIXME: this here does not respect uncomitted changes
-#     query = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-# PREFIX ns: <http://www.bccvl.org.au/individual/>
-# PREFIX cvocab: <http://namespaces.griffith.edu.au/collection_vocab#>
-# PREFIX bccprop: <http://namespaces.bccvl.org.au/prop#>
-# PREFIX bioclim: <http://namespaces.bccvl.org.au/bioclim#>
-# PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
-
-
-# SELECT ?bvar ?blabel ?fnam WHERE {{
-#   Graph ?g {{
-#   <{subject}> a cvocab:Dataset .
-#   <{subject}> bccprop:hasArchiveItem ?ar .
-#   }}
-#   Graph ?a {{
-#     ?ar bioclim:bioclimVariable ?bvar .
-#     ?ar nfo:fileName ?fnam .
-#   }}
-#   Graph ?b {{
-#     ?bvar rdfs:label ?blabel .
-#   }}
-# }}"""
-#     # FIXME: need to clean up getContentUri function
-#     uri = getUtility(IORDF).getContentUri(ds)
-#     q = query.format(subject=uri)
-#     ret = {}
-#     handler = getUtility(IORDF).getHandler()
-#     for row in handler.query(q):
-#         ret[row['bvar']] = {'label': unicode(row['blabel']),
-#                             'filename': unicode(row['fnam'])}
-#     return ret
-
-
 ############# ++api++<name>/ experiment
 ######## maybe useful with inspection? e.g. json-ld schema, json-hyperschema?
 ######## json-api ?
-
-
-# def getMetadata(datasetid):
-#     ds = uuidToObject(datasetid)
-#     if ds is None:
-#         # TODO: raise Exception?
-#         return None
-#     return getdsmetadata(ds)
-
 
 # from zope.interface import Interface
 # class IDmApi(Interface):
