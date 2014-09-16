@@ -3,7 +3,7 @@
   "title": "My Data",
   "_layout": "datasets_listing_view",
   "_transitions": "publish",
-  "_permission_mapping": {
+  "_permissions": {
     "Add portal content": {"acquire": true, "roles": ["Manager", "Member"]},
     "org.bccvl: Add Dataset": {"acquire": true, "roles": ["Manager", "Member"]}
   }

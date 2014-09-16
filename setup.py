@@ -58,7 +58,7 @@ setup(
         'collective.setuphelpers',
         'plone.app.contentlisting',
         'collective.transmogrifier',
-        'collective.blueprint.jsonmigrator',
+        'collective.jsonmigrator',
         'transmogrify.dexterity',
         'quintagroup.transmogrifier',
         'org.bccvl.compute',
