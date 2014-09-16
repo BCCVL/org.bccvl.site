@@ -95,7 +95,7 @@ class ALASource(object):
         rdf = Graph()
         rdfmd = Resource(rdf, rdf.identifier)
         self.map_json_to_resource(json,  rdfmd)
-        rdfmd.set(BCCPROP['datagenre'], BCCVOCAB['DataGenreSO'])
+        rdfmd.set(BCCPROP['datagenre'], BCCVOCAB['DataGenreSpeciesOccurrence'])
         rdfmd.set(BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP'])
         rdfmd.add(RDF['type'], CVOCAB['Dataset'])
         # TODO: important thing ... date of export (import date in

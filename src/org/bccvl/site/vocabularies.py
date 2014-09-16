@@ -42,7 +42,7 @@ class QueryAPI(object):
         return brains
 
     def getSpeciesOccurrenceDatasets(self):
-        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSO'],
+        return self.getDatasets(BCCDataGenre=BCCVOCAB['DataGenreSpeciesOccurrence'],
                                 job_state='COMPLETED')
 
     def getSpeciesDistributionModelEvaluationDatasets(self):
@@ -171,7 +171,7 @@ species_presence_datasets_vocab = CatalogVocabularyFactory(
     'species_presence_datasets_vocab',
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
-        'BCCDataGenre': BCCVOCAB['DataGenreSO'],
+        'BCCDataGenre': BCCVOCAB['DataGenreSpeciesOccurrence'],
         'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerP'],
         'job_state': 'COMPLETED'
     })
@@ -180,7 +180,7 @@ species_absence_datasets_vocab = CatalogVocabularyFactory(
     'species_absence_datasets_vocab',
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
-        'BCCDataGenre': BCCVOCAB['DataGenreSO'],
+        'BCCDataGenre': BCCVOCAB['DataGenreSpeciesOccurrence'],
         'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerX'],
         'job_state': 'COMPLETED',
     })
@@ -189,7 +189,7 @@ species_abundance_datasets_vocab = CatalogVocabularyFactory(
     'species_abundance_datasets_vocab',
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
-        'BCCDataGenre': BCCVOCAB['DataGenreSO'],
+        'BCCDataGenre': BCCVOCAB['DataGenreSpeciesOccurrence'],
         'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerA'],
         'job_state': 'COMPLETED',
     })

@@ -57,9 +57,6 @@ def BCCExperimentResolution(object, **kw):
 
 @indexer(IDataset)
 def dataset_environmental_layer(object, **kw):
-    # graph = IGraph(object)
-    # if (graph.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreSD']) in graph:
-    #     return tuple(graph.objects(graph.identifier, BIOCLIM['bioclimVariable']))
     layers = getbiolayermetadata(object)
     if layers.get('layers'):
         return tuple(layers['layers'].keys())

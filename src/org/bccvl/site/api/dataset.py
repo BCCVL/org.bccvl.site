@@ -200,7 +200,7 @@ def getspeciesmetadata(ds):
         'taxonid': None,
         'rows': None
     }
-        # bccprop: datagenre ->  bccvocab: DataGenreSO
+        # bccprop: datagenre ->  bccvocab: DataGenreSpeciesOccurrence
         # bccprop: specieslayer -> bccvocab: SpeciesLayerP, SpeciesLayerX
     if res is None:
         return ret

@@ -27,22 +27,10 @@ class DatasetFieldMixin(object):
         genre = md.value(md.identifier, BCCPROP['datagenre'])
         # TODO: do a better check for genre. e.g. query store for
         #       classes of genre?
-        if genre in (BCCVOCAB['DataGenreSA'], BCCVOCAB['DataGenreSO']):
+        if genre in (BCCVOCAB['DataGenreSpeciesAbsence'], BCCVOCAB['DataGenreSpeciesOccurrence']):
             yield ISpeciesDataset
         elif genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreE']):
             yield ILayerDataset
-
-    # def updateFields(self):
-    #     md = IGraph(self.context)
-    #     genre = md.value(md.identifier, BCCPROP['datagenre'])
-    #     # TODO: do a better check for genre. e.g. query store for
-    #             classes of genre?
-    #     import ipdb; ipdb.set_trace()
-    #     if genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreSD'],
-    #                  BCCVOCAB['DataGenreSO']):
-    #         self.fields += Fields(ISpeciesDataset)
-    #     else:
-    #         self.fields += Fields(ILayerDataset)
 
     def updateWidgets(self):
         super(DatasetFieldMixin, self).updateWidgets()

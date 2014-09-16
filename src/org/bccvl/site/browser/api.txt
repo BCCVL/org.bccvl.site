@@ -234,9 +234,9 @@ Vocabulary endpoint:
 
    >>> pprint(proxy.getVocabulary('org.bccvl.site.SpeciesDataGenreVocabulary'))
     [{'title': 'Abundance',
-      'token': 'http://namespaces.bccvl.org.au/vocab#DataGenreSA'},
+      'token': 'http://namespaces.bccvl.org.au/vocab#DataGenreSpeciesAbsence'},
      {'title': 'Species Occurrence',
-      'token': 'http://namespaces.bccvl.org.au/vocab#DataGenreSO'}]
+      'token': 'http://namespaces.bccvl.org.au/vocab#DataGenreSpeciesOccurrence'}]
 
    >>> pprint(proxy.getVocabulary('org.bccvl.site.SpeciesLayerVocabulary'))
     [{'title': 'Absence',

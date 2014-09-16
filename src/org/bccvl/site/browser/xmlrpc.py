@@ -580,7 +580,7 @@ class DataMover(BrowserView):
         md = Resource(md, md.identifier)
         # TODO: provenance ... import url?
         # FIXME: verify input parameters before adding to graph
-        md.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreSO'])
+        md.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreSpeciesOccurrence'])
         md.add(BCCPROP['specieslayer'], BCCVOCAB['SpeciesLayerP'])
         md.add(DWC['scientificName'], Literal(taxon))
         md.add(DWC['taxonID'], Literal(lsid))
