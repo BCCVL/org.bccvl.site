@@ -1,5 +1,5 @@
 {
   "_type": "Folder",
   "title": "Climate Data",
-  "_transitions": "publish"
+  "_transitions": ["show_internally", "publish_internally"]
 }

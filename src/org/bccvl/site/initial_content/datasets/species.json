@@ -1,5 +1,5 @@
 {
   "_type": "Folder",
   "title": "Biological Data",
-  "_transitions": "publish"
+  "_transitions": ["show_internally", "publish_internally"]
 }
