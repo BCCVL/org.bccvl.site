@@ -75,6 +75,8 @@ def getdsmetadata(ds):
         #    id: ds.UID,
         #    description: ds.Description
     md = {
+        #'@context': { },
+        '@type':  ds.portal_type,
         'url': ds.absolute_url(),
         'id': IUUID(ds),
         'description': ds.description,
@@ -125,7 +127,7 @@ def getbiolayermetadata(ds):
     #       could get layer friendly names as well
     # FIXME: this here is slow compared to the query version below
     # FIXME: layers should only be added if we have multiple layers
-    ret = {'layers': {}}
+    ret = {'layers': []}
     handler = getUtility(IORDF).getHandler()
     biovocab = getUtility(IVocabularyFactory,
                           name='org.bccvl.site.BioclimVocabulary')(ds)
@@ -136,6 +138,7 @@ def getbiolayermetadata(ds):
     dstypevocab = getUtility(IVocabularyFactory,
                              name='org.bccvl.site.DatasetTypeVocabulary')(ds)
     r = IResource(ds, None)
+    ret['@id'] = unicode(r.identifier)
     if r is None:
         return ret
     for ref in r.objects(BCCPROP['hasArchiveItem']):
@@ -149,7 +152,8 @@ def getbiolayermetadata(ds):
             #        the vocab is still empty at that time because it queries
             #        the triple store directly. As this should only happen with
             #        new content, it's not that critical
-            ret['layers'][bvar.identifier] = {
+            ret['layers'].append({
+                'layer': bvar.identifier, # {'@id', 'label'}
                 'filename': unicode(ref.value(NFO['fileName'])),
                 'label': get_vocab_label(biovocab, bvar),
                 'min': ref.value(BCCPROP['min'], None),
@@ -160,20 +164,13 @@ def getbiolayermetadata(ds):
                                        ref.value(GML['srsName'], None)),
                 'datatype': get_vocab_label(dstypevocab,
                                             ref.value(BCCPROP['datatype'], None))
-            }
+            })
     # check for metadat for file itself:
     ret.update({
-        'min': r.value(BCCPROP['min'], None),
-        'max': r.value(BCCPROP['max'], None),
-        'width': r.value(BCCPROP['width'], None),
-        'height': r.value(BCCPROP['height'], None),
         'resolution': get_vocab_label(resvocab, r.value(BCCPROP['resolution'], None)),
-        'crs': get_vocab_label(crsvocab, r.value(GML['srsName'], None)),
         'temporal': unicode(r.value(DCTERMS['temporal'], None)), # FIXME: parse it
         'emsc': unicode(r.value(BCCPROP['emissionsscenario'], None)), # FIXME: title
         'gcm': unicode(r.value(BCCPROP['gcm'], None)), # FIXME: title
-        'datatype': get_vocab_label(dstypevocab,
-                                    r.value(BCCPROP['datatype'], None))
     })
     # do we have layer metadata directly on the object? (no archive items)
     bvar = r.value(BIOCLIM['bioclimVariable'])
@@ -184,9 +181,16 @@ def getbiolayermetadata(ds):
             label = unicode(biovocab.getTerm(bvar.identifier).title)
         except:
             label = bvar.identifier
-        ret.update({
+        ret['layers'].append({
             'label': label,
-            'layer': bvar.identifier
+            'layer': bvar.identifier,
+            'min': r.value(BCCPROP['min'], None),
+            'max': r.value(BCCPROP['max'], None),
+            'width': r.value(BCCPROP['width'], None),
+            'height': r.value(BCCPROP['height'], None),
+            'crs': get_vocab_label(crsvocab, r.value(GML['srsName'], None)),
+            'datatype': get_vocab_label(dstypevocab,
+                                        r.value(BCCPROP['datatype'], None))
         })
 
     return ret

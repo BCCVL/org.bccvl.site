@@ -58,11 +58,9 @@ def BCCExperimentResolution(object, **kw):
 @indexer(IDataset)
 def dataset_environmental_layer(object, **kw):
     layers = getbiolayermetadata(object)
-    if layers.get('layers'):
-        return tuple(layers['layers'].keys())
-    # TODO: can there be both?
-    if layers.get('layer'):
-        return (layers['layer'], )
+    layers = layers.get('layers', [])
+    if len(layers) > 0:
+        return tuple((l['layer'] for l in layers))
     return None
 
 
