@@ -172,7 +172,7 @@ species_presence_datasets_vocab = CatalogVocabularyFactory(
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
         'BCCDataGenre': BCCVOCAB['DataGenreSpeciesOccurrence'],
-        'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerP'],
+        #'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerP'],
         'job_state': 'COMPLETED'
     })
 
@@ -180,8 +180,8 @@ species_absence_datasets_vocab = CatalogVocabularyFactory(
     'species_absence_datasets_vocab',
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
-        'BCCDataGenre': BCCVOCAB['DataGenreSpeciesOccurrence'],
-        'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerX'],
+        'BCCDataGenre': BCCVOCAB['DataGenreSpeciesAbsence'],
+        #'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerX'],
         'job_state': 'COMPLETED',
     })
 
@@ -189,8 +189,8 @@ species_abundance_datasets_vocab = CatalogVocabularyFactory(
     'species_abundance_datasets_vocab',
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
-        'BCCDataGenre': BCCVOCAB['DataGenreSpeciesOccurrence'],
-        'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerA'],
+        'BCCDataGenre': BCCVOCAB['DataGenreSpeciesAbundance'],
+        #'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerA'],
         'job_state': 'COMPLETED',
     })
 
