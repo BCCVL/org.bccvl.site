@@ -81,8 +81,52 @@ class DatasetTools(BrowserView):
 #        otherwise diazo.off won't find the page if set up.
 #        -> how would unthemed markup look like?
 #        -> theme would only have updated template.
+from Products.AdvancedQuery import In, Eq, Not, Generic, And
+
+
 @implementer(IFolderContentsView)
 class DatasetsListingView(BrowserView):
+
+    def contentFilterAQ(self):
+        portal_state = getMultiAdapter(
+            (self.context, self.request), name="plone_portal_state")
+        member = portal_state.member()
+
+        query_parts = []
+
+        text = self.request.get('datasets.filter.text')
+        if text:
+            query_parts.append(Eq('SearchableText', text))
+
+        genre = self.request.get('datasets.filter.genre')
+        if genre:
+            query_parts.append(In('BCCDataGenre', [self.genre_vocab.by_token[token].value for token in genre]))
+        else:
+            # if nothing selcted use all values in vocab
+            query_parts.append(In('BCCDataGenre', list(self.genre_vocab.by_value.keys())))
+
+        resolution = self.request.get('datasets.filter.resolution')
+        if resolution:
+            query_parts.append(In('BCCResolution', [self.resolution_vocab.by_token[token].value for token in resolution]))
+
+        # FIXME: source filter is incomplete
+        source = self.request.get('datasets.filter.source')
+        if source:
+            for token in source:
+                if token == 'user':
+                    query_parts.append(Eq('Creator', member.getId()))
+                elif token == 'admin':
+                    query_parts.append(Eq('Creator', 'BCCVL'))
+                elif token == 'shared':
+                    query_parts.append(Not(In('Creator', (member.getId(), 'BCCVL'))))
+                # FIXME: missing: shared, ala
+
+        query_parts.extend((
+            Generic('path', {'query': '/'.join(self.context.getPhysicalPath()),
+                             'depth': -1}),
+            Eq('object_provides', IDataset.__identifier__)
+        ))
+        return And(*query_parts)
 
     def contentFilter(self):
         portal_state = getMultiAdapter(
@@ -109,13 +153,17 @@ class DatasetsListingView(BrowserView):
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
         if source:
-            query['Creator'] = []
             for token in source:
                 if token == 'user':
-                    query['Creator'].append(member.getId())
+                    query['Creator'] = member.getId()
                 elif token == 'admin':
-                    query['Creator'].append(token)
-                # FIXME: missing: shared, ala
+                    query['Creator'] = 'BCCVL'
+                elif token == 'shared':
+                    pc = getToolByName(self.context, 'portal_catalog')
+                    vals = filter(lambda x: x not in ('BCCVL', member.getId()),
+                                  pc.uniqueValuesFor('Creator'))
+                    query['Creator'] = vals
+                # FIXME: missing: ala
 
         # add fixed query parameters:
         query .update({
@@ -140,13 +188,21 @@ class DatasetsListingView(BrowserView):
         - ajax ... render only list
         - uuid + ajax ... render only one entry
         """
-        query_params = self.contentFilter()
+        # FIXME: decide AdvancedQuery or not; need to do some performance tests with ManagedIndex and Incrementalsearch offered by AQ
+        USE_AQ = False
+        if USE_AQ:
+            query_params = self.contentFilterAQ()
+        else:
+            query_params = self.contentFilter()
         b_size = int(self.request.get('b_size', 20))
         b_start = int(self.request.get('b_start', 0))
 
         pc = getToolByName(self.context, 'portal_catalog')
         from Products.CMFPlone import Batch
-        brains = pc.queryCatalog(query_params)  # show_all=1?? show_inactive=show_inactive?
+        if USE_AQ:
+            brains = pc.evalAdvancedQuery(query_params, (('modified', 'desc'), ))
+        else:
+            brains = pc.queryCatalog(query_params)  # show_all=1?? show_inactive=show_inactive?
         batch = Batch(brains, b_size, b_start, orphan=0)
         return batch
 
