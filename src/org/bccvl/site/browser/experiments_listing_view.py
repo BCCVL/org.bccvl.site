@@ -6,7 +6,7 @@ from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from org.bccvl.site.namespace import DWC, BCCPROP
 from org.bccvl.site.content.interfaces import IExperiment
 from collections import defaultdict
-from zope.component import getUtility, queryUtility
+from zope.component import getUtility, queryUtility, getMultiAdapter
 from zope.schema.interfaces import IVocabularyFactory
 from gu.z3cform.rdf.interfaces import IGraph
 from gu.z3cform.rdf.utils import Period
@@ -34,6 +34,17 @@ class ExperimentsListingView(BrowserView):
         # TODO: could also cache the next call per request?
         self.envlayervocab = envvocab(self.context)
         return super(ExperimentsListingView, self).__call__()
+
+    def new_experiment_actions(self):
+        experimenttypes = ('org.bccvl.content.sdmexperiment',
+                           'org.bccvl.content.projectionexperiment',
+                           'org.bccvl.content.ensemble',
+                           'org.bccvl.content.biodiverseexperiment',
+                           'org.bccvl.content.speciestraitsexperiment')
+        ftool = getMultiAdapter((self.context, self.request),
+                                name='folder_factories')
+        actions = ftool.addable_types(experimenttypes)
+        return dict((action['id'], action) for action in actions)
 
     def contentFilter(self):
         # alternative would be to use @@plone_portal_state
