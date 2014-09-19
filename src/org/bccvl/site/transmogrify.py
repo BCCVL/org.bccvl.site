@@ -394,37 +394,11 @@ class FileMetadataToRDF(object):
             ##############################
             # Layer
             #    try to get a layer identifier from somewhere...
-            #    TODO: much too complicated at the moment.
-            layer = bandmd.get('layer')
-            if layer:
-                match = re.match(r'.*bioclim.*(\d\d)', layer)
-                if match:
-                    bid = match.group(1)
-                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
-                else:
-                    # TODO: really write something?
-                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM[layer])
-            else:
-                match = re.match(r'.*bioclim.*(\d\d).tif', filename)
-                if match:
-                    bid = match.group(1)
-                    res.add(BIOCLIM['bioclimVariable'], BIOCLIM['B' + bid])
-                else:
-                    # TODO: this part may be better as separate md update step
-                    # check if we have _bccvlmetadata
-                    bmd = filemd.get('_bccvlmetadata')
-                    if bmd:
-                        # FIXME: acknowledgement, bounding_box, external_url,
-                        #        license, temporal_coverage, title,
-                        if 'layers' in bmd:
-                            for layer in sorted(bmd['layers'],
-                                                key=lambda x: len(x['file_pattern']),
-                                                reverse=True):
-                                if layer['file_pattern'] in filename:
-                                    # works for filenames matichng our layr vocabulary
-                                    res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[layer['file_pattern'].strip('_')])
-                                    # TODO check if two patterns would match?
-                                    break
+            #    from bccvlmetadata
+            fileinfo = filemd.get('_bccvlmetadata', {})
+            fileinfo = fileinfo.get(filename, {})
+            if 'layer' in fileinfo:
+                res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[fileinfo['layer']])
             # End Layer
             #############################
 
