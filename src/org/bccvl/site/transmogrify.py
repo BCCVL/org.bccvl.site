@@ -476,7 +476,7 @@ class FileMetadataToRDF(object):
             if 'genre' in bmd:
                 # It's a bit weird here, we have the genre
                 genremap = {'Environmental': BCCVOCAB['DataGenreE'],
-                            'Climate': BCCVOCAB['DataGenreE'],
+                            'Climate': BCCVOCAB['DataGenreCC'],
                             'FutureClimate': BCCVOCAB['DataGenreFC']}
                 if bmd['genre'] in genremap:
                     res.set(BCCPROP['datagenre'], genremap[bmd['genre']])
