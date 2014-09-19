@@ -7,6 +7,7 @@ from gu.z3cform.rdf.interfaces import IORDF
 from gu.z3cform.rdf.utils import Period
 from Products.CMFCore.utils import getToolByName
 from gu.z3cform.rdf.vocabulary import SparqlInstanceVocabularyFactory
+from gu.z3cform.rdf.vocabulary import StaticSparqlInstanceVocabularyFactory
 from org.bccvl.site.namespace import BCCGCM, BCCEMSC, BIOCLIM, BCCVOCAB, GML
 from rdflib import RDF
 from Products.CMFPlone.interfaces import IPloneSiteRoot
@@ -402,17 +403,23 @@ fc_years_source = SparqlValuesVocabularyFactory(
 )
 
 
-BioclimVocabularyFactory = SparqlInstanceVocabularyFactory(BIOCLIM['BioclimaticVariable'])
-GCMVocabularyFactory = SparqlInstanceVocabularyFactory(BCCGCM['GCM'])
-EMSCVocabularyFactory = SparqlInstanceVocabularyFactory(BCCEMSC['EMSC'])
+BioclimVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
+    BIOCLIM['BioclimaticVariable'])
+GCMVocabularyFactory = StaticSparqlInstanceVocabularyFactory(BCCGCM['GCM'])
+EMSCVocabularyFactory = StaticSparqlInstanceVocabularyFactory(BCCEMSC['EMSC'])
 
-SpeciesDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['SpeciesDataGenre'])
+SpeciesDataGenreVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
+    BCCVOCAB['SpeciesDataGenre'])
+# TODO: SpeciesLayer will go away in favour of more fine grained genre
 SpeciesLayerVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['SpeciesLayer'])
-EnvironmentalDataGenreVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['EnvironmentalDataGenre'])
-DatasetTypeVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['DataSetType'])
-ResolutionVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['Resolution'],
-                                                              RDF['value'])
-CRSVocabularyFactory = SparqlInstanceVocabularyFactory(GML['GeodeticCRS'])
+EnvironmentalDataGenreVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
+    BCCVOCAB['EnvironmentalDataGenre'])
+DatasetTypeVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
+    BCCVOCAB['DataSetType'])
+ResolutionVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
+    BCCVOCAB['Resolution'], RDF['value'])
+CRSVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
+    GML['GeodeticCRS'])
 
 programming_language_vocab = SimpleVocabulary([
     SimpleTerm("R", "R", u'R'),
