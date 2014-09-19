@@ -107,27 +107,27 @@ bv:B19 a bv:BioclimaticVariable ;
     bccprop:unit "mm";
     .
 
-bccvllayer:nsg-2011-250m-clay30 a bv:BioclimaticVariable ;
+bccvllayer:clay30 a bv:BioclimaticVariable ;
     rdfs:label "Clay content percentage 0-30 cm" ;
     bccprop:unit "%";
     .
 
-bccvllayer:nsg-2011-250m-bd30 a bv:BioclimaticVariable ;
+bccvllayer:bd30 a bv:BioclimaticVariable ;
     rdfs:label "Bulk density 0-30 cm";
     bccprop:unit "Mg/m3";
     .
 
-bccvllayer:nsg-2011-250m-ph_0_30 a bv:BioclimaticVariable ;
+bccvllayer:ph_0_30 a bv:BioclimaticVariable ;
     rdfs:label "pH (Calcium Chloride 1:5) 0-30cm" ;
     bccprop:unit "pH";
     .
 
-bccvllayer:nsg-2011-250m-pawc_1m a bv:BioclimaticVariable ;
+bccvllayer:pawc_1m a bv:BioclimaticVariable ;
     rdfs:label "Plant available water capacity 0-1 m" ;
     bccprop:unit "mm";
     .
 
-bccvllayer:nsg-2011-250m-asc a bv:BioclimaticVariable ;
+bccvllayer:asc a bv:BioclimaticVariable ;
     rdfs:label "Australian Soil Classification" ;
     bccprop:unit "Soil class";
     .
@@ -324,6 +324,16 @@ bccvllayer:ann_WRel2End a bv:BioclimaticVariable ;
 
 bccvllayer:pcr_ann_WRel2End a bv:BioclimaticVariable ;
     rdfs:label "Annual Relative Soil Moisture (Lower Layer) at end of aggregation period (Percentile Rank Data)" ;
+    bccprop:unit "%";
+    .
+
+bccvllayer:ann_Precip a bv:BioclimaticVariable ;
+    rdfs:label "Annual Precipitation" ;
+    bccprop:unit "mm/d";
+    .
+
+bccvllayer:prc_ann_Precip a bv:BioclimaticVariable ;
+    rdfs:label "Annual Relative Precipitation (Percentile Rank Data)" ;
     bccprop:unit "%";
     .
 
