@@ -6,42 +6,26 @@
       tal:define="plone_view context/@@plone;
                   normalizeString nocall: context/plone_utils/normalizeString;
                   toLocalizedTime nocall: context/@@plone/toLocalizedTime;
-
                   site_properties context/portal_properties/site_properties;
                   use_view_action site_properties/typesUseViewActionInListings|python:();
-
-                  dummy python:request.response.setHeader('X-Theme-Disabled', 'True');
-
+                  pas_member context/@@pas_member;
                   isAnon context/@@plone_portal_state/anonymous;
                   show_about python:not isAnon or site_properties.allowAnonymousViewAbout;
-                  pas_member context/@@pas_member;
-                  navigation_root_url context/@@plone_portal_state/navigation_root_url;
+                  dummy python:request.response.setHeader('X-Theme-Disabled', 'True');
 
-                  item nocall:context;
                   item_uuid context/@@uuid;
                   item python:context.portal_catalog.searchResults(UID=item_uuid)[0];
 
-                  item_url item/getURL|item/absolute_url;
-                  item_id item/getId|item/id;
-                  item_title_or_id item/pretty_title_or_id;
-                  item_description item/Description;
-                  item_type item/portal_type;
-                  item_type_title item/Type;
-                  item_modified item/ModificationDate;
-                  item_created item/CreationDate;
-                  item_icon python:plone_view.getIcon(item);
-                  item_type_class python:'contenttype-' + normalizeString(item_type);
-                  item_wf_state item/review_state|python: context.portal_workflow.getInfoFor(item, 'review_state', '');
-                  item_wf_state_class python:'state-' + normalizeString(item_wf_state);
-                  item_creator item/Creator;
-                  item_start item/start|item/StartDate|nothing;
-                  item_end item/end|item/EndDate|nothing;
-                  item_sametime python: item_start == item_end;
-                  item_samedate python: (item_end - item_start &lt; 1) if item_type == 'Event' else False;
-                  item_obj item/getObject;
-                  rowstyle request/rowstyle|string:odd;"
+                  dataset_tools nocall:context/@@dataset_tools;
+
+                  navigation_root_url context/@@plone_portal_state/navigation_root_url;
+
+                  xitem_id item/getId|item/id;
+                  xitem_type_title item/Type;
+                  xitem_created item/CreationDate;
+                  "
       tal:omit-tag="">
 
-      <metal:block use-macro="context/datasets-listing-view/datasets_listitem"></metal:block>
+      <metal:block use-macro="context/aq_parent/datasets_listing_view/datasets_listitem"></metal:block>
 
 </html>

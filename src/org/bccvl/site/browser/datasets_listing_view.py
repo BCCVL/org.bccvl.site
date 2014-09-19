@@ -29,6 +29,8 @@ class DatasetTools(BrowserView):
     It provides a couple of methods that are helpful within a page template.
     """
 
+    _genre_vocab = None
+
     def get_transition(self, itemob=None):
         #return checkPermission('cmf.RequestReview', self.context)
         if itemob is None:
@@ -75,6 +77,27 @@ class DatasetTools(BrowserView):
             itemobj = self.context
         # FIXME: assume we have a IContentListingObject
         return itemobj._brain.job_state
+
+    @property
+    def genre_vocab(self):
+        if self._genre_vocab is None:
+            self._genre_vocab = SimpleVocabulary(tuple(chain.from_iterable((
+                getUtility(IVocabularyFactory, 'org.bccvl.site.SpeciesDataGenreVocabulary')(self.context),
+                getUtility(IVocabularyFactory, 'org.bccvl.site.EnvironmentalDataGenreVocabulary')(self.context)
+            ))))
+        return self._genre_vocab
+
+    def genre_title(self, genre):
+        try:
+            return self.genre_vocab.by_value[genre[0]].title
+        except Missing.Value:
+            return u'Missing Genre'
+        except TypeError:
+            return u'Invalid Genre {0}'.format(repr(genre))
+        except KeyError:
+            return u'Genre not found {0}'.format(genre)
+        except IndexError:
+            return u'Invalid Genre {0}'.format(repr(genre))
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -252,15 +275,3 @@ class DatasetsListingView(BrowserView):
                 'token': genre.token,
                 'label': genre.title
             }
-
-    def item_genre_title(self, genre):
-        try:
-            return self.genre_vocab.by_value[genre[0]].title
-        except Missing.Value:
-            return u'Missing Genre'
-        except TypeError:
-            return u'Invalid Genre {0}'.format(repr(genre))
-        except KeyError:
-            return u'Genre not found {0}'.format(genre)
-        except IndexError:
-            return u'Invalid Genre {0}'.format(repr(genre))

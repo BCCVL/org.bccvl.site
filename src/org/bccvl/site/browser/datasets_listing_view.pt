@@ -101,6 +101,7 @@
                      normalizeString nocall: context/plone_utils/normalizeString;
                      toLocalizedTime nocall: context/@@plone/toLocalizedTime;
                      site_properties context/portal_properties/site_properties;
+                     dataset_tools nocall:context/@@dataset_tools;
                      isAnon context/@@plone_portal_state/anonymous;
                      show_about python:not isAnon or site_properties.allowAnonymousViewAbout;">
       <div class="alert" tal:condition="not: batch">
@@ -134,8 +135,7 @@
         </thead>
         <tbody>
           <tal:repeat tal:repeat="item batch">
-            <tal:define tal:define="rowstyle python: repeat['item'].odd and 'even' or 'odd';
-                                    item_title_or_id item/pretty_title_or_id;
+            <tal:define tal:define="item_title_or_id item/pretty_title_or_id;
                                     item_icon python:plone_view.getIcon(item);
                                     item_creator item/Creator;
                                     item_modified item/ModificationDate;
@@ -144,14 +144,15 @@
                                     item_type item/portal_type;
                                     item_type_class python:'contenttype-' + normalizeString(item_type);
                                     item_genre item/BCCDataGenre;
-                                    item_genre_title python:view.item_genre_title(item['BCCDataGenre']);
+                                    item_genre_title python:dataset_tools.genre_title(item['BCCDataGenre']);
                                     item_wf_state item/review_state|python: context.portal_workflow.getInfoFor(item, 'review_state', '');
                                     item_wf_state_class python:'state-' + normalizeString(item_wf_state);
                                     use_view_action site_properties/typesUseViewActionInListings|python:();
                                     item_obj item/getObject
-                                    ">
+                                    "
+                        metal:define-macro="datasets_listitem">
 
-              <tr tal:attributes="class rowstyle" metal:define-macro="datasets_listitem">
+              <tr>>
                 <td>
                   <img width="16" height="16"
                        src="" alt=""
