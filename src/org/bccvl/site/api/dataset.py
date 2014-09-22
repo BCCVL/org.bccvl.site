@@ -138,9 +138,9 @@ def getbiolayermetadata(ds):
     dstypevocab = getUtility(IVocabularyFactory,
                              name='org.bccvl.site.DatasetTypeVocabulary')(ds)
     r = IResource(ds, None)
-    ret['@id'] = unicode(r.identifier)
     if r is None:
         return ret
+    ret['@id'] = unicode(r.identifier)
     for ref in r.objects(BCCPROP['hasArchiveItem']):
         # TODO: is this a good test for empty resource?
         obj = next(ref.objects(), None)
