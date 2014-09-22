@@ -16,7 +16,7 @@ from plone.testing.z2 import Browser
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
-from org.bccvl.site.namespace import BIOCLIM, BCCVOCAB
+from org.bccvl.site.namespace import BCCVLLAYER, BCCVOCAB
 
 
 # do somebrowser testing here:
@@ -114,13 +114,13 @@ class ExperimentAddTest(unittest.TestCase):
         # select 1st two layers within current dataset
         lname = 'form.widgets.environmental_datasets.{}'.format(curuid)
         lctrl = self.browser.getControl(name=lname)
-        lctrl.value = [str(BIOCLIM['B01']),
-                       str(BIOCLIM['B02'])]
+        lctrl.value = [str(BCCVLLAYER['B01']),
+                       str(BCCVLLAYER['B02'])]
 
         # KEEP: inout widget example
         #form = self.browser.getForm(index=1)
-        #self.in_out_select(form, lname, str(BIOCLIM['B01']))
-        #self.in_out_select(form, lname, str(BIOCLIM['B02']))
+        #self.in_out_select(form, lname, str(BCCVLLAYER['B01']))
+        #self.in_out_select(form, lname, str(BCCVLLAYER['B02']))
         # END: inout widget example
 
         # form.widgets.functions:list
@@ -194,7 +194,7 @@ class ExperimentAddTest(unittest.TestCase):
         # select 1st two layers within current dataset
         lname = 'form.widgets.environmental_datasets.{}'.format(curuid)
         lctrl = self.browser.getControl(name=lname)
-        lctrl.value = [str(BIOCLIM['B01'])]
+        lctrl.value = [str(BCCVLLAYER['B01'])]
         # form submit should fail with resolution mismatch error
         self.browser.getControl('Create and start').click()
         self.assertTrue('All datasets must have the same resolution' in self.browser.contents)

@@ -16,7 +16,7 @@ from gu.z3cform.rdf.interfaces import IORDF, IResource
 from collective.transmogrifier.transmogrifier import Transmogrifier
 from rdflib import URIRef, Literal
 from rdflib.resource import Resource
-from org.bccvl.site.namespace import BIOCLIM
+from org.bccvl.site.namespace import BIOCLIM, BCCVLLAYER
 
 
 TESTCSV = '\n'.join(['%s, %d, %d' % ('Name', x, x + 1) for x in range(1, 10)])
@@ -137,7 +137,7 @@ class BCCVLLayer(PloneSandboxLayer):
         for fid, i in ((URIRef("http://example.com/file%02d" % i), i)
                        for i in range(1, 3)):
             f = Resource(r.graph, fid)
-            f.add(BIOCLIM['bioclimVariable'], BIOCLIM['B%02d' % i])
+            f.add(BIOCLIM['bioclimVariable'], BCCVLLAYER['B%02d' % i])
             f.add(NFO['fileName'], Literal('file%02d' % i))
             r.add(BCCPROP['hasArchiveItem'], f.identifier)
         rdfhandler.put(r.graph)
@@ -147,7 +147,7 @@ class BCCVLLayer(PloneSandboxLayer):
         for fid, i in ((URIRef("http://example.com/file%02d" % i), i)
                        for i in range(1, 3)):
             f = Resource(r.graph, fid)
-            f.add(BIOCLIM['bioclimVariable'], BIOCLIM['B%02d' % i])
+            f.add(BIOCLIM['bioclimVariable'], BCCVLLAYER['B%02d' % i])
             f.add(NFO['fileName'], Literal('file%02d' % i))
             r.add(BCCPROP['hasArchiveItem'], f.identifier)
         rdfhandler.put(r.graph)

@@ -13,7 +13,7 @@ from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from plone.uuid.interfaces import IUUID
 from org.bccvl.site import defaults
 from zope.component import getUtility
-from org.bccvl.site.namespace import BIOCLIM
+from org.bccvl.site.namespace import BCCVLLAYER
 
 
 class PresenceSourceTest(unittest.TestCase):
@@ -199,5 +199,5 @@ class EnviroLayerSourceTest(unittest.TestCase):
         ds = self.layer['portal'][defaults.DATASETS_FOLDER_ID]
         data = ds[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
         source = self._make_one(data)
-        self.assertIn(BIOCLIM['B01'], source)
+        self.assertIn(BCCVLLAYER['B01'], source)
         # FIXME: add tests with layers for data in source
