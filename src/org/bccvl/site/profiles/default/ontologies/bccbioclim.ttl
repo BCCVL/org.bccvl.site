@@ -332,7 +332,7 @@ bccvllayer:ann_Precip a bv:BioclimaticVariable ;
     bccprop:unit "mm/d";
     .
 
-bccvllayer:prc_ann_Precip a bv:BioclimaticVariable ;
+bccvllayer:pcr_ann_Precip a bv:BioclimaticVariable ;
     rdfs:label "Annual Relative Precipitation (Percentile Rank Data)" ;
     bccprop:unit "%";
     .
