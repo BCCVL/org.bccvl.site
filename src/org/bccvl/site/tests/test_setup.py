@@ -98,26 +98,27 @@ class SiteSetupTest(unittest.TestCase):
     def test_initial_content_published(self):
         # make sure fronte-page and knowledgebase are published
         portal = self.layer['portal']
-        for id in (defaults.KNOWLEDGEBASE_FOLDER_ID,
-                   defaults.DATASETS_FOLDER_ID,
-                   defaults.EXPERIMENTS_FOLDER_ID,
-                   '/'.join((defaults.DATASETS_FOLDER_ID,
-                            defaults.DATASETS_CLIMATE_FOLDER_ID)),
-                   '/'.join((defaults.DATASETS_FOLDER_ID,
-                            defaults.DATASETS_SPECIES_FOLDER_ID)),
-                   '/'.join((defaults.DATASETS_FOLDER_ID,
-                            defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID)),
-                   'front-page'):
+        for id, wf_name, state in (
+                (defaults.KNOWLEDGEBASE_FOLDER_ID, 'intranet_workflow', 'external'),
+                (defaults.DATASETS_FOLDER_ID, 'intranet_workflow', 'internally_published'),
+                (defaults.EXPERIMENTS_FOLDER_ID, 'intranet_workflow', 'internally_published'),
+                ('/'.join((defaults.DATASETS_FOLDER_ID,
+                           defaults.DATASETS_CLIMATE_FOLDER_ID)), 'intranet_workflow', 'internally_published'),
+                ('/'.join((defaults.DATASETS_FOLDER_ID,
+                           defaults.DATASETS_SPECIES_FOLDER_ID)), 'intranet_workflow', 'internally_published'),
+                ('/'.join((defaults.DATASETS_FOLDER_ID,
+                           defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID)), 'intranet_workflow', 'internally_published'),
+                ('front-page', 'simple_publication_workflow', 'published')):
             content = portal.restrictedTraverse(id)
             wf_tool = getToolByName(portal, 'portal_workflow')
             chain = wf_tool.getChainFor(content)
             # only one workflow chain
             self.assertEqual(len(chain), 1)
             # our custom simple pub workflow
-            self.assertEqual(chain[0], 'simple_publication_workflow')
+            self.assertEqual(chain[0], wf_name)
             # is the state published?
             wf_state = wf_tool.getStatusOf(chain[0], content)
-            self.assertEqual(wf_state['review_state'], 'published')
+            self.assertEqual(wf_state['review_state'], state)
 
     def test_add_experiment_permission(self):
         portal = self.layer['portal']
