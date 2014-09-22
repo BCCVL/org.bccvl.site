@@ -395,7 +395,7 @@ class FileMetadataToRDF(object):
             # Layer
             #    try to get a layer identifier from somewhere...
             #    from bccvlmetadata
-            fileinfo = filemd.get('_bccvlmetadata', {})
+            fileinfo = filemd.get('_bccvlmetadata', {}).get('files', {})
             fileinfo = fileinfo.get(filename, {})
             if 'layer' in fileinfo:
                 res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[fileinfo['layer']])
