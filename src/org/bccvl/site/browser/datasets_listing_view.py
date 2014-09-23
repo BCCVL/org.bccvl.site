@@ -124,10 +124,10 @@ class DatasetsListingView(BrowserView):
 
         genre = self.request.get('datasets.filter.genre')
         if genre:
-            query_parts.append(In('BCCDataGenre', [self.genre_vocab.by_token[token].value for token in genre]))
+            query_parts.append(In('BCCDataGenre', [self.dstools.genre_title.by_token[token].value for token in genre]))
         else:
             # if nothing selcted use all values in vocab
-            query_parts.append(In('BCCDataGenre', list(self.genre_vocab.by_value.keys())))
+            query_parts.append(In('BCCDataGenre', list(self.dstools.genre_vocab.by_value.keys())))
 
         resolution = self.request.get('datasets.filter.resolution')
         if resolution:
@@ -165,10 +165,10 @@ class DatasetsListingView(BrowserView):
 
         genre = self.request.get('datasets.filter.genre')
         if genre:
-            query['BCCDataGenre'] = [self.genre_vocab.by_token[token].value for token in genre]
+            query['BCCDataGenre'] = [self.dstools.genre_vocab.by_token[token].value for token in genre]
         else:
             # if nothing selcted use all values in vocab
-            query['BCCDataGenre'] =  list(self.genre_vocab.by_value.keys())
+            query['BCCDataGenre'] =  list(self.dstools.genre_vocab.by_value.keys())
 
         resolution = self.request.get('datasets.filter.resolution')
         if resolution:
@@ -233,10 +233,7 @@ class DatasetsListingView(BrowserView):
     def __call__(self):
         # initialise instance variables, we'll do it here so that we have
         # security set up and have to do it only once per request
-        self.genre_vocab = SimpleVocabulary(tuple(chain.from_iterable((
-            getUtility(IVocabularyFactory, 'org.bccvl.site.SpeciesDataGenreVocabulary')(self.context),
-            getUtility(IVocabularyFactory, 'org.bccvl.site.EnvironmentalDataGenreVocabulary')(self.context)
-        ))))
+        self.dstools = getMultiAdapter((self.context, self.request), name = "dataset_tools")
         self.resolution_vocab = getUtility(IVocabularyFactory,  'org.bccvl.site.ResolutionVocabulary')(self.context)
         self.source_vocab = SimpleVocabulary((
             SimpleTerm('user', 'user', u'My Datasets'),
@@ -249,7 +246,7 @@ class DatasetsListingView(BrowserView):
     # Various datasets listing helpers
     def genre_list(self):
         selected = self.request.get('datasets.filter.genre', ())
-        for genre in self.genre_vocab:
+        for genre in self.dstools.genre_vocab:
             yield {
                 'selected': genre.token in selected,
                 'disabled': False,
