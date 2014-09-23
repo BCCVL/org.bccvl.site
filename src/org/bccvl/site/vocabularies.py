@@ -203,6 +203,14 @@ environmental_datasets_vocab = CatalogVocabularyFactory(
         #'job_state': 'COMPLETED',
     })
 
+current_environmental_datasets_vocab = CatalogVocabularyFactory(
+    'current_environmental_datasets_vocab',
+    query={
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        'BCCDataGenre': (BCCVOCAB['DataGenreCC'], BCCVOCAB['DataGenreE']),
+        #'job_state': 'COMPLETED',
+    })
+
 future_climate_datasets_vocab = CatalogVocabularyFactory(
     # TODO: might be useful for this vocab to support additional parameters like
     #       year, emsc, gcm, etc...

@@ -126,8 +126,8 @@ class ISDMExperiment(IExperiment):
     # FIXME: would be best if widget supplies only possible values (at least for key_type)
     form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetLayersFieldWidget')
     environmental_datasets = DatasetLayersField(
-        title=u'Environmental Datasets',
-        key_type=Choice(vocabulary='environmental_datasets_vocab'),
+        title=u'Climate & Environmental Datasets',
+        key_type=Choice(vocabulary='current_environmental_datasets_vocab'),
         value_type=List(Choice(vocabulary='envirolayer_source'),
                         unique=False),
         required=True,

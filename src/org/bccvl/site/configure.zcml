@@ -199,7 +199,12 @@
     <utility
       component=".vocabularies.environmental_datasets_vocab"
       name="environmental_datasets_vocab"
-    />
+      />
+
+    <utility
+      component=".vocabularies.current_environmental_datasets_vocab"
+      name="current_environmental_datasets_vocab"
+      />
 
     <utility
       component=".vocabularies.future_climate_datasets_vocab"
