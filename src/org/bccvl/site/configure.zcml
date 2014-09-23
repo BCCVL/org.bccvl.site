@@ -294,7 +294,12 @@
     <utility
         name="org.bccvl.site.DatasetTypeVocabulary"
         component=".vocabularies.DatasetTypeVocabularyFactory"
-    />
+        />
+
+    <utility
+        name="org.bccvl.site.TraitsDataGenreVocabulary"
+        component=".vocabularies.TraitsDataGenreVocabularyFactory"
+        />
 
     <utility
         name="org.bccvl.site.ResolutionVocabulary"

@@ -83,7 +83,8 @@ class DatasetTools(BrowserView):
         if self._genre_vocab is None:
             self._genre_vocab = SimpleVocabulary(tuple(chain.from_iterable((
                 getUtility(IVocabularyFactory, 'org.bccvl.site.SpeciesDataGenreVocabulary')(self.context),
-                getUtility(IVocabularyFactory, 'org.bccvl.site.EnvironmentalDataGenreVocabulary')(self.context)
+                getUtility(IVocabularyFactory, 'org.bccvl.site.EnvironmentalDataGenreVocabulary')(self.context),
+                getUtility(IVocabularyFactory, 'org.bccvl.site.TraitsDataGenreVocabulary')(self.context),
             ))))
         return self._genre_vocab
 

@@ -423,6 +423,8 @@ SpeciesDataGenreVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
 SpeciesLayerVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['SpeciesLayer'])
 EnvironmentalDataGenreVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
     BCCVOCAB['EnvironmentalDataGenre'])
+TraitsDataGenreVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
+    BCCVOCAB['TraitsDataGenre'])
 DatasetTypeVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
     BCCVOCAB['DataSetType'])
 ResolutionVocabularyFactory = StaticSparqlInstanceVocabularyFactory(

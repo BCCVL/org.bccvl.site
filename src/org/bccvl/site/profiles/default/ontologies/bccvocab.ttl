@@ -30,7 +30,12 @@ bccvocab:EnvironmentalDataGenre a owl:Class ;
 
 bccvocab:SpeciesDistributionDataGenre a owl:Class;
     rdfs:subClassOf bccvocab:SpeciesDataGenre;
-    rdfs:label "Species Distribution" ;
+    rdfs:label "Species Distribution Data Genre" ;
+    .
+
+bccvocab:TraitsDataGenre a owl:Class;
+    rdfs:subClassOf bccvocab:DataGenreClass;
+    rdfs:label "Species Traits Data Genre";
     .
 
 bccvocab:DataSetType a owl:Class ;
@@ -79,16 +84,14 @@ bccvocab:DataGenreSpeciesAbundance a bccvocab:DataGenre, bccvocab:SpeciesDataGen
     rdfs:label "Species Abundance" ;
     .
 
-
+bccvocab:DataGenreTraits a bccvocab:DataGenre, bccvocab:TraitsDataGenre ;
+    rdfs:label "Species Traits" ;
+    .
 
 # Result Datasets
 
 bccvocab:DataGenreSDMEval a bccvocab:DataGenre ;
     rdfs:label "Species Distribution Model Evaluation" ;
-    .
-
-bccvocab:DataGenreTraits a bccvocab:DataGenre ;
-    rdfs:label "Species Traits Data Genre" ;
     .
 
 bccvocab:DataGenreSDMModel a bccvocab:DataGenre ;
