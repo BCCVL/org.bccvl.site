@@ -152,6 +152,18 @@ bccvocab:DataGenreREDUNDANCY_ALL a bccvocab:DataGenre, bccvocab:BiodiverseOutput
   rdfs:label "Redundancy - both neigbour sets";
   .
 
+bccvocab:DataGenreRAREW_CWE a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Rarity whole - Corrected weighted rarity";
+  .
+
+bccvocab:DataGenreRAREW_RICHNESS a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Rarity whole - Richness used in RAREW_CWE";
+  .
+
+bccvocab:DataGenreRAREW_WE a bccvocab:DataGenre, bccvocab:BiodiverseOutputDataGenre ;
+  rdfs:label "Rarity whole - weighted rarity";
+  .
+
 bccvocab:BiodiverseModel a bccvocab:DataGenre ; # (Indices?)
   rdfs:label "Biodiverse output";
   .
