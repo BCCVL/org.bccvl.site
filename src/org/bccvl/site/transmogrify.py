@@ -11,7 +11,7 @@ from ordf.namespace import DC
 from rdflib import RDF, URIRef, Literal, OWL
 from rdflib.resource import Resource
 from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GML, EPSG,
-                                      BIOCLIM, BCCVLLAYER)
+                                      BIOCLIM, BCCVLLAYER, BCCGCM, BCCEMSC)
 from gu.plone.rdf.namespace import CVOCAB
 from zope.component import getUtility
 from gu.z3cform.rdf.interfaces import IORDF, IGraph
@@ -379,12 +379,7 @@ class FileMetadataToRDF(object):
             if width and height:
                 res.set(BCCPROP['width'], Literal(width))
                 res.set(BCCPROP['height'], Literal(height))
-            # TODO: emsc, gcm, year, layer, resolution, bounding box?
-            if bandmd.get('type') and bandmd.get('type').lower() == 'categorical':
-                res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
-            else:
-                res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
-
+            # check if we have more info in layer?
             rat = bandmd.get('rat')
             if rat:
                 # FIXME: really a good way to store this?
@@ -395,10 +390,22 @@ class FileMetadataToRDF(object):
             # Layer
             #    try to get a layer identifier from somewhere...
             #    from bccvlmetadata
-            fileinfo = filemd.get('_bccvlmetadata', {}).get('files', {})
+            bccvlmd = filemd.get('_bccvlmetadata', {})
+            data_type = None
+            fileinfo = bccvlmd.get('files', {})
             fileinfo = fileinfo.get(filename, {})
             if 'layer' in fileinfo:
                 res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[fileinfo['layer']])
+                data_type = fileinfo.get('data_type')
+            # check data_type (continuous, discrete)
+            if not data_type:
+                data_type = bandmd.get('type', bccvlmd.get('data_type'))
+            if data_type and data_type.lower() == 'categorical':
+                res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
+            else:
+                res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
+            # TODO: bbox: which units do we want bbox?
+            #       lat/long?, whatever coordinates layer uses?
             # End Layer
             #############################
 
@@ -474,6 +481,10 @@ class FileMetadataToRDF(object):
                 p.end = bmd['temporal_coverage'].get('end')
                 p.scheme = 'W3C-DTF'
                 res.set(DC['temporal'], Literal(unicode(p), datatype=DC['Period']))
+            if 'gcm' in bmd:
+                res.set(BCCPROP['gcm'], BCCGCM[bmd['gcm']])
+            if 'emsc' in bmd:
+                res.set(BCCPROP['emissionscenario'], BCCEMSC[bmd['gcm']])
             if 'genre' in bmd:
                 # It's a bit weird here, we have the genre
                 genremap = {'Environmental': BCCVOCAB['DataGenreE'],
