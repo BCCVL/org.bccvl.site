@@ -4,342 +4,363 @@
     xmlns:transmogrifier="http://namespaces.plone.org/transmogrifier"
     xmlns:cmf="http://namespaces.zope.org/cmf"
     xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="org.bccvl"
     >
 
-    <i18n:registerTranslations directory="locales" />
+  <monkey:patch
+      description="Patch ZPT BOOLEAN_HTML_ATTRS constant"
+      module="zope.tal.htmltalparser"
+      original="BOOLEAN_HTML_ATTRS"
+      replacement=".patch.boolean_html_attrs"
+      handler=".patch.apply_patched_const"
+      />
 
-    <includeDependencies package="."/>
-    <include file="permissions.zcml"/>
-    <include file="profiles.zcml"/>
-    <include package=".content"/>
-    <include package=".browser"/>
+  <monkey:patch
+      description="Patch ZPT BOOLEAN_HTML_ATTRS constant"
+      module="zope.tal.talinterpreter"
+      original="BOOLEAN_HTML_ATTRS"
+      replacement=".patch.boolean_html_attrs"
+      handler=".patch.apply_patched_const"
+      />
 
-    <cmf:registerDirectory name="bccvl_skin" />
-
-    <adapter
-        for="zope.interface.Interface
-             plone.app.z3cform.interfaces.IPloneFormLayer
-             z3c.form.interfaces.IAddForm"
-        factory=".utilities.RDFTypeMapper"
-    />
-
-    <utility
-        factory=".utilities.RDFDataMapper"
-        name="Content data to RDF Mapper"
-    />
-
-    <utility
-        factory=".utilities.RDFContentBasedTypeMapper"
-        name="Content type to RDF type Mapper"
-    />
-
-
-    <utility
-        factory=".UserAdder"
-        provides="Products.membrane.interfaces.IUserAdder"
-        name="BCCVL User Adder"
-    />
-
-    <!--<adapter-->
-        <!--for="Products.CMFCore.interfaces.IFolderish-->
-             <!--Products.CMFDefault.interfaces.ICMFDefaultSkin-->
-             <!--plone.dexterity.interfaces.IDexterityFTI"-->
-        <!--name="gu.repository.content.RepositoryItem"-->
-        <!--provides="zope.publisher.interfaces.browser.IBrowserPage"-->
-        <!--factory="org.bccvl.site.browser.add.TypeFromRequestAddView"       -->
-    <!--/> -->
-    <!--<class class="org.bccvl.site.browser.add.TypeFromRequestAddView">-->
-        <!--<require-->
-            <!--permission="cmf.AddPortalContent"-->
-            <!--interface="zope.publisher.interfaces.browser.IBrowserPage"-->
-        <!--/>-->
-    <!--</class>-->
-
-    <!-- make all dexterity based content geo-locatable with collective.geo.* -->
-    <class class="plone.dexterity.content.DexterityContent">
-        <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
-    </class>
-
-    <!-- download info adapters -->
-    <adapter
-        factory=".utilities.DatasetDownloadInfo"
+  <configure zcml:condition="installed z3c.pt">
+    <monkey:patch
+        description="Patch Chameleon BOOLEAN_HTML_ATTRS constant"
+        module="z3c.pt.pagetemplate"
+        original="BOOLEAN_HTML_ATTRS"
+        replacement=".patch.boolean_html_attrs"
+        handler=".patch.apply_patched_const"
         />
+  </configure>
 
-    <adapter
-        factory=".utilities.RemoteDatasetDownloadInfo"
-        />
+  <i18n:registerTranslations directory="locales" />
 
-    <adapter
-        factory=".utilities.CatalogBrainDownloadInfo"
-        />
+  <includeDependencies package="."/>
+  <include file="permissions.zcml"/>
+  <include file="profiles.zcml"/>
+  <include package=".content"/>
+  <include package=".browser"/>
 
-    <!-- index relevant RDF properties -->
-    <adapter
-        factory=".indexers.dataset_BCCDataGenre"
-        name="BCCDataGenre"
-    />
+  <cmf:registerDirectory name="bccvl_skin" />
 
-    <adapter
-        factory=".indexers.dataset_BCCSpeciesLayer"
-        name="BCCSpeciesLayer"
-    />
+  <adapter
+      for="zope.interface.Interface
+           plone.app.z3cform.interfaces.IPloneFormLayer
+           z3c.form.interfaces.IAddForm"
+      factory=".utilities.RDFTypeMapper"
+      />
 
-    <adapter
-        factory=".indexers.dataset_environmental_layer"
-        name="BCCEnviroLayer"
-    />
+  <utility
+      factory=".utilities.RDFDataMapper"
+      name="Content data to RDF Mapper"
+      />
 
-    <adapter
-        factory=".indexers.dataset_BCCEmissionScenario"
-        name="BCCEmissionScenario"
-    />
-
-    <adapter
-        factory=".indexers.dataset_BCCGlobalClimateModel"
-        name="BCCGlobalClimateModel"
-    />
-
-    <adapter
-        factory=".indexers.BCCDatasetResolution"
-        name="BCCResolution"
-        />
-
-    <adapter
-        factory=".indexers.BCCExperimentResolution"
-        name="BCCResolution"
-        />
-
-    <adapter
-        for=".content.interfaces.IExperiment
-             Products.ZCatalog.interfaces.IZCatalog"
-        factory=".indexers.JobStateIndexer"
-        name="job_state"
-        />
-
-    <adapter
-        for=".content.interfaces.IDataset
-             Products.ZCatalog.interfaces.IZCatalog"
-        factory=".indexers.JobStateIndexer"
-        name="job_state"
-        />
-
-    <adapter
-        for="gu.repository.content.interfaces.IRepositoryItem
-             Products.ZCatalog.interfaces.IZCatalog"
-        factory=".indexers.JobStateIndexer"
-        name="job_state"
-        />
+  <utility
+      factory=".utilities.RDFContentBasedTypeMapper"
+      name="Content type to RDF type Mapper"
+      />
 
 
-    <!-- TODO: index temporal coverage someday -->
-    <!-- <adapter -->
-    <!--     factory=".indexers.dataset_DCTemporal" -->
-    <!--     name="DCTemporal" -->
-    <!-- /> -->
+  <utility
+      factory=".UserAdder"
+      provides="Products.membrane.interfaces.IUserAdder"
+      name="BCCVL User Adder"
+      />
 
-    <adapter
-        for="gu.repository.content.interfaces.IRepositoryItem"
-        factory=".utilities.JobTracker" />
+  <!--<adapter-->
+  <!--for="Products.CMFCore.interfaces.IFolderish-->
+  <!--Products.CMFDefault.interfaces.ICMFDefaultSkin-->
+  <!--plone.dexterity.interfaces.IDexterityFTI"-->
+  <!--name="gu.repository.content.RepositoryItem"-->
+  <!--provides="zope.publisher.interfaces.browser.IBrowserPage"-->
+  <!--factory="org.bccvl.site.browser.add.TypeFromRequestAddView"       -->
+  <!--/> -->
+  <!--<class class="org.bccvl.site.browser.add.TypeFromRequestAddView">-->
+  <!--<require-->
+  <!--permission="cmf.AddPortalContent"-->
+  <!--interface="zope.publisher.interfaces.browser.IBrowserPage"-->
+  <!--/>-->
+  <!--</class>-->
 
+  <!-- make all dexterity based content geo-locatable with collective.geo.* -->
+  <class class="plone.dexterity.content.DexterityContent">
+    <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
+  </class>
 
-    <adapter
-        factory=".utilities.SDMJobTracker"/>
+  <!-- download info adapters -->
+  <adapter
+      factory=".utilities.DatasetDownloadInfo"
+      />
 
-    <adapter
-        factory=".utilities.ProjectionJobTracker"/>
+  <adapter
+      factory=".utilities.RemoteDatasetDownloadInfo"
+      />
 
-    <adapter
-        factory=".utilities.BiodiverseJobTracker"/>
+  <adapter
+      factory=".utilities.CatalogBrainDownloadInfo"
+      />
 
-    <adapter
-        factory=".utilities.SpeciesTraitsJobTracker"/>
+  <!-- index relevant RDF properties -->
+  <adapter
+      factory=".indexers.dataset_BCCDataGenre"
+      name="BCCDataGenre"
+      />
 
-    <adapter
-        factory=".utilities.EnsembleJobTracker"/>
+  <adapter
+      factory=".indexers.dataset_BCCSpeciesLayer"
+      name="BCCSpeciesLayer"
+      />
 
-    <adapter
-        factory=".utilities.ALAJobTracker"/>
+  <adapter
+      factory=".indexers.dataset_environmental_layer"
+      name="BCCEnviroLayer"
+      />
 
-    <utility
-        component=".transmogrify.ALASource"
-        name="org.bccvl.site.transmogrify.alasource"
-        />
+  <adapter
+      factory=".indexers.dataset_BCCEmissionScenario"
+      name="BCCEmissionScenario"
+      />
 
-    <utility
-        component=".transmogrify.RDFMetadataUpdater"
-        name="org.bccvl.site.transmogrify.rdfmetadata"
-        />
+  <adapter
+      factory=".indexers.dataset_BCCGlobalClimateModel"
+      name="BCCGlobalClimateModel"
+      />
 
-    <utility
-        component=".transmogrify.FileMetadataToRDF"
-        name="org.bccvl.site.transmogrify.filemetadatardf"
-        />
+  <adapter
+      factory=".indexers.BCCDatasetResolution"
+      name="BCCResolution"
+      />
 
-    <utility
-        component=".transmogrify.ContextSource"
-        name="org.bccvl.site.transmogrify.contextsource"
-        />
+  <adapter
+      factory=".indexers.BCCExperimentResolution"
+      name="BCCResolution"
+      />
 
-    <utility
+  <adapter
+      for=".content.interfaces.IExperiment
+           Products.ZCatalog.interfaces.IZCatalog"
+      factory=".indexers.JobStateIndexer"
+      name="job_state"
+      />
+
+  <adapter
+      for=".content.interfaces.IDataset
+           Products.ZCatalog.interfaces.IZCatalog"
+      factory=".indexers.JobStateIndexer"
+      name="job_state"
+      />
+
+  <adapter
+      for="gu.repository.content.interfaces.IRepositoryItem
+           Products.ZCatalog.interfaces.IZCatalog"
+      factory=".indexers.JobStateIndexer"
+      name="job_state"
+      />
+
+  <!-- TODO: index temporal coverage someday -->
+  <!-- <adapter -->
+  <!--     factory=".indexers.dataset_DCTemporal" -->
+  <!--     name="DCTemporal" -->
+  <!-- /> -->
+
+  <adapter
+      for="gu.repository.content.interfaces.IRepositoryItem"
+      factory=".utilities.JobTracker"
+      />
+
+  <adapter factory=".utilities.SDMJobTracker"/>
+
+  <adapter factory=".utilities.ProjectionJobTracker"/>
+
+  <adapter factory=".utilities.BiodiverseJobTracker"/>
+
+  <adapter factory=".utilities.SpeciesTraitsJobTracker"/>
+
+  <adapter factory=".utilities.EnsembleJobTracker"/>
+
+  <adapter factory=".utilities.ALAJobTracker"/>
+
+  <utility
+      component=".transmogrify.ALASource"
+      name="org.bccvl.site.transmogrify.alasource"
+      />
+
+  <utility
+      component=".transmogrify.RDFMetadataUpdater"
+      name="org.bccvl.site.transmogrify.rdfmetadata"
+      />
+
+  <utility
+      component=".transmogrify.FileMetadataToRDF"
+      name="org.bccvl.site.transmogrify.filemetadatardf"
+      />
+
+  <utility
+      component=".transmogrify.ContextSource"
+      name="org.bccvl.site.transmogrify.contextsource"
+      />
+
+  <utility
       component=".vocabularies.species_presence_datasets_vocab"
       name="species_presence_datasets_vocab"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.species_absence_datasets_vocab"
       name="species_absence_datasets_vocab"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.species_abundance_datasets_vocab"
       name="species_abundance_datasets_vocab"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.environmental_datasets_vocab"
       name="environmental_datasets_vocab"
       />
 
-    <utility
+  <utility
       component=".vocabularies.current_environmental_datasets_vocab"
       name="current_environmental_datasets_vocab"
       />
 
-    <utility
+  <utility
       component=".vocabularies.future_climate_datasets_vocab"
       name="future_climate_datasets_vocab"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.species_distributions_models_vocab"
       name="species_distributions_models_vocab"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.species_projection_datasets_vocab"
       name="species_projection_datasets_vocab"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.species_traits_datasets_vocab"
       name="species_traits_datasets_vocab"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.sdm_functions_source"
       name="sdm_functions_source"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.traits_functions_source"
       name="traits_functions_source"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.envirolayer_source"
       name="envirolayer_source"
-    />
+      />
 
-    <utility
+  <utility
       component=".vocabularies.programming_language_vocab_factory"
       name="org.bccvl.site.programming_language_vocab"
       />
 
-    <utility
-        component=".vocabularies.emission_scenarios_source"
-        name="emission_scenarios_source"
-        />
+  <utility
+      component=".vocabularies.emission_scenarios_source"
+      name="emission_scenarios_source"
+      />
 
-    <utility
-        component=".vocabularies.global_climate_models_source"
-        name="global_climate_models_source"
-        />
+  <utility
+      component=".vocabularies.global_climate_models_source"
+      name="global_climate_models_source"
+      />
 
-    <utility
-        component=".vocabularies.fc_years_source"
-        name="fc_years_source"
-        />
+  <utility
+      component=".vocabularies.fc_years_source"
+      name="fc_years_source"
+      />
 
-    <utility
-        name="org.bccvl.site.GCMVocabulary"
-        component=".vocabularies.GCMVocabularyFactory"
-        />
+  <utility
+      name="org.bccvl.site.GCMVocabulary"
+      component=".vocabularies.GCMVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.EMSCVocabulary"
-        component=".vocabularies.EMSCVocabularyFactory"
-        />
+  <utility
+      name="org.bccvl.site.EMSCVocabulary"
+      component=".vocabularies.EMSCVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.BioclimVocabulary"
-        component=".vocabularies.BioclimVocabularyFactory"
-        />
+  <utility
+      name="org.bccvl.site.BioclimVocabulary"
+      component=".vocabularies.BioclimVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.SpeciesDataGenreVocabulary"
-        component=".vocabularies.SpeciesDataGenreVocabularyFactory"
-    />
+  <utility
+      name="org.bccvl.site.SpeciesDataGenreVocabulary"
+      component=".vocabularies.SpeciesDataGenreVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.SpeciesLayerVocabulary"
-        component=".vocabularies.SpeciesLayerVocabularyFactory"
-    />
+  <utility
+      name="org.bccvl.site.SpeciesLayerVocabulary"
+      component=".vocabularies.SpeciesLayerVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.EnvironmentalDataGenreVocabulary"
-        component=".vocabularies.EnvironmentalDataGenreVocabularyFactory"
-    />
+  <utility
+      name="org.bccvl.site.EnvironmentalDataGenreVocabulary"
+      component=".vocabularies.EnvironmentalDataGenreVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.DatasetTypeVocabulary"
-        component=".vocabularies.DatasetTypeVocabularyFactory"
-        />
+  <utility
+      name="org.bccvl.site.DatasetTypeVocabulary"
+      component=".vocabularies.DatasetTypeVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.TraitsDataGenreVocabulary"
-        component=".vocabularies.TraitsDataGenreVocabularyFactory"
-        />
+  <utility
+      name="org.bccvl.site.TraitsDataGenreVocabulary"
+      component=".vocabularies.TraitsDataGenreVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.ResolutionVocabulary"
-        component=".vocabularies.ResolutionVocabularyFactory"
-        />
+  <utility
+      name="org.bccvl.site.ResolutionVocabulary"
+      component=".vocabularies.ResolutionVocabularyFactory"
+      />
 
-    <utility
-        name="org.bccvl.site.CRSVocabulary"
-        component=".vocabularies.CRSVocabularyFactory"
-        />
+  <utility
+      name="org.bccvl.site.CRSVocabulary"
+      component=".vocabularies.CRSVocabularyFactory"
+      />
 
-    <transmogrifier:registerConfig
-        name="exportknowledgebase"
-        title="Export Knowledgebase pipeline configuration"
-        description="This exports BCCVL Knowledge base section."
-        configuration="exportknowledgebase.cfg"
-        />
+  <transmogrifier:registerConfig
+      name="exportknowledgebase"
+      title="Export Knowledgebase pipeline configuration"
+      description="This exports BCCVL Knowledge base section."
+      configuration="exportknowledgebase.cfg"
+      />
 
-    <transmogrifier:registerConfig
-        name="importknowledgebase"
-        title="Import Knowledgebase pipeline configuration"
-        description="This imports BCCVL Knowledge base section."
-        configuration="importknowledgbase.cfg"
-        />
+  <transmogrifier:registerConfig
+      name="importknowledgebase"
+      title="Import Knowledgebase pipeline configuration"
+      description="This imports BCCVL Knowledge base section."
+      configuration="importknowledgbase.cfg"
+      />
 
-    <transmogrifier:registerConfig
+  <transmogrifier:registerConfig
       name="org.bccvl.site.dataimport"
       title="Import data"
       description="Import data structure"
       configuration="dataimport.cfg"
       />
 
-    <transmogrifier:registerConfig
+  <transmogrifier:registerConfig
       name="org.bccvl.site.alaimport"
       title="Import ALA data"
       description="Import data form ALA put onto filesystem"
       configuration="import_ala.cfg"
       />
 
-    <transmogrifier:registerConfig
+  <transmogrifier:registerConfig
       name="org.bccvl.site.add_file_metadata"
       title="Add File metadata"
       description="Extract metadata from file and store on content object"

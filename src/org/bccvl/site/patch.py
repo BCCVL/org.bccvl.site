@@ -41,3 +41,28 @@ class FileDescriptorStorable(object):
         dest = blob.open('w')
         # TODO: should we seek to 0?
         shutil.copyfileobj(data, dest)
+
+
+# updated boolean html attributes to cover html 5 attributes
+BOOLEAN_HTML_ATTRS = frozenset([
+    # List of Boolean attributes in HTML that should be rendered in
+    # minimized form (e.g. <img ismap> rather than <img ismap="">)
+    # From http://www.w3.org/TR/xhtml1/#guidelines (C.10)
+    # TODO: The problem with this is that this is not valid XML and
+    # can't be parsed back!
+    "compact", "nowrap", "ismap", "declare", "noshade", "checked",
+    "disabled", "readonly", "multiple", "selected", "noresize",
+    "defer", "required"
+])
+
+
+boolean_html_attrs = lambda: BOOLEAN_HTML_ATTRS  # Now we have a callable method!
+
+
+def apply_patched_const(scope, original, replacement):
+    """
+    Helper method for collective.monkeypatcher to replace
+    module level constants.
+    """
+    setattr(scope, original, replacement())
+    return
