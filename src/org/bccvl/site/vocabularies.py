@@ -173,7 +173,6 @@ species_presence_datasets_vocab = CatalogVocabularyFactory(
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
         'BCCDataGenre': BCCVOCAB['DataGenreSpeciesOccurrence'],
-        #'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerP'],
         'job_state': 'COMPLETED'
     })
 
@@ -182,7 +181,6 @@ species_absence_datasets_vocab = CatalogVocabularyFactory(
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
         'BCCDataGenre': BCCVOCAB['DataGenreSpeciesAbsence'],
-        #'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerX'],
         'job_state': 'COMPLETED',
     })
 
@@ -191,7 +189,6 @@ species_abundance_datasets_vocab = CatalogVocabularyFactory(
     query={
         'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
         'BCCDataGenre': BCCVOCAB['DataGenreSpeciesAbundance'],
-        #'BCCSpeciesLayer': BCCVOCAB['SpeciesLayerA'],
         'job_state': 'COMPLETED',
     })
 
@@ -419,8 +416,6 @@ EMSCVocabularyFactory = StaticSparqlInstanceVocabularyFactory(BCCEMSC['EMSC'])
 
 SpeciesDataGenreVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
     BCCVOCAB['SpeciesDataGenre'])
-# TODO: SpeciesLayer will go away in favour of more fine grained genre
-SpeciesLayerVocabularyFactory = SparqlInstanceVocabularyFactory(BCCVOCAB['SpeciesLayer'])
 EnvironmentalDataGenreVocabularyFactory = StaticSparqlInstanceVocabularyFactory(
     BCCVOCAB['EnvironmentalDataGenre'])
 TraitsDataGenreVocabularyFactory = StaticSparqlInstanceVocabularyFactory(

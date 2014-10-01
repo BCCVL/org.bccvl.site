@@ -205,7 +205,6 @@ def getspeciesmetadata(ds):
         'rows': None
     }
         # bccprop: datagenre ->  bccvocab: DataGenreSpeciesOccurrence
-        # bccprop: specieslayer -> bccvocab: SpeciesLayerP, SpeciesLayerX
     if res is None:
         return ret
     for key, prop in (('rows', BCCPROP['rows']),

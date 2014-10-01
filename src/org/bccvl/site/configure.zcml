@@ -109,11 +109,6 @@
       />
 
   <adapter
-      factory=".indexers.dataset_BCCSpeciesLayer"
-      name="BCCSpeciesLayer"
-      />
-
-  <adapter
       factory=".indexers.dataset_environmental_layer"
       name="BCCEnviroLayer"
       />
@@ -300,11 +295,6 @@
   <utility
       name="org.bccvl.site.SpeciesDataGenreVocabulary"
       component=".vocabularies.SpeciesDataGenreVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.SpeciesLayerVocabulary"
-      component=".vocabularies.SpeciesLayerVocabularyFactory"
       />
 
   <utility

@@ -3,9 +3,6 @@
     <index name="BCCDataGenre" meta_type="KeywordIndex">
         <indexed_attr value="BCCDataGenre"/>
     </index>
-    <index name="BCCSpeciesLayer" meta_type="KeywordIndex">
-        <indexed_attr value="BCCSpeciesLayer"/>
-    </index>
     <index name="BCCEnviroLayer" meta_type="KeywordIndex">
         <indexed_attr value="BCCEnviroLayer"/>
     </index>
@@ -24,6 +21,8 @@
     <index name="job_state" meta_type="FieldIndex">
         <indexed_attr value="job_state"/>
     </index>
+
+    <index name="BCCSpeciesLayer" meta_type="KeywordIndex" remove="True"/>
 
     <column value="BCCResolution" />
     <column value="job_state" />

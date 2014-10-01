@@ -30,12 +30,6 @@ bccprop:datatype a owl:ObjectProperty ;
     rdfs:range bccvocab:DataSetType ;
     .
 
-bccprop:specieslayer a owl:ObjectProperty ;
-    rdfs:label "Species Layer" ;
-    rdfs:comment "Species Layer type" ;
-    rdfs:range bccvocab:SpeciesLayer ;
-    .
-
 bccprop:resolution a owl:ObjectProperty ;
     rdfs:label "Resolution" ;
     rdfs:comment "Resolution for grid data" ;

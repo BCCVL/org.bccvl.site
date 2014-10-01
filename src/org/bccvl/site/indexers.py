@@ -18,12 +18,6 @@ def dataset_BCCDataGenre(object, *kw):
 
 
 @indexer(IDataset)
-def dataset_BCCSpeciesLayer(object, *kw):
-    graph = IGraph(object)
-    return tuple(graph.objects(graph.identifier, BCCPROP['specieslayer']))
-
-
-@indexer(IDataset)
 def dataset_BCCEmissionScenario(object, *kw):
     graph = IGraph(object)
     return tuple(graph.objects(graph.identifier, BCCPROP['emissionscenario']))

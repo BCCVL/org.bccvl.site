@@ -36,13 +36,6 @@ class ISpeciesDataset(form.Schema):
         vocabulary=u'org.bccvl.site.SpeciesDataGenreVocabulary'
     )
 
-    specieslayer = RDFURIChoiceField(
-        prop=BCCPROP['specieslayer'],
-        required=False,
-        title=u'Species Layer',
-        vocabulary=u'org.bccvl.site.SpeciesLayerVocabulary'
-    )
-
     scientificName = RDFLiteralLineField(
         prop=DWC['scientificName'],
         required=True,

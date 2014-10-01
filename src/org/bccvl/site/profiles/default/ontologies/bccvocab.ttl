@@ -42,10 +42,6 @@ bccvocab:DataSetType a owl:Class ;
     rdfs:label "Dataset Type" ;
     .
 
-bccvocab:SpeciesLayer a owl:Class ;
-    rdfs:label "Species Layer" ;
-    .
-
 bccvocab:DataSetFormat a owl:Class ;
     rdfs:label "Dataset Format" ;
     .
@@ -181,14 +177,6 @@ bccvocab:DataSetTypeC a bccvocab:DataSetType ;
 
 bccvocab:DataSetTypeD a bccvocab:DataSetType ;
     rdfs:label "discrete" ;
-    .
-
-bccvocab:SpeciesLayerP a bccvocab:SpeciesLayer ;
-    rdfs:label "Presence" ;
-    .
-
-bccvocab:SpeciesLayerX a bccvocab:SpeciesLayer ;
-    rdfs:label "Absence" ;
     .
 
 bccvocab:Resolution3s a bccvocab:Resolution ;
