@@ -5,7 +5,7 @@ from plone.dexterity.browser.add import DefaultAddForm
 from Products.CMFCore.utils import getToolByName
 from collective.transmogrifier.transmogrifier import Transmogrifier
 from plone.dexterity.utils import addContentToContainer
-from plone.app.dexterity.behaviors.metadata import IBasic
+from plone.app.dexterity.behaviors.metadata import IDublinCore
 from z3c.form.field import Fields
 from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import defaults
@@ -13,9 +13,9 @@ from org.bccvl.site.content.dataset import (IBlobDataset,
                                             ISpeciesDataset,
                                             ILayerDataset,
                                             ITraitsDataset)
-from org.bccvl.compute.mdextractor import MetadataExtractor
-#from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from gu.z3cform.rdf.interfaces import IResource
+from org.bccvl.site.namespace import BCCPROP,  BCCVOCAB
 
 
 LOG = logging.getLogger(__name__)
@@ -27,6 +27,12 @@ LOG = logging.getLogger(__name__)
 
 class BCCVLUploadForm(DefaultAddForm):
 
+    css_class = 'form-horizontal'
+
+    template = ViewPageTemplateFile('dataset_upload_subform.pt')
+
+    datagenre = None
+
     def add(self, object):
         # FIXME: this is a workaround, which is fine for small uploaded files.
         #        large uploads should go through another process anyway
@@ -36,6 +42,11 @@ class BCCVLUploadForm(DefaultAddForm):
         #fti = getUtility(IDexterityFTI, name=self.portal_type)
         container = aq_inner(self.context)
         new_object = addContentToContainer(container, object)
+        # set data genre:
+        if self.datagenre:
+            res = IResource(new_object)
+            res.set(BCCPROP['datagenre'], self.datagenre)
+            # rdf commit should happens in transmogrifier step later on
         # if fti.immediate_view:
         #     self.immediate_view = "%s/%s/%s" % (container.absolute_url(), new_object.id, fti.immediate_view,)
         # else:
@@ -50,29 +61,63 @@ class BCCVLUploadForm(DefaultAddForm):
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         return portal[defaults.DATASETS_FOLDER_ID].absolute_url()
 
-
-class SpeciesAddForm(BCCVLUploadForm):
-
-    title = u"Upload Species Data"
-    description = (
-        u"<p>Upload occurrences or abundance data for single species</p>"
-        u"<p>An occurrence dataset is expected to be in CSV format."
-        u" BCCVL will only try to interpret columns with labels"
-        u" 'lon' and 'lat'.</p>")
-    fields = Fields(IBasic, IBlobDataset, ISpeciesDataset).omit('thresholds')
-
-    template = ViewPageTemplateFile('dataset_upload_subform.pt')
+    def updateWidgets(self):
+        super(BCCVLUploadForm, self).updateWidgets()
+        self.widgets['description'].rows = 6
+        self.widgets['rights'].rows = 6
 
     def updateFields(self):
         # don't fetch plone default fields'
         pass
 
 
-class RasterAddForm(BCCVLUploadForm):
+class SpeciesAbsenceAddForm(BCCVLUploadForm):
 
-    title = u"Upload Environmental Data"
+    title = u"Upload Species Abesence Data"
     description = (
-        u"<p>Upload current or future climate data</p>"
+        u"<p>Upload absence data for single species</p>"
+        u"<p>An absence dataset is expected to be in CSV format."
+        u" BCCVL will only try to interpret columns with labels"
+        u" 'lon' and 'lat'.</p>")
+    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
+        'file', 'title', 'description', 'scientificName', 'taxonID',
+        'vernacularName', 'rights')
+    datagenre = BCCVOCAB['DataGenreSpeciesAbsence']
+
+
+class SpeciesAbundanceAddForm(BCCVLUploadForm):
+
+    title = u"Upload Species Abundance Data"
+    description = (
+        u"<p>Upload abundance data for single species</p>"
+        u"<p>An abundance dataset is expected to be in CSV format."
+        u" BCCVL will only try to interpret columns with labels"
+        u" 'lon' and 'lat'.</p>")
+    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
+        'file', 'title', 'description', 'scientificName', 'taxonID',
+        'vernacularName', 'rights')
+    datagenre = BCCVOCAB['DataGenreSpeciesAbundance']
+
+
+class SpeciesOccurrenceAddForm(BCCVLUploadForm):
+
+    title = u"Upload Species Occurrence Data"
+    description = (
+        u"<p>Upload occurrences data for single species</p>"
+        u"<p>An occurrence dataset is expected to be in CSV format."
+        u" BCCVL will only try to interpret columns with labels"
+        u" 'lon' and 'lat'.</p>")
+    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
+        'file', 'title', 'description', 'scientificName', 'taxonID',
+        'vernacularName', 'rights')
+    datagenre = BCCVOCAB['DataGenreSpeciesOccurrence']
+
+
+class ClimateCurrentAddForm(BCCVLUploadForm):
+
+    title = u"Upload Current Climate Data"
+    description = (
+        u"<p>Upload current climate data</p>"
         u"<p>BCCVL can only deal with raster data in GeoTIFF format."
         u" Valid files are either single GeoTiff files or a number of"
         u" GeoTiff packaged within a zip file."
@@ -80,33 +125,61 @@ class RasterAddForm(BCCVLUploadForm):
         u" within the GeoTiff itself. In case of missing map projection"
         u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
-    fields = Fields(IBasic, IBlobDataset, ILayerDataset).omit('thresholds')
-
-    template = ViewPageTemplateFile('dataset_upload_subform.pt')
-
-    def updateFields(self):
-        # don't fetch plone default fields'
-        pass
+    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
+        'file', 'title', 'description', 'resolution', 'resolutiono',
+        'temporal', 'rights')
+    datagenre = BCCVOCAB['DataGenreCC']
+    # datatype, gcm, emissionscenario
 
 
-class SpeciesTraitsAddForm(BCCVLUploadForm):
+class EnvironmentalAddForm(BCCVLUploadForm):
+
+    title = u"Upload Environmental Data"
+    description = (
+        u"<p>Upload environmental data</p>"
+        u"<p>BCCVL can only deal with raster data in GeoTIFF format."
+        u" Valid files are either single GeoTiff files or a number of"
+        u" GeoTiff packaged within a zip file."
+        u" Idealy the map projection information is embedded as metadata"
+        u" within the GeoTiff itself. In case of missing map projection"
+        u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
+
+    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
+        'file', 'title', 'description', 'resolution', 'resolutiono',
+        'temporal', 'rights')
+    datagenre = BCCVOCAB['DataGenreE']
+    # datatype, gcm, emissionscenario
+
+
+class ClimateFutureAddForm(BCCVLUploadForm):
+
+    title = u"Upload Future Climate Data"
+    description = (
+        u"<p>Upload future climate data</p>"
+        u"<p>BCCVL can only deal with raster data in GeoTIFF format."
+        u" Valid files are either single GeoTiff files or a number of"
+        u" GeoTiff packaged within a zip file."
+        u" Idealy the map projection information is embedded as metadata"
+        u" within the GeoTiff itself. In case of missing map projection"
+        u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
+
+    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
+        'file', 'title', 'description', 'resolution', 'resolutiono',
+        'temporal', 'rights')
+    datagenre = BCCVOCAB['DataGenreFC']
+    # datatype, gcm, emissionscenario
+
+
+class SpeciesTraitAddForm(BCCVLUploadForm):
     # TODO: these wolud be schema forms... sholud try it
 
     title = u"Upload Species Traits"
     description = \
         u"<p>Upload CSV file to use for species traits modelling.</p>"
 
-    fields = Fields(IBasic, IBlobDataset, ITraitsDataset).omit('thresholds')
-
-    template = ViewPageTemplateFile('dataset_upload_subform.pt')
-
-    def updateWidgets(self):
-        super(SpeciesTraitsAddForm, self).updateWidgets()
-        self.widgets['datagenre'].mode = HIDDEN_MODE
-
-    def updateFields(self):
-        # don't fetch plone default fields'
-        pass
+    fields = Fields(IBlobDataset, IDublinCore, ITraitsDataset).select(
+        'file', 'title', 'description', 'rights')
+    datagenre = BCCVOCAB['DataGenreTraits']
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -135,9 +208,13 @@ class DatasetsUploadView(BrowserView):
         ttool = getToolByName(self.context, 'portal_types')
         fti = ttool.getTypeInfo('org.bccvl.content.dataset')
 
-        for form_prefix, form_class in (('addspecies', SpeciesAddForm),
-                                        ('addlayer', RasterAddForm),
-                                        ('addtraits', SpeciesTraitsAddForm)):
+        for form_prefix, form_class in (('speciesabsence', SpeciesAbsenceAddForm),
+                                        ('speciesabundance', SpeciesAbundanceAddForm),
+                                        ('speciesoccurrence', SpeciesOccurrenceAddForm),
+                                        ('climatecurrent', ClimateCurrentAddForm),
+                                        ('environmental', EnvironmentalAddForm),
+                                        ('climatefuture', ClimateFutureAddForm),
+                                        ('speciestrait', SpeciesTraitAddForm)):
             form = form_class(aq_inner(self.context),
                               self.request, fti)
             form.__name__ = "{0}form".format(form_prefix)
