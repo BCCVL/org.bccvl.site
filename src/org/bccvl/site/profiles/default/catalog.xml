@@ -26,4 +26,5 @@
 
     <column value="BCCResolution" />
     <column value="job_state" />
+    <column value="BCCDataGenre" />
 </object>
