@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<dataimport>
+  <import>
+    <param name="path" value="org.bccvl.site:initial_content"/>
+  </import>
+  <import>
+    <param name="path" value="org.bccvl.compute:content"/>
+  </import>
+</dataimport>
