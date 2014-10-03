@@ -16,9 +16,20 @@ from org.bccvl.site.content.dataset import (IBlobDataset,
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from gu.z3cform.rdf.interfaces import IResource
 from org.bccvl.site.namespace import BCCPROP,  BCCVOCAB
+from zope.interface import Interface
+from zope.schema import Bool
 
 
 LOG = logging.getLogger(__name__)
+
+
+class ITermsAndConditions(Interface):
+
+    legalcheckbox = Bool(
+        title = u'I agree to the <a href="http://www.bccvl.org.au/bccvl/legals/" target="_blank">Terms and Conditions</a>',
+        required=True,
+        default=False
+    )
 
 
 # TODO: provenance field:
@@ -66,6 +77,10 @@ class BCCVLUploadForm(DefaultAddForm):
         self.widgets['description'].rows = 6
         self.widgets['rights'].rows = 6
 
+    def updateActions(self):
+        super(BCCVLUploadForm, self).updateActions()
+        self.actions['save'].disabled = "disabled"
+
     def updateFields(self):
         # don't fetch plone default fields'
         pass
@@ -79,9 +94,9 @@ class SpeciesAbsenceAddForm(BCCVLUploadForm):
         u"<p>An absence dataset is expected to be in CSV format."
         u" BCCVL will only try to interpret columns with labels"
         u" 'lon' and 'lat'.</p>")
-    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
+    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset, ITermsAndConditions).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rights')
+        'vernacularName', 'rights', 'legalcheckbox')
     datagenre = BCCVOCAB['DataGenreSpeciesAbsence']
 
 
@@ -93,9 +108,9 @@ class SpeciesAbundanceAddForm(BCCVLUploadForm):
         u"<p>An abundance dataset is expected to be in CSV format."
         u" BCCVL will only try to interpret columns with labels"
         u" 'lon' and 'lat'.</p>")
-    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
+    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset, ITermsAndConditions).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rights')
+        'vernacularName', 'rights', 'legalcheckbox')
     datagenre = BCCVOCAB['DataGenreSpeciesAbundance']
 
 
@@ -107,9 +122,9 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
         u"<p>An occurrence dataset is expected to be in CSV format."
         u" BCCVL will only try to interpret columns with labels"
         u" 'lon' and 'lat'.</p>")
-    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
+    fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset, ITermsAndConditions).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rights')
+        'vernacularName', 'rights', 'legalcheckbox')
     datagenre = BCCVOCAB['DataGenreSpeciesOccurrence']
 
 
@@ -125,9 +140,9 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
         u" within the GeoTiff itself. In case of missing map projection"
         u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
-    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
+    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset, ITermsAndConditions).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'temporal', 'rights')
+        'temporal', 'rights', 'legalcheckbox')
     datagenre = BCCVOCAB['DataGenreCC']
     # datatype, gcm, emissionscenario
 
@@ -144,9 +159,9 @@ class EnvironmentalAddForm(BCCVLUploadForm):
         u" within the GeoTiff itself. In case of missing map projection"
         u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
-    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
+    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset, ITermsAndConditions).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'temporal', 'rights')
+        'temporal', 'rights', 'legalcheckbox')
     datagenre = BCCVOCAB['DataGenreE']
     # datatype, gcm, emissionscenario
 
@@ -163,9 +178,9 @@ class ClimateFutureAddForm(BCCVLUploadForm):
         u" within the GeoTiff itself. In case of missing map projection"
         u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
-    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
+    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset, ITermsAndConditions).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'temporal', 'rights')
+        'temporal', 'rights', 'legalcheckbox')
     datagenre = BCCVOCAB['DataGenreFC']
     # datatype, gcm, emissionscenario
 
@@ -177,8 +192,8 @@ class SpeciesTraitAddForm(BCCVLUploadForm):
     description = \
         u"<p>Upload CSV file to use for species traits modelling.</p>"
 
-    fields = Fields(IBlobDataset, IDublinCore, ITraitsDataset).select(
-        'file', 'title', 'description', 'rights')
+    fields = Fields(IBlobDataset, IDublinCore, ITraitsDataset, ITermsAndConditions).select(
+        'file', 'title', 'description', 'rights', 'legalcheckbox')
     datagenre = BCCVOCAB['DataGenreTraits']
 
 
