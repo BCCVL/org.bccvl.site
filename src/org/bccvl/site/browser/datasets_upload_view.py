@@ -179,8 +179,8 @@ class ClimateFutureAddForm(BCCVLUploadForm):
         u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset, ITermsAndConditions).select(
-        'file', 'title', 'description', 'resolution', 'resolutiono',
-        'temporal', 'rights', 'legalcheckbox')
+        'file', 'title', 'description', 'emissionscenario', 'gcm',
+        'resolution', 'resolutiono', 'temporal', 'rights', 'legalcheckbox')
     datagenre = BCCVOCAB['DataGenreFC']
     # datatype, gcm, emissionscenario
 
