@@ -238,7 +238,7 @@ class DatasetsListingView(BrowserView):
         self.source_vocab = SimpleVocabulary((
             SimpleTerm('user', 'user', u'My Datasets'),
             SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
-            SimpleTerm('ala', 'ala', u'Imported from ALA'),
+            # SimpleTerm('ala', 'ala', u'Imported from ALA'),
             SimpleTerm('shared', 'shared', 'Shared'),
         ))
         return super(DatasetsListingView, self).__call__()
