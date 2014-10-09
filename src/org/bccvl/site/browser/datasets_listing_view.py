@@ -110,6 +110,18 @@ from Products.AdvancedQuery import In, Eq, Not, Generic, And
 
 @implementer(IFolderContentsView)
 class DatasetsListingView(BrowserView):
+    '''
+    Accepted searech parameters:
+
+    datasets.filter.text: searches full text index SearchableText
+    datasets.filter.genre: matches BCCDataGenre index
+    datasets.filter.resolution: matches in BCCResolution index
+    datasets.filter.source: ...
+    datasets.filter.sort: ....
+    datasets.filter.order: asc, desc
+    b_size: batch size
+    b_start: batch start
+    '''
 
     def contentFilterAQ(self):
         portal_state = getMultiAdapter(
@@ -190,14 +202,12 @@ class DatasetsListingView(BrowserView):
                 # FIXME: missing: ala
 
         # add fixed query parameters:
-        query .update({
+        query.update({
             'path': {
                 # 'query': portal_state.navigation_root_path(),
                 'query': '/'.join(self.context.getPhysicalPath()),
                 'depth': -1
             },
-            'sort_on': 'modified',
-            'sort_order': 'descending',
             'object_provides': IDataset.__identifier__,
         })
         return query
@@ -220,13 +230,32 @@ class DatasetsListingView(BrowserView):
             query_params = self.contentFilter()
         b_size = int(self.request.get('b_size', 20))
         b_start = int(self.request.get('b_start', 0))
+        # get sort parameters
+        orderby = self.request.get('datasets.filter.sort')
+        orderby = {
+            'modified': ('modified', 'desc'),
+            'created': ('created', 'desc'),
+            'title': ('sortable_title', 'asc')
+        }.get(orderby, ('modified', 'desc'))
+
+        # use descending as default for last modified sorting
+        # TODO: use different defaults for different filters?
+        order = self.request.get('datasets.filter.order', orderby[1])
+        if order not in ('asc', 'desc'):
+            order = orderby[1]
 
         pc = getToolByName(self.context, 'portal_catalog')
         from Products.CMFPlone import Batch
         if USE_AQ:
-            brains = pc.evalAdvancedQuery(query_params, (('modified', 'desc'), ))
+            # TODO: we could do multi field sorting here
+            brains = pc.evalAdvancedQuery(query_params, ((orderby[0], order), ))
         else:
-            brains = pc.queryCatalog(query_params)  # show_all=1?? show_inactive=show_inactive?
+            order = {'asc': 'ascending',
+                     'desc': 'descending'}.get(order)
+            query_params.update({
+                'sort_on': orderby[0],
+                'sort_order': order})
+            brains = pc.searchResults(query_params)  # show_all=1?? show_inactive=show_inactive?
         batch = Batch(brains, b_size, b_start, orphan=0)
         return batch
 
