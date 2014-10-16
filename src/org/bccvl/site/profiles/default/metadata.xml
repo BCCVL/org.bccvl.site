@@ -26,7 +26,6 @@
         <!-- <dependency>profile-collective.geo.geographer:default</dependency> -->
         <!-- <dependency>profile-collective.geo.contentlocations:default</dependency> -->
         <dependency>profile-plone.app.folderui:default</dependency>
-        <dependency>profile-gu.plone.rdf:default</dependency>
         <dependency>profile-gu.repository.content:default</dependency>
 
         <dependency>profile-org.bccvl.site.content:content</dependency>
@@ -39,7 +38,3 @@
   - setup shibboleth login ... can't enable via genericsetup
   - setup pas (correct plugin order)
   - setup geo stuff -->
-
-<!-- 2ndoray todo's:
-  - edit events to keep plone metadata in sync with rdf metadat
--->

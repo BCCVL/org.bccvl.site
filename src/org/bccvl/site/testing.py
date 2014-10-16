@@ -1,8 +1,5 @@
 import os.path
-import logging
-from threading import Thread
 import org.bccvl.site.tests
-from zope.component import getUtility
 from plone.testing import z2
 from plone.app.testing import login
 from plone.app.testing import SITE_OWNER_NAME
@@ -11,12 +8,7 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
-from org.bccvl.site.namespace import BCCPROP, NFO
-from gu.z3cform.rdf.interfaces import IORDF, IResource
 from collective.transmogrifier.transmogrifier import Transmogrifier
-from rdflib import URIRef, Literal
-from rdflib.resource import Resource
-from org.bccvl.site.namespace import BIOCLIM, BCCVLLAYER
 
 
 TESTCSV = '\n'.join(['%s, %d, %d' % ('Name', x, x + 1) for x in range(1, 10)])
@@ -128,31 +120,6 @@ class BCCVLLayer(PloneSandboxLayer):
         transmogrifier = Transmogrifier(portal)
         transmogrifier(u'org.bccvl.site.dataimport',
                        source={'path': 'org.bccvl.site.tests:data'})
-        # update metadata on imported content:
-        # TODO: sholud be done in transomgrifier step
-        rdfhandler = getUtility(IORDF).getHandler()
-        current = portal.datasets.environmental.current
-        r = IResource(current)
-
-        for fid, i in ((URIRef("http://example.com/file%02d" % i), i)
-                       for i in range(1, 3)):
-            f = Resource(r.graph, fid)
-            f.add(BIOCLIM['bioclimVariable'], BCCVLLAYER['B%02d' % i])
-            f.add(NFO['fileName'], Literal('file%02d' % i))
-            r.add(BCCPROP['hasArchiveItem'], f.identifier)
-        rdfhandler.put(r.graph)
-
-        current = portal.datasets.environmental.current_1k
-        r = IResource(current)
-        for fid, i in ((URIRef("http://example.com/file%02d" % i), i)
-                       for i in range(1, 3)):
-            f = Resource(r.graph, fid)
-            f.add(BIOCLIM['bioclimVariable'], BCCVLLAYER['B%02d' % i])
-            f.add(NFO['fileName'], Literal('file%02d' % i))
-            r.add(BCCPROP['hasArchiveItem'], f.identifier)
-        rdfhandler.put(r.graph)
-
-        current.reindexObject()
 
 
 BCCVL_FIXTURE = BCCVLLayer()

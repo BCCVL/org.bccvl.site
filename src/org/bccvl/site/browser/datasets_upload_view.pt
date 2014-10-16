@@ -13,9 +13,26 @@
   <div id="content">
     <tal:tabs metal:use-macro="context/datasets_listing_view/datasets_tabs"></tal:tabs>
 
-    <tal:block tal:repeat="subform view/subforms">
-        <tal:form tal:replace="structure subform"></tal:form>
-    </tal:block>
+    <script type="text/javascript">
+      //<![CDATA[
+      jQuery(document).ready( function() {
+      jQuery("[id$='widgets-legalcheckbox-0']").click(function() {
+          var btnid = this.id.replace('widgets-legalcheckbox-0', 'buttons-save');
+          jQuery('#' + btnid).enable(this.checked);
+      })});
+    //]]>
+    </script>
+    <dl class="enableFormTabbing">
+      <tal:block tal:repeat="subform view/subforms">
+
+        <dt id="fieldsetlegend-id"
+            tal:attributes="id string:fieldsetlegend-${repeat/subform/number}" tal:content="subform/title">Title</dt>
+        <dd id="fieldset-id"
+            tal:attributes="id string:fieldset-${repeat/subform/number}">
+          <tal:form tal:replace="structure subform/content"></tal:form>
+        </dd>
+      </tal:block>
+    </dl>
   </div>
 
 </metal:content-core>

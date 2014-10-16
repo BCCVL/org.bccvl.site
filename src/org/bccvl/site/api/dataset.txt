@@ -22,22 +22,20 @@ Once we have a XMLRPC proxy we can just call the available methods.
     >>> proxy = xmlrpclib.ServerProxy(abt.absolute_url() + '/dm')
     >>> res = proxy.getMetadata()
     >>> pprint(res)
-    {'@id': 'urn:plone:...',
+    {'@id': '...',
      '@type': 'org.bccvl.content.dataset',
-     'commonname': 'Australian Brush-turkey',
+     'bounds': {'bottom': 1.0, 'left': 1.0, 'right': 3.0, 'top': 3.0},
      'description': '',
-     'emsc': 'None',
      'file': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',
-     'gcm': 'None',
+     'genre': 'DataGenreSpeciesOccurrence',
+     'headers': ['Name', 'lon', 'lat'],
      'id': '...',
-     'layers': [],
      'mimetype': 'text/csv',
-     'resolution': None,
-     'rows': '3',
-     'scientificname': 'Alectura lathami',
-     'taxonid': 'urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986',
-     'temporal': 'None',
+     'rows': 3,
+     'species': {'scientificName': 'Alectura lathami',
+                 'taxonID': 'urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986',
+                 'vernacularName': 'Australian Brush-turkey'},
      'url': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv',
      'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
     >>> res['id'] == abtuid

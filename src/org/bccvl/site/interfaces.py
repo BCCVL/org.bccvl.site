@@ -31,3 +31,10 @@ class IComputeMethod(Interface):
         """
         execute a compute method
         """
+
+
+class IBCCVLMetadata(Interface):
+    """
+    Interface to access BCCVL specific metadata.
+    """
+    # FIXME: add IDict or IMapping as base interface?

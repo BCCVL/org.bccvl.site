@@ -3,7 +3,19 @@
   "title": "Remote",
   "_transitions": "publish",
   "remoteUrl": "https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677/australia_5km/RCP3PD_cccma-cgcm31_2015.zip",
-  "_rdf": {
-          "file": "remote.ttl",
-          "contenttype": "text/turtle"}
+  "_bccvlmetadata":{
+    "genre": "DataGenreFC",
+    "resolution": "Resolution30m",
+    "layers": {
+      "http://example.com/file01":{
+        "fileName": "remote/data/file1.tif"
+      },
+      "http://example.com/file02":{
+        "fileName": "remote/data/file2.tif"
+      },
+      "http://example.com/file03":{
+        "fileName": "remote/data/file3.tif"
+      }
+    }
+  }
 }

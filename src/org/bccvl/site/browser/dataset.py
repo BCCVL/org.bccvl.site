@@ -1,63 +1,15 @@
 #from plone.dexaterity.browser.view import DefaultView (template override in plone.app.dexterity.browser)
-from rdflib.resource import Resource
-from plone.dexterity.browser.edit import DefaultEditForm
-from plone.dexterity.browser.view import DefaultView
-from z3c.form import form, field, button
+
+
+from z3c.form import field, button
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
 from zope.event import notify
 from zope.lifecycleevent import modified
-from org.bccvl.site.content.dataset import (ISpeciesDataset,
-                                            ILayerDataset)
-from org.bccvl.site.namespace import BCCPROP, BCCVOCAB
+from org.bccvl.site.interfaces import IBCCVLMetadata
 #from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.browser import BrowserView
-
-
-class DatasetFieldMixin(object):
-
-    # fields = Fields(IBasic, IDataset)
-
-    @property
-    def additionalSchemata(self):
-        for schema in super(DatasetFieldMixin, self).additionalSchemata:
-            yield schema
-        md = IGraph(self.context)
-        genre = md.value(md.identifier, BCCPROP['datagenre'])
-        # TODO: do a better check for genre. e.g. query store for
-        #       classes of genre?
-        if genre in (BCCVOCAB['DataGenreSpeciesAbsence'], BCCVOCAB['DataGenreSpeciesOccurrence']):
-            yield ISpeciesDataset
-        elif genre in (BCCVOCAB['DataGenreFC'], BCCVOCAB['DataGenreE']):
-            yield ILayerDataset
-
-    def updateWidgets(self):
-        super(DatasetFieldMixin, self).updateWidgets()
-        from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
-        rightsfield = None
-        if 'IDublinCore.rights' in self.fields:
-            rightsfield = self.fields['IDublinCore.rigths']
-        else:
-            for group in self.groups:
-                if 'IDublinCore.rights' in group.fields:
-                    rightsfield = group.fields['IDublinCore.rights']
-                    break
-        if rightsfield is not None:
-            rightsfield.widgetFactory = WysiwygFieldWidget
-
-
-class DatasetDisplayView(DatasetFieldMixin, DefaultView):
-
-    # schema = None
-    # additionalSchemata = ()
-
-    # def updateFieldsFromSchemata(self):
-    #     self.updateFields()
-
-    def _update(self):
-        # import ipdb; ipdb.set_trace()
-        super(DatasetDisplayView, self)._update()
 
 
 class DatasetDetailsView(BrowserView):
@@ -72,47 +24,25 @@ class DatasetDetailsView(BrowserView):
 #             js turns the button into an ajax form and non-js uses redirects
 
 
-class DatasetEditView(DatasetFieldMixin, DefaultEditForm):
-
-    # kw: ignoreFields, ignoreButtons, ignoreHandlers
-    form.extends(DefaultEditForm, ignoreFields=True)
-
-    # TODO: do this only for zipped files
-    @button.buttonAndHandler(u'Edit File Details', name='edit_file_metadata')
-    def handleEditFileMetadata(self, action):
-        # do whatever here and redirect to metadata edit view
-        # TODO: use restrictedTraverse to check security as well?
-        #       (would avoid login page)
-        url = self.context.absolute_url() + '/@@editfilemetadata'
-        self.request.response.redirect(url)
-
-    # TODO: when the file get's replaced the metadata about zip
-    #       content may become invalid'
-
-
 from plone.z3cform.crud import crud
 from zope import schema
 from zope.interface import Interface
-import gu.z3cform.rdf.schema as rdfschema
-from rdflib import RDF, Graph, Literal
 from zope.component import getUtility
-from gu.z3cform.rdf.interfaces import IORDF, IGraph, IResource
 import zipfile
-from org.bccvl.site.namespace import BIOCLIM, NFO
 
 
 class IFileItemMetadata(Interface):
 
-    name = rdfschema.RDFLiteralLineField(
+    # FIXME: adapter to IBCCVLMetadata required?
+    # FIXME: fieldnames to match BCCVLMetadata dict keys
+    name = schema.TextLine(
         title=u"File name",
-        prop=NFO['fileName'],
         description=u'The file name within the archive',
         readonly=True)
 
-    bioclim = rdfschema.RDFURIChoiceField(
+    bioclim = schema.Choice(
         title=u"Bioclimatic Variable",
-        prop=BIOCLIM['bioclimVariable'],
-        vocabulary='org.bccvl.site.BioclimVocabulary')
+        vocabulary='layer_source')
 
 
 def getFileGraph(context):
@@ -123,22 +53,15 @@ def getFileGraph(context):
     """
     file = context.file.open('r')
     zip = zipfile.ZipFile(file)
-    ret = {}
-    ordf = getUtility(IORDF)
+    ret = []
     for zipinfo in zip.infolist():
         if zipinfo.filename.endswith('/'):
             # skip directories
             continue
-        info = Graph(identifier=ordf.generateURI())
-        info.add((info.identifier, RDF['type'], NFO['ArchiveItem']))
-        #info.add((info.identifier, RDF['type'], NFO['RasterImage']))
-        #info.add((info.identifier, NFO['fileCreated'],
-        #          NFO['ArchiveItem'])) # xsd:datetime
-        info.add((info.identifier, NFO['fileName'],
-                  Literal(zipinfo.filename)))  # XSD:string
-        info.add((info.identifier, NFO['fileSize'],
-                  Literal(zipinfo.file_size)))  # XSD:integer
-        ret[zipinfo.filename] = info
+        info = {}
+        info['fileName'] = zipinfo.filename
+        info['fileSize'] = zipinfo.file_size()
+        ret.append(info)
     return ret
 
 
@@ -197,9 +120,6 @@ class EditFileMetadataForm(crud.EditForm):
                         notify(AfterWidgetUpdateEvent(widget))
         # don't forget to update our property we manage
 
-        # TODO: we shouldn't need a handler here'
-        handler = getUtility(IORDF).getHandler()
-
         urilist = []
         for subform in self.subforms:
             # TODO: this would handle adds?
@@ -243,7 +163,7 @@ class CrudFileMetadataForm(crud.CrudForm):
     #       form work the same way with or without ajax
     template = ViewPageTemplateFile('datasets_filemd_master.pt')
     # TODO generalise this
-    property = BCCPROP['hasArchiveItem']
+    property = 'layers'
 
     update_schema = field.Fields(IFileItemMetadata).omit('name')
     view_schema = field.Fields(IFileItemMetadata).select('name')
@@ -270,8 +190,9 @@ class CrudFileMetadataForm(crud.CrudForm):
         self.request.response.redirect(nexturl)
 
     def getContent(self):
+        # FIXME: maybe no longer necessary as it can be adapted directly?
         if not self._content:
-            self._content = IGraph(self.context)
+            self._content = IBCCVLMetadata(self.context)
         return self._content
 
     def get_items(self):
@@ -339,12 +260,12 @@ class IFutureClimateMetadata(Interface):
     gcm = schema.Choice(
         title=u"GCM",
         # value_type=URIRefField(),
-        vocabulary='org.bccvl.site.GCMVocabulary')
+        vocabulary='gcm_source')
 
     emc = schema.Choice(
         title=u"Emmision Scenario",
         # value_type=URIRefField(),
-        vocabulary='org.bccvl.site.EMSCVocabulary')
+        vocabulary='emsc_source')
 
 
 

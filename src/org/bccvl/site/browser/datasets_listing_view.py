@@ -1,10 +1,9 @@
-from itertools import chain
 from Products.Five import BrowserView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
 from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IDownloadInfo, IJobTracker
+from org.bccvl.site.interfaces import IDownloadInfo
 from org.bccvl.site.browser.interfaces import IDatasetTools
 from org.bccvl.site.api.dataset import getdsmetadata
 from org.bccvl.site.namespace import BCCVOCAB, BIOCLIM
@@ -34,6 +33,7 @@ class DatasetTools(BrowserView):
     _layer_vocab = None
 
     def get_transition(self, itemob=None):
+        # TODO: should this return all possible transitions?
         #return checkPermission('cmf.RequestReview', self.context)
         if itemob is None:
             itemob = self.context
@@ -91,16 +91,16 @@ class DatasetTools(BrowserView):
     @property
     def genre_vocab(self):
         if self._genre_vocab is None:
-            self._genre_vocab = SimpleVocabulary(tuple(chain.from_iterable((
-                getUtility(IVocabularyFactory, 'org.bccvl.site.SpeciesDataGenreVocabulary')(self.context),
-                getUtility(IVocabularyFactory, 'org.bccvl.site.EnvironmentalDataGenreVocabulary')(self.context),
-                getUtility(IVocabularyFactory, 'org.bccvl.site.TraitsDataGenreVocabulary')(self.context),
-            ))))
+            genre_list = ('DataGenreSpeciesOccurrence', 'DataGenreSpeciesAbsence',
+                          'DataGenreSpeciesAbundance', 'DataGenreE',
+                          'DataGenreCC', 'DataGenreFC', 'DataGenreTraits')
+            genre_source = getUtility(IVocabularyFactory, 'genre_source')(self.context)
+            self._genre_vocab = SimpleVocabulary([genre_source.getTerm(genre) for genre in genre_list])
         return self._genre_vocab
 
     def genre_title(self, genre):
         try:
-            return self.genre_vocab.by_value[genre[0]].title
+            return self.genre_vocab.by_value[genre].title
         except Missing.Value:
             return u'Missing Genre'
         except TypeError:
@@ -278,8 +278,8 @@ class DatasetsListingView(BrowserView):
     def __call__(self):
         # initialise instance variables, we'll do it here so that we have
         # security set up and have to do it only once per request
-        self.dstools = getMultiAdapter((self.context, self.request), name="dataset_tools")
-        self.resolution_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
+        self.dstools = getMultiAdapter((self.context, self.request), name = "dataset_tools")
+        self.resolution_vocab = getUtility(IVocabularyFactory,  'resolution_source')(self.context)
         self.source_vocab = SimpleVocabulary((
             SimpleTerm('user', 'user', u'My Datasets'),
             SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
@@ -423,7 +423,7 @@ class DatasetsListingPopup(BrowserView):
         # initialise instance variables, we'll do it here so that we have
         # security set up and have to do it only once per request
         self.dstools = getMultiAdapter((self.context, self.request), name="dataset_tools")
-        self.resolution_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
+        self.resolution_vocab = getUtility(IVocabularyFactory,  'resolution_source')(self.context)
         self.source_vocab = SimpleVocabulary((
             SimpleTerm('user', 'user', u'My Datasets'),
             SimpleTerm('admin', 'admin', u'Provided by BCCVL'),

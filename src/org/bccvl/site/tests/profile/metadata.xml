@@ -18,7 +18,6 @@
         <dependency>profile-plone.formwidget.autocomplete:default</dependency>
 
         <dependency>profile-plone.app.folderui:default</dependency>
-        <dependency>profile-gu.plone.rdf:default</dependency>
         <dependency>profile-gu.repository.content:default</dependency>
 
         <dependency>profile-org.bccvl.site:default</dependency>

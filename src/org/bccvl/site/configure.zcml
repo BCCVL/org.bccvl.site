@@ -47,24 +47,6 @@
 
   <cmf:registerDirectory name="bccvl_skin" />
 
-  <adapter
-      for="zope.interface.Interface
-           plone.app.z3cform.interfaces.IPloneFormLayer
-           z3c.form.interfaces.IAddForm"
-      factory=".utilities.RDFTypeMapper"
-      />
-
-  <utility
-      factory=".utilities.RDFDataMapper"
-      name="Content data to RDF Mapper"
-      />
-
-  <utility
-      factory=".utilities.RDFContentBasedTypeMapper"
-      name="Content type to RDF type Mapper"
-      />
-
-
   <utility
       factory=".UserAdder"
       provides="Products.membrane.interfaces.IUserAdder"
@@ -91,6 +73,11 @@
     <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
   </class>
 
+  <!-- metadata adapter -->
+  <adapter
+      factory=".metadata.BCCVLMetadata"
+      />
+
   <!-- download info adapters -->
   <adapter
       factory=".utilities.DatasetDownloadInfo"
@@ -104,7 +91,7 @@
       factory=".utilities.CatalogBrainDownloadInfo"
       />
 
-  <!-- index relevant RDF properties -->
+  <!-- index relevant metadata properties -->
   <adapter
       factory=".indexers.dataset_BCCDataGenre"
       name="BCCDataGenre"
@@ -185,63 +172,18 @@
       />
 
   <utility
-      component=".transmogrify.RDFMetadataUpdater"
-      name="org.bccvl.site.transmogrify.rdfmetadata"
+      component=".transmogrify.BCCVLMetadataUpdater"
+      name="org.bccvl.site.transmogrify.bccvlmetadata"
       />
 
   <utility
-      component=".transmogrify.FileMetadataToRDF"
-      name="org.bccvl.site.transmogrify.filemetadatardf"
+      component=".transmogrify.FileMetadataToBCCVL"
+      name="org.bccvl.site.transmogrify.filemetadatabccvl"
       />
 
   <utility
       component=".transmogrify.ContextSource"
       name="org.bccvl.site.transmogrify.contextsource"
-      />
-
-  <utility
-      component=".vocabularies.species_presence_datasets_vocab"
-      name="species_presence_datasets_vocab"
-      />
-
-  <utility
-      component=".vocabularies.species_absence_datasets_vocab"
-      name="species_absence_datasets_vocab"
-      />
-
-  <utility
-      component=".vocabularies.species_abundance_datasets_vocab"
-      name="species_abundance_datasets_vocab"
-      />
-
-  <utility
-      component=".vocabularies.environmental_datasets_vocab"
-      name="environmental_datasets_vocab"
-      />
-
-  <utility
-      component=".vocabularies.current_environmental_datasets_vocab"
-      name="current_environmental_datasets_vocab"
-      />
-
-  <utility
-      component=".vocabularies.future_climate_datasets_vocab"
-      name="future_climate_datasets_vocab"
-      />
-
-  <utility
-      component=".vocabularies.species_distributions_models_vocab"
-      name="species_distributions_models_vocab"
-      />
-
-  <utility
-      component=".vocabularies.species_projection_datasets_vocab"
-      name="species_projection_datasets_vocab"
-      />
-
-  <utility
-      component=".vocabularies.species_traits_datasets_vocab"
-      name="species_traits_datasets_vocab"
       />
 
   <utility
@@ -255,8 +197,33 @@
       />
 
   <utility
-      component=".vocabularies.envirolayer_source"
-      name="envirolayer_source"
+      component=".vocabularies.layer_source"
+      name="layer_source"
+      />
+
+  <utility
+      component=".vocabularies.resolution_source"
+      name="resolution_source"
+      />
+
+  <utility
+      component=".vocabularies.crs_source"
+      name="crs_source"
+      />
+
+  <utility
+      component=".vocabularies.gcm_source"
+      name="gcm_source"
+      />
+
+  <utility
+      component=".vocabularies.emsc_source"
+      name="emsc_source"
+      />
+
+  <utility
+      component=".vocabularies.datatype_source"
+      name="datatype_source"
       />
 
   <utility
@@ -265,63 +232,8 @@
       />
 
   <utility
-      component=".vocabularies.emission_scenarios_source"
-      name="emission_scenarios_source"
-      />
-
-  <utility
-      component=".vocabularies.global_climate_models_source"
-      name="global_climate_models_source"
-      />
-
-  <utility
-      component=".vocabularies.fc_years_source"
-      name="fc_years_source"
-      />
-
-  <utility
-      name="org.bccvl.site.GCMVocabulary"
-      component=".vocabularies.GCMVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.EMSCVocabulary"
-      component=".vocabularies.EMSCVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.BioclimVocabulary"
-      component=".vocabularies.BioclimVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.SpeciesDataGenreVocabulary"
-      component=".vocabularies.SpeciesDataGenreVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.EnvironmentalDataGenreVocabulary"
-      component=".vocabularies.EnvironmentalDataGenreVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.DatasetTypeVocabulary"
-      component=".vocabularies.DatasetTypeVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.TraitsDataGenreVocabulary"
-      component=".vocabularies.TraitsDataGenreVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.ResolutionVocabulary"
-      component=".vocabularies.ResolutionVocabularyFactory"
-      />
-
-  <utility
-      name="org.bccvl.site.CRSVocabulary"
-      component=".vocabularies.CRSVocabularyFactory"
+      component=".vocabularies.genre_source"
+      name="genre_source"
       />
 
   <transmogrifier:registerConfig

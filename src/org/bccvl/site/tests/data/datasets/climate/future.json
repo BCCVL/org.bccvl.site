@@ -2,7 +2,19 @@
   "_type": "org.bccvl.content.dataset",
   "title": "Future",
   "_transitions": "publish",
-  "_rdf": {
-          "file": "future.ttl",
-          "contenttype": "text/turtle"}
+  "_bccvlmetadata": {
+    "genre": "DataGenreFC",
+    "resolution": "Resolution30m",
+    "layers": {
+      "http://example.com/file01":{
+        "fileName": "future/data/file1.tif"
+      },
+      "http://example.com/file02":{
+        "fileName": "future/data/file2.tif"
+      },
+      "http://example.com/file03":{
+        "fileName": "future/data/file3.tif"
+      }
+    }
+  }
 }

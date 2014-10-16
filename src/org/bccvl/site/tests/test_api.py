@@ -1,15 +1,11 @@
 import unittest2 as unittest
 import doctest
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
+from org.bccvl.site.interfaces import IBCCVLMetadata
 from plone.testing import layered
-from gu.z3cform.rdf.interfaces import IGraph
-from org.bccvl.site.namespace import BCCVOCAB, BCCPROP, BCCEMSC, BCCGCM, DWC
-from ordf.namespace import DC
-from rdflib import Literal
-from gu.z3cform.rdf.interfaces import IORDF
-from zope.component import getUtility
 from plone.namedfile import NamedFile
 from plone.uuid.interfaces import IUUID
+import transaction
 
 # setup site with content
 # run doctest in xmlrpc package (rename to api or move to sep. package someday)
@@ -39,6 +35,14 @@ def setUpApiTests(doctest):
                                  title=u'Result Test SDM RData',
                                  file=NamedFile(filename=u'Result_file.Rdata'))
     sdmds = result[sdmds]
+    md = IBCCVLMetadata(sdmds)
+    md.update({
+        'genre': 'DataGenreCP',
+        'species': {
+            'scientificName': u'Result species',
+        }
+    })
+    sdmds.reindexObject()
 
     # create a fake projection experiment
     proj = portal.experiments.invokeFactory('org.bccvl.content.projectionexperiment',
@@ -59,19 +63,21 @@ def setUpApiTests(doctest):
                                file=NamedFile(filename=u'Result_file.tiff'))
     rds = result[rds]
     # set metadata on rds
-    rdsgraph = IGraph(rds)
-    rdsgraph.add((rdsgraph.identifier, BCCPROP['datagenre'], BCCVOCAB['DataGenreFP']))
-    rdsgraph.add((rdsgraph.identifier, DC['temporal'], Literal(u"start=2014;")))
-    rdsgraph.add((rdsgraph.identifier, BCCPROP['gcm'], BCCGCM['cccma-cgcm31']))
-    rdsgraph.add((rdsgraph.identifier, BCCPROP['emissionscenario'], BCCEMSC['RCP3PD']))
-    rdsgraph.add((rdsgraph.identifier, DWC['scientificName'], Literal(u"Result species")))
-    handler = getUtility(IORDF).getHandler()
-    handler.put(rdsgraph)
+    md = IBCCVLMetadata(rds)
+    md.update({
+        'genre': 'DataGenreFP',
+        'temporal': u"start=2014;",
+        'gcm': 'cccma-cgcm31',
+        'emsc': 'RCP3PD',
+        'species': {
+            'scientificName': u'Result species',
+        }
+    })
     # update index with data from graph
-    # TODO: do I need to put stuff for reindexing as well?
     rds.reindexObject()
-    # TODO: do I have to commit? (put is necessary for commit)
-    import transaction
+
+    # we have to commit here because doctests run in a different
+    # thread because they connect via test-broswer.
     transaction.commit()
 
 

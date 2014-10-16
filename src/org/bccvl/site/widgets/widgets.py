@@ -244,7 +244,7 @@ class DatasetsMultiSelectWidget(HTMLInputWidget, SequenceWidget):
 
     def update(self):
         envvocab = getUtility(IVocabularyFactory,
-                              name='org.bccvl.site.BioclimVocabulary')
+                              name='layer_source')
         # TODO: could also cache the next call per request?
         self.envlayervocab = envvocab(self.context)
         super(DatasetsMultiSelectWidget, self).update()

@@ -394,13 +394,11 @@ class ProjectionAdd(Add):
         if resolution is None:
             uuids = data.get('species_distribution_models')
             from plone.app.uuid.utils import uuidToCatalogBrain
-            from gu.z3cform.rdf.interfaces import IResource
             from org.bccvl.site.namespace import BCCPROP
             data['resolution'] = set()
             for sdm in (uuidToCatalogBrain(uuid) for uuid in uuids):
-                sdmgraph = IResource(sdm)
-                resolution = sdmgraph.value(BCCPROP['resolution'])
-                data['resolution'].add(resolution.identifier)
+                md = IBCCVLMetadata(sdm)
+                data['resolution'].add(md['resolution'])
 
         if data['resolution']:
             data['resolution'] = list(data['resolution'])

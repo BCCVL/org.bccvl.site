@@ -7,32 +7,19 @@ from collective.transmogrifier.transmogrifier import Transmogrifier
 from plone.dexterity.utils import addContentToContainer
 from plone.app.dexterity.behaviors.metadata import IDublinCore
 from z3c.form.field import Fields
-from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import defaults
+from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.content.dataset import (IBlobDataset,
                                             ISpeciesDataset,
                                             ILayerDataset,
                                             ITraitsDataset)
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from gu.z3cform.rdf.interfaces import IResource
-from org.bccvl.site.namespace import BCCPROP,  BCCVOCAB
-from zope.interface import Interface
 from zope.schema import Bool
-from z3c.form import form, button
+from z3c.form import button
 from Products.statusmessages.interfaces import IStatusMessage
 
 
 LOG = logging.getLogger(__name__)
-
-
-class ITermsAndConditions(Interface):
-
-    # FIXME: another hardcoded url here :(
-    legalcheckbox = Bool(
-        title = u'I agree to the <a href="http://www.bccvl.org.au/bccvl/legals/" target="_blank">Terms and Conditions</a>',
-        required=True,
-        default=False
-    )
 
 
 # TODO: provenance field:
@@ -61,8 +48,7 @@ class BCCVLUploadForm(DefaultAddForm):
         new_object = addContentToContainer(container, object)
         # set data genre:
         if self.datagenre:
-            res = IResource(new_object)
-            res.set(BCCPROP['datagenre'], self.datagenre)
+            IBCCVLMetadata(new_object)['genre'] = self.datagenre
             # rdf commit should happens in transmogrifier step later on
         # if fti.immediate_view:
         #     self.immediate_view = "%s/%s/%s" % (container.absolute_url(), new_object.id, fti.immediate_view,)
@@ -70,6 +56,7 @@ class BCCVLUploadForm(DefaultAddForm):
         #     self.immediate_view = "%s/%s" % (container.absolute_url(), new_object.id)
         # run transmogrify md extraction here
         # TODO: move this to an event listener?
+
         tm = Transmogrifier(new_object)
         tm('org.bccvl.site.add_file_metadata')
 
@@ -81,7 +68,7 @@ class BCCVLUploadForm(DefaultAddForm):
     def updateWidgets(self):
         super(BCCVLUploadForm, self).updateWidgets()
         self.widgets['description'].rows = 6
-        self.widgets['rights'].rows = 6
+        #self.widgets['rights'].rows = 6
 
     def updateActions(self):
         super(BCCVLUploadForm, self).updateActions()
@@ -89,7 +76,15 @@ class BCCVLUploadForm(DefaultAddForm):
 
     def updateFields(self):
         # don't fetch plone default fields'
-        self.fields += Fields(ITermsAndConditions, ignoreContext=True)
+        self.fields += Fields(
+            Bool(
+                __name__ = 'legalcheckbox',
+                title = u'I agree to the <a href="http://www.bccvl.org.au/bccvl/legals/" target="_blank">Terms and Conditions</a>',
+                required=True,
+                default=False
+            )
+        )
+            # ITermsAndConditions, ignoreContext=True)
 
     @button.buttonAndHandler(u'Save', name='save')
     def handleAdd(self, action):
@@ -110,7 +105,8 @@ class BCCVLUploadForm(DefaultAddForm):
 
     @button.buttonAndHandler(u'Cancel', name='cancel')
     def handleCancel(self, action):
-        super(BCCVLUploadForm, self).handleCancel(action)
+        # We call a ButtonHandler not a method on super, so we have to pass in self as well
+        super(BCCVLUploadForm, self).handleCancel(self, action)  # self, form, action
 
 
 class SpeciesAbsenceAddForm(BCCVLUploadForm):
@@ -123,8 +119,8 @@ class SpeciesAbsenceAddForm(BCCVLUploadForm):
         u" 'lon' and 'lat'.</p>")
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rights')
-    datagenre = BCCVOCAB['DataGenreSpeciesAbsence']
+        'vernacularName', 'rightsstatement')
+    datagenre = 'DataGenreSpeciesAbsence'
 
 
 class SpeciesAbundanceAddForm(BCCVLUploadForm):
@@ -137,8 +133,8 @@ class SpeciesAbundanceAddForm(BCCVLUploadForm):
         u" 'lon' and 'lat'.</p>")
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rights')
-    datagenre = BCCVOCAB['DataGenreSpeciesAbundance']
+        'vernacularName', 'rightsstatement')
+    datagenre = 'DataGenreSpeciesAbundance'
 
 
 class SpeciesOccurrenceAddForm(BCCVLUploadForm):
@@ -151,8 +147,8 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
         u" 'lon' and 'lat'.</p>")
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rights')
-    datagenre = BCCVOCAB['DataGenreSpeciesOccurrence']
+        'vernacularName', 'rightsstatement')
+    datagenre = 'DataGenreSpeciesOccurrence'
 
 
 class ClimateCurrentAddForm(BCCVLUploadForm):
@@ -169,8 +165,8 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'temporal', 'rights')
-    datagenre = BCCVOCAB['DataGenreCC']
+        'temporal', 'rightsstatement')
+    datagenre = 'DataGenreCC'
     # datatype, gcm, emissionscenario
 
 
@@ -188,8 +184,8 @@ class EnvironmentalAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'temporal', 'rights')
-    datagenre = BCCVOCAB['DataGenreE']
+        'temporal', 'rightsstatement')
+    datagenre = 'DataGenreE'
     # datatype, gcm, emissionscenario
 
 
@@ -206,9 +202,9 @@ class ClimateFutureAddForm(BCCVLUploadForm):
         u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
-        'file', 'title', 'description', 'emissionscenario', 'gcm',
-        'resolution', 'resolutiono', 'temporal', 'rights')
-    datagenre = BCCVOCAB['DataGenreFC']
+        'file', 'title', 'description', 'emsc', 'gcm',
+        'resolution', 'resolutiono', 'temporal', 'rightsstatement')
+    datagenre = 'DataGenreFC'
     # datatype, gcm, emissionscenario
 
 
@@ -220,8 +216,8 @@ class SpeciesTraitAddForm(BCCVLUploadForm):
         u"<p>Upload CSV file to use for species traits modelling.</p>"
 
     fields = Fields(IBlobDataset, IDublinCore, ITraitsDataset).select(
-        'file', 'title', 'description', 'rights')
-    datagenre = BCCVOCAB['DataGenreTraits']
+        'file', 'title', 'description', 'rightsstatement')
+    datagenre = 'DataGenreTraits'
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -268,7 +264,8 @@ class DatasetsUploadView(BrowserView):
 
         # render the forms for display or generate redirect
         for idx, subform in enumerate(self.subforms):
-            self.subforms[idx] = subform.render()
+            self.subforms[idx] = {'content': subform.render(),
+                                  'title': subform.title}
 
     def __call__(self):
         self.update()

@@ -10,13 +10,11 @@ from zope.component import queryUtility
 
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import SITE_OWNER_PASSWORD
-from plone.app.testing import TEST_USER_ID, setRoles
 from plone.testing.z2 import Browser
 
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
-from org.bccvl.site.namespace import BCCVLLAYER, BCCVOCAB
 
 
 # do somebrowser testing here:
@@ -114,8 +112,7 @@ class ExperimentAddTest(unittest.TestCase):
         # select 1st two layers within current dataset
         lname = 'form.widgets.environmental_datasets.{}'.format(curuid)
         lctrl = self.browser.getControl(name=lname)
-        lctrl.value = [str(BCCVLLAYER['B01']),
-                       str(BCCVLLAYER['B02'])]
+        lctrl.value = ['B01', 'B02']
 
         # KEEP: inout widget example
         #form = self.browser.getForm(index=1)
@@ -194,7 +191,7 @@ class ExperimentAddTest(unittest.TestCase):
         # select 1st two layers within current dataset
         lname = 'form.widgets.environmental_datasets.{}'.format(curuid)
         lctrl = self.browser.getControl(name=lname)
-        lctrl.value = [str(BCCVLLAYER['B01'])]
+        lctrl.value = ['B01']
         # form submit should fail with resolution mismatch error
         self.browser.getControl('Create and start').click()
         self.assertTrue('All datasets must have the same resolution' in self.browser.contents)

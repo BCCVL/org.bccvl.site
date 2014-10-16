@@ -3,14 +3,12 @@ from Products.CMFPlone.interfaces import IPloneSiteRoot
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
-from org.bccvl.site.namespace import DWC, BCCPROP
+from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.content.interfaces import IExperiment
 from collections import defaultdict
 from zope.component import getUtility, queryUtility, getMultiAdapter
 from zope.schema.interfaces import IVocabularyFactory
-from gu.z3cform.rdf.interfaces import IGraph
 from gu.z3cform.rdf.utils import Period
-from ordf.namespace import DC
 from org.bccvl.site import defaults
 
 
@@ -30,7 +28,7 @@ class ExperimentsListingView(BrowserView):
 
     def __call__(self):
         envvocab = getUtility(IVocabularyFactory,
-                              name='org.bccvl.site.BioclimVocabulary')
+                              name='layer_source')
         # TODO: could also cache the next call per request?
         self.envlayervocab = envvocab(self.context)
         return super(ExperimentsListingView, self).__call__()
@@ -139,18 +137,17 @@ class ExperimentsListingView(BrowserView):
                 if not dsobj:
                     # TODO: can't access dateset anymore, let user know somehow
                     continue
-                dsmd = IGraph(dsobj)
-                species.add(unicode(dsmd.value(dsmd.identifier,
-                                               DWC['scientificName'])))
-                period = dsmd.value(dsmd.identifier, DC['temporal'])
+                md = IBCCVLMetadata(dsobj)
+                species.add(md.get('species', {}).get('scientificName'))
+                period = md.get('temporal')
                 if period:
                     years.add(Period(period).start)
-                gcm = dsmd.value(dsmd.identifier, BCCPROP['gcm'])
+                gcm = md.get('gcm')
                 if gcm:
-                    gcms.add(gcm.split('#', 1)[-1])
-                emsc = dsmd.value(dsmd.identifier, BCCPROP['emissionscenario'])
+                    gcms.add(gcm)
+                emsc = md.get('emsc')
                 if emsc:
-                    emscs.add(emsc.split('#', 1)[-1])
+                    emscs.add(emsc)
 
             details.update({
                 'type': 'BIODIVERSE',

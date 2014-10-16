@@ -1,25 +1,16 @@
 from datetime import datetime
 from urlparse import urlsplit
 import os.path
-from gu.plone.rdf.interfaces import IRDFContentTransform
-from gu.plone.rdf.namespace import CVOCAB
 from gu.repository.content.interfaces import (
     IRepositoryContainer, IRepositoryItem)
-from gu.z3cform.rdf.interfaces import IGraph, IResource
-from gu.z3cform.rdf.interfaces import IRDFTypeMapper
 from gu.z3cform.rdf.utils import Period
-from ordf.namespace import DC as DCTERMS
-from ordf.namespace import FOAF
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
-from org.bccvl.site.content.group import IBCCVLGroup
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
-from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
-from org.bccvl.site.namespace import DWC, BCCPROP, BCCVOCAB
-from org.bccvl.site.api import dataset
+form org.bccvl.site.api import dataset
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
@@ -28,8 +19,6 @@ from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from Products.ZCatalog.interfaces import ICatalogBrain
-from rdflib import RDF, RDFS, Literal, OWL
-import tempfile
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter, queryUtility
 from zope.interface import implementer
@@ -38,74 +27,6 @@ from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 
 LOG = logging.getLogger(__name__)
-
-
-@implementer(IRDFTypeMapper)
-class RDFTypeMapper(object):
-    """Used for content creation (esp. Add Views), where there is content yet."""
-
-    def __init__(self, context, request, form):
-        self.context = context
-        self.request = request
-        self.form = form
-
-    def applyTypes(self, graph):
-        pt = self.form.portal_type
-        typemap = {'org.bccvl.content.user': FOAF['Person'],
-                   'org.bccvl.content.group': FOAF['Group'],
-                   'org.bccvl.content.dataset': CVOCAB['Dataset'],
-                   'org.bccvl.content.remotedataset': CVOCAB['Dataset'],
-                   # TODO: remove types below someday
-                   'gu.repository.content.RepositoryItem': CVOCAB['Item'],
-                   'gu.repository.content.RepositoryContainer': CVOCAB['Collection'],
-                   'File': CVOCAB['File']}
-        rdftype = typemap.get(pt, OWL['Thing'])
-        graph.add((graph.identifier, RDF['type'], rdftype))
-
-
-@implementer(IRDFContentTransform)
-class RDFContentBasedTypeMapper(object):
-    """Add rdf:type to existing content object based on Interfaces provided."""
-
-    def tordf(self, content, graph):
-        # We might have a newly generated empty graph here, so let's apply the
-        # all IRDFTypeMappers as well
-        if IDataset.providedBy(content):
-            graph.add((graph.identifier, RDF['type'], CVOCAB['Dataset']))
-        elif IBCCVLUser.providedBy(content):
-            graph.add((graph.identifier, RDF['type'], FOAF['Person']))
-        elif IBCCVLGroup.providedBy(content):
-            graph.add((graph.identifier, RDF['type'], FOAF['Group']))  # foaf:Organization
-        # TODO: remove types below some day
-        elif IRepositoryItem.providedBy(content):
-            graph.add((graph.identifier, RDF['type'], CVOCAB['Item']))
-        elif IRepositoryContainer.providedBy(content):
-            graph.add((graph.identifier, RDF['type'], CVOCAB['Collection']))
-        elif IFile.providedBy(content):
-            graph.add((graph.identifier, RDF['type'], FOAF['File']))
-
-        graph.add((graph.identifier, RDF['type'], OWL['Thing']))
-
-
-@implementer(IRDFContentTransform)
-class RDFDataMapper(object):
-    """Add additional metadata about existing content."""
-
-    def tordf(self, content, graph):
-        # FIXME: use only one way to describe things ....
-        #        see dc - rdf mapping at http://dublincore.org/documents/dcq-rdf-xml/
-        #        maybe dc app profile not as good as it might sound, but translated to RDF is better (or even owl)
-        # FIXME: maybe move the next part into a separate utility
-        # TODO: check content for attributes/interface before trying to access them
-        for prop, val in ((DCTERMS['title'], Literal(content.title)),
-                          (RDFS['label'], Literal(content.title)),
-                          (DCTERMS['description'], Literal(content.description)),
-                          (RDFS['comment'], Literal(content.description)),
-                          ):
-            # TODO: support language tagged values (e.g. remove only
-            #       same language first and add new values)
-            if not graph.value(graph.identifier, prop):
-                graph.set((graph.identifier, prop, val))
 
 
 @implementer(IDownloadInfo)
@@ -405,6 +326,7 @@ class ProjectionJobTracker(MultiJobTracker):
                 thrs.update(dsobj.thresholds)
             return thrs
 
+        # FIXME: this will probably go away
         result.experiment_infos = {
             'sdm': {
                 'uuid': sdmuuid,

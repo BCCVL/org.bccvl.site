@@ -1,19 +1,57 @@
 <configure
-        xmlns="http://namespaces.zope.org/zope"
-        xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-        i18n_domain="org.bccvl"
-        >
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="org.bccvl"
+    >
 
-    <adapter factory=".user.NameFromFullName" />
+  <!-- form filed adapters -->
+  <adapter
+      for=".interfaces.IDataset"
+      provides=".dataset.ISpeciesDataset"
+      factory=".dataset_base.DatasetMetadataAdapter"
+      />
 
-    <adapter factory=".user.BCCVLUserProperties" />
+  <adapter
+      for=".interfaces.IDataset"
+      provides=".dataset.ILayerDataset"
+      factory=".dataset_base.DatasetMetadataAdapter"
+      />
 
-    <genericsetup:registerProfile
-        name="content"
-        title="BCCVL User / Group content"
-        description="BCCVL User and Group content types"
-        directory="../profiles/content"
-        provides="Products.GenericSetup.interfaces.EXTENSION"
-        />
+  <adapter
+      for=".interfaces.IDataset"
+      provides=".dataset.ITraitsDataset"
+      factory=".dataset_base.DatasetMetadataAdapter"
+      />
+
+  <!-- CRUD views -->
+  <browser:page
+      for=".interfaces.IDataset"
+      name="view"
+      class=".dataset_view.DatasetDisplayView"
+      template="dataset_view.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      for=".interfaces.IDataset"
+      name="edit"
+      class=".dataset_edit.DatasetEditView"
+      permission="cmf.ModifyPortalContent"
+      />
+
+
+  <!-- User and Group content objects -->
+  <adapter factory=".user.NameFromFullName" />
+
+  <adapter factory=".user.BCCVLUserProperties" />
+
+  <genericsetup:registerProfile
+      name="content"
+      title="BCCVL User / Group content"
+      description="BCCVL User and Group content types"
+      directory="../profiles/content"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
 
 </configure>

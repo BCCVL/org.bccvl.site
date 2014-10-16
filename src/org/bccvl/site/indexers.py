@@ -5,40 +5,32 @@ from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
-from org.bccvl.site.interfaces import IJobTracker
-from gu.z3cform.rdf.interfaces import IGraph
-from org.bccvl.site.api.dataset import getbiolayermetadata
-from .namespace import BCCPROP, BCCVOCAB, BIOCLIM
+from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 
 
 @indexer(IDataset)
 def dataset_BCCDataGenre(object, *kw):
-    graph = IGraph(object)
-    return tuple(graph.objects(graph.identifier, BCCPROP['datagenre']))
+    return IBCCVLMetadata(object).get('genre')
 
 
 @indexer(IDataset)
 def dataset_BCCEmissionScenario(object, *kw):
-    graph = IGraph(object)
-    return tuple(graph.objects(graph.identifier, BCCPROP['emissionscenario']))
+    return IBCCVLMetadata(object).get('emsc')
 
 
 @indexer(IDataset)
 def dataset_BCCGlobalClimateModel(object, *kw):
-    graph = IGraph(object)
-    return tuple(graph.objects(graph.identifier, BCCPROP['gcm']))
+    return IBCCVLMetadata(object).get('gcm')
 
 
 @indexer(IDataset)
 def BCCDatasetResolution(object, **kw):
-    graph = IGraph(object)
-    return graph.value(graph.identifier, BCCPROP['resolution'])
+    return IBCCVLMetadata(object).get('resolution')
 
 
 @indexer(IExperiment)
 def BCCExperimentResolution(object, **kw):
-    graph = IGraph(object)
-    return graph.value(graph.identifier, BCCPROP['resolution'])
+    return IBCCVLMetadata(object).get('resolution')
 
 
 # TODO: should be a DateRangeIndex (resolve partial dates to 1stday
@@ -51,10 +43,9 @@ def BCCExperimentResolution(object, **kw):
 
 @indexer(IDataset)
 def dataset_environmental_layer(object, **kw):
-    layers = getbiolayermetadata(object)
-    layers = layers.get('layers', [])
-    if len(layers) > 0:
-        return tuple((l['layer'] for l in layers))
+    layers = IBCCVLMetadata(object).get('layers')
+    if layers:
+        return layers.keys()
     return None
 
 

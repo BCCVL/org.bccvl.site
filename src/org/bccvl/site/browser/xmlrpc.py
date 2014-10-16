@@ -8,16 +8,13 @@ from zope.publisher.interfaces import NotFound
 #from functools import wraps
 from decorator import decorator
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
-from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site import defaults
-from org.bccvl.site.namespace import BCCPROP, BCCVOCAB, DWC, BIOCLIM, NFO
-from ordf.namespace import DC
 import logging
-from gu.z3cform.rdf.interfaces import IORDF, IGraph, IResource
 from zope.component import getUtility, queryUtility
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
@@ -25,11 +22,8 @@ import json
 from Products.statusmessages.interfaces import IStatusMessage
 from org.bccvl.site.browser.ws import IDataMover, IALAService
 from plone.dexterity.utils import createContentInContainer
-from rdflib.resource import Resource
-from rdflib import Literal, URIRef
 from gu.z3cform.rdf.utils import Period
 from decimal import Decimal
-from org.bccvl.site.api.dataset import getdsmetadata
 from org.bccvl.site.api import dataset
 
 
@@ -117,21 +111,14 @@ class DataSetManager(BrowserView):
     @returnwrapper
     def getRAT(self, datasetid, layer=None):
         query = {'UID': datasetid}
-        if layer:
-            layer=URIRef(layer)
         dsbrain = dataset.query(self.context, brains=True, **query)
         if dsbrain:
+            # get first brain from list
             dsbrain = next(dsbrain, None)
         if not dsbrain:
             raise NotFound(self.context, datasetid, self.request)
-        res = IResource(dsbrain)
-        rat = res.value(BCCPROP['rat'])
-        if not rat:
-            # nothing on dataset itself, maybe there are archive items?
-            for ai in res.objects(BCCPROP['hasArchiveItem']):
-                alayer = ai.value(BIOCLIM['bioclimVariable'])
-                if alayer and alayer.identifier == layer:
-                    rat = ai.value(BCCPROP['rat'])
+        md = IBCCVLMetadata(dsbrain.getObject())
+        rat = md.get('layers', {}).get(layer, {}).get('rat')
         # if we have a rat, let's try and parse it
         if rat:
             try:
@@ -140,7 +127,6 @@ class DataSetManager(BrowserView):
                 LOG.warning("Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
                 rat = None
         return rat
-
 
     @returnwrapper
     def query(self):
@@ -162,12 +148,12 @@ class DataSetManager(BrowserView):
         if genre:
             if not isinstance(genre, (tuple, list)):
                 genre = (genre, )
-            params['BCCDataGenre'] = {'query': [URIRef(g) for g in genre],
+            params['BCCDataGenre'] = {'query': genre,
                                       'operator': 'or'}
         if layers:
             if not isinstance(layers, (tuple, list)):
                 layers = (layers, )
-            params['BCCEnviroLayer'] = {'query': [URIRef(l) for l in layers],
+            params['BCCEnviroLayer'] = {'query': layers,
                                         'operator': 'and'}
         result = []
         for brain in dataset.query(self.context, True, **params):
@@ -195,11 +181,7 @@ class DataSetManager(BrowserView):
         years = [years] if not isinstance(years, list) else years
         emsc = [emsc] if not isinstance(emsc, list) else emsc
         gcms = [gcms] if not isinstance(gcms, list) else gcms
-        # 4. convert to proper values
-        years = [Literal(x, datatype=DC['Period']) for x in years]
-        emsc = [URIRef(x) for x in emsc]
-        gcms = [URIRef(x) for x in gcms]
-        # 5. search
+        # 4. search
         res = dataset.find_projections(self.context, emsc, gcms, years, None)
         return len(res)
 
@@ -218,7 +200,7 @@ class DataSetManager(BrowserView):
             datasets = []
             for dsbrain in pc.searchResults(
                     path=sdmbrain.getPath(),
-                    BCCDataGenre=BCCVOCAB['DataGenreCP']):
+                    BCCDataGenre='DataGenreCP'):
                 # get required metadata about dataset
                 datasets.append({
                     #"files": [raster file names],
@@ -252,13 +234,13 @@ class DataSetManager(BrowserView):
             # TODO: query for data genre class?
             for dsbrain in pc.searchResults(
                     path=biodiversebrain.getPath(),
-                    BCCDataGenre=(BCCVOCAB['DataGenreENDW_CWE'],
-                                  BCCVOCAB['DataGenreENDW_WE'],
-                                  BCCVOCAB['DataGenreENDW_RICHNESS'],
-                                  BCCVOCAB['DataGenreENDW_SINGLE'],
-                                  BCCVOCAB['DataGenreREDUNDANCY_SET1'],
-                                  BCCVOCAB['DataGenreREDUNDANCY_SET2'],
-                                  BCCVOCAB['DataGenreREDUNDANCY_ALL'])):
+                    BCCDataGenre=('DataGenreENDW_CWE',
+                                  'DataGenreENDW_WE',
+                                  'DataGenreENDW_RICHNESS',
+                                  'DataGenreENDW_SINGLE',
+                                  'DataGenreREDUNDANCY_SET1',
+                                  'DataGenreREDUNDANCY_SET2',
+                                  'DataGenreREDUNDANCY_ALL')):
                 # get required metadata about dataset
                 datasets.append({
                     "title": dsbrain.Title,
@@ -281,7 +263,7 @@ class DataSetManager(BrowserView):
         # to make it easire to produce required structure do separate queries
         # 1st query for all projection experiments
         projbrains = pc.searchResults(
-            object_provides=IProjectionExperiment.__identifier__,
+            object_provides=(IProjectionExperiment.__identifier__, ISDMExperiment.__identifier__),
             sort_on='sortable_title')  # date?
         # the list to collect results
         projections = []
@@ -292,22 +274,16 @@ class DataSetManager(BrowserView):
             agg_years = set()
             for dsbrain in pc.searchResults(
                     path=projbrain.getPath(),
-                    BCCDataGenre=BCCVOCAB['DataGenreFP']):
+                    BCCDataGenre=('DataGenreFP', 'DataGenreCP')):
                 # get year, gcm, emsc, species, filename/title, fileuuid
                 # TODO: Result is one file per species ... should this be a dict by species or year as well?
                 # FIXME: build on dataset, check if a sparql query using all dsbrains at once would be faster?
                 ds = dsbrain.getObject()
-                dsgraph = IGraph(ds)
+                md = IBCCVLMetadata(ds)
                 # parse year
-                period = dsgraph.value(dsgraph.identifier, DC['temporal'])
+                period = md.get('temporal')
                 year = Period(period).start if period else None
-                gcm = dsgraph.value(dsgraph.identifier, BCCPROP['gcm'])
-                gcm = unicode(gcm) if gcm else None
-                emsc = dsgraph.value(dsgraph.identifier, BCCPROP['emissionscenario'])
-                emsc = unicode(emsc) if emsc else None
-                species = dsgraph.value(dsgraph.identifier, DWC['scientificName'])
-                species = unicode(species) if species else None
-                resolution = unicode(dsbrain.BCCResolution)
+                species = md.get('species', {}).get('scientificName')
                 dsinfo = {
                     # passible fields on brain:
                     #   Description, BCCResolution
@@ -316,16 +292,23 @@ class DataSetManager(BrowserView):
                     "title":  dsbrain.Title,
                     "uuid": dsbrain.UID,
                     "files": [ds.file.filename],  # filenames
-                    "year":  year,  # int or string?
-                    "gcm":  gcm,  # URI? title? both?-> ui can fetch vocab to get titles
-                    "emsc": emsc,  # URI
-                    "species": species,   # species for this file ...
-                    "resolution": resolution
+                    "year": year,  # int or string?
+                    "gcm": md.get('gcm'),  # URI? title? both?-> ui can fetch vocab to get titles
+                    "emsc": md.get('emsc'),
+                    "species": species,
+                    "resolution": dsbrain.BCCResolution,
                 }
                 # add info about sdm
-                sdmuuid = ds.__parent__.job_params['species_distribution_models']
-                sdm = uuidToCatalogBrain(sdmuuid).getObject()
-                sdmresult = sdm.__parent__
+                if 'DataGenreCP' in dsbrain.BCCDataGenre:
+                    sdmresult = ds.__parent__
+                    # sdm = .... it's the model as sibling to this current projection ds
+                    sdm = ds  # FIXME: wrong object here
+                    dsinfo['type'] = u"Current"
+                else:
+                    sdmuuid = ds.__parent__.job_params['species_distribution_models']
+                    sdm = uuidToCatalogBrain(sdmuuid).getObject()
+                    sdmresult = sdm.__parent__
+                    dsinfo['type'] = u"Future"
                 sdmexp = sdmresult.__parent__
                 dsinfo['sdm'] = {
                     'title': sdmexp.title,
@@ -397,6 +380,9 @@ class DataSetManager(BrowserView):
             ths = expinf.get('sdm', {}).get('thresholds', None)
             if not ths:
                 continue
+            # FIXME: thresholds are no longer on result container, but on eval datasets...
+            #        add a more sane way to find thresholds faster if necessary
+            #        find on DataGenreSDMEval datasets
 
             # ok we have thresholds, let's find the dataset uuid for this result
             pc = getToolByName(self.context, 'portal_catalog')
@@ -413,7 +399,7 @@ class DataSetAPI(BrowserView):
 
     @returnwrapper
     def getMetadata(self):
-        return getdsmetadata(self.context)
+        return dataset.getdsmetadata(self.context)
 
     @returnwrapper
     def share(self):
@@ -450,18 +436,6 @@ class DataSetAPI(BrowserView):
         self.request.response.redirect(next)
 
 
-class JobManager(BrowserView):
-    # job manager on Site Root
-
-    @returnwrapper
-    def getJobs(self):
-        return ['job1', 'job2']
-
-    @returnwrapper
-    def getJobStatus(self,  jobid):
-        return {'status': 'running'}
-
-
 class JobManagerAPI(BrowserView):
     # job manager on experiment
 
@@ -472,13 +446,6 @@ class JobManagerAPI(BrowserView):
     @returnwrapper
     def getJobStates(self):
         return IJobTracker(self.context).states
-
-
-class ExperimentManager(BrowserView):
-
-    @returnwrapper
-    def getExperiments(self, id):
-        return {'data': 'experimentmetadata+datasetids+jobid'}
 
 
 from ZPublisher.Iterators import IStreamIterator
@@ -576,17 +543,16 @@ class DataMover(BrowserView):
                                       title=u' '.join(title))
         # TODO: add number of occurences to description
         ds.description = u' '.join(title) + u' imported from ALA'
-        md = IGraph(ds)
-        md = Resource(md, md.identifier)
+        md = IBCCVLMetadata(ds)
         # TODO: provenance ... import url?
         # FIXME: verify input parameters before adding to graph
-        md.add(BCCPROP['datagenre'], BCCVOCAB['DataGenreSpeciesOccurrence'])
-        md.add(DWC['scientificName'], Literal(taxon))
-        md.add(DWC['taxonID'], Literal(lsid))
+        md['genre'] = 'DataGenreSpeciesOccurrence'
+        md['species'] = {
+            'scientificName': taxon,
+            'taxonID': lsid,
+        }
         if common:
-            md.add(DWC['vernacularName'], Literal(common))
-
-        getUtility(IORDF).getHandler().put(md.graph)
+            md['species']['vernacularName'] = common
 
         IStatusMessage(self.request).add('New Dataset created',
                                          type='info')

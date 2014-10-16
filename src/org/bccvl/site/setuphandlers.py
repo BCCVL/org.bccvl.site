@@ -178,7 +178,7 @@ def upgrade_090_160_1(context, logger=None):
 
     if reindex:
         # populate new column
-        for brain in pc.unrestrictedSearchResults(portal_type='org.bccvl.content.dataset'):
+        for brain in pc.unrestrictedSearchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset')):
             obj = brain.getObject()
             obj.reindexObject()
     # pc.addIndex(name,  'type', extra)
@@ -213,3 +213,174 @@ def upgrade_160_170_1(context, logger=None):
 
     # TODO: possible data structure strange on sdmexperiments
     #    environmental_datasets a dict of sets (instead of list?)
+    # Examples:
+    # setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
+    # logger.info("%s fields converted." % count)
+
+
+def migrate_to_bccvlmetadata(context, logger):
+    """
+    migrate rdf content to annotation based metadata.
+    """
+    from org.bccvl.site.namespace import DWC, GML, NFO, TN
+    from org.bccvl.site.namespace import BCCPROP, BIOCLIM
+    from ordf.namespace import DC as DCTERMS
+    from rdflib import URIRef
+    from rdflib.resource import Resource
+    from zope.component import getUtility
+    from gu.z3cform.rdf.interfaces import IORDF,  IResource
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    from urlparse import urldefrag
+    from Acquisition import aq_base
+    # TODO: convert URIRef's to unicode
+    #        also do that in indices and vocabularies
+    res = IResource(context)
+    md = IBCCVLMetadata(context)
+
+    ###################################################################
+    # helper methods:
+    def extract_values(resource, mdata, mdkey, props, convert=unicode):
+        """
+        get dict key from props[1] and convert value if exists
+        with convert method
+        """
+        for prop, key in props:
+            val = resource.value(prop)
+            if val:
+                if hasattr(val, 'identifier'):
+                    val = val.identifier
+                if isinstance(val, URIRef):
+                    _, frag = urldefrag(val)
+                    if frag:
+                        val = frag
+                if mdkey:
+                    if mdata[mdkey] is None:
+                        mdata[mdkey] = {}
+                    mdata[mdkey][key] = convert(val)
+                else:
+                    mdata[key] = convert(val)
+
+    ###########################################################################
+    # species info:
+    species = {}
+    extract_values(res, species, None,
+                   ((DWC['scientificName'], 'scientificName'),
+                    (DWC['vernacularName'], 'vernacularName'),
+                    (DWC['taxonID'], 'taxonID'),
+                    (TN['nameComplete'], 'taxonName')),
+                   unicode)
+    if species:
+        md['species'] = species
+
+    # CSV metadata
+    if res.value(BCCPROP['rows']):
+        md['rows'] = int(res.value(BCCPROP['rows']))
+    # FIXME: headernames ... put this info into separate section in md?
+    #        can csv be sort of layer as well?
+    # FIXME: CSV can have bounding box
+
+    ###########################################################################
+    # transition layer metadata
+    # layers within an archive have an additional attribute fileName
+    #    to identify the file within the archive.
+    # FIXME: experiments and results may have set this stuff differently?
+    layers = [l.identifier for l in res.objects(BIOCLIM['bioclimVariable'])]
+    if layers:
+        md['layers'] = dict((unicode(l), None) for l in layers)
+        # there may be layer metadata directly on the object (usually only for single layer files)
+        # assume only one layer
+        key = md['layers'].keys()[0]
+        extract_values(res, md['layers'], key,
+                       ((BCCPROP['height'], 'height'),
+                        (BCCPROP['width'], 'width')),
+                       int)
+        extract_values(res, md['layers'], key,
+                       ((BCCPROP['min'], 'min'),
+                        (BCCPROP['max'], 'max')),
+                       float)
+        extract_values(res, md['layers'], key,
+                       ((BCCPROP['datatype'], 'datatype'),
+                        (BCCPROP['rat'], 'rat'),
+                        (GML['srsName'], 'srsName')),
+                       unicode)
+    # hasArchiveItem
+    for archiveItem in res.objects(BCCPROP['hasArchiveItem']):
+        # check if archiveItem is empty ... need to load graph otherwise
+        obj = next(archiveItem.objects(), None)
+        if obj is None:
+            # load archiveItem from triple store
+            handler = getUtility(IORDF).getHandler()
+            archiveItem = Resource(handler.get(archiveItem.identifier),
+                                   archiveItem.identifier)
+        # we have a couple of things stored on the archiveitem
+        newitem = {}
+        extract_values(res, newitem, None,
+                       ((BCCPROP['height'], 'height'),
+                        (BCCPROP['width'], 'width'),
+                        (NFO['fileSize'], 'fileSize')),
+                       int)
+        extract_values(res, newitem, None,
+                       ((BCCPROP['min'], 'min'),
+                        (BCCPROP['max'], 'max')),
+                       float)
+        extract_values(res, newitem, None,
+                       ((BCCPROP['datatype'], 'datatype'),
+                        (BCCPROP['rat'], 'rat'),
+                        (GML['srsName'], 'srsName'),
+                        (NFO['fileName'], 'fileName')),
+                       unicode)
+
+        key = res.value(BIOCLIM['bioclimVariable'])
+        if key:
+            key = key.identifier
+            if newitem:
+                md['layers'][key] = newitem
+
+    ###########################################################################
+    # Other literals
+    # FIXME:  these are all vocab entries
+    extract_values(res, md, None,
+                   ((BCCPROP['datagenre'], 'genre'),
+                    (BCCPROP['emissionsscenario'], 'emsc'),
+                    (BCCPROP['gcm'], 'gcm'),
+                    (BCCPROP['resolution'], 'resolution')),
+                   unicode)
+    # FIXME: dc:format should match mimetype? what about zip files and conatined files?
+    extract_values(res, md, None,
+                   ((DCTERMS['temporal'], 'temporal'),),
+                   unicode)
+
+    ###########################################################################
+    # custom attributes directly on dataset:
+    if hasattr(aq_base(context), 'thresholds'):
+        md['thresholds'] = context.thresholds
+
+    ###########################################################################
+    # renamed attributes
+    if not 'rightsstatement' in context.__dict__ and context.rights:
+        # only copy rights if not already set (for dexterity content
+        # we have to check __dict__ otherwise the attribute will be
+        # found in the schema.  This check makes this migration step
+        # repeatable.
+        context.rightsstatement = context.rights
+        context.rights = None
+
+
+def upgrade_170_200_1(context, logger=None):
+    # context is either the portal (called from setupVarious) or portal_setup when run via genericsetup
+    if logger is None:
+        # Called as upgrade step: define our own logger.
+        logger = LOG
+
+    # Run the following GS steps
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+
+    # migrate rdf metadata
+    pc = getToolByName(context, 'portal_catalog')
+    # FIXME: maybe not just datasets?
+    # TODO: maybe don't create bccvl annotations for content we don't need it
+    for brain in pc.unrestrictedSearchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset')):
+            obj = brain.getObject()
+            migrate_to_bccvlmetadata(obj, logger)
+            obj.reindexObject()

@@ -57,4 +57,17 @@
 
   </genericsetup:upgradeSteps>
 
+    <genericsetup:upgradeSteps
+      source="1.7.0"
+      destination="2.0.0"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 2.0"
+        description="Updates registry and migrate metadata"
+        handler=".setuphandlers.upgrade_170_200_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

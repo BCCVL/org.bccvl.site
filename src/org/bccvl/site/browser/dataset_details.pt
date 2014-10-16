@@ -20,7 +20,7 @@
     <p tal:content="context/description">Description</p>
   </tal:description>
   <h3>Rights:</h3>
-  <p tal:content="structure context/rights">Rights statement</p>
+  <p tal:content="structure context/rightsstatement">Rights statement</p>
   <hr/>
   <p>If you are the owner of this dataset and believe it is
   incorrectly used, please visit <a href="http://www.bccvl.org.au/contact-us">http://www.bccvl.org.au/contact-us</a></p>

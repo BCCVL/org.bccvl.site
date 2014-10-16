@@ -1,6 +1,7 @@
 from zope.interface import Interface
 from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
+from plone.app.textfield import RichText as RichTextField
 from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text, Set
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
@@ -14,6 +15,12 @@ from org.bccvl.site.widgets.widgets import DatasetLayersFieldWidget
 class IDataset(form.Schema):
     """Interface all datasets inherit from"""
 
+    rightsstatement = RichTextField(
+        title=u'Rights Statement',
+        description=u"",
+        required=False,
+    )
+
 
 class IBlobDataset(IDataset):
 
@@ -24,35 +31,6 @@ class IBlobDataset(IDataset):
         description=_(u"Data content"),
         required=True
     )
-
-    form.omitted('thresholds')
-    thresholds = Dict(
-        title=_(u"Thresholds"),
-        default=None,
-        required=False
-    )
-
-    # fixed fields
-    # RDFURIChoiceField(
-    #     __name__='format',
-    #     prop=BCCPROP['format'],
-    #     required=False,
-    #     title=u'Format',
-    #     vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetFormatVocabulary')
-
-    # layer
-    # RDFURIChoiceField(
-    #     __name__='datatype',
-    #     prop=BCCPROP['datatype'],
-    #     required=False,
-    #     title=u'Type of Dataset',
-    #     vocabulary=u'http://namespaces.zope.org/z3c/form#DataSetTypeVocabulary'),
-    # # not needed?
-    # RDFLiteralLineField(
-    #     __name__='formato',
-    #     prop=DCTERMS['format'],
-    #     required=False,
-    #     title=u'Data format (other)'),
 
 
 class IRemoteDataset(IDataset):
@@ -179,7 +157,7 @@ class IBiodiverseExperiment(IExperiment):
     resolution = Choice(
         title=u'Resolution',
         default=None,
-        vocabulary='org.bccvl.site.ResolutionVocabulary',
+        vocabulary='resolution_source',
         required=False,
     )
 

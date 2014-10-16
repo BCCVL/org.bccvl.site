@@ -1,20 +1,12 @@
 from zope.interface import implementer, provider
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from collective.transmogrifier.interfaces import ISection
-import re
 import os
 import os.path
 from collective.transmogrifier.utils import defaultMatcher
 import simplejson
-from ordf.graph import Graph
-from ordf.namespace import DC
-from rdflib import RDF, URIRef, Literal, OWL
-from rdflib.resource import Resource
-from org.bccvl.site.namespace import (BCCPROP, BCCVOCAB, TN, NFO, GML, EPSG,
-                                      BIOCLIM, BCCVLLAYER, BCCGCM, BCCEMSC)
-from gu.plone.rdf.namespace import CVOCAB
+from org.bccvl.site.interfaces import IBCCVLMetadata
 from zope.component import getUtility
-from gu.z3cform.rdf.interfaces import IORDF, IGraph
 from gu.z3cform.rdf.utils import Period
 import logging
 import json
@@ -26,16 +18,6 @@ LOG = logging.getLogger(__name__)
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class ALASource(object):
-
-    # map a path in json to RDF property and object type
-    JSON_TO_RDFMAP = [
-        ('taxonConcept/nameString', DC['title'], Literal),
-        ('taxonConcept/nameString', TN['nameComplete'], Literal),
-        ('taxonConcept/guid', OWL['sameAs'], URIRef),
-        ('taxonConcept/guid', DC['identifier'], URIRef),
-        ('commonNames/0/nameString', DC['description'], Literal),
-        ('images/0/thumbnail', BCCVOCAB['thumbnail'], URIRef),
-    ]
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -67,12 +49,6 @@ class ALASource(object):
             current = None
         return current
 
-    def map_json_to_resource(self, json, resource):
-        for path, prop, obt in self.JSON_TO_RDFMAP:
-            val = self.traverse_dict(json, path)
-            if val:
-                resource.set(prop, obt(val))
-
     def __iter__(self):
         # exhaust previous iterator
         for item in self.previous:
@@ -92,14 +68,17 @@ class ALASource(object):
         json = simplejson.load(open(files['attribution']['url'], 'r'))
         csv = files['occurrences']['url']
 
-        rdf = Graph()
-        rdfmd = Resource(rdf, rdf.identifier)
-        self.map_json_to_resource(json,  rdfmd)
-        rdfmd.set(BCCPROP['datagenre'], BCCVOCAB['DataGenreSpeciesOccurrence'])
-        rdfmd.add(RDF['type'], CVOCAB['Dataset'])
+        bccvlmd = {}
+        bccvlmd['genre'] = 'DataGenreSpeciesOccurrence'
+        bccvlmd['species'] = {
+            'scientificName': self.traverse_dict(json, 'taxonConcept/nameString'),
+            'vernacularName': self.traverse_dict(json, 'commonNames/0/nameString'),
+            'taxonID': self.traverse_dict(json, 'taxonConcept/guid')
+        }
+        # TODO: other interesting bits:
+        #       images/0/thumbnail ... URL to thumbnail image
         # TODO: important thing ... date of export (import date in
         #       plone)/ date modified in ALA
-
         # FIXME: import of the same guid changes current existing dataset
         #_, id = json['taxonConcept']['guid'].rsplit(':', 1)
         item = {'_type': 'org.bccvl.content.dataset',
@@ -110,23 +89,13 @@ class ALASource(object):
                     'contenttype': 'text/csv',
                     'filename': '{}.csv'.format(self.lsid),
                 },
-                # TODO: not necessary to use '_files' with '_rdf';
-                #       _rdf is custom already
-                #       -> same for _filemetadata ?
-                '_rdf': {
-                    'file': 'rdf.ttl',
-                    'contenttype': 'text/turtle',
-                },
+                '_bccvlmetadata': bccvlmd,
                 # FIXME: don't load files into ram
                 '_files': {
                     'data.csv': {
                         'name': 'data.csv',
                         'data': open(csv).read()
                     },
-                    'rdf.ttl': {
-                        'name': 'rdf.ttl',
-                        'data': rdf.serialize(format='turtle')
-                    }
                 }}
         # if we have an id use it to possibly update existing content
         # TODO: check if improt context is already correct folder, or
@@ -184,9 +153,11 @@ class ContextSource(object):
         yield item
 
 
+
+
 @provider(ISectionBlueprint)
 @implementer(ISection)
-class RDFMetadataUpdater(object):
+class BCCVLMetadataUpdater(object):
 
     def __init__(self, transmogrifier, name, options, previous):
         self.transmogrifier = transmogrifier
@@ -197,8 +168,7 @@ class RDFMetadataUpdater(object):
 
         # keys for sections further down the chain
         self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
-        self.fileskey = options.get('files-key', '_files').strip()
-        self.rdfkey = options.get('rdf-key', '_rdf').strip()
+        self.bccvlmdkey = options.get('bccvlmd-key', '_bccvlmetadata').strip()
 
     def __iter__(self):
         # exhaust previous iterator
@@ -216,61 +186,33 @@ class RDFMetadataUpdater(object):
                 continue
 
             obj = self.context.unrestrictedTraverse(
-                path.encode().lstrip('/'), None)
+                path.encode(), None)
+                #path.encode().lstrip('/'), None)
 
             # path doesn't exist
             if obj is None:
                 yield item
                 continue
 
-            rdfinfo = item.get(self.rdfkey)
-            if not rdfinfo:
+            bccvlmd = item.get(self.bccvlmdkey)
+            if not bccvlmd:
                 yield item
                 continue
 
-            filename = rdfinfo.get('file')
-            if not filename:
-                yield item
-                continue
-
-            # get files
-            files = item.setdefault(self.fileskey, {})
-            file = files.get(filename)
-            if not file:
-                yield item
-                continue
-
-            rdfdata = file['data']
-            if not rdfdata:
-                yield item
-                continue
-
-            # parse rdf and apply to content
-            rdfgraph = Graph()
-            rdfgraph.parse(data=rdfdata, format='turtle')
-            mdgraph = IGraph(obj)
-            # FIXME: replace data or not?
-            for p, o in rdfgraph.predicate_objects(None):
-                mdgraph.add((mdgraph.identifier, p, o))
-            rdfhandler = getUtility(IORDF).getHandler()
-            # TODO: the transaction should take care of
-            #       donig the diff
-            cc = rdfhandler.context(user='Importer',
-                                    reason='Test data')
-            cc.add(mdgraph)
-            cc.commit()
-
+            # apply bccvl metadata
+            # FIXME: replace or update?
+            IBCCVLMetadata(obj).update(bccvlmd)
             yield item
 
 
 # TODO: maybe turn this into a RDF updater section.
 @provider(ISectionBlueprint)
 @implementer(ISection)
-class FileMetadataToRDF(object):
-    """Generates all sorts of metadata out of item.
+class FileMetadataToBCCVL(object):
+    """Convert metedata extracted from files (_filemetadata) and store it
+    in _bccvmd so that it can be applied to IBCCVLMetadata
 
-    All metadata generated will be stored via ordf in the triple store
-    associated with the current content object.
+    Nothing will be stored on content here.
     """
 
     def __init__(self, transmogrifier, name, options, previous):
@@ -284,8 +226,7 @@ class FileMetadataToRDF(object):
         self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
         self.filemetadatakey = options.get('filemetadata-key',
                                            '_filemetadata').strip()
-        self.fileskey = options.get('files-key', '_files').strip()
-        self.rdfkey = options.get('rdf-key', '_rdf').strip()
+        self.bccvlmdkey = options.get('bccvlmd-key', '_bccvlmetadata').strip()
 
     def __iter__(self):
         # exhaust previous iterator
@@ -313,6 +254,7 @@ class FileMetadataToRDF(object):
                 yield item
                 continue
 
+            # FIXME: we don't need content object here (Only for format)
             # we'll also need a content object
             pathkey = self.pathkey(*item.keys())[0]
             if not pathkey:
@@ -326,7 +268,8 @@ class FileMetadataToRDF(object):
                 continue
 
             content = self.context.unrestrictedTraverse(
-                path.encode().lstrip('/'), None)
+                #path.encode().lstrip('/'), None)
+                path.encode(), None)
 
             if content is None:
                 yield item
@@ -338,13 +281,32 @@ class FileMetadataToRDF(object):
             #       ? if there is none set yet?
             if contenttype and content.format != contenttype:
                 content.format = contenttype
-            if content.format in ('application/zip', ):
-                self.update_archive_items(content, filemd)
-            else:
-                self.update_file_metadata(content, filemd)
-            self.update_metadata(content, filemd)
-            # continue pipe line
+
+
+            # FIXME: not finished yet ... need to do raster metadata and others
+            self.update_bccvl_metadata(item, filemd)
             yield item
+            # if content.format in ('application/zip', ):
+            #     self.update_archive_items(content, filemd)
+            # else:
+            #     self.update_file_metadata(content, filemd)
+            # self.update_metadata(content, filemd)
+            # # continue pipe line
+            # yield item
+
+    def update_bccvl_metadata(self, item, filemd):
+        bccvlmd = item.setdefault(self.bccvlmdkey, {})
+        # csv metadata:
+        for key in ('bounds', 'headers', 'rows'):
+            if filemd.get(key):
+                bccvlmd[key] = filemd[key]
+
+        # species:
+        if filemd.get('species'):
+            bccvlmd.setdefault('species', {})['scientificName'] = filemd['species']
+
+
+
 
     def update_resource_metadata(self, res, filemd, md, filename):
         if not md:
@@ -510,7 +472,7 @@ class FileMetadataToRDF(object):
                     rights.append(u'<li>{0}</li>'.format(ack))
                 rights.append(u'</ul>')
             if rights:
-                content.rights = u'\n'.join(rights)
+                content.rightsstatement = u'\n'.join(rights)
 
 
         # mark graph as modified - we have a copy of the graph... if anyone else

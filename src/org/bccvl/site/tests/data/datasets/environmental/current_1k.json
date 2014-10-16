@@ -2,7 +2,19 @@
   "_type": "org.bccvl.content.dataset",
   "title": "Current 1k",
   "_transitions": "publish",
-  "_rdf": {
-          "file": "current_1k.ttl",
-          "contenttype": "text/turtle"}
+  "_bccvlmetadata": {
+    "genre": "DataGenreCC",
+    "resolution": "Resolution2_5m",
+    "layers": {
+      "http://example.com/file01":{
+        "fileName": "current_1k/data/file1.tif"
+      },
+      "http://example.com/file02":{
+        "fileName": "current_1k/data/file2.tif"
+      },
+      "http://example.com/file03":{
+        "fileName": "current_1k/data/file3.tif"
+      }
+    }
+  }
 }

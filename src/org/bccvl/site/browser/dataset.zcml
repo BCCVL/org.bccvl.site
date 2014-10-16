@@ -87,13 +87,6 @@
 
     <browser:page
         for="..content.dataset.IDataset"
-        name="edit"
-        class=".dataset.DatasetEditView"
-        permission="cmf.ModifyPortalContent"
-        />
-
-    <browser:page
-        for="..content.dataset.IDataset"
         name="editfilemetadata"
         class=".dataset.CrudFileMetadataForm"
         permission="cmf.ModifyPortalContent"
@@ -102,14 +95,6 @@
     <cache:ruleset
         for=".dataset.CrudFileMetadataForm"
         ruleset="plone.content.itemView"
-        />
-
-    <browser:page
-        for="..content.dataset.IDataset"
-        name="view"
-        class=".dataset.DatasetDisplayView"
-        template="dataset_view.pt"
-        permission="zope2.View"
         />
 
     <browser:page
