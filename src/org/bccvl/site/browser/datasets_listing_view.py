@@ -7,6 +7,7 @@ from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.interfaces import IDownloadInfo, IJobTracker
 from org.bccvl.site.browser.interfaces import IDatasetTools
 from org.bccvl.site.api.dataset import getdsmetadata
+from org.bccvl.site.namespace import BCCVOCAB, BIOCLIM
 from Products.CMFCore.utils import getToolByName
 from zope.security import checkPermission
 from zope.component import getMultiAdapter, getUtility
@@ -30,6 +31,7 @@ class DatasetTools(BrowserView):
     """
 
     _genre_vocab = None
+    _layer_vocab = None
 
     def get_transition(self, itemob=None):
         #return checkPermission('cmf.RequestReview', self.context)
@@ -99,6 +101,12 @@ class DatasetTools(BrowserView):
             return u'Genre not found {0}'.format(genre)
         except IndexError:
             return u'Invalid Genre {0}'.format(repr(genre))
+
+    @property
+    def layer_vocab(self):
+        if self._layer_vocab is None:
+            self._layer_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.BioclimVocabulary')(self.context)
+        return self._layer_vocab
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -302,3 +310,139 @@ class DatasetsListingView(BrowserView):
                 'token': genre.token,
                 'label': genre.title
             }
+
+
+class DatasetsListingPopup(BrowserView):
+
+    genre = BCCVOCAB['DataGenreSpeciesOccurrence']
+
+    def contentFilter(self):
+        portal_state = getMultiAdapter(
+            (self.context, self.request), name="plone_portal_state")
+        member = portal_state.member()
+
+        query = {}
+        text = self.request.get('datasets.filter.text')
+        if text:
+            query['SearchableText'] = text
+
+        genre = self.request.get('datasets.filter.genre')
+        if genre:
+            query['BCCDataGenre'] = [BCCVOCAB[g] for g in genre]
+        else:
+            # if nothing selcted use all values in vocab
+            query['BCCDataGenre'] = [self.genre]
+
+        layer = self.request.get('datasets.filter.layer')
+        if layer:
+            query['BCCEnviroLayer'] = [self.dstools.layer_vocab.by_token[token].value for token in layer]
+        # FIXME: source filter is incomplete
+        source = self.request.get('datasets.filter.source')
+        if source:
+            for token in source:
+                if token == 'user':
+                    query['Creator'] = member.getId()
+                elif token == 'admin':
+                    query['Creator'] = 'BCCVL'
+                elif token == 'shared':
+                    pc = getToolByName(self.context, 'portal_catalog')
+                    vals = filter(lambda x: x not in ('BCCVL', member.getId()),
+                                  pc.uniqueValuesFor('Creator'))
+                    query['Creator'] = vals
+                # FIXME: missing: ala
+
+        # add fixed query parameters:
+        query.update({
+            'job_state': 'COMPLETED',
+            # 'path': {
+            #     # 'query': portal_state.navigation_root_path(),
+            #     'query': '/'.join(self.context.getPhysicalPath()),
+            #     'depth': -1
+            # },
+            'object_provides': IDataset.__identifier__,
+        })
+        return query
+
+    def datasetslisting(self):
+        """
+        Render the datasets listing section.
+
+        Accepted parameters:
+        - Batch range
+        - filters
+        - ajax ... render only list
+        - uuid + ajax ... render only one entry
+        """
+        query_params = self.contentFilter()
+        b_size = int(self.request.get('b_size', 20))
+        b_start = int(self.request.get('b_start', 0))
+        # get sort parameters
+        orderby = self.request.get('datasets.filter.sort')
+        orderby = {
+            'modified': ('modified', 'desc'),
+            'created': ('created', 'desc'),
+            'title': ('sortable_title', 'asc')
+        }.get(orderby, ('sortable_title', 'asc'))
+
+        # use descending as default for last modified sorting
+        # TODO: use different defaults for different filters?
+        order = self.request.get('datasets.filter.order', orderby[1])
+        if order not in ('asc', 'desc'):
+            order = orderby[1]
+
+        pc = getToolByName(self.context, 'portal_catalog')
+        from Products.CMFPlone import Batch
+        order = {'asc': 'ascending',
+                 'desc': 'descending'}.get(order)
+        query_params.update({
+            'sort_on': orderby[0],
+            'sort_order': order})
+        brains = pc.searchResults(query_params)  # show_all=1?? show_inactive=show_inactive?
+        #batch = Batch(brains, b_size, b_start, orphan=0)
+        #return batch
+        return brains
+
+    def __call__(self):
+        # initialise instance variables, we'll do it here so that we have
+        # security set up and have to do it only once per request
+        self.dstools = getMultiAdapter((self.context, self.request), name = "dataset_tools")
+        self.source_vocab = SimpleVocabulary((
+            SimpleTerm('user', 'user', u'My Datasets'),
+            SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
+            # SimpleTerm('ala', 'ala', u'Imported from ALA'),
+            SimpleTerm('shared', 'shared', 'Shared'),
+        ))
+        self.enable_layers = self.request.get('datasets.filter.enable_layers', False)
+        return super(DatasetsListingPopup, self).__call__()
+
+    def source_list(self):
+        selected = self.request.get('datasets.filter.source', ())
+        for genre in self.source_vocab:
+            yield {
+                'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
+
+    def layer_list(self):
+        selected = self.request.get('datasets.filter.layer', ())
+        for genre in self.dstools.layer_vocab:
+            yield {
+                'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
+
+    def match_selectedlayers(self, md):
+        layers = self.request.get('datasets.filter.layer', ())
+        selected = [self.dstools.layer_vocab.by_token[token].value for token in layers]
+        for layer in md['layers']:
+            if not selected:
+                # no filter set.. just yield everything
+                yield layer
+            else:
+                # filter set...
+                if layer['layer'] in selected:
+                    yield layer

@@ -86,27 +86,27 @@ class ISDMExperiment(IExperiment):
         required=True,
     )
 
-    form.widget('species_occurrence_dataset',
-                DatasetsRadioFieldWidget,
-                errmsg=u"Please select at least 1 emmission scenario.",
-                vizclass=u'fine bccvl-occurrence-viz')
-    species_occurrence_dataset = Choice(
-        title=u'Species Occurrence Datasets',
-        vocabulary='species_presence_datasets_vocab',
-        default=None,
-        required=False,
-    )
+    # form.widget('species_occurrence_dataset',
+    #             DatasetsRadioFieldWidget,
+    #             errmsg=u"Please select at least 1 emmission scenario.",
+    #             vizclass=u'fine bccvl-occurrence-viz')
+    # species_occurrence_dataset = Choice(
+    #     title=u'Species Occurrence Datasets',
+    #     vocabulary='species_presence_datasets_vocab',
+    #     default=None,
+    #     required=False,
+    # )
 
-    form.widget('species_absence_dataset',
-                DatasetsRadioFieldWidget,
-                errmsg=u"Please select at least 1 emmission scenario.",
-                vizclass=u'fine bccvl-absence-viz')
-    species_absence_dataset = Choice(
-        title=u'Species Absence Datasets',
-        source='species_absence_datasets_vocab',
-        default=None,
-        required=False,
-    )
+    # form.widget('species_absence_dataset',
+    #             DatasetsRadioFieldWidget,
+    #             errmsg=u"Please select at least 1 emmission scenario.",
+    #             vizclass=u'fine bccvl-absence-viz')
+    # species_absence_dataset = Choice(
+    #     title=u'Species Absence Datasets',
+    #     source='species_absence_datasets_vocab',
+    #     default=None,
+    #     required=False,
+    # )
 
     species_pseudo_absence_points = Bool(
         title=u"Pseudo absence points",
@@ -124,14 +124,14 @@ class ISDMExperiment(IExperiment):
     # store dataset + layer (or file within zip)
     # e.g. ... basic key and value_types .... and widget does heavy work?
     # FIXME: would be best if widget supplies only possible values (at least for key_type)
-    form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetLayersFieldWidget')
-    environmental_datasets = DatasetLayersField(
-        title=u'Climate & Environmental Datasets',
-        key_type=Choice(vocabulary='current_environmental_datasets_vocab'),
-        value_type=List(Choice(vocabulary='envirolayer_source'),
-                        unique=False),
-        required=True,
-    )
+    # form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetLayersFieldWidget')
+    # environmental_datasets = DatasetLayersField(
+    #     title=u'Climate & Environmental Datasets',
+    #     key_type=Choice(vocabulary='current_environmental_datasets_vocab'),
+    #     value_type=List(Choice(vocabulary='envirolayer_source'),
+    #                     unique=False),
+    #     required=True,
+    # )
 
 
 class IProjectionExperiment(IExperiment):

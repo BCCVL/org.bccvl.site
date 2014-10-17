@@ -70,6 +70,21 @@
         class=".experiment.SDMEdit"
         permission="cmf.ModifyPortalContent"/>
 
+
+    <!-- new experiment helper views -->
+    <browser:page
+        name="dataset_selecteditems"
+        for="*"
+        class=".experiment.DatasetSelectedItems"
+        permission="zope2.View"
+        />
+    <browser:page
+        name="dataset_selectedlayers"
+        for="*"
+        class=".experiment.DatasetSelectedLayers"
+        permission="zope2.View"
+        />
+
     <!-- Standard add view and form - invoked from ++add++ traverser
     -->
     <!-- FIXME: don't use ++add++ traverser here, get rid of AddView
@@ -88,6 +103,14 @@
             interface="zope.publisher.interfaces.browser.IBrowserPage"
             />
     </class>
+
+    <!-- add form without ++add++ traverser -->
+    <browser:page
+        name="org.bccvl.content.sdmexperiment"
+        for="Products.CMFCore.interfaces.IFolderish"
+        class=".experiment.SDMAdd"
+        permission="org.bccvl.AddExperiment"
+    />
 
     <adapter
         for="Products.CMFCore.interfaces.IFolderish

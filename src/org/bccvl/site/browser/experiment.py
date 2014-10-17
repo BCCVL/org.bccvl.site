@@ -21,6 +21,8 @@ from decimal import Decimal
 from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
 import logging
+from Products.Five.browser import BrowserView
+from plone.app.uuid.utils import uuidToCatalogBrain
 
 LOG = logging.getLogger(__name__)
 
@@ -274,6 +276,8 @@ class SDMAdd(ParamGroupMixin, Add):
     Add SDM Experiment
     """
 
+    portal_type = "org.bccvl.content.sdmexperiment"
+
     def create(self, data):
         # FIXME: store only selcted algos
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
@@ -288,7 +292,6 @@ class SDMAdd(ParamGroupMixin, Add):
         newob.parameters = new_params
         return newob
 
-    # TODO: deprecate once data mover/manager API is finished?
     template = ViewPageTemplateFile("experiment_add.pt")
 
     # TODO: is this still necessary?
@@ -447,6 +450,10 @@ class ProjectionAddView(add.DefaultAddView):
 class SDMAddView(add.DefaultAddView):
 
     form = SDMAdd
+
+    def __call__(self, *args, **kw):
+        import ipdb; ipdb.set_trace()
+        return super(SDMAddView, self).__call__(*args, **kw)
 
 
 class BiodiverseAddView(add.DefaultAddView):
@@ -612,3 +619,50 @@ class SpeciesTraitsAdd(Add):
 class SpeciesTraitsAddView(add.DefaultAddView):
 
     form = SpeciesTraitsAdd
+
+
+######################################################################
+#
+#  datasets select helper views
+#
+class DatasetSelectedItems(BrowserView):
+
+    template = ViewPageTemplateFile('dataset_selecteditems.pt')
+
+    datasets = None
+    metadata = None
+    widgetname = None
+
+    def __call__(self, uuid, name):
+        self.datasets = (uuidToCatalogBrain(uuid) for uuid in uuid)
+        self.widgetname = name
+        return self.template()
+
+
+class DatasetSelectedLayers(BrowserView):
+
+    template = ViewPageTemplateFile('dataset_selectedlayers.pt')
+
+    widgetname = None
+    datasets = None
+    count = 0
+
+    def __call__(self, count, name):
+        self.widgetname = name
+        self.datasets = []
+        dsuuids = {}
+        for idx in range(0, int(count)):
+            uuid = self.request.get('uuid.{0}'.format(idx))
+            layer = self.request.get('layer.{0}'.format(idx))
+            dsuuids.setdefault(uuid, set()).add(layer)
+        for uuid in dsuuids:
+            ds = uuidToCatalogBrain(uuid)
+            if not ds:
+                continue
+            md = getdsmetadata(ds)
+            layertokens = dsuuids[uuid]
+            for layer in md['layers']:
+                if unicode(layer['layer']) in layertokens:
+                    self.datasets.append({'brain': ds, 'layer': layer})
+                    self.count += 1
+        return self.template()

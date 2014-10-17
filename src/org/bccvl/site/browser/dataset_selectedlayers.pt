@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      i18n:domain="plone.app.dexterity"
+      tal:omit-tag=""
+      tal:define="dummy python:request.response.setHeader('X-Theme-Disabled', 'True');">
+  <tal:repeat tal:repeat="item view/datasets">
+    <div class="selecteditem"
+         tal:define="context item/brain/getObject;
+                     owner context/getOwner;
+                     user owner/getUserName;
+                     ">
+      <input type="hidden" value="" name="form.widgets.name.dataset.0"
+             tal:attributes="value item/brain/UID;
+                             name string:${view/widgetname}.dataset.${repeat/item/index}"/>
+      <input type="hidden" value="" name="form.widgets.name.layer.0"
+             tal:attributes="value item/layer/layer;
+                             name string:${view/widgetname}.layer.${repeat/item/index}"/>
+      <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
+      <span tal:content="item/brain/Title">Dateset title</span>
+      <span tal:content="item/layer/label">Layer title</span>
+  </div>
+  </tal:repeat>
+  <input type="hidden" value="" name="form.widgets.name.count"
+         tal:attributes="value view/count;
+                         name string:${view/widgetname}.count"/>
+</html>

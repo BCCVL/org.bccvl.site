@@ -59,7 +59,15 @@
         template="datasets_listing_view.pt"
         menu="plone_displayviews"
         title="Datasets Listing"
-    />
+        />
+
+    <browser:page
+        name="datasets_listing_popup"
+        for="plone.app.contenttypes.interfaces.IFolder"
+        class=".datasets_listing_view.DatasetsListingPopup"
+        permission="zope2.View"
+        template="datasets_listing_popup.pt"
+        />
 
     <browser:page
         name="datasets_import_view"
