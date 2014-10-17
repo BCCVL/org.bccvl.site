@@ -137,7 +137,7 @@ bccvl = {};
                     var $cursel = $('input[name^="' + settings.field + '.dataset"]');
                     var count = 0;
                     $.each($cursel, function(index, dsinput) {
-                        var $layer = $('input[name="' + $(dsinput).attr('name').replace('.dataset.','.layer.') + '"]');
+                        var $layer = $('input[name="' + $(dsinput).attr('name').replace(/\.dataset\./,'.layer.') + '"]');
                         params.push({name: 'uuid.' + count,
                                      value: $(dsinput).val()});
                         params.push({name: 'layer.' + count,
@@ -150,7 +150,7 @@ bccvl = {};
                         count += 1;
                     });
                     params.push({name: 'count', value: count});
-                    $('#' + settings.field + '-selected').load(
+                    $('#' + settings.field.replace(/\./g, '-') + '-selected').load(
                         'dataset_selectedlayers',
                         params
                     );
@@ -158,7 +158,7 @@ bccvl = {};
                     $.each(uuid, function(index, value){
                         params.push({name: 'uuid:list', value: value});
                     });
-                    $('#' + settings.field + '-selected').load(
+                    $('#' + settings.field.replace(/\./g, '-') + '-selected').load(
                         'dataset_selecteditems',
                         params
                     );
@@ -176,19 +176,19 @@ $(document).ready( function() {
     bccvl.select_dataset($("a#datasets-occurrences-popup"), {
         target: $('#modal-occurrences'),
         genre: ['DataGenreSpeciesOccurrence'],
-        field: 'form-widgets-species_occurrence_dataset'
+        field: 'form.widgets.species_occurrence_dataset'
     });
     bccvl.select_dataset($("a#datasets-absences-popup"), {
         target: $('#modal-absences'),
         genre: ['DataGenreSpeciesAbsence'],
-        field: 'form-widgets-species_absence_dataset'
+        field: 'form.widgets.species_absence_dataset'
     });
     bccvl.select_dataset($("a#datasets-environmental-popup"), {
         target: $('#modal-environmental'),
         genre: ['DataGenreCC', 'DataGenreE'],
         single: false,
         enable_layers: true,
-        field: 'form-widgets-environmental_datasets'
+        field: 'form.widgets.environmental_datasets'
     });
 
     $('#form').on('click', 'div.field i.icon-remove', function(event){
@@ -291,6 +291,9 @@ $(document).ready( function() {
                 tal:replace="structure widget/@@ploneform-render-widget"/>
             <tal:widget
                 tal:define="widget python:view.widgets['species_number_pseudo_absence_points']"
+                tal:replace="structure widget/@@ploneform-render-widget"/>
+            <tal:widget
+                tal:define="widget python:view.widgets['resolution']"
                 tal:replace="structure widget/@@ploneform-render-widget"/>
             <!-- climate and environmental layers -->
             <div id="formfield-form-widgets-environmental_datasets" data-fieldname="form.widgets.environmental_datasets" class="field z3cformInlineValidation empty">

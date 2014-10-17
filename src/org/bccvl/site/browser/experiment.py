@@ -284,6 +284,11 @@ class SDMAdd(ParamGroupMixin, Add):
         # we'll have to override it to find a place to apply our algo_group data'
         newob = super(SDMAdd, self).create(data)
         # apply values to algo dict manually to make sure we don't write data on read
+
+        # we have to apply our manual parameters as well
+        newob.species_occurrence_dataset = data['species_occurrence_dataset']
+        newob.species_absence_dataset = data['species_absence_dataset']
+        newob.environmental_datasets = data['environmental_datasets']
         new_params = {}
         for group in self.param_groups:
             content = group.getContent()
@@ -350,6 +355,49 @@ class SDMAdd(ParamGroupMixin, Add):
                 #        -> needs template adaption to show selected values and parsey compatible error rendering
                 #raise WidgetActionExecutionError('environmental_datasets', Invalid("All datasets must have the same resolution"))
                 raise ActionExecutionError(Invalid("All datasets must have the same resolution"))
+
+    def extractData(self, setErrors=True):
+        data, errors = super(SDMAdd, self).extractData(setErrors)
+
+        prefix = prefix = '{}{}'.format(self.prefix, self.widgets.prefix)
+        # extract occurrences dataset
+        data['species_occurrence_dataset'] = self.request.get('{}species_occurrence_dataset'.format(prefix))
+        # extract absences dataset
+        data['species_absence_dataset'] = self.request.get('{}species_absence_dataset'.format(prefix))
+        # extract environmental datasets
+        count = self.request.get('{}environmental_datasets.count'.format(prefix))
+        # TODO: validation....
+        #      values available? (check if dataset exists?)
+        #      extract URIRefs from vocab? (check dataset layers exist)
+        #      generate errorviews if necessary
+        #      count is a string?
+        #      required fields
+        try:
+            envvalue = {}
+            count = int(count)
+            for idx in range(0, count):
+                uuid = self.request.get('{}environmental_datasets.dataset.{}'.format(prefix, idx))
+                layer = self.request.get('{}environmental_datasets.layer.{}'.format(prefix, idx))
+                from rdflib import URIRef
+                envvalue.setdefault(uuid, set()).add(URIRef(layer))
+            data['environmental_datasets'] = envvalue
+        except:
+            #import ipdb; ipdb.set_trace()
+            pass
+        return data, errors
+    #     NO_VALUE in case there is no default or anything else
+    #     convert to fieldvalue if not NO_VALUE
+    #     validate fieldvalue
+    #     add errors:
+    #       view will be z3c.form.error.ErrorViewSnippet
+    #       view = zope.component.getMultiAdapter(
+    # 315                     (error, self.request, widget, widget.field,
+    # 316                      self.form, self.content), interfaces.IErrorViewSnippet)
+    # 317                 view.update()
+    # 318                 if self.setErrors:
+    # 319                     widget.error = view
+    # 320                 errors += (view,)
+
 
 
 class ProjectionAdd(Add):
