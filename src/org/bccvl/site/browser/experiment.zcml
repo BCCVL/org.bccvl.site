@@ -85,33 +85,18 @@
         permission="zope2.View"
         />
 
-    <!-- Standard add view and form - invoked from ++add++ traverser
-    -->
-    <!-- FIXME: don't use ++add++ traverser here, get rid of AddView
-    classes, change FTI entries to use proper view, etc... -->
-    <adapter
-        for="Products.CMFCore.interfaces.IFolderish
-             Products.CMFDefault.interfaces.ICMFDefaultSkin
-             plone.dexterity.interfaces.IDexterityFTI"
-        provides="zope.publisher.interfaces.browser.IBrowserPage"
-        factory=".experiment.SDMAddView"
-        name="org.bccvl.content.sdmexperiment"
-        />
-    <class class=".experiment.SDMAddView">
-        <require
-            permission="org.bccvl.AddExperiment"
-            interface="zope.publisher.interfaces.browser.IBrowserPage"
-            />
-    </class>
-
     <!-- add form without ++add++ traverser -->
     <browser:page
-        name="org.bccvl.content.sdmexperiment"
+        name="newSpeciesDistribution"
         for="Products.CMFCore.interfaces.IFolderish"
         class=".experiment.SDMAdd"
         permission="org.bccvl.AddExperiment"
     />
 
+    <!-- Standard add view and form - invoked from ++add++ traverser
+    -->
+    <!-- FIXME: don't use ++add++ traverser here, get rid of AddView
+    classes, change FTI entries to use proper view, etc... -->
     <adapter
         for="Products.CMFCore.interfaces.IFolderish
              Products.CMFDefault.interfaces.ICMFDefaultSkin
@@ -142,14 +127,6 @@
             interface="zope.publisher.interfaces.browser.IBrowserPage"
             />
     </class>
-
-    <!-- add form without ++add++ traverser  -->
-    <!-- <browser:page -->
-    <!--     name="org.bccvl.content.biodiverseexperiment" -->
-    <!--     for="Products.CMFCore.interfaces.IFolderish" -->
-    <!--     class=".experiment.BiodiverseAddWizard" -->
-    <!--     permission="org.bccvl.AddExperiment" -->
-    <!-- /> -->
 
     <adapter
         for="Products.CMFCore.interfaces.IFolderish

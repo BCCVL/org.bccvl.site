@@ -495,15 +495,6 @@ class ProjectionAddView(add.DefaultAddView):
     form = ProjectionAdd
 
 
-class SDMAddView(add.DefaultAddView):
-
-    form = SDMAdd
-
-    def __call__(self, *args, **kw):
-        import ipdb; ipdb.set_trace()
-        return super(SDMAddView, self).__call__(*args, **kw)
-
-
 class BiodiverseAddView(add.DefaultAddView):
 
     form = BiodiverseAdd
