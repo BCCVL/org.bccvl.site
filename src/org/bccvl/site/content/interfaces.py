@@ -145,7 +145,7 @@ class IProjectionExperiment(IExperiment):
     )
 
     form.widget(species_distribution_models=
-                'org.bccvl.site.browser.widgets.DatasetsMultiSelectFieldWidget')
+                'org.bccvl.site.widgets.widgets.DatasetsMultiSelectFieldWidget')
     species_distribution_models = List(
         title=u'Species Distribution Models',
         value_type=Choice(vocabulary='species_distributions_models_vocab'),

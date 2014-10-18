@@ -78,69 +78,32 @@
         permission="org.bccvl.AddExperiment"
     />
 
-    <!-- Standard add view and form - invoked from ++add++ traverser
-    -->
-    <!-- FIXME: don't use ++add++ traverser here, get rid of AddView
-    classes, change FTI entries to use proper view, etc... -->
-    <adapter
-        for="Products.CMFCore.interfaces.IFolderish
-             Products.CMFDefault.interfaces.ICMFDefaultSkin
-             plone.dexterity.interfaces.IDexterityFTI"
-        provides="zope.publisher.interfaces.browser.IBrowserPage"
-        factory=".experiment.ProjectionAddView"
-        name="org.bccvl.content.projectionexperiment"
-        />
-    <class class=".experiment.ProjectionAddView">
-        <require
-            permission="org.bccvl.AddExperiment"
-            interface="zope.publisher.interfaces.browser.IBrowserPage"
-            />
-    </class>
+    <browser:page
+        name="newProjection"
+        for="Products.CMFCore.interfaces.IFolderish"
+        class=".experiment.ProjectionAdd"
+        permission="org.bccvl.AddExperiment"
+    />
 
+    <browser:page
+        name="newBiodiverse"
+        for="Products.CMFCore.interfaces.IFolderish"
+        class=".experiment.BiodiverseAdd"
+        permission="org.bccvl.AddExperiment"
+    />
 
-    <adapter
-        for="Products.CMFCore.interfaces.IFolderish
-             Products.CMFDefault.interfaces.ICMFDefaultSkin
-             plone.dexterity.interfaces.IDexterityFTI"
-        provides="zope.publisher.interfaces.browser.IBrowserPage"
-        factory=".experiment.BiodiverseAddView"
-        name="org.bccvl.content.biodiverseexperiment"
-        />
-    <class class=".experiment.BiodiverseAddView">
-        <require
-            permission="org.bccvl.AddExperiment"
-            interface="zope.publisher.interfaces.browser.IBrowserPage"
-            />
-    </class>
+    <browser:page
+        name="newEnsemble"
+        for="Products.CMFCore.interfaces.IFolderish"
+        class=".experiment.EnsembleAdd"
+        permission="org.bccvl.AddExperiment"
+    />
 
-    <adapter
-        for="Products.CMFCore.interfaces.IFolderish
-             Products.CMFDefault.interfaces.ICMFDefaultSkin
-             plone.dexterity.interfaces.IDexterityFTI"
-        provides="zope.publisher.interfaces.browser.IBrowserPage"
-        factory=".experiment.EnsembleAddView"
-        name="org.bccvl.content.ensemble"
-        />
-    <class class=".experiment.EnsembleAddView">
-        <require
-            permission="org.bccvl.AddExperiment"
-            interface="zope.publisher.interfaces.browser.IBrowserPage"
-            />
-    </class>
-
-    <adapter
-        for="Products.CMFCore.interfaces.IFolderish
-             Products.CMFDefault.interfaces.ICMFDefaultSkin
-             plone.dexterity.interfaces.IDexterityFTI"
-        provides="zope.publisher.interfaces.browser.IBrowserPage"
-        factory=".experiment.SpeciesTraitsAddView"
-        name="org.bccvl.content.speciestraitsexperiment"
-        />
-    <class class=".experiment.SpeciesTraitsAddView">
-        <require
-            permission="org.bccvl.AddExperiment"
-            interface="zope.publisher.interfaces.browser.IBrowserPage"
-            />
-    </class>
+    <browser:page
+        name="newSpeciesTraits"
+        for="Products.CMFCore.interfaces.IFolderish"
+        class=".experiment.SpeciesTraitsAdd"
+        permission="org.bccvl.AddExperiment"
+    />
 
 </configure>

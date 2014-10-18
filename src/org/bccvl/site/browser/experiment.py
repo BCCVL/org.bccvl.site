@@ -355,6 +355,8 @@ class SDMAdd(ParamGroupMixin, Add):
 
 class ProjectionAdd(Add):
 
+    portal_type = 'org.bccvl.content.projectionexperiment'
+
     def validateAction(self, data):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
@@ -392,6 +394,8 @@ class ProjectionAdd(Add):
 
 
 class BiodiverseAdd(Add):
+
+    portal_type = "org.bccvl.content.biodiverseexperiment"
 
     def create(self, data):
         # FIXME: store only selcted algos
@@ -440,20 +444,9 @@ class BiodiverseAdd(Add):
         return data, errors
 
 
-class ProjectionAddView(add.DefaultAddView):
-    """
-    The formwrapper wrapping Add form above
-    """
-
-    form = ProjectionAdd
-
-
-class BiodiverseAddView(add.DefaultAddView):
-
-    form = BiodiverseAdd
-
-
 class EnsembleAdd(Add):
+
+    portal_type = "org.bccvl.content.ensemble"
 
     def create(self, data):
         # FIXME: store only selcted algos
@@ -498,12 +491,9 @@ class EnsembleAdd(Add):
         return data, errors
 
 
-class EnsembleAddView(add.DefaultAddView):
-
-    form = EnsembleAdd
-
-
 class SpeciesTraitsAdd(Add):
+
+    portal_type = "org.bccvl.content.speciestraitsexperiment"
 
     # TODO: almost same as in SDMAdd
     def create(self, data):
@@ -606,8 +596,3 @@ class SpeciesTraitsAdd(Add):
         self.context.parameters = new_params
 
         return changed
-
-
-class SpeciesTraitsAddView(add.DefaultAddView):
-
-    form = SpeciesTraitsAdd
