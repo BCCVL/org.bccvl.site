@@ -70,21 +70,6 @@
         class=".experiment.SDMEdit"
         permission="cmf.ModifyPortalContent"/>
 
-
-    <!-- new experiment helper views -->
-    <browser:page
-        name="dataset_selecteditems"
-        for="*"
-        class=".experiment.DatasetSelectedItems"
-        permission="zope2.View"
-        />
-    <browser:page
-        name="dataset_selectedlayers"
-        for="*"
-        class=".experiment.DatasetSelectedLayers"
-        permission="zope2.View"
-        />
-
     <!-- add form without ++add++ traverser -->
     <browser:page
         name="newSpeciesDistribution"

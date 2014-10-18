@@ -53,7 +53,7 @@
          </fieldset>
     </metal:block>
 
-    <metal:block define-macro="experiment_state">
+    <metal:block metal:define-macro="experiment_state">
         <div id="experiment_state" class="note"
              tal:define="state view/job_state;
                          klass python: {'QUEUED': 'note', 'RUNNING': 'note', 'COMPLETED': 'note', 'FAILED': 'error'}.get(state);"
@@ -74,5 +74,6 @@
           </tal:black>
         </div>
     </metal:block>
+
   </body>
 </html>

@@ -1,7 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       tal:omit-tag="">
-<span id="" class=""
+<div id="" class=""
       tal:attributes="id view/id;
                       class view/klass;
                       style view/style;
@@ -16,11 +18,15 @@
                       onmouseout view/onmouseout;
                       onkeypress view/onkeypress;
                       onkeydown view/onkeydown;
-                      onkeyup view/onkeyup"><tal:block
-    repeat="value view/displayValue"
-    ><span class="selected-option"
-           tal:content="value"
-    /><tal:block condition="not:repeat/value/end">, </tal:block
-  ></tal:block
-></span>
+                      onkeyup view/onkeyup">
+  <tal:block repeat="item view/items">
+    <div id="" class="row"
+         tal:define="layer item/layer;
+                     brain item/brain;
+                     ">
+        <span tal:content="brain/Title">Dataset</span>
+        <span tal:content="layer/label">Layer</span>
+    </div>
+  </tal:block>
+</div>
 </html>

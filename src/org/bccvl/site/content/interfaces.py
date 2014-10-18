@@ -1,13 +1,14 @@
 from zope.interface import Interface
 from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
-from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text
+from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text, Set
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
-from org.bccvl.site.browser.widgets import SequenceCheckboxFieldWidget, DatasetsRadioFieldWidget
-from org.bccvl.site.browser.converter import DatasetLayersField
+from org.bccvl.site.widgets.widgets import SequenceCheckboxFieldWidget
+from org.bccvl.site.widgets.widgets import DatasetFieldWidget
+from org.bccvl.site.widgets.widgets import DatasetLayersFieldWidget
 
 
 class IDataset(form.Schema):
@@ -86,27 +87,27 @@ class ISDMExperiment(IExperiment):
         required=True,
     )
 
-    # form.widget('species_occurrence_dataset',
-    #             DatasetsRadioFieldWidget,
-    #             errmsg=u"Please select at least 1 emmission scenario.",
-    #             vizclass=u'fine bccvl-occurrence-viz')
-    # species_occurrence_dataset = Choice(
-    #     title=u'Species Occurrence Datasets',
-    #     vocabulary='species_presence_datasets_vocab',
-    #     default=None,
-    #     required=False,
-    # )
+    form.widget('species_occurrence_dataset',
+                DatasetFieldWidget,
+                genre=['DataGenreSpeciesOccurrence'],
+                errmsg=u"Please select at least 1 occurrence dataset.",
+                vizclass=u'fine bccvl-occurrence-viz')
+    species_occurrence_dataset = TextLine(
+        title=u'Species Occurrence Datasets',
+        default=None,
+        required=True,
+    )
 
-    # form.widget('species_absence_dataset',
-    #             DatasetsRadioFieldWidget,
-    #             errmsg=u"Please select at least 1 emmission scenario.",
-    #             vizclass=u'fine bccvl-absence-viz')
-    # species_absence_dataset = Choice(
-    #     title=u'Species Absence Datasets',
-    #     source='species_absence_datasets_vocab',
-    #     default=None,
-    #     required=False,
-    # )
+    form.widget('species_absence_dataset',
+                DatasetFieldWidget,
+                genre=['DataGenreSpeciesAbsence'],
+                errmsg=u"Please select at least 1 emmission scenario.",
+                vizclass=u'fine bccvl-absence-viz')
+    species_absence_dataset = TextLine(
+        title=u'Species Absence Datasets',
+        default=None,
+        required=True,
+    )
 
     species_pseudo_absence_points = Bool(
         title=u"Pseudo absence points",
@@ -121,17 +122,16 @@ class ISDMExperiment(IExperiment):
         default=10000,
         required=False)
 
-    # store dataset + layer (or file within zip)
-    # e.g. ... basic key and value_types .... and widget does heavy work?
-    # FIXME: would be best if widget supplies only possible values (at least for key_type)
-    # form.widget(environmental_datasets='org.bccvl.site.browser.widgets.DatasetLayersFieldWidget')
-    # environmental_datasets = DatasetLayersField(
-    #     title=u'Climate & Environmental Datasets',
-    #     key_type=Choice(vocabulary='current_environmental_datasets_vocab'),
-    #     value_type=List(Choice(vocabulary='envirolayer_source'),
-    #                     unique=False),
-    #     required=True,
-    # )
+    form.widget('environmental_datasets',
+                DatasetLayersFieldWidget,
+                genre=['DataGenreCC', 'DataGenreE'],
+                errmsg=u"Please select at least 1 layer.")
+    environmental_datasets = Dict(
+        title=u'Climate & Environmental Datasets',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        required=True,
+    )
 
 
 class IProjectionExperiment(IExperiment):
@@ -245,10 +245,10 @@ class ISpeciesTraitsExperiment(IExperiment):
         default=None,
     )
 
-    form.widget('data_table',
-                DatasetsRadioFieldWidget,
-                errmsg=u"Please select at least 1 data set.",
-                vizclass=u'fine bccvl-auto-viz')
+    # form.widget('data_table',
+    #             DatasetFieldWidget,
+    #             errmsg=u"Please select at least 1 data set.",
+    #             vizclass=u'fine bccvl-auto-viz')
     data_table = Choice(
         title=u'Dataset',
         vocabulary='species_traits_datasets_vocab',

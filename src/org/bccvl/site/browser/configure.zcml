@@ -20,7 +20,6 @@
    <include file="api.zcml"/>
    <include file="experiment.zcml"/>
    <include file="dataset.zcml"/>
-   <include file="widgets.zcml"/>
    <include file="toolkit.zcml"/>
 
     <utility

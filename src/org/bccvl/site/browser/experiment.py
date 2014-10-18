@@ -1,7 +1,8 @@
 from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
-from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet
+from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
+from zope.schema.interfaces import RequiredMissing
 from org.bccvl.site.interfaces import IJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -284,11 +285,6 @@ class SDMAdd(ParamGroupMixin, Add):
         # we'll have to override it to find a place to apply our algo_group data'
         newob = super(SDMAdd, self).create(data)
         # apply values to algo dict manually to make sure we don't write data on read
-
-        # we have to apply our manual parameters as well
-        newob.species_occurrence_dataset = data['species_occurrence_dataset']
-        newob.species_absence_dataset = data['species_absence_dataset']
-        newob.environmental_datasets = data['environmental_datasets']
         new_params = {}
         for group in self.param_groups:
             content = group.getContent()
@@ -355,49 +351,6 @@ class SDMAdd(ParamGroupMixin, Add):
                 #        -> needs template adaption to show selected values and parsey compatible error rendering
                 #raise WidgetActionExecutionError('environmental_datasets', Invalid("All datasets must have the same resolution"))
                 raise ActionExecutionError(Invalid("All datasets must have the same resolution"))
-
-    def extractData(self, setErrors=True):
-        data, errors = super(SDMAdd, self).extractData(setErrors)
-
-        prefix = prefix = '{}{}'.format(self.prefix, self.widgets.prefix)
-        # extract occurrences dataset
-        data['species_occurrence_dataset'] = self.request.get('{}species_occurrence_dataset'.format(prefix))
-        # extract absences dataset
-        data['species_absence_dataset'] = self.request.get('{}species_absence_dataset'.format(prefix))
-        # extract environmental datasets
-        count = self.request.get('{}environmental_datasets.count'.format(prefix))
-        # TODO: validation....
-        #      values available? (check if dataset exists?)
-        #      extract URIRefs from vocab? (check dataset layers exist)
-        #      generate errorviews if necessary
-        #      count is a string?
-        #      required fields
-        try:
-            envvalue = {}
-            count = int(count)
-            for idx in range(0, count):
-                uuid = self.request.get('{}environmental_datasets.dataset.{}'.format(prefix, idx))
-                layer = self.request.get('{}environmental_datasets.layer.{}'.format(prefix, idx))
-                from rdflib import URIRef
-                envvalue.setdefault(uuid, set()).add(URIRef(layer))
-            data['environmental_datasets'] = envvalue
-        except:
-            #import ipdb; ipdb.set_trace()
-            pass
-        return data, errors
-    #     NO_VALUE in case there is no default or anything else
-    #     convert to fieldvalue if not NO_VALUE
-    #     validate fieldvalue
-    #     add errors:
-    #       view will be z3c.form.error.ErrorViewSnippet
-    #       view = zope.component.getMultiAdapter(
-    # 315                     (error, self.request, widget, widget.field,
-    # 316                      self.form, self.content), interfaces.IErrorViewSnippet)
-    # 317                 view.update()
-    # 318                 if self.setErrors:
-    # 319                     widget.error = view
-    # 320                 errors += (view,)
-
 
 
 class ProjectionAdd(Add):
@@ -658,50 +611,3 @@ class SpeciesTraitsAdd(Add):
 class SpeciesTraitsAddView(add.DefaultAddView):
 
     form = SpeciesTraitsAdd
-
-
-######################################################################
-#
-#  datasets select helper views
-#
-class DatasetSelectedItems(BrowserView):
-
-    template = ViewPageTemplateFile('dataset_selecteditems.pt')
-
-    datasets = None
-    metadata = None
-    widgetname = None
-
-    def __call__(self, uuid, name):
-        self.datasets = (uuidToCatalogBrain(uuid) for uuid in uuid)
-        self.widgetname = name
-        return self.template()
-
-
-class DatasetSelectedLayers(BrowserView):
-
-    template = ViewPageTemplateFile('dataset_selectedlayers.pt')
-
-    widgetname = None
-    datasets = None
-    count = 0
-
-    def __call__(self, count, name):
-        self.widgetname = name
-        self.datasets = []
-        dsuuids = {}
-        for idx in range(0, int(count)):
-            uuid = self.request.get('uuid.{0}'.format(idx))
-            layer = self.request.get('layer.{0}'.format(idx))
-            dsuuids.setdefault(uuid, set()).add(layer)
-        for uuid in dsuuids:
-            ds = uuidToCatalogBrain(uuid)
-            if not ds:
-                continue
-            md = getdsmetadata(ds)
-            layertokens = dsuuids[uuid]
-            for layer in md['layers']:
-                if unicode(layer['layer']) in layertokens:
-                    self.datasets.append({'brain': ds, 'layer': layer})
-                    self.count += 1
-        return self.template()

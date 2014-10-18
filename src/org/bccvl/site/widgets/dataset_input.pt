@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+  <script type="text/javascript"
+          tal:content="structure view/js"></script>
+  <a id="fieldname-popup" href="#"
+     tal:attributes="id string:${view/field/__name__}-popup"
+     tal:content="string:Select ${view/label}">Select Occurrence Dataset</a>
+  <div id="form-widgets-fieldname-selected"
+       tal:attributes="id string:${view/id}-selected">
+    <div class="selecteditem"
+         tal:define="item view/item"
+         tal:condition="python: view.value and item">
+      <input type="hidden" value="" name="form.widgets.fieldname"
+             tal:attributes="value view/value;
+                             name view/name;
+                             id view/id;
+                             required view/required;
+                             "/>
+      <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
+      <span class="selected-option"
+            tal:content="item/Title">Species</span>
+    </div>
+  </div>
+</html>

@@ -40,20 +40,22 @@ bccvl = {};
 
     bccvl.select_dataset = function($element, options) {
 
+        // required options: field, genre
+
         var settings = $.extend({
             // These are the defaults.
-            target: null,
-            genre: ["DataGenreSpeciesOccurrence"],
-            single: true,
-            field: null,
-            enable_layers: false,
+            target: '#' + options.field + '-modal',
             remote: 'datasets_listing_popup',
+            widgetname: 'form.widgets.' + options.field,
+            widgetid: 'form-widgets-' + options.field,
+            widgeturl: location.origin + location.pathname + '/++widget++' + options.field,
+            widgetelement: 'div.selecteditem',
             result_selector: '#datasets-popup-result',
             result_child_selector: '#datasets-popup-result-list'
         }, options );
 
         // variable names that make more sense
-        var $modal = settings.target;
+        var $modal = $(settings.target);
 
         // hookup popup button/link to show modal
         $element.click(function(event) {
@@ -64,10 +66,6 @@ bccvl = {};
                 paramlist.push({name: 'datasets.filter.genre:list',
                                 value: value});
             });
-            if (settings.enable_layers) {
-                paramlist.push({name: 'datasets.filter.enable_layers',
-                                value: 1});
-            }
             // bootstrap 2 modal does'n have loaded event so we have to do it ourselves
             $modal.modal('show')
                 .find('.modal-body')
@@ -78,34 +76,20 @@ bccvl = {};
 
         // initialise modal when finished loading
         function bind_events_on_modal_content() {
-
-        //}
-        //$modal.on('shown', function(event) {
             // hookup events within modal
             $modal.find('form').submit(function(event) {
                 event.preventDefault();
-                console.log(event);
                 $modal.find(settings.result_selector).load(
                     $(this).attr('action') + ' ' + settings.result_child_selector,
                     $(this).serialize(),
                     // reapply single select events
                     function() {
-                        if (settings.single) {
-                            single_selectable($modal.find(settings.result_child_selector));
-                        } else {
-                            $modal.find(settings.result_child_selector).selectable();
-                        }
+                        single_selectable($modal.find(settings.result_child_selector));
                     }
                 );
             });
             // single select on first load
-            if (settings.single) {
-                single_selectable($modal.find(settings.result_child_selector));
-            } else {
-                $modal.find(settings.result_child_selector).selectable();
-            }
-
-        //});
+            single_selectable($modal.find(settings.result_child_selector));
         };
 
         // clear modal on close
@@ -118,51 +102,124 @@ bccvl = {};
         $modal.find('button.btn-primary').click(function() {
             // get selected element
             var $selected = $modal.find('.ui-selected');
-            var uuid;
-            if (settings.enable_layers) {
-                uuid = $selected.map(function() {
-                    return {uuid: $(this).attr('data-uuid'),
-                            layer: $(this).attr('data-layer')};
-                }).get();
-            } else {
-                uuid = $selected.map(function() { return $(this).attr('data-uuid'); }).get();
-            }
+            var uuid = $selected.map(function() { return $(this).attr('data-uuid'); }).get();
             // we have all the data we need so get rid of the modal
             $modal.modal('hide');
             if ($selected.length) {
                 // fetch html for widget
-                var params = [{name: 'name', value: settings.field}];
-                if (settings.enable_layers) {
-                    // collect all existing datasets and layers as well
-                    var $cursel = $('input[name^="' + settings.field + '.dataset"]');
-                    var count = 0;
-                    $.each($cursel, function(index, dsinput) {
-                        var $layer = $('input[name="' + $(dsinput).attr('name').replace(/\.dataset\./,'.layer.') + '"]');
-                        params.push({name: 'uuid.' + count,
-                                     value: $(dsinput).val()});
-                        params.push({name: 'layer.' + count,
-                                     value: $layer.val()});
-                        count += 1;
-                    });
-                    $.each(uuid, function(index, value){
-                        params.push({name: 'uuid.' + count, value: value.uuid});
-                        params.push({name: 'layer.' + count, value: value.layer});
-                        count += 1;
-                    });
-                    params.push({name: 'count', value: count});
-                    $('#' + settings.field.replace(/\./g, '-') + '-selected').load(
-                        'dataset_selectedlayers',
-                        params
-                    );
-                } else {
-                    $.each(uuid, function(index, value){
-                        params.push({name: 'uuid:list', value: value});
-                    });
-                    $('#' + settings.field.replace(/\./g, '-') + '-selected').load(
-                        'dataset_selecteditems',
-                        params
-                    );
-                }
+                var params = [];
+                $.each(uuid, function(index, value){
+                    params.push({name: settings.widgetname, value: value});
+                });
+                $('#' + settings.widgetid + '-selected').load(
+                    settings.widgeturl + ' ' + settings.widgetelement,
+                    params
+                );
+            }
+        });
+
+    };
+
+    bccvl.select_dataset_layers = function($element, options) {
+
+        // required options: field, genre
+
+        var settings = $.extend({
+            // These are the defaults.
+            target: '#' + options.field + '-modal',
+            remote: 'datasets_listing_popup',
+            widgetname: 'form.widgets.' + options.field,
+            widgetid: 'form-widgets-' + options.field,
+            widgeturl: location.origin + location.pathname + '/++widget++' + options.field,
+            widgetelement: 'div.selecteditem',
+            result_selector: '#datasets-popup-result',
+            result_child_selector: '#datasets-popup-result-list'
+        }, options );
+
+        // variable names that make more sense
+        var $modal = $(settings.target);
+
+        // hookup popup button/link to show modal
+        $element.click(function(event) {
+            event.preventDefault();
+            // show modal
+            var paramlist = [{name: 'datasets.filter.enable_layers',
+                              value: 1}];
+            $.each(settings.genre, function(index, value) {
+                paramlist.push({name: 'datasets.filter.genre:list',
+                                value: value});
+            });
+            // bootstrap 2 modal does'n have loaded event so we have to do it ourselves
+            $modal.modal('show')
+                .find('.modal-body')
+                .load(settings.remote + '?' + $.param(paramlist), function() {
+                   bind_events_on_modal_content();
+                });
+        });
+
+        // initialise modal when finished loading
+        function bind_events_on_modal_content() {
+            // hookup events within modal
+            $modal.find('form').submit(function(event) {
+                event.preventDefault();
+                $modal.find(settings.result_selector).load(
+                    $(this).attr('action') + ' ' + settings.result_child_selector,
+                    $(this).serialize(),
+                    // reenable selectable
+                    function() {
+                        $modal.find(settings.result_child_selector).selectable();
+                    }
+                );
+            });
+            // enable selectable
+            $modal.find(settings.result_child_selector).selectable();
+        };
+
+        // clear modal on close
+        $modal.on('hidden', function() {
+            $(this).removeData('modal');
+            $(this).find('.modal-body').empty();
+        });
+
+        // when user preses 'save' button in modal
+        $modal.find('button.btn-primary').click(function() {
+            // get selected element
+            var $selected = $modal.find('.ui-selected');
+            var uuid = $selected.map(function() {
+                return {uuid: $(this).attr('data-uuid'),
+                        layer: $(this).attr('data-layer')};
+                }).get();
+            // we have all the data we need so get rid of the modal
+            $modal.modal('hide');
+            if ($selected.length) {
+                // we only change things if there was a selection
+                var params = []
+                // collect all existing datasets and layers
+                var $cursel = $('input[name^="' + settings.widgetname + '.dataset"]');
+                var count = 0;
+                $.each($cursel, function(index, dsinput) {
+                    var $layer = $('input[name="' + $(dsinput).attr('name').replace(/\.dataset\./, '.layer.') + '"]');
+                    params.push({name: settings.widgetname + '.dataset.' + count,
+                                 value: $(dsinput).val()});
+                    params.push({name: settings.widgetname + '.layer.' + count,
+                                 value: $layer.val()});
+                    count += 1;
+                });
+                // collect newly selected layers
+                $.each(uuid, function(index, value){
+                    params.push({name: settings.widgetname + '.dataset.' + count,
+                                 value: value.uuid});
+                    params.push({name: settings.widgetname + '.layer.' + count,
+                                 value: value.layer});
+                    count += 1;
+                });
+                // add count parameter
+                params.push({name: settings.widgetname + '.count', value: count});
+                // fetch html for widget
+                $('#' + settings.widgetid + '-selected').load(
+                    settings.widgeturl + ' ' + settings.widgetelement,
+                    params
+                );
             }
         });
 
@@ -171,25 +228,6 @@ bccvl = {};
 }(jQuery));
 
 $(document).ready( function() {
-
-    // species occurrence selector
-    bccvl.select_dataset($("a#datasets-occurrences-popup"), {
-        target: $('#modal-occurrences'),
-        genre: ['DataGenreSpeciesOccurrence'],
-        field: 'form.widgets.species_occurrence_dataset'
-    });
-    bccvl.select_dataset($("a#datasets-absences-popup"), {
-        target: $('#modal-absences'),
-        genre: ['DataGenreSpeciesAbsence'],
-        field: 'form.widgets.species_absence_dataset'
-    });
-    bccvl.select_dataset($("a#datasets-environmental-popup"), {
-        target: $('#modal-environmental'),
-        genre: ['DataGenreCC', 'DataGenreE'],
-        single: false,
-        enable_layers: true,
-        field: 'form.widgets.environmental_datasets'
-    });
 
     $('#form').on('click', 'div.field i.icon-remove', function(event){
         event.preventDefault();
@@ -205,7 +243,7 @@ $(document).ready( function() {
   <metal:main fill-slot="main">
 
     <!-- Modal Dialog occurrences -->
-    <div id="modal-occurrences" class="modal large hide fade" tabindex="-1" role="dialog">
+    <div id="species_occurrence_dataset-modal" class="modal large hide fade" tabindex="-1" role="dialog">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Select a species occurrence dataset</h3>
@@ -217,7 +255,7 @@ $(document).ready( function() {
       </div>
     </div>
     <!-- Modal Dialog absences -->
-    <div id="modal-absences" class="modal large hide fade" tabindex="-1" role="dialog">
+    <div id="species_absence_dataset-modal" class="modal large hide fade" tabindex="-1" role="dialog">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Select a species absence dataset</h3>
@@ -229,7 +267,7 @@ $(document).ready( function() {
       </div>
     </div>
     <!-- Modal Dialog layers -->
-    <div id="modal-environmental" class="modal large hide fade" tabindex="-1" role="dialog">
+    <div id="environmental_datasets-modal" class="modal large hide fade" tabindex="-1" role="dialog">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Select a climate and environmental data</h3>
@@ -271,21 +309,13 @@ $(document).ready( function() {
                 tal:define="widget python:view.widgets['functions']"
                 tal:replace="structure widget/@@ploneform-render-widget"/>
             <!-- species occurrences -->
-            <div id="formfield-form-widgets-species_occurrence_dataset" data-fieldname="form.widgets.species_occurrence_dataset" class="field z3cformInlineValidation empty">
-              <label class="horizontal" for="form-widgets-species_occurrence_dataset">Species Occurrence Dataset<span title="Required" class="required horizontal">&nbsp;</span></label>
-              <a id="datasets-occurrences-popup"  href="#">Select Occurrence Dataset</a>
-              <div class="fieldErrorBox"></div>
-              <div id="form-widgets-species_occurrence_dataset-selected">
-              </div>
-            </div>
+            <tal:widget
+                tal:define="widget python:view.widgets['species_occurrence_dataset']"
+                tal:replace="structure widget/@@ploneform-render-widget"/>
             <!-- species absences -->
-            <div id="formfield-form-widgets-species_absence_dataset" data-fieldname="form.widgets.species_absence_dataset" class="field z3cformInlineValidation empty">
-              <label class="horizontal" for="form-widgets-species_absence_dataset">Species Absence Dataset<span title="Required" class="required horizontal">&nbsp;</span></label>
-              <a id="datasets-absences-popup"  href="#">Select Absence Dataset</a>
-              <div class="fieldErrorBox"></div>
-              <div id="form-widgets-species_absence_dataset-selected">
-              </div>
-            </div>
+            <tal:widget
+                tal:define="widget python:view.widgets['species_absence_dataset']"
+                tal:replace="structure widget/@@ploneform-render-widget"/>
             <tal:widget
                 tal:define="widget python:view.widgets['species_pseudo_absence_points']"
                 tal:replace="structure widget/@@ploneform-render-widget"/>
@@ -296,13 +326,9 @@ $(document).ready( function() {
                 tal:define="widget python:view.widgets['resolution']"
                 tal:replace="structure widget/@@ploneform-render-widget"/>
             <!-- climate and environmental layers -->
-            <div id="formfield-form-widgets-environmental_datasets" data-fieldname="form.widgets.environmental_datasets" class="field z3cformInlineValidation empty">
-              <label class="horizontal" for="form-widgets-environmental_datasets">Environmental Datasets<span title="Required" class="required horizontal">&nbsp;</span></label>
-              <a id="datasets-environmental-popup"  href="#">Select Climate and Environmental Data</a>
-              <div class="fieldErrorBox"></div>
-              <div id="form-widgets-environmental_datasets-selected">
-              </div>
-            </div>
+            <tal:widget
+                tal:define="widget python:view.widgets['environmental_datasets']"
+                tal:replace="structure widget/@@ploneform-render-widget"/>
 
           </fieldset>
           <!-- secondary fieldsets -->

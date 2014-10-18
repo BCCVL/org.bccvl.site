@@ -14,6 +14,22 @@
 
     <z3c:widgetTemplate
       mode="input"
+      widget=".interfaces.IDatasetWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="dataset_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="display"
+      widget=".interfaces.IDatasetWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="dataset_display.pt"
+      />
+
+
+
+    <z3c:widgetTemplate
+      mode="input"
       widget=".interfaces.IDatasetLayersWidget"
       layer="z3c.form.interfaces.IFormLayer"
       template="datasetlayers_input.pt"
@@ -24,20 +40,6 @@
       widget=".interfaces.IDatasetLayersWidget"
       layer="z3c.form.interfaces.IFormLayer"
       template="datasetlayers_display.pt"
-      />
-
-    <z3c:widgetTemplate
-      mode="input"
-      widget=".interfaces.IDatasetsRadioWidget"
-      layer="z3c.form.interfaces.IFormLayer"
-      template="datasetsradio_input.pt"
-      />
-
-    <z3c:widgetTemplate
-      mode="display"
-      widget=".interfaces.IDatasetsRadioWidget"
-      layer="z3c.form.interfaces.IFormLayer"
-      template="datasetsradio_display.pt"
       />
 
     <z3c:widgetTemplate
