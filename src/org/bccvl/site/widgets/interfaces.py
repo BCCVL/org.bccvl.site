@@ -1,3 +1,4 @@
+from zope.interface import Interface
 from z3c.form.interfaces import IOrderedSelectWidget, IWidget
 
 
@@ -18,5 +19,10 @@ class IDatasetWidget(IWidget):
 
 
 class IDatasetsMultiSelectWidget(IWidget):
+
+    pass
+
+
+class IJSWrapper(Interface):
 
     pass

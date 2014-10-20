@@ -11,10 +11,17 @@ from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
                                      addFieldClass)
 from zope.i18n import translate
 from .interfaces import (IDatasetLayersWidget, IDatasetWidget,
-                         IOrderedCheckboxWidget, IDatasetsMultiSelectWidget)
+                         IOrderedCheckboxWidget, IDatasetsMultiSelectWidget,
+                         IJSWrapper)
 from plone.app.uuid.utils import uuidToCatalogBrain
 from org.bccvl.site.interfaces import IDownloadInfo
 from plone.z3cform.interfaces import IDeferSecurityCheck
+
+
+# Wrap js code into a document.ready wrapper and CDATA section
+JS_WRAPPER = u"//<![CDATA[$(document).ready(function(){%(js)s});//]]>"
+
+JS_WRAPPER_ADAPTER = lambda req, widget: JS_WRAPPER
 
 
 @implementer(IOrderedCheckboxWidget)
@@ -46,23 +53,22 @@ class DatasetWidget(HTMLInputWidget, Widget):
         return brain
 
     def js(self):
-        return u"""//<![CDATA[
-            $(document).ready(function(){
-                bccvl.select_dataset($("a#%(fieldname)s-popup"), {
-                    field: '%(fieldname)s',
-                    genre: %(genre)s,
-                    widgetname: '%(widgetname)s',
-                    widgetid: '%(widgetid)s',
-                    widgeturl: '%(widgeturl)s',
-                });
-            });//]]>""" % {
+        js = u"""
+            bccvl.select_dataset($("a#%(fieldname)s-popup"), {
+                field: '%(fieldname)s',
+                genre: %(genre)s,
+                widgetname: '%(widgetname)s',
+                widgetid: '%(widgetid)s',
+                widgeturl: '%(widgeturl)s',
+            });""" % {
             'fieldname': self.__name__,
             'genre': self.genre,
             'widgetname': self.name,
             'widgetid': self.id,
             'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
-                                                    self.__name__)
-        }
+                                                    self.__name__)}
+        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
+        return jswrap % {'js':  js}
 
 
 @implementer(IFieldWidget)
@@ -78,16 +84,14 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
     """
 
     def js(self):
-        return u"""//<![CDATA[
-            $(document).ready(function(){
-                bccvl.select_dataset_layers($("a#%(fieldname)s-popup"), {
-                    field: '%(fieldname)s',
-                    genre: %(genre)s,
-                    widgetname: '%(widgetname)s',
-                    widgetid: '%(widgetid)s',
-                    widgeturl: '%(widgeturl)s',
-                });
-            });//]]>""" % {
+        js = u"""
+            bccvl.select_dataset_layers($("a#%(fieldname)s-popup"), {
+                field: '%(fieldname)s',
+                genre: %(genre)s,
+                widgetname: '%(widgetname)s',
+                widgetid: '%(widgetid)s',
+                widgeturl: '%(widgeturl)s',
+            });""" % {
             'fieldname': self.__name__,
             'genre': self.genre,
             'widgetname': self.name,
@@ -95,6 +99,8 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
             'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
                                                     self.__name__)
         }
+        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
+        return jswrap % {'js':  js}
 
     def items(self):
         # FIXME importing here to avoid circular import of IDataset
