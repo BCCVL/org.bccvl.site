@@ -195,4 +195,6 @@ def upgrade_160_170_1(context, logger=None):
 
     # Run the following GS steps
     setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(PROFILE_ID, 'types')
+    setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
+    # TODO: possible data structure strange on sdmexperiments
+    #    environmental_datasets a dict of sets (instead of list?)
