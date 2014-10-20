@@ -288,81 +288,9 @@ $(document).ready( function() {
 
         <metal:block fill-slot="fields">
 
-          <fieldset id="fieldset-default" tal:omit-tag="not:show_default_label">
-            <legend tal:condition="show_default_label"
-                    tal:attributes="id string:fieldsetlegend-default"
-                    tal:content="default_fieldset_label">Form name</legend>
+          <metal:block use-macro="context/@@ploneform-macros/fields">
+          </metal:block>
 
-            <!-- remove fields:
-                 resolution
-                 species_occurrence_dataset
-                 species_absence_dataset
-                 environmental_datasets
-                 -->
-            <tal:widget
-                tal:define="widget python:view.widgets['IDublinCore.title']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-            <tal:widget
-                tal:define="widget python:view.widgets['IDublinCore.description']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-            <tal:widget
-                tal:define="widget python:view.widgets['functions']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-            <!-- species occurrences -->
-            <tal:widget
-                tal:define="widget python:view.widgets['species_occurrence_dataset']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-            <!-- species absences -->
-            <tal:widget
-                tal:define="widget python:view.widgets['species_absence_dataset']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-            <tal:widget
-                tal:define="widget python:view.widgets['species_pseudo_absence_points']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-            <tal:widget
-                tal:define="widget python:view.widgets['species_number_pseudo_absence_points']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-            <tal:widget
-                tal:define="widget python:view.widgets['resolution']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-            <!-- climate and environmental layers -->
-            <tal:widget
-                tal:define="widget python:view.widgets['environmental_datasets']"
-                tal:replace="structure widget/@@ploneform-render-widget"/>
-
-          </fieldset>
-          <!-- secondary fieldsets -->
-          <tal:block tal:repeat="group groups" condition="has_groups">
-            <fieldset
-                tal:define="normalizeString nocall:context/@@plone/normalizeString;
-                            fieldset_label group/label;
-                            fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
-                            fieldset_name python:normalizeString(fieldset_name);"
-                tal:attributes="id string:fieldset-${fieldset_name};
-                                class string:kssattr-fieldset-${fieldset_name};
-                                data-fieldset fieldset_name">
-              <legend tal:condition="fieldset_label"
-                      tal:attributes="id string:fieldsetlegend-${fieldset_name}"
-                      tal:content="fieldset_label">Form name</legend>
-              <p i18n:translate=""
-                 tal:define="group_description group/description|nothing"
-                 tal:condition="group_description"
-                 tal:content="structure group_description">
-                Description
-              </p>
-              <tal:block tal:define="errors group/widgets/errors"
-                         tal:condition="errors"
-                         tal:repeat="error errors">
-                <div class="field error"
-                     tal:condition="not:nocall:error/widget"
-                     tal:content="structure error/render"
-                     />
-              </tal:block>
-              <tal:block define="view nocall:group">
-                <metal:block use-macro="context/@@ploneform-macros/widget_rendering" />
-              </tal:block>
-            </fieldset>
-          </tal:block>
           <!-- Algorithm parameter fieldsets -->
           <metal:parameters use-macro="context/@@experiment-macros/algo_parameters"/>
         </metal:block>
