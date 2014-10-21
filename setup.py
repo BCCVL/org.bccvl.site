@@ -32,7 +32,6 @@ setup(
         'Products.AutoUserMakerPASPlugin',
         'Products.ShibbolethPermissions',
         'sc.social.like',
-        'gu.repository.content',
         'gu.transmogrifier',
         'plone.api',
         'collective.js.jqueryui',
@@ -50,7 +49,6 @@ setup(
         'collective.z3cform.widgets',
         #'collective.deletepermission', careful it interfers with delete buttons when not activated
         #'collective.z3cform.chosen',
-        'gu.plone.rdf',
         'plone.app.folderui',
         'dexterity.membrane',
         'borg.localrole',
@@ -82,7 +80,10 @@ setup(
     ],
     extras_require={
         'test': ['plone.app.testing',
-                 'unittest2']
+                 'unittest2'],
+        'deprecated':  ['gu.repository.content',
+                        'gu.plone.rdf'],
+        'experimental': ['eea.facetednavigation']
     },
 
     entry_points="""
