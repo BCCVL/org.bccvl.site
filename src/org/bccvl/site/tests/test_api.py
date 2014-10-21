@@ -20,11 +20,11 @@ def setUpApiTests(doctest):
     #        configurationContext, host, port, zodbDB
     portal = layer['portal']
     # create a fake sdm experiment
-    sdm = portal.experiments.invokeFactory('org.bccvl.content.sdmexperiment',
+    sdm = portal.experiments.invokeFactory('Folder',
                                            id='sdm',
                                            title=u'Test SDM')
     sdm = portal.experiments[sdm]
-    result = sdm.invokeFactory('gu.repository.content.RepositoryItem',
+    result = sdm.invokeFactory('Folder',
                                id='sdmresult')
     result = sdm[result]
     result.job_params = {
@@ -45,12 +45,12 @@ def setUpApiTests(doctest):
     sdmds.reindexObject()
 
     # create a fake projection experiment
-    proj = portal.experiments.invokeFactory('org.bccvl.content.projectionexperiment',
+    proj = portal.experiments.invokeFactory('Folder',
                                             id='proj',
                                             title=u'Test Projection')
     proj = portal.experiments[proj]
     # create a result folder
-    result = proj.invokeFactory('gu.repository.content.RepositoryItem',
+    result = proj.invokeFactory('Folder',
                                 id='projresult')
     result = proj[result]
     result.job_params = {

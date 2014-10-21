@@ -26,7 +26,6 @@
         <!-- <dependency>profile-collective.geo.geographer:default</dependency> -->
         <!-- <dependency>profile-collective.geo.contentlocations:default</dependency> -->
         <dependency>profile-plone.app.folderui:default</dependency>
-        <dependency>profile-gu.repository.content:default</dependency>
 
         <dependency>profile-org.bccvl.site.content:content</dependency>
         <dependency>profile-plone.app.caching:default</dependency>

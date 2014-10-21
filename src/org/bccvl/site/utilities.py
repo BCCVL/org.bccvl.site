@@ -1,8 +1,6 @@
 from datetime import datetime
 from urlparse import urlsplit
 import os.path
-from gu.repository.content.interfaces import (
-    IRepositoryContainer, IRepositoryItem)
 from gu.z3cform.rdf.utils import Period
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
@@ -234,7 +232,7 @@ class SDMJobTracker(MultiJobTracker):
                                          datetime.now().isoformat())
                 result = createContentInContainer(
                     self.context,
-                    'gu.repository.content.RepositoryItem',
+                    'Folder',
                     title=title)
 
                 # Build job_params store them on result and submit job
@@ -299,7 +297,7 @@ class ProjectionJobTracker(MultiJobTracker):
             datetime.now().isoformat())
         result = createContentInContainer(
             self.context,
-            'gu.repository.content.RepositoryItem',
+            'Folder',
             title=title)
         result.job_params = self._get_job_params(sdmuuid, year, emsc, gcm, climds)
         return result
@@ -415,7 +413,7 @@ class BiodiverseJobTracker(MultiJobTracker):
                     datetime.now().isoformat())
                 result = createContentInContainer(
                     self.context,
-                    'gu.repository.content.RepositoryItem',
+                    'Folder',
                     title=title)
 
                 # build job_params and store on result
@@ -455,7 +453,7 @@ class EnsembleJobTracker(MultiJobTracker):
                 self.context.title, datetime.now().isoformat())
             result = createContentInContainer(
                 self.context,
-                'gu.repository.content.RepositoryItem',
+                'Folder',
                 title=title)
 
             # build job_params and store on result
@@ -496,7 +494,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                                      datetime.now().isoformat())
             result = createContentInContainer(
                 self.context,
-                'gu.repository.content.RepositoryItem',
+                'Folder',
                 title=title)
 
             # Build job_params store them on result and submit job

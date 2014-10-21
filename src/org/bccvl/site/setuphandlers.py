@@ -375,6 +375,7 @@ def upgrade_170_200_1(context, logger=None):
     # Run the following GS steps
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
 
     # migrate rdf metadata
     pc = getToolByName(context, 'portal_catalog')
@@ -384,3 +385,5 @@ def upgrade_170_200_1(context, logger=None):
             obj = brain.getObject()
             migrate_to_bccvlmetadata(obj, logger)
             obj.reindexObject()
+
+    # TODO: migrate all gu.repository.content.RepositoryItem to Folder
