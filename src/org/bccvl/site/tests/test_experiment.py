@@ -2,7 +2,7 @@ import unittest2 as unittest
 from urlparse import urljoin
 import re
 import time
-
+from itertools import chain
 import transaction
 
 from zope.component import createObject
@@ -10,11 +10,28 @@ from zope.component import queryUtility
 
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import SITE_OWNER_PASSWORD
-from plone.testing.z2 import Browser
+
+from zope.component import getMultiAdapter
 
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker
-from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
+from org.bccvl.site.testing import (BCCVL_INTEGRATION_TESTING,
+                                    BCCVL_FUNCTIONAL_TESTING)
+
+
+from zope.interface import alsoProvides, implementer
+from plone.app.z3cform.interfaces import IPloneFormLayer
+from zope.publisher.browser import TestRequest as TestRequestBase
+from zope.annotation.interfaces import IAttributeAnnotatable
+
+
+@implementer(IPloneFormLayer, IAttributeAnnotatable)
+class TestRequest(TestRequestBase):
+    """Zope 3's TestRequest doesn't support item assignment, but Zope 2's
+    request does.
+    """
+    def __setitem__(self, key, value):
+        pass
 
 
 # do somebrowser testing here:
@@ -25,223 +42,151 @@ from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 
 class ExperimentAddTest(unittest.TestCase):
 
+    # Use functional layer for now to get a new demostorage layer for each test
     layer = BCCVL_FUNCTIONAL_TESTING
+    # integration testing gives only a new transaction for each test (rolled back at end)
+    #layer = BCCVL_INTEGRATION_TESTING
 
     def setUp(self):
-        app = self.layer['app']
         self.portal = self.layer['portal']
-        self.portal_url = self.portal.absolute_url()
-        self.experiments_url = '/'.join((self.portal_url, defaults.EXPERIMENTS_FOLDER_ID))
-        self.experiments_add_url = '/'.join((self.experiments_url,
-                                            '++add++org.bccvl.content.sdmexperiment'))
-        self.browser = Browser(app)
-        # make publisher errors avilable
-        self.browser.handleErrors = False
-        # ignore http errors (we can still inspect e.g. 404 errors on the browser)
-        # self.browser.raiseHttpErrors= False
-        self.browser.addHeader(
-            'Authorization',
-            'Basic %s:%s' % (SITE_OWNER_NAME, SITE_OWNER_PASSWORD,)
-        )
+        self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
+        # get some dataset shortcuts
+        self.algorithm = self.portal[defaults.TOOLKITS_FOLDER_ID]['bioclim']
+        self.datasets = self.portal[defaults.DATASETS_FOLDER_ID]
+        abt = self.datasets[defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']
+        self.occur = abt['occurrence.csv']
+        self.absen = abt['absence.csv']
+        self.current = self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
 
-    def test_add_experiment_missing_input(self):
-        self.browser.open(self.experiments_url)
-        self.browser.getLink(url=self.experiments_add_url).click()
-        # uncomment set title as long as I don't know how to send any
-        # other field without value
-        #self.browser.getControl(name='form.widgets.IDublinCore.title')\
-        #    .value = "My Experiment"
-        self.browser.getControl(name='form.widgets.IDublinCore.description')\
-            .value = "This is my experiment description."
-        # form.widgets.functions:list
-        # form.widgets.species_occurrence_dataset:list
-        # form.widgets.species_absence_dataset:list
-        # form.widgets.species_environmental_dataset:list
-        # get listcontrol options and get/set value
-        # control.options/ control.value
-        # get listcontrol display options and get/set display value
-        #  control.displayOptions/ control.displayValue
-        # get sub controls (items)
-        # control.controls/ control.getControls
-        # itemcontrol.selected (get/set selcted state)
-        # form.widgets.species_climate_dataset:list
-        self.browser.getControl('Create and start').click()
-        self.assertTrue('Required input is missing' in self.browser.contents)
-        self.assertEquals(self.browser.url, self.experiments_add_url)
-
-        # self.assertTrue(self.browser.url.endswith('my-experiment'))
-        # self.assertTrue('My Experiment' in self.browser.contents)
-        # self.assertTrue('This is my experiment' in self.browser.contents)
-        # check for submit button
-
-    def in_out_select(self, form, name, value):
-        """
-        little helper to deal with in-out widget.
-
-        form ... the form we are manipulating
-        name ... the name of the target control to generate
-        value ... the value to submit with the new control
-        """
-        form.mech_form.new_control(
-            type='hidden', name=name,
-            attrs=dict(value=value))
-
-    def start_experiment(self):
+    def get_form(self):
         """
         fill out common stuff when creating a new experiment
         """
-        self.browser.open(self.experiments_url)
-        self.browser.getLink(url=self.experiments_add_url).click()
-        self.browser.getControl(name='form.widgets.IDublinCore.title')\
-            .value = "My Experiment"
-        self.browser.getControl(name='form.widgets.IDublinCore.description')\
-            .value = "This is my experiment description."
-        self.browser.getControl(name='form.widgets.functions:list')\
-            .displayValue = ["Bioclim"]
-        self.browser.getControl(name='form.widgets.species_occurrence_dataset')\
-            .displayValue = ["ABT"]
-        # select absence data
-        # self.browser.getControl(name='form.widgets.species_absence_dataset')\
-        #     .displayValue = ["ABT"]
-        # select resolution
-        # self.browser.getControl(name='form.widgets.resolution:list')\
-        #     .value = [unicode(BCCVOCAB['Resolution30s'])]
-        # select current dataset
-        datasets = self.portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
-        curuid = datasets['current'].UID()  # get current datasets uuid
-        # select 1st two layers within current dataset
-        lname = 'form.widgets.environmental_datasets.{}'.format(curuid)
-        lctrl = self.browser.getControl(name=lname)
-        lctrl.value = ['B01', 'B02']
+        # setup request layer
+        self.request = TestRequest()
+        # get add view
+        form = getMultiAdapter((self.experiments, self.request),
+                               name="newSpeciesDistribution")
+        # update the form once to initialise all widgets
+        form.update()
+        # go through all widgets on the form  and update the request with default values
+        data = {}
+        for widget in chain(
+                form.widgets.values(),
+                # skip standard plone groups
+                #chain.from_iterable(g.widgets.values() for g in form.groups),
+                chain.from_iterable(g.widgets.values() for g in form.param_groups)):
+            data[widget.name] = widget.value
+        data.update({
+            'form.widgets.IDublinCore.title': u"My Experiment",
+            'form.widgets.IDublinCore.description': u'This is my experiment description',
+            'form.widgets.functions': [self.algorithm.UID()],  # BIOCLIM
+            'form.widgets.species_occurrence_dataset': unicode(self.occur.UID()),  # ABT
+            'form.widgets.species_absence_dataset': unicode(self.absen.UID()),
+            'form.widgets.species_absence_points': [],
+            'form.widgets.resolution': ('Resolution2_5m', ),
+            # FIXME: shouldn't be necessary to use unicode here,... widget converter should take care of it
+            'form.widgets.environmental_datasets.dataset.0': unicode(self.current.UID()),
+            'form.widgets.environmental_datasets.layer.0': u'B01',
+            'form.widgets.environmental_datasets.dataset.1': unicode(self.current.UID()),
+            'form.widgets.environmental_datasets.layer.1': u'B02',
+            'form.widgets.environmental_datasets.count': '3',
+        })
+        self.request.form.update(data)
+        form = getMultiAdapter((self.experiments, self.request),
+                               name="newSpeciesDistribution")
+        return form
 
-        # KEEP: inout widget example
-        #form = self.browser.getForm(index=1)
-        #self.in_out_select(form, lname, str(BCCVLLAYER['B01']))
-        #self.in_out_select(form, lname, str(BCCVLLAYER['B02']))
-        # END: inout widget example
-
-        # form.widgets.functions:list
-        # form.widgets.species_occurrence_dataset:list
-        # form.widgets.species_absence_dataset:list
-        # form.widgets.species_environmental_dataset:list
-        # get listcontrol options and get/set value
-        # control.options/ control.value
-        # get listcontrol display options and get/set display value
-        #  control.displayOptions/ control.displayValue
-        # get sub controls (items)
-        # control.controls/ control.getControls
-        # itemcontrol.selected (get/set selcted state)
-        # form.widgets.species_climate_dataset:list
+    def test_add_experiment_missing_input(self):
+        form = self.get_form()
+        # remove required field
+        del form.request.form['form.widgets.IDublinCore.title']
+        form.request.form.update({
+            'form.buttons.create': 'Create',
+        })
+        # submit form
+        form.update()
+        errors = [e for e in form.widgets.errors]
+        self.assertEqual(len(errors), 1)
+        # check self.experiments still empty
+        # IStatusMessage
 
     def test_add_experiment(self):
-        self.start_experiment()
-        # start experiment
-        self.browser.getControl('Create and start').click()
-        self.assertTrue('Item created' in self.browser.contents)
-
-        self.assertTrue('Job submitted' in self.browser.contents)
-        new_exp_url = urljoin(self.experiments_add_url, 'my-experiment/view')
-        self.assertEquals(self.browser.url, new_exp_url)
-        self.assertTrue('My Experiment' in self.browser.contents)
-        self.assertTrue('This is my experiment description' in self.browser.contents)
-        self.assertTrue("Job submitted My Experiment - QUEUED" in self.browser.contents)
-        # wait for job to finish
-        self._wait_for_job('my-experiment')
-        self.browser.open(new_exp_url)
-        self.assertTrue('COMPLETED' in self.browser.contents)
-        # TODO:
-        # check for submit button; should be grayed?
+        form = self.get_form()
+        form.request.form.update({
+            'form.buttons.save': 'Create and start',
+            })
+        # update form with updated request
+        form.update()
+        self.assertEqual(form.status, u'')
+        self.assertEqual(len(form.widgets.errors), 0)
+        self.assertIn('my-experiment', self.experiments)
+        exp = self.experiments['my-experiment']
+        self.assertEqual(exp.environmental_datasets.keys(), [unicode(self.current.UID())])
+        self.assertEqual(exp.environmental_datasets.values(), [set([u'B01', u'B02'])])
+        # get result container: (there is only one)
+        self.assertEqual(len(exp.objectIds()), 1)
+        result = exp.objectValues()[0]
+        # FIXME: test result.job_params
+        self.assertEqual(result.job_params['function'], 'bioclim')
+        self.assertEqual(result.job_params['environmental_datasets'], exp.environmental_datasets)
+        # no result files yet
+        self.assertEqual(len(result.keys()), 0)
+        # test job state
+        jt = IJobTracker(exp)
+        self.assertEqual(jt.state, u'QUEUED')
+        # after transaction commit the job sholud finish
+        transaction.commit()
+        self.assertEqual(jt.state, u'COMPLETED')
+        # and we should have a result as well
+        self.assertGreaterEqual(len(result.keys()), 1)
 
     def test_run_experiment_twice(self):
         # create experiment
-        self.start_experiment()
+        form = self.get_form()
+        form.request.form.update({
+            'form.buttons.save': 'Create and start',
+            })
+        # update form with updated request
+        form.update()
         # start experiment
-        self.browser.getControl('Create and start').click()
-        self.assertTrue('Item created' in self.browser.contents)
-
-        self.assertTrue('Job submitted' in self.browser.contents)
-        new_exp_url = urljoin(self.experiments_add_url, 'my-experiment/view')
-        self.assertEquals(self.browser.url, new_exp_url)
-        self.assertTrue("Job submitted My Experiment - QUEUED" in self.browser.contents)
-        # wait for result
-        self._wait_for_job('my-experiment')
-        # reload exp page and check for status on page
-        self.browser.open(new_exp_url)
-        self.assertTrue('COMPLETED' in self.browser.contents)
-        # TODO: check Result list
-        results = re.findall(r'<a href=.*My Experiment - bioclim.*</a>', self.browser.contents)
-        self.assertEqual(len(results), 1)
-        # start again
-        self.browser.getControl('Start Job').click()
-
-        self.assertTrue('Job submitted' in self.browser.contents)
-        self._wait_for_job('my-experiment')
-        # reload experiment page
-        self.browser.open(new_exp_url)
-        self.assertTrue('COMPLETED' in self.browser.contents)
-        # We should have two results now
-        results = re.findall(r'<a href=.*My Experiment - bioclim.*</a>', self.browser.contents)
-        self.assertEqual(len(results), 2)
+        jt = IJobTracker(self.experiments['my-experiment'])
+        self.assertEqual(jt.state, u'QUEUED')
+        #error
+        state = jt.start_job(form.request)
+        self.assertEqual(state[0], 'error')
+        # finish current job
+        transaction.commit()
+        self.assertEqual(jt.state, u'COMPLETED')
+        # TODO: after commit tasks cause site to disappear and the
+        # following code will fail, bceause without site we can't find
+        # a catalog without whchi we can't finde the toolkit by uuid
+        jt.start_job(form.request)
+        # FIXME: why is this running?
+        self.assertEqual(jt.state, u'RUNNING')
+        transaction.commit()
+        self.assertEqual(jt.state, u'COMPLETED')
+        # TODO: assrt two result folders,....
+        # TODO: check mix of jt.state (in multistate scenario with queued, running etc. mixed)
 
     def test_validate_resolution(self):
-        self.start_experiment()
-        # select layer from 2nd dataset
-        datasets = self.portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]
-        curuid = datasets['current_1k'].UID()  # get current datasets uuid
-        # select 1st two layers within current dataset
-        lname = 'form.widgets.environmental_datasets.{}'.format(curuid)
-        lctrl = self.browser.getControl(name=lname)
-        lctrl.value = ['B01']
-        # form submit should fail with resolution mismatch error
-        self.browser.getControl('Create and start').click()
-        self.assertTrue('All datasets must have the same resolution' in self.browser.contents)
-        self.assertEquals(self.browser.url, self.experiments_add_url)
-
-    def _wait_for_job(self, expid):
-        exp = self.portal[defaults.EXPERIMENTS_FOLDER_ID][expid]
-        count = 3
-        timeout = True
-        while count:
-            transaction.begin()
-            state = IJobTracker(exp).state
-            if state in ('COMPLETED', 'FAILED'):
-                timeout = False
-                break
-            time.sleep(10)
-            count -= 1
-        # if timeout:
-        #     import ipdb; ipdb.set_trace()
-        # TODO: check if we only have error messages if at all?
-        # if job.result is not None:
-        #     job.result.raiseException()
+        current_1k_uuid = unicode(self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
+        form = self.get_form()
+        form.request.form.update({
+            'form.buttons.create': 'Create',
+            # select 1k dataset as well
+            'form.widgets.environmental_datasets.dataset.2': current_1k_uuid,
+            'form.widgets.environmental_datasets.layer.2': u'B01'
+        })
+        form.update()
+        # we should have a resolution mismatch error here
+        errors = [e for e in form.widgets.errors]
+        self.assertEqual(len(errors), 1)
 
 
-class ExperimentsViewFunctionalTest(unittest.TestCase):
+class ExperimentViewTest(unittest.TestCase):
 
-    layer = BCCVL_FUNCTIONAL_TESTING
+    pass
 
-    def setUp(self):
-        app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
-        self.experiments_url = self.experiments.absolute_url()
-        # this creates an experiment with no values set at all
-        self.experiments.invokeFactory('org.bccvl.content.sdmexperiment', id='exp', title='My Experiment')
-        self.exp = self.experiments['exp']
-        self.exp_url = self.exp.absolute_url()
-        import transaction
-        transaction.commit()
-        self.browser = Browser(app)
-        self.browser.handleErrors = False
-        self.browser.addHeader(
-            'Authorization',
-            'Basic %s:%s' % (SITE_OWNER_NAME, SITE_OWNER_PASSWORD,)
-        )
-
-    def test_experiment_view(self):
-        self.browser.open(self.exp_url + '/view')
-        self.assertTrue('My Experiment' in self.browser.contents)
-        self.assertTrue('Start Job' in self.browser.contents)
-        # check for themeing target
-        self.assertTrue('<div id="bccvl-experiment-view">' in self.browser.contents)
+    # shall I have test data or run an experiment?
+    #   e.g. create something programmatically with invokeFactory just for this test
