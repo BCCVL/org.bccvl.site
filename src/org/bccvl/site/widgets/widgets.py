@@ -158,10 +158,9 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
             uuid = self.request.get('{}.dataset.{}'.format(self.name, idx))
             layer = self.request.get('{}.layer.{}'.format(self.name, idx))
             # FIXME: use vocab to translate to field value
-            from rdflib import URIRef
             # skip none values in case count is larger than actual parameters
             if all((uuid, layer)):
-                value.setdefault(uuid, set()).add(URIRef(layer))
+                value.setdefault(uuid, set()).add(layer)
         if not value:
             return NO_VALUE
         return value
