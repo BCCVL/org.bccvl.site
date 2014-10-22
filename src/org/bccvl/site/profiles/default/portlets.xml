@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<portlets
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="plone">
+
+ <!-- Columns (portlet managers) -->
+
+ <portletmanager
+   name="bccvl.news"
+   type="org.bccvl.site.portlets.interfaces.INewsPortletManager"
+   />
+
+ <portlet addview="portlets.News"
+          extend="True">
+   <for
+       interface="org.bccvl.site.portlets.interfaces.INewsPortletManager"
+       />
+ </portlet>
+
+  <!-- <assignment -->
+  <!--    manager="bccvl.news" -->
+  <!--    category="context" -->
+  <!--    key="/" -->
+  <!--    type="portlets.News" -->
+  <!--    name="news" -->
+  <!--    /> -->
+
+</portlets>

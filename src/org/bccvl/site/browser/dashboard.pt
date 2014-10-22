@@ -1,0 +1,88 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone.app.dexterity"
+      tal:define="member context/portal_membership/getAuthenticatedMember;
+                  username member/getUserName;
+                  portal_state context/@@plone_portal_state;
+                  root_url portal_state/navigation_root_url;">
+
+  <metal:block fill-slot="content"> <!-- body (header, main) -->
+
+    <div class="row">
+      <!-- top half includes title, two count boxes and news portlet -->
+      <div class="cell position-0 width-3:4">
+        <div class="row">
+          <div class="cell position-0">
+            <h1>Welcome <strong tal:content="username">Username</strong></h1>
+            <p>Need help? <a href="knowledgebase" tal:attributes="href string:${root_url}/knowledgebase">Visit our knowledge base</a> or <a href="contact-info" tal:attributes="href string:${root_url}/contact-info">contact our support team</a></p>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="cell position-0 width-1:2">
+            <h5><strong>Explore</strong></h5>
+            <h2>Datasets</h2>
+            <p><span tal:content="view/num_datasets">47</span></p>
+            <a href="datasets" tal:attributes="href string:${root_url}/datasets">Browse Datasets</a>
+          </div>
+
+          <div class="cell position-1:2 width-1:2">
+            <h5><strong>Analyse</strong></h5>
+            <h2>Experiments</h2>
+            <p><span tal:content="view/num_experiments">5</span></p>
+            <a href="experiments" tal:attributes="href string:${root_url}/experiments">View Experiments</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell position-3:4 width-1:4">
+        <div tal:content="structure provider:bccvl.news"></div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="cell position-0 width-1:2"
+           tal:define="datasets view/newest_datasets">
+        <h4><strong>Recently Added Datasets</strong></h4>
+        <div id="recent-datasets-list">
+	  <div class="alert"
+               tal:condition="not:datasets">
+	    <strong>No datasets are available yet.</strong><br/>
+	    Listed here are all the recently uploaded datasets that are available to you, including experiments shared by other people.
+	  </div>
+          <div class="row"
+               tal:repeat="item datasets">
+            <a href="item_url" tal:attributes="href item/getURL" tal:content="item/Title">Dataset title</a>
+          </div>
+        </div>
+        <a class="bccvllinks-datasets btn btn-primary" href="datasets_upload_view" tal:attributes="href string:${portal_url}/datasets_upload_view">Upload A Dataset <i class="icon-chevron-right icon-white"></i></a>
+        <a class="bccvllinks-datasets" href="datasets" tal:attributes="href string:${portal_url}/datasets" style="float:right;">View All My Datasets</a>
+
+      </div>
+
+      <div class="cell position-1:2 width-1:2">
+        <h4><strong>My Recent Experiments</strong></h4>
+        <div id="experiment-list"
+             tal:define="experiments view/newest_experiments">
+	  <div class="alert"
+               tal:condition="not:experiments">
+	    <strong>You have no experiments.</strong><br/>
+	    Listed here are all the recent experiments you've conducted, including experiments shared by other people.
+	  </div>
+          <div class="row"
+               tal:repeat="item experiments">
+            <a href="item_url" tal:attributes="href item/getURL" tal:content="item/Title">Dataset title</a>
+          </div>
+        </div>
+        <a class="bccvllinks-experiments btn btn-primary" href="experiments" tal:attributes="href string:${portal_url}/experiments">Start a new experiment <i class="icon-chevron-right icon-white"></i></a>
+        <a class="bccvllinks-experiments" style="float:right;" href="experiments" tal:attributes="href string:${portal_url}/experiments">View All My Experiments</a>
+      </div>
+    </div>
+
+  </metal:block>
+
+</html>

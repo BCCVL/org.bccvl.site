@@ -186,6 +186,16 @@ def upgrade_090_160_1(context, logger=None):
     # pc.getIndexDataForRID(rid)
     # pc.getIndexDataForUID(path)
 
-    # Examples:
-    # setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
-    # logger.info("%s fields converted." % count)
+
+def upgrade_160_170_1(context, logger=None):
+    # context is either the portal (called from setupVarious) or portal_setup when run via genericsetup
+    if logger is None:
+        # Called as upgrade step: define our own logger.
+        logger = LOG
+
+    # Run the following GS steps
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
+    setup.runImportStepFromProfile(PROFILE_ID, 'portlets')
+    # TODO: possible data structure strange on sdmexperiments
+    #    environmental_datasets a dict of sets (instead of list?)

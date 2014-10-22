@@ -42,6 +42,7 @@
   <include file="profiles.zcml"/>
   <include package=".content"/>
   <include package=".browser"/>
+  <include package=".portlets"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
 
