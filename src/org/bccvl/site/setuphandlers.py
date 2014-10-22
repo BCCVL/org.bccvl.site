@@ -197,5 +197,6 @@ def upgrade_160_170_1(context, logger=None):
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'portlets')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
     # TODO: possible data structure strange on sdmexperiments
     #    environmental_datasets a dict of sets (instead of list?)

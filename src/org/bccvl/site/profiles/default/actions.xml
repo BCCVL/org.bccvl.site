@@ -21,7 +21,8 @@
   </object>
   <object name="user" meta_type="CMF Action Category">
     <object name="dashboard" meta_type="CMF Action" i18n:domain="plone">
-      <property name="visible">False</property>
+      <property name="visible">True</property>
+      <property name="icon_class" type="string">icon-bell</property>
     </object>
     <object name="details" meta_type="CMF Action" i18n:domain="plone">
       <property name="visible">False</property>
