@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone.app.dexterity"
+      tal:define="member context/portal_membership/getAuthenticatedMember;
+                  username member/getUserName;
+                  portal_state context/@@plone_portal_state;
+                  root_url portal_state/navigation_root_url;">
+
+  <metal:block fill-slot="content"> <!-- body (header, main) -->
+
+    <metal:block use-macro="context/main_template/macros/content">
+    </metal:block>
+
+    <div id="notifications">
+      <div tal:content="structure provider:bccvl.news"></div>
+    </div>
+  </metal:block>
+</html>
