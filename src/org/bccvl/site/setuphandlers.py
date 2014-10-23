@@ -198,5 +198,8 @@ def upgrade_160_170_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'portlets')
     setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    # update initial content and toolkits
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
     # TODO: possible data structure strange on sdmexperiments
     #    environmental_datasets a dict of sets (instead of list?)

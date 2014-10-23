@@ -19,7 +19,6 @@
           <div class="cell position-0">
             <h1>Welcome <strong tal:content="username">Username</strong></h1>
             <p>Need help? <a href="knowledgebase" tal:attributes="href string:${root_url}/knowledgebase">Visit our knowledge base</a> or <a href="contact-info" tal:attributes="href string:${root_url}/contact-info">contact our support team</a></p>
-
           </div>
         </div>
         <div class="row">
@@ -29,7 +28,6 @@
             <p><span tal:content="view/num_datasets">47</span></p>
             <a href="datasets" tal:attributes="href string:${root_url}/datasets">Browse Datasets</a>
           </div>
-
           <div class="cell position-1:2 width-1:2">
             <h5><strong>Analyse</strong></h5>
             <h2>Experiments</h2>

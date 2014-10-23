@@ -1,0 +1,10 @@
+{
+  "_type": "Folder",
+  "title": "News",
+  "exclude_from_nav": true,
+  "_constraintypes": {
+    "mode": 1,
+    "locallyallowedtypes": ["News Item"],
+    "immediatelyaddabletypes": ["News Item"]
+  }
+}
