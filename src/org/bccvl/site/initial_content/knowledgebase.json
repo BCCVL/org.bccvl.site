@@ -3,7 +3,7 @@
   "title": "Knowledge Base",
   "_transitions": ["show_internally", "publish_internally", "publish_externally"],
   "_ac_local_roles": {
-    "Knowledgebase Editor": ["Knowledgebase Editor"],
-    "Knowledgebase Contributor": ["Knowledgebase Contributor"]
+    "Knowledgebase Editor": ["Editor"],
+    "Knowledgebase Contributor": ["Contributor"]
   }
 }

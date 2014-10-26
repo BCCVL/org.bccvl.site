@@ -198,7 +198,13 @@ def upgrade_160_170_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'portlets')
     setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    # install plone default workflows
+    setup.runImportStepFromProfile('profile-Products.CMFPlone:plone', 'workflow')
     setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
+    # TODO: reindex security?
+    # install plone default rolemap?
+    setup.runImportStepFromProfile('profile-Products.CMFPlone:plone', 'rolemap')
+    setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
     # update initial content and toolkits
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
 
