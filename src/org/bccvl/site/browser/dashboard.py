@@ -1,6 +1,7 @@
 from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.content.interfaces import IDataset,  IExperiment
+from org.bccvl.site import defaults
 
 
 class DashboardView(BrowserView):
@@ -22,7 +23,7 @@ class DashboardView(BrowserView):
 
     def newest_datasets(self):
         return self.pc.searchResults(
-            path='/'.join(self.portal.datasets.getPhysicalPath()),
+            path='/'.join(self.portal[defaults.DATASETS_FOLDER_ID].getPhysicalPath()),
             object_provides=IDataset.__identifier__,
             sort_on='modified',
             sort_order='descending',
@@ -31,7 +32,7 @@ class DashboardView(BrowserView):
 
     def newest_experiments(self):
         return self.pc.searchResults(
-            path='/'.join(self.portal.datasets.getPhysicalPath()),
+            path='/'.join(self.portal[defaults.EXPERIMENTS_FOLDER_ID].getPhysicalPath()),
             object_provides=IExperiment.__identifier__,
             sort_on='modified',
             sort_order='descending',
