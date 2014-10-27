@@ -115,8 +115,13 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
                 for layer in md['layers']:
                     if not layer['layer'] in layers:
                         continue
+                    if 'filename' in layer:
+                        vizurl = '{0}#{1}'.format(md['vizurl'], layer['filename'])
+                    else:
+                        vizurl = md['vizurl']
                     yield {"brain": brain,
-                           "layer": layer}
+                           "layer": layer,
+                           "vizurl": vizurl}
 
     def extract(self):
         # extract the value for the widget from the request and return
