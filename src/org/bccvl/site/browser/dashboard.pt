@@ -5,8 +5,8 @@
       lang="en"
       metal:use-macro="context/main_template/macros/master"
       i18n:domain="plone.app.dexterity"
-      tal:define="member context/portal_membership/getAuthenticatedMember;
-                  username member/getUserName;
+      tal:define="pas_member context/@@pas_member;
+                  userinfo pas_member/info;
                   portal_state context/@@plone_portal_state;
                   root_url portal_state/navigation_root_url;">
 
@@ -17,7 +17,7 @@
       <div class="cell position-0 width-3:4">
         <div class="row">
           <div class="cell position-0">
-            <h1>Welcome <strong tal:content="username">Username</strong></h1>
+            <h1>Welcome <strong tal:content="userinfo/name_or_id">Username</strong></h1>
             <p>Need help? <a href="knowledgebase" tal:attributes="href string:${root_url}/knowledgebase">Visit our knowledge base</a> or <a href="contact-info" tal:attributes="href string:${root_url}/contact-info">contact our support team</a></p>
           </div>
         </div>
