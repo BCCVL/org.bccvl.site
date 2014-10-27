@@ -1,6 +1,7 @@
 {
   "_type": "Document",
-  "title": "Welcome to BCCVL",
+  "title": "Getting Started with the BCCVL",
   "_transitions": "publish",
-  "description": "Congratulations! You have successfully installed BCCVL"
+  "_layout": "frontpage",
+  "description": "The Biodiversity & Climate Change Virtual Laboratory (BCCVL) provides an innovative, efficient, robust portfolio of integrated tools and data collections modelling the potential responses of Australia’s biodiversity to climate change through an easy-to-use, web-based platform."
 }

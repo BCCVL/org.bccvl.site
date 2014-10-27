@@ -21,9 +21,25 @@
    <include file="experiment.zcml"/>
    <include file="dataset.zcml"/>
    <include file="toolkit.zcml"/>
+   <include file="dashboard.zcml"/>
 
     <utility
         factory=".ws.ALAService"/>
+
+    <!-- maybe register for
+         plone.dexterity.interfaces.IDexterityContent
+         plone.dexterity.interfaces.IDexterityItem
+         Products.CMFCore.interfaces._content.IDublinCore
+         plone.app.contenttypes.interfaces.IDocument
+         Products.CMFPlone.interfaces.siteroot.IPloneSiteRoot-->
+    <browser:page
+        name="frontpage"
+        for="plone.app.contenttypes.interfaces.IDocument"
+        permission="zope2.View"
+        template="frontpage.pt"
+        menu="plone_displayviews"
+        title="Front Page View"
+        />
 
     <browser:resource
         name="experiment.png"

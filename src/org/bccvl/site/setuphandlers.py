@@ -196,5 +196,17 @@ def upgrade_160_170_1(context, logger=None):
     # Run the following GS steps
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
+    setup.runImportStepFromProfile(PROFILE_ID, 'portlets')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    # install plone default workflows
+    setup.runImportStepFromProfile('profile-Products.CMFPlone:plone', 'workflow')
+    setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
+    # TODO: reindex security?
+    # install plone default rolemap?
+    setup.runImportStepFromProfile('profile-Products.CMFPlone:plone', 'rolemap')
+    setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
+    # update initial content and toolkits
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
     # TODO: possible data structure strange on sdmexperiments
     #    environmental_datasets a dict of sets (instead of list?)

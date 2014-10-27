@@ -8,5 +8,8 @@
     <type type_id="Folder">
       <bound-workflow workflow_id="intranet_workflow"/>
     </type>
+    <type type_id="News Item">
+      <bound-workflow workflow_id="intranet_workflow"/>
+    </type>
   </bindings>
 </object>

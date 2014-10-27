@@ -43,6 +43,7 @@
   <include package=".content"/>
   <include package=".browser"/>
   <include package=".widgets"/>
+  <include package=".portlets"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
 

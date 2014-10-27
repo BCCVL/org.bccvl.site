@@ -43,14 +43,15 @@
 
   </genericsetup:upgradeSteps>
 
-    <genericsetup:upgradeSteps
+  <!-- source="1.6.0" -->
+  <genericsetup:upgradeSteps
       source="1.6.0"
       destination="1.7.0"
       profile="org.bccvl.site:default">
 
     <genericsetup:upgradeStep
         title="Upgrade profile to version 1.7"
-        description="Updates types"
+        description="Updates dashboard, types"
         handler=".setuphandlers.upgrade_160_170_1"
         />
 
