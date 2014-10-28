@@ -85,7 +85,12 @@
   <div id="datasets-popup-result"
        tal:define="batch view/datasetslisting">
     <div id="datasets-popup-result-list">
-    <tal:repeat tal:repeat="item batch">
+      <div class="row" tal:condition="batch">
+        <div class="cell position-1">
+          <div metal:use-macro="context/batch_macros/macros/navigation" />
+        </div>
+      </div>
+      <tal:repeat tal:repeat="item batch">
       <!-- non layered datasets -->
       <div class="row"
            tal:condition="not:enable_layers"
@@ -152,6 +157,11 @@
         </div>
       </div>
     </tal:repeat>
+    <div class="row" tal:condition="batch">
+      <div class="cell position-1">
+        <div metal:use-macro="context/batch_macros/macros/navigation" />
+      </div>
+    </div>
     <div class="row"
          tal:condition="not:batch">
       <div class="cell position-1">
