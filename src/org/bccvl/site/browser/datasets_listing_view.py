@@ -333,13 +333,14 @@ class DatasetsListingPopup(BrowserView):
             # if nothing selcted use all values in vocab
             query['BCCDataGenre'] = [self.genre]
 
-        layer = self.request.get('datasets.filter.layer')
-        if layer:
-            query['BCCEnviroLayer'] = [self.dstools.layer_vocab.by_token[token].value for token in layer]
+        if self.request.get('datasets.filter.enable_layers'):
+            layer = self.request.get('datasets.filter.layer')
+            if layer:
+                query['BCCEnviroLayer'] = [self.dstools.layer_vocab.by_token[token].value for token in layer]
 
-        resolution = self.request.get('datasets.filter.resolution', self.resolution_vocab._terms[0].token)
-        if resolution:
-            query['BCCResolution'] = self.resolution_vocab.by_token[resolution].value
+            resolution = self.request.get('datasets.filter.resolution', self.resolution_vocab._terms[0].token)
+            if resolution:
+                query['BCCResolution'] = self.resolution_vocab.by_token[resolution].value
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
