@@ -291,6 +291,8 @@ class SDMAdd(ParamGroupMixin, Add):
             applyChanges(group, content, data)
             new_params[group.toolkit] = content
         newob.parameters = new_params
+        # FIXME: resolution hack
+        newob.resolution = data['resolution']
         return newob
 
     template = ViewPageTemplateFile("experiment_add.pt")
@@ -334,23 +336,20 @@ class SDMAdd(ParamGroupMixin, Add):
         # WidgetActionExecutionError ... widget specific
         # TODO: validate all sort of extra info- new object does not exist yet
         # data contains already field values
-        resolution = None
         datasets = data.get('environmental_datasets', {}).keys()
         if not datasets:
             # FIXME: Make this a widget error, currently shown as form wide error
             raise ActionExecutionError(Invalid('No environmental dataset selected'))
-        # FIXME: index resolution for faster access
-        #        or use dsbrain.subjecturi to get info
-        #        or run sparql query across all dsbrain.subjecturis
+        # Determine lowest resolution
+        # FIXME: this is slow and needs improvements
+        #        and accessing _terms is not ideal
+        res_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
+        resolution_idx = len(res_vocab._terms)
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
-            if resolution is None:
-                resolution = dsbrain.BCCResolution
-                continue
-            if dsbrain.BCCResolution != resolution:
-                # FIXME: Make this a widget error, currently shown as form wide error
-                #        -> needs template adaption to show selected values and parsey compatible error rendering
-                #raise WidgetActionExecutionError('environmental_datasets', Invalid("All datasets must have the same resolution"))
-                raise ActionExecutionError(Invalid("All datasets must have the same resolution"))
+            idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+            if idx < resolution_idx:
+                resolution_idx = idx
+        data['resolution'] = res_vocab._terms[resolution_idx].value
 
 
 class ProjectionAdd(Add):
