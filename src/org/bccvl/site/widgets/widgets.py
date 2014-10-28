@@ -19,7 +19,9 @@ from plone.z3cform.interfaces import IDeferSecurityCheck
 
 
 # Wrap js code into a document.ready wrapper and CDATA section
-JS_WRAPPER = u"//<![CDATA[$(document).ready(function(){%(js)s});//]]>"
+JS_WRAPPER = u"""//<![CDATA[
+    $(document).ready(function(){%(js)s});
+//]]>"""
 
 JS_WRAPPER_ADAPTER = lambda req, widget: JS_WRAPPER
 

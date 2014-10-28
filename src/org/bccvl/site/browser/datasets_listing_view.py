@@ -270,8 +270,8 @@ class DatasetsListingView(BrowserView):
     def __call__(self):
         # initialise instance variables, we'll do it here so that we have
         # security set up and have to do it only once per request
-        self.dstools = getMultiAdapter((self.context, self.request), name = "dataset_tools")
-        self.resolution_vocab = getUtility(IVocabularyFactory,  'org.bccvl.site.ResolutionVocabulary')(self.context)
+        self.dstools = getMultiAdapter((self.context, self.request), name="dataset_tools")
+        self.resolution_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
         self.source_vocab = SimpleVocabulary((
             SimpleTerm('user', 'user', u'My Datasets'),
             SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
@@ -336,6 +336,11 @@ class DatasetsListingPopup(BrowserView):
         layer = self.request.get('datasets.filter.layer')
         if layer:
             query['BCCEnviroLayer'] = [self.dstools.layer_vocab.by_token[token].value for token in layer]
+
+        resolution = self.request.get('datasets.filter.resolution', self.resolution_vocab._terms[0].token)
+        if resolution:
+            query['BCCResolution'] = self.resolution_vocab.by_token[resolution].value
+
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
         if source:
@@ -398,14 +403,16 @@ class DatasetsListingPopup(BrowserView):
             'sort_on': orderby[0],
             'sort_order': order})
         brains = pc.searchResults(query_params)  # show_all=1?? show_inactive=show_inactive?
-        #batch = Batch(brains, b_size, b_start, orphan=0)
-        #return batch
-        return brains
+        from Products.CMFPlone import Batch
+        batch = Batch(brains, b_size, b_start, orphan=0)
+        return batch
+        #return brains
 
     def __call__(self):
         # initialise instance variables, we'll do it here so that we have
         # security set up and have to do it only once per request
-        self.dstools = getMultiAdapter((self.context, self.request), name = "dataset_tools")
+        self.dstools = getMultiAdapter((self.context, self.request), name="dataset_tools")
+        self.resolution_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
         self.source_vocab = SimpleVocabulary((
             SimpleTerm('user', 'user', u'My Datasets'),
             SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
@@ -430,6 +437,19 @@ class DatasetsListingPopup(BrowserView):
         for genre in self.dstools.layer_vocab:
             yield {
                 'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
+
+    def resolution_list(self):
+        selected = self.request.get('datasets.filter.resolution', None)
+        if not selected:
+            # TODO: _terms really?
+            selected = self.resolution_vocab._terms[0].token
+        for genre in self.resolution_vocab:
+            yield {
+                'selected': genre.token == selected,
                 'disabled': False,
                 'token': genre.token,
                 'label': genre.title

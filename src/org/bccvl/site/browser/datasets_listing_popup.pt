@@ -57,6 +57,7 @@
       </div>
       <div class="cell position-8"
            tal:condition="enable_layers">
+        <input name="datasets.filter.enable_layers" type="hidden" value="1"/>
         <select id="datasets-filter-layer"
                 name="datasets.filter.layer:list"
                 multiple="multiple">
@@ -68,7 +69,15 @@
                                   value opt/token;"
                   tal:content="opt/label">Layer title</option>
         </select>
-        <input name="datasets.filter.enable_layers" type="hidden" value="1"/>
+        <select id="datasets-filter-resolution"
+                name="datasets.filter.resolution">
+          <option value="resolutionid"
+                  tal:repeat="opt view/resolution_list"
+                  tal:attributes="selected opt/selected;
+                                  disabled opt/disabled;
+                                  value opt/token;"
+                  tal:content="opt/label">Resolution title</option>
+        </select>
       </div>
 
     </form>
@@ -143,6 +152,12 @@
         </div>
       </div>
     </tal:repeat>
+    <div class="row"
+         tal:condition="not:batch">
+      <div class="cell position-1">
+        <p>No Datasets found</p>
+      </div>
+    </div>
     </div>
   </div>
 </html>
