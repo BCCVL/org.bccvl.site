@@ -16,6 +16,7 @@ from .interfaces import (IDatasetLayersWidget, IDatasetWidget,
 from plone.app.uuid.utils import uuidToCatalogBrain
 from org.bccvl.site.interfaces import IDownloadInfo
 from plone.z3cform.interfaces import IDeferSecurityCheck
+from Products.CMFCore.utils import getToolByName
 
 
 # Wrap js code into a document.ready wrapper and CDATA section
@@ -85,6 +86,8 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
     render a default widget for values per key
     """
 
+    _res_vocab = None
+
     def js(self):
         js = u"""
             bccvl.select_dataset_layers($("a#%(fieldname)s-popup"), {
@@ -104,6 +107,19 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
         jswrap = getMultiAdapter((self.request, self), IJSWrapper)
         return jswrap % {'js':  js}
 
+    def resolutions(self):
+        if self.value:
+            pc = getToolByName(self.context, 'portal_catalog')
+            brains = pc.searchResults(UID=self.value.keys())
+            # TODO: should use vocab to turn into token
+            return set(unicode(b['BCCResolution']) for b in brains)
+        return []
+
+    def resolution_term(self, resvalue):
+        if not self._res_vocab:
+            self._res_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
+        return self._res_vocab.getTerm(resvalue)
+
     def items(self):
         # FIXME importing here to avoid circular import of IDataset
         from org.bccvl.site.api.dataset import getdsmetadata
@@ -122,6 +138,7 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
                     else:
                         vizurl = md['vizurl']
                     yield {"brain": brain,
+                           "resolution": self.resolution_term(brain['BCCResolution']),
                            "layer": layer,
                            "vizurl": vizurl}
 
