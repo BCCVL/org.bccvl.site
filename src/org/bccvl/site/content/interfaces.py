@@ -72,13 +72,6 @@ class IExperiment(Interface):
 
 class ISDMExperiment(IExperiment):
 
-    resolution = Choice(
-        title=u'Resolution',
-        default=None,
-        vocabulary='org.bccvl.site.ResolutionVocabulary',
-        required=True,
-    )
-
     form.widget(functions=CheckBoxFieldWidget)
     functions = List(
         title=u'Algorithm',
