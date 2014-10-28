@@ -23,6 +23,12 @@
             <role name="Site Administrator"/>
             <role name="Editor"/>
         </permission>
+        <permission name="gu.repository.content: Add Repository Item" acquire="False">
+            <role name="Repository Administrator"/>
+            <role name="Repository Contributor"/>
+            <role name="Manager"/>
+            <role name="Owner"/>
+        </permission>
         <!-- see Products/CMFEditions/profiles/default/rolemap.xml
              for history permissions -->
         <!-- see plone/app/contenttypes/profiles/default/rolemap.xml
