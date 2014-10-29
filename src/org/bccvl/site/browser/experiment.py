@@ -344,10 +344,10 @@ class SDMAdd(ParamGroupMixin, Add):
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
         res_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
-        resolution_idx = len(res_vocab._terms)
+        resolution_idx = -1
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
             idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
-            if idx < resolution_idx:
+            if idx > resolution_idx:
                 resolution_idx = idx
         data['resolution'] = res_vocab._terms[resolution_idx].value
 
@@ -376,18 +376,19 @@ class ProjectionAdd(Add):
             from plone.app.uuid.utils import uuidToCatalogBrain
             from gu.z3cform.rdf.interfaces import IResource
             from org.bccvl.site.namespace import BCCPROP
+            data['resolution'] = set()
             for sdm in (uuidToCatalogBrain(uuid) for uuid in uuids):
                 sdmgraph = IResource(sdm)
                 resolution = sdmgraph.value(BCCPROP['resolution'])
-                # TODO: looks just at first sdm, but should also validate
-                #       tha they have all the same resolution
-                data['resolution'] = resolution.identifier
-                break
+                data['resolution'].add(resolution.identifier)
 
-        from org.bccvl.site.api.dataset import find_projections
-        result = find_projections(self.context, data.get('emission_scenarios'),
-                                  data.get('climate_models'),
-                                  data.get('years'))
+        if data['resolution']:
+            data['resolution'] = list(data['resolution'])
+            from org.bccvl.site.api.dataset import find_projections
+            result = find_projections(self.context, data.get('emission_scenarios'),
+                                      data.get('climate_models'),
+                                      data.get('years'),
+                                      data.get('resolution'))
         if not len(result):
             raise ActionExecutionError(Invalid(u"The combination of projection points does not match any datasets"))
 

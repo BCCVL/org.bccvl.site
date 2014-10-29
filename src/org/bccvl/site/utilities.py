@@ -19,6 +19,7 @@ from org.bccvl.site.content.interfaces import (
 from org.bccvl.site.content.user import IBCCVLUser
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
 from org.bccvl.site.namespace import DWC, BCCPROP, BCCVOCAB
+from org.bccvl.site.api import dataset
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
@@ -341,14 +342,14 @@ class SDMJobTracker(MultiJobTracker):
 @adapter(IProjectionExperiment)
 class ProjectionJobTracker(MultiJobTracker):
 
-    def _get_job_params(self, sdm, year, emsc, gcm, dsbrain):
+    def _get_job_params(self, sdmuuid, year, emsc, gcm, dsbrain):
         # sdm ... sdm projection result model
         # climds ... future climate dataset brain
 
         # build job_params and store on result
         return {
-            'resolution': self.context.resolution,
-            'species_distribution_models': sdm,
+            'resolution': dsbrain.BCCResolution,
+            'species_distribution_models': sdmuuid,
             # TODO: URI values or titles?
             'year': year,
             'emission_scenario': emsc,
@@ -356,7 +357,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'future_climate_datasets': dsbrain.UID,
         }
 
-    def _create_result_container(self, sdm, climds):
+    def _create_result_container(self, sdmuuid, climds):
         # create result object:
         # get more metadata about dataset
         dsmd = IResource(climds)
@@ -376,16 +377,16 @@ class ProjectionJobTracker(MultiJobTracker):
             self.context,
             'gu.repository.content.RepositoryItem',
             title=title)
-        result.job_params = self._get_job_params(sdm, year, emsc, gcm, climds)
+        result.job_params = self._get_job_params(sdmuuid, year, emsc, gcm, climds)
         return result
 
-    def _store_experiment_metadata_on_result(self, result, sdm, dsbrain):
+    def _store_experiment_metadata_on_result(self, result, sdmuuid, dsbrain):
         # result ... result container
         # sdm ... sdm model dataset uuid?
         # dsbrain ... future climate layer dataset
-        def getThresholdsForSdm(context, sdm):
+        def getThresholdsForSdm(context, sdmuuid):
             pc = getToolByName(context, 'portal_catalog')
-            sdmbrain = uuidToCatalogBrain(sdm)
+            sdmbrain = uuidToCatalogBrain(sdmuuid)
             # sdmbrain is the model dataset, and we want it's sibling evaluation results
             path = '/'.join(sdmbrain.getPath().split('/')[:-1])
             thrs = {}
@@ -403,8 +404,8 @@ class ProjectionJobTracker(MultiJobTracker):
 
         result.experiment_infos = {
             'sdm': {
-                'uuid': sdm,
-                'thresholds': getThresholdsForSdm(self.context, sdm),
+                'uuid': sdmuuid,
+                'thresholds': getThresholdsForSdm(self.context, sdmuuid),
             }
         }
 
@@ -418,11 +419,20 @@ class ProjectionJobTracker(MultiJobTracker):
                 return ('error',
                         u"Can't find method to run Projection Experiment")
 
+            # TODO: for each SDM we have to find the future datasets
+            # with appropriate resolution
+
+
             # split jobs across future climate datasets and sdms
-            for sdm in self.context.species_distribution_models:
-                for dsbrain in self.context.future_climate_datasets():
-                    result = self._create_result_container(sdm, dsbrain)
-                    self._store_experiment_metadata_on_result(result, sdm, dsbrain)
+            for sdmuuid in self.context.species_distribution_models:
+                sdmbrain = uuidToCatalogBrain(sdmuuid)
+                for dsbrain in dataset.find_projections(self.context,
+                                                        self.context.emission_scenarios,
+                                                        self.context.climate_models,
+                                                        self.context.years,
+                                                        sdmbrain.BCCResolution):
+                    result = self._create_result_container(sdmuuid, dsbrain)
+                    self._store_experiment_metadata_on_result(result, sdmuuid, dsbrain)
                     # submit job
                     LOG.info("Submit JOB project to queue")
                     method(result, "project")  # TODO: wrong interface
@@ -431,6 +441,8 @@ class ProjectionJobTracker(MultiJobTracker):
                                      'generate taskname: projection experiment')
                     resultjt.set_progress('PENDING',
                                           u'projection pending')
+            # TODO: add status message about mismatched sdms
+            # TODO: match layers as well?
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             # TODO: in case there is an error should we abort the transaction

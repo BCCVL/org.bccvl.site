@@ -48,13 +48,18 @@ def query(context=None, brains=False, **kw):
 
 # TODO: turn this into some adapter lookup component-> maybe use
 # z3c.form validation adapter lookup?
-def find_projections(ctx, emission_scenarios, climate_models, years):
+def find_projections(ctx, emission_scenarios, climate_models, years, resolution=None):
         """Find Projection datasets for given criteria"""
         pc = getToolByName(ctx, 'portal_catalog')
         result = []
-        brains = pc.searchResults(BCCEmissionScenario=emission_scenarios,
-                                  BCCGlobalClimateModel=climate_models,
-                                  BCCDataGenre=BCCVOCAB['DataGenreFC'])
+        params = {
+            'BCCEmissionScenario': emission_scenarios,
+            'BCCGlobalClimateModel': climate_models,
+            'BCCDataGenre': BCCVOCAB['DataGenreFC']
+        }
+        if resolution:
+            params['BCCResolution'] = resolution
+        brains = pc.searchResults(**params)
         for brain in brains:
             graph = IGraph(brain.getObject())
             # TODO: do better date matching

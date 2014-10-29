@@ -200,7 +200,7 @@ class DataSetManager(BrowserView):
         emsc = [URIRef(x) for x in emsc]
         gcms = [URIRef(x) for x in gcms]
         # 5. search
-        res = dataset.find_projections(self.context, emsc, gcms, years)
+        res = dataset.find_projections(self.context, emsc, gcms, years, None)
         return len(res)
 
     # TODO: this is rather experiment API
