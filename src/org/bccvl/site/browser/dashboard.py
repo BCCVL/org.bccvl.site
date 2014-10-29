@@ -1,5 +1,6 @@
 from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
+from org.bccvl.site.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IDataset,  IExperiment
 from org.bccvl.site import defaults
 
@@ -38,3 +39,14 @@ class DashboardView(BrowserView):
             sort_order='descending',
             sort_limit=3
         )[:3]
+
+    def get_state_css(self, brain):
+        # check job_state and return either success, error or block
+
+        job_state = IJobTracker(brain.getObject()).state
+        if job_state in ('COMPLETED', None):
+            return "success"
+        if job_state == 'FAILED':
+            return "error"
+        # everything else can only be in progress
+        return "info"
