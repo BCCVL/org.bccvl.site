@@ -34,7 +34,7 @@
       <required>False</required>
       <title>Enable redirect on login</title>
     </field>
-    <value>True</value>
+    <value>False</value>
   </record>
   <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_expr">
     <field type="plone.registry.field.TextLine">
