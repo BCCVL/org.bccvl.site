@@ -7,7 +7,7 @@
       <required>False</required>
       <title>Enable redirect on first login</title>
     </field>
-    <value>True</value>
+    <value>False</value>
   </record>
   <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_expr">
     <field type="plone.registry.field.TextLine">
@@ -25,7 +25,7 @@
       <required>False</required>
       <title>Ignore came_from parameter on first login</title>
     </field>
-    <value>True</value>
+    <value>False</value>
   </record>
   <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_enabled" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_enabled">
     <field type="plone.registry.field.Bool">
@@ -34,7 +34,7 @@
       <required>False</required>
       <title>Enable redirect on login</title>
     </field>
-    <value>False</value>
+    <value>True</value>
   </record>
   <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_expr">
     <field type="plone.registry.field.TextLine">

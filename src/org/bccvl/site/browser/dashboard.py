@@ -42,7 +42,6 @@ class DashboardView(BrowserView):
 
     def get_state_css(self, brain):
         # check job_state and return either success, error or block
-
         job_state = IJobTracker(brain.getObject()).state
         if job_state in ('COMPLETED', None):
             return "success"

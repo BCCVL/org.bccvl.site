@@ -198,6 +198,7 @@ def upgrade_160_170_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'portlets')
     setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     # install plone default workflows
     setup.runImportStepFromProfile('profile-Products.CMFPlone:plone', 'workflow')
     setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
