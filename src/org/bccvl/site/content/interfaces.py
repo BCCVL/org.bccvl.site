@@ -230,10 +230,11 @@ class ISpeciesTraitsExperiment(IExperiment):
         default=None,
     )
 
-    # form.widget('data_table',
-    #             DatasetFieldWidget,
-    #             errmsg=u"Please select at least 1 data set.",
-    #             vizclass=u'fine bccvl-auto-viz')
+    form.widget('data_table',
+                DatasetFieldWidget,
+                errmsg=u"Please select at least 1 emmission scenario.",
+                genre=['DataGenreTraits'],
+                vizclass=u'fine bccvl-auto-viz')
     data_table = Choice(
         title=u'Dataset',
         vocabulary='species_traits_datasets_vocab',
