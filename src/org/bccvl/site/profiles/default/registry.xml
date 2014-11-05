@@ -34,7 +34,7 @@
       <required>False</required>
       <title>Enable redirect on login</title>
     </field>
-    <value>False</value>
+    <value>True</value>
   </record>
   <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_expr">
     <field type="plone.registry.field.TextLine">
@@ -52,7 +52,7 @@
       <required>False</required>
       <title>Ignore came_from parameter on login</title>
     </field>
-    <value>False</value>
+    <value>True</value>
   </record>
   <!-- plone.caching settings -->
   <record name="plone.caching.interfaces.ICacheSettings.enabled" interface="plone.caching.interfaces.ICacheSettings" field="enabled">
