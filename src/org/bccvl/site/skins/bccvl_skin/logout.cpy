@@ -23,15 +23,13 @@ next = request.get('next', None)
 if (next is not None and context.portal_url.isURLInPortal(next)):
     target_url = next
 else:
+    loggedout_url = request.URL1 + '/logged_out'
+    site_url = context.portal_url()
     if request.get("HTTP_X_REMOTE_USER"):
-        site_url = context.portal_url()
+        # do shibboleth logout
         target_url = "/Shibboleth.sso/Logout?return={0:s}".format(site_url)
     else:
-        target_url = request.URL1 + '/logged_out'
-        site_properties = context.portal_properties.site_properties
-        external_logout_url = site_properties.getProperty('external_logout_url')
-        if external_logout_url:
-            target_url = "%s?next=%s" % (external_logout_url, target_url)
+        target_url = site_url
 
 # Double '$' to avoid injection into TALES
 target_url = target_url.replace('$', '$$')
