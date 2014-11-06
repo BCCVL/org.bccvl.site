@@ -233,6 +233,9 @@ class JobTracker(object):
     def start_job(self, request):
         raise NotImplementedError()
 
+    def progress(self):
+        return self._state.get('progress', None)
+
 
 class MultiJobTracker(JobTracker):
     # used for content objects that don't track jobs directly, but may have

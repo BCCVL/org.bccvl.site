@@ -80,6 +80,14 @@ class DatasetTools(BrowserView):
         # FIXME: assume we have a IContentListingObject
         return itemobj._brain.job_state
 
+    def job_progress(self, itemobj=None):
+        if itemobj is None:
+            itemobj = self.context
+        progress = IJobTracker(itemobj.getObject()).progress()
+        if progress:
+            return progress.get('message')
+        return None
+
     @property
     def genre_vocab(self):
         if self._genre_vocab is None:
