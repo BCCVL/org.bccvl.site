@@ -107,7 +107,7 @@ class ALASource(object):
                 'description': description,
                 'file': {
                     'file': 'data.csv',
-                    'contentype': 'text/csv',
+                    'contenttype': 'text/csv',
                     'filename': '{}.csv'.format(self.lsid),
                 },
                 # TODO: not necessary to use '_files' with '_rdf';
