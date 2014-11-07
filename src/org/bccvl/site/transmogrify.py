@@ -291,24 +291,23 @@ class FileMetadataToRDF(object):
         # exhaust previous iterator
         for item in self.previous:
 
-            filename = None
+            fileid = None
             if 'remoteUrl' in item:
                 # TODO: assumse, that there is a _file entry to it which has
                 #       the name for _filemetadata dictionary
                 _files = item.get('_files', {}).get(item.get('remoteUrl'), {})
-                filename = _files.get('filename')
+                fileid = item.get('remoteUrl')
                 contenttype = _files.get('contenttype', 'application/octet-stream')
             elif 'file' in item:
-                filename = item.get('file', {}).get('file')  # TODO: or is this filename?
+                fileid = item.get('file', {}).get('file')
                 contenttype = item.get('file', {}).get('contenttype')
-            if not filename:
+            if not fileid:
                 # there should be no other None key
                 yield item
                 continue
 
-            # FIXME: this assumes, that the key in _files matches the filename, but the key may be arbitrary
             filemd = item.get(self.filemetadatakey, {})
-            filemd = filemd.get(filename)
+            filemd = filemd.get(fileid)
             if not filemd:
                 # no filemetadata (delete or leave untouched?)
                 yield item
