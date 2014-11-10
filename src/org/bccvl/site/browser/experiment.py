@@ -331,12 +331,6 @@ class SDMAdd(ParamGroupMixin, Add):
         """
         return js_tmpl % json.dumps(mapping)
 
-    def updateWidgets(self):
-        super(SDMAdd, self).updateWidgets()
-        self.widgets['species_absence_dataset'].addClass('required')
-        self.widgets['species_pseudo_absence_points'].addClass('required')
-        self.widgets['species_number_pseudo_absence_points'].addClass('required')
-
     def validateAction(self, data):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific

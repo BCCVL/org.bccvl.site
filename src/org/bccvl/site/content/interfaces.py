@@ -99,7 +99,7 @@ class ISDMExperiment(IExperiment):
     species_absence_dataset = TextLine(
         title=u'Species Absence Datasets',
         default=None,
-        required=False,
+        required=True,
     )
 
     species_pseudo_absence_points = Bool(
@@ -113,7 +113,7 @@ class ISDMExperiment(IExperiment):
         title=u"Number of pseudo absence points",
         description=u"The number of random pseudo absence points to generate",
         default=10000,
-        required=False)
+        required=True)
 
     form.widget('environmental_datasets',
                 DatasetLayersFieldWidget,
