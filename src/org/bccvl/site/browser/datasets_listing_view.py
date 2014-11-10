@@ -346,9 +346,9 @@ class DatasetsListingPopup(BrowserView):
             if layer:
                 query['BCCEnviroLayer'] = [self.dstools.layer_vocab.by_token[token].value for token in layer]
 
-            resolution = self.request.get('datasets.filter.resolution', self.resolution_vocab._terms[0].token)
+            resolution = self.request.get('datasets.filter.resolution')
             if resolution:
-                query['BCCResolution'] = self.resolution_vocab.by_token[resolution].value
+                query['BCCResolution'] = [self.resolution_vocab.by_token[resolution].value for tok in resolution]
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
@@ -413,6 +413,8 @@ class DatasetsListingPopup(BrowserView):
             'sort_order': order})
         brains = pc.searchResults(query_params)  # show_all=1?? show_inactive=show_inactive?
         from Products.CMFPlone import Batch
+        # TODO: batching doesn't work properly for layered view, as batch
+        #       is per dataset and not per layer as displayed
         batch = Batch(brains, b_size, b_start, orphan=0)
         return batch
         #return brains
@@ -453,9 +455,6 @@ class DatasetsListingPopup(BrowserView):
 
     def resolution_list(self):
         selected = self.request.get('datasets.filter.resolution', None)
-        if not selected:
-            # TODO: _terms really?
-            selected = self.resolution_vocab._terms[0].token
         for genre in self.resolution_vocab:
             yield {
                 'selected': genre.token == selected,
