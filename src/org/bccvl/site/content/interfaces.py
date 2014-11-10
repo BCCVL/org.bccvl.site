@@ -99,7 +99,7 @@ class ISDMExperiment(IExperiment):
     species_absence_dataset = TextLine(
         title=u'Species Absence Datasets',
         default=None,
-        required=True,
+        required=False,
     )
 
     species_pseudo_absence_points = Bool(

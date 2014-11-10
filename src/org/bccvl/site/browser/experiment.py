@@ -331,6 +331,12 @@ class SDMAdd(ParamGroupMixin, Add):
         """
         return js_tmpl % json.dumps(mapping)
 
+    def updateWidgets(self):
+        super(SDMAdd, self).updateWidgets()
+        self.widgets['species_absence_dataset'].addClass('required')
+        self.widgets['species_pseudo_absence_points'].addClass('required')
+        self.widgets['species_number_pseudo_absence_points'].addClass('required')
+
     def validateAction(self, data):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
@@ -339,7 +345,20 @@ class SDMAdd(ParamGroupMixin, Add):
         datasets = data.get('environmental_datasets', {}).keys()
         if not datasets:
             # FIXME: Make this a widget error, currently shown as form wide error
-            raise ActionExecutionError(Invalid('No environmental dataset selected'))
+            raise ActionExecutionError(Invalid('No environmental dataset selected.'))
+
+        # TODO: we should make sure only user picks only one option, otherwise pseudo absence
+        #       will be preferred (maybe we can do both?, select absence points, and fill up mith pseudo absences?)
+        # we need an absence dataset or a a number of pseudo absence points
+        if not data.get('species_pseudo_absence_points'):
+            if not data.get('species_absence_dataset'):
+                raise ActionExecutionError(RequiredMissing('No absence points selected.'))
+        else:
+            numabspoints = data.get('species_number_pseudo_absence_points')
+            if not numabspoints:
+                raise ActionExecutionError(RequiredMissing('No absence points selected'))
+            elif numabspoints <= 0:
+                raise ActionExecutionError(Invalid('Number of absence points must be greater than 0.'))
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
