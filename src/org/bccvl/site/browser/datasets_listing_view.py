@@ -348,7 +348,7 @@ class DatasetsListingPopup(BrowserView):
 
             resolution = self.request.get('datasets.filter.resolution')
             if resolution:
-                query['BCCResolution'] = [self.resolution_vocab.by_token[resolution].value for tok in resolution]
+                query['BCCResolution'] = [self.resolution_vocab.by_token[token].value for token in resolution]
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
