@@ -4,6 +4,6 @@
   <div class="selecteditem"
        tal:define="item view/item">
     <span class="selected-option"
-          tal:content="item/Title">Species</span>
+          tal:content="item/Title | string:No absence dataset selected">Species</span>
   </div>
 </html>
