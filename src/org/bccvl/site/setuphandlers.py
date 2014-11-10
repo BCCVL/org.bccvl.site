@@ -206,6 +206,8 @@ def upgrade_160_170_1(context, logger=None):
     # install plone default rolemap?
     setup.runImportStepFromProfile('profile-Products.CMFPlone:plone', 'rolemap')
     setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
+    # rerun cmfeditions rolemap
+    setup.runImportStepFromProfile('profile-Products.CMFEditions:CMFEditions', 'rolemap')
     # update initial content and toolkits
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
 
