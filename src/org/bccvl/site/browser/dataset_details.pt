@@ -5,14 +5,15 @@
       lang="en"
       i18n:domain="plone.app.dexterity"
       tal:omit-tag=""
-      tal:define="owner context/getOwner;
+      tal:define="pas_member context/@@pas_member;
+                  owner context/getOwner;
                   user  owner/getUserName;
                   dummy python:request.response.setHeader('X-Theme-Disabled', 'True');">
 
   <h1 tal:content="context/title">Title</h1>
   <tal:owner tal:condition="python: user != 'admin'">
     <h2>Owner:</h2>
-    <p tal:content="owner/getUserName">Owner</p>
+    <p tal:content="python: pas_member.info(user)['name_or_id']">Owner</p>
   </tal:owner>
   <tal:description tal:condition="context/description">
     <h2>Description:</h2>
