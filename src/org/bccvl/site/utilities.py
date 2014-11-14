@@ -8,7 +8,7 @@ from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
-form org.bccvl.site.api import dataset
+from org.bccvl.site.api import dataset
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
