@@ -488,7 +488,7 @@ class FileMetadataToRDF(object):
             if 'gcm' in bmd:
                 res.set(BCCPROP['gcm'], BCCGCM[bmd['gcm']])
             if 'emsc' in bmd:
-                res.set(BCCPROP['emissionscenario'], BCCEMSC[bmd['gcm']])
+                res.set(BCCPROP['emissionscenario'], BCCEMSC[bmd['emsc']])
             if 'genre' in bmd:
                 # It's a bit weird here, we have the genre
                 genremap = {'Environmental': BCCVOCAB['DataGenreE'],
