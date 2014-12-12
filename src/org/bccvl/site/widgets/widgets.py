@@ -117,7 +117,7 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
 
     def resolution_term(self, resvalue):
         if not self._res_vocab:
-            self._res_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
+            self._res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
         return self._res_vocab.getTerm(resvalue)
 
     def items(self):
