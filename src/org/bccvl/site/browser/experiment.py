@@ -363,7 +363,7 @@ class SDMAdd(ParamGroupMixin, Add):
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
-        res_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.ResolutionVocabulary')(self.context)
+        res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
         resolution_idx = -1
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
             idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
