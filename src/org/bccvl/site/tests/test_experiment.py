@@ -169,7 +169,7 @@ class ExperimentAddTest(unittest.TestCase):
         # TODO: assrt two result folders,....
         # TODO: check mix of jt.state (in multistate scenario with queued, running etc. mixed)
 
-    def test_validate_resolution(self):
+    def test_mixed_resolution(self):
         current_1k_uuid = unicode(self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
         form = self.get_form()
         form.request.form.update({
@@ -179,9 +179,8 @@ class ExperimentAddTest(unittest.TestCase):
             'form.widgets.environmental_datasets.layer.2': u'B01'
         })
         form.update()
-        # we should have a resolution mismatch error here
-        errors = [e for e in form.widgets.errors]
-        self.assertEqual(len(errors), 1)
+        # resolution should be set to the lowest of selected datasets
+        self.assertEqual(self.experiments['my-experiment'].resolution, 'Resolution2_5m')
 
 
 class ExperimentViewTest(unittest.TestCase):
