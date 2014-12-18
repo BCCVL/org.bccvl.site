@@ -297,40 +297,6 @@ class SDMAdd(ParamGroupMixin, Add):
 
     template = ViewPageTemplateFile("experiment_add.pt")
 
-    # TODO: is this still necessary?
-    def occurrences_mapping(self):
-
-        def _add_ds_to_map(vocab, map):
-            # TODO: relies on BrainsVocabulary terms
-            for brain in (term.brain for term in vocab):
-                dataset_info = getdsmetadata(brain.getObject())
-
-                mapping[dataset_info['vizurl']] = {
-                    'object': dataset_info['url'],
-                    'file': dataset_info['file'],
-                }
-
-                if 'vizurl' in dataset_info:
-                    mapping[dataset_info['vizurl']].update({
-                        'vizurl': dataset_info['vizurl']
-                    })
-
-        import json
-        occur_vocab = getUtility(IVocabularyFactory, 'species_presence_datasets_vocab')(self.context)
-        abs_vocab = getUtility(IVocabularyFactory, 'species_absence_datasets_vocab')(self.context)
-
-        mapping = dict()
-        _add_ds_to_map(occur_vocab, mapping)
-        _add_ds_to_map(abs_vocab, mapping)
-
-        # FIXME: this does look bad, and should probably be handled by a proper widget
-        js_tmpl = """
-            window.bccvl || (window.bccvl = {});
-            window.bccvl.lookups || (window.bccvl.lookups = {});
-            window.bccvl.lookups.occurrencesMap = %s;
-        """
-        return js_tmpl % json.dumps(mapping)
-
     def updateWidgets(self):
         super(SDMAdd, self).updateWidgets()
         # TODO: the template checks required to set required class, but
@@ -394,7 +360,6 @@ class ProjectionAdd(Add):
         if resolution is None:
             uuids = data.get('species_distribution_models')
             from plone.app.uuid.utils import uuidToCatalogBrain
-            from org.bccvl.site.namespace import BCCPROP
             data['resolution'] = set()
             for sdm in (uuidToCatalogBrain(uuid) for uuid in uuids):
                 md = IBCCVLMetadata(sdm)
@@ -537,8 +502,6 @@ class SpeciesTraitsAdd(Add):
 
     # TODO: all below here is almost like ParmsGroupMixin ->merge
     param_groups = ()
-
-    occurrences_mapping = u""
 
     def addAlgorithmFields(self):
         groups = []

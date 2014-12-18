@@ -327,7 +327,6 @@ $(document).ready( function() {
           <metal:parameters use-macro="context/@@experiment-macros/algo_parameters"/>
         </metal:block>
       </metal:block>
-      <script id="bccvl-lookups" tal:content="view/occurrences_mapping" />
     </div>
   </metal:main>
 </html>
