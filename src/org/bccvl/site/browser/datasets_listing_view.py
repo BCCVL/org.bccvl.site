@@ -21,6 +21,16 @@ def get_title_from_uuid(uuid):
     return None
 
 
+def safe_int(val, default):
+    '''
+    convert val to int without throwing an exception
+    '''
+    try:
+        return int(val)
+    except:
+        return default
+
+
 @implementer(IDatasetTools)
 class DatasetTools(BrowserView):
     """A helper view to deal with datasets.
@@ -30,6 +40,8 @@ class DatasetTools(BrowserView):
 
     _genre_vocab = None
     _layer_vocab = None
+    _source_vocab = None
+    _resolution_vocab = None
 
     def get_transition(self, itemob=None):
         # TODO: should this return all possible transitions?
@@ -115,6 +127,24 @@ class DatasetTools(BrowserView):
             self._layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(self.context)
         return self._layer_vocab
 
+    @property
+    def resolution_vocab(self):
+        if self._resolution_vocab is None:
+            self._resolution_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
+        return self._resolution_vocab
+
+    @property
+    def source_vocab(self):
+        # TODO: this should be a lookup
+        if self._source_vocab is None:
+            self._source_vocab = SimpleVocabulary((
+                SimpleTerm('user', 'user', u'My Datasets'),
+                SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
+                # SimpleTerm('ala', 'ala', u'Imported from ALA'),
+                SimpleTerm('shared', 'shared', 'Shared'),
+            ))
+        return self._source_vocab
+
 
 # FIXME: this view needs to exist for default browser layer as well
 #        otherwise diazo.off won't find the page if set up.
@@ -123,10 +153,9 @@ class DatasetTools(BrowserView):
 from Products.AdvancedQuery import In, Eq, Not, Generic, And
 
 
-@implementer(IFolderContentsView)
-class DatasetsListingView(BrowserView):
+class DatasetsListingTool(BrowserView):
     '''
-    Accepted searech parameters:
+    Accepted search parameters:
 
     datasets.filter.text: searches full text index SearchableText
     datasets.filter.genre: matches BCCDataGenre index
@@ -138,7 +167,20 @@ class DatasetsListingView(BrowserView):
     b_start: batch start
     '''
 
+    _dstools = None
+    path = None
+
+    @property
+    def dstools(self):
+        if not self._dstools:
+            self._dstools = getMultiAdapter((self.context, self.request),
+                                            name="dataset_tools")
+        return self._dstools
+
     def contentFilterAQ(self):
+        '''
+        Parse request and generate AdvancedQuery query
+        '''
         portal_state = getMultiAdapter(
             (self.context, self.request), name="plone_portal_state")
         member = portal_state.member()
@@ -150,15 +192,24 @@ class DatasetsListingView(BrowserView):
             query_parts.append(Eq('SearchableText', text))
 
         genre = self.request.get('datasets.filter.genre')
+        genre_vocab = self.dstools.genre_vocab
         if genre:
-            query_parts.append(In('BCCDataGenre', [self.dstools.genre_title.by_token[token].value for token in genre]))
+            # convert token from request to value
+            query_parts.append(In('BCCDataGenre', [genre_vocab.getTermByToken(token).value for token in genre if token in genre_vocab.by_token]))
         else:
             # if nothing selcted use all values in vocab
-            query_parts.append(In('BCCDataGenre', list(self.dstools.genre_vocab.by_value.keys())))
+            query_parts.append(In('BCCDataGenre', list(genre_vocab.by_value.keys())))
 
         resolution = self.request.get('datasets.filter.resolution')
+        resolution_vocab = self.dstools.resolution_vocab
         if resolution:
-            query_parts.append(In('BCCResolution', [self.resolution_vocab.by_token[token].value for token in resolution]))
+            # convert token to value
+            query_parts.append(In('BCCResolution', [resolution_vocab.getTermByToken(token).value for token in resolution if token in resolution_vocab.by_token]))
+
+        layer = self.request.get('datasets.filter.layer')
+        layer_vocab = self.dstools.layer_vocab
+        if layer:
+            query_parts.append(In('BCCEnviroLayer', [layer_vocab.getTermByToken(token).value for token in layer if token in layer_vocab.by_token]))
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
@@ -172,11 +223,15 @@ class DatasetsListingView(BrowserView):
                     query_parts.append(Not(In('Creator', (member.getId(), 'BCCVL'))))
                 # FIXME: missing: shared, ala
 
-        query_parts.extend((
-            Generic('path', {'query': '/'.join(self.context.getPhysicalPath()),
-                             'depth': -1}),
+        # add path filter
+        if self.path:
+            query_parts.append(
+                Generic('path', {'query': self.path,
+                                 'depth': -1}))
+        # add additional query filters
+        query_parts.append(
             Eq('object_provides', IDataset.__identifier__)
-        ))
+        )
         return And(*query_parts)
 
     def contentFilter(self):
@@ -191,15 +246,24 @@ class DatasetsListingView(BrowserView):
             query['SearchableText'] = text
 
         genre = self.request.get('datasets.filter.genre')
+        genre_vocab = self.dstools.genre_vocab
         if genre:
-            query['BCCDataGenre'] = [self.dstools.genre_vocab.by_token[token].value for token in genre]
+            # convert token from request to value
+            query['BCCDataGenre'] = [genre_vocab.getTermByToken(token).value for token in genre if token in genre_vocab.by_token]
         else:
             # if nothing selcted use all values in vocab
-            query['BCCDataGenre'] =  list(self.dstools.genre_vocab.by_value.keys())
+            query['BCCDataGenre'] =  list(genre_vocab.by_value.keys())
 
         resolution = self.request.get('datasets.filter.resolution')
+        resolution_vocab = self.dstools.resolution_vocab
         if resolution:
-            query['BCCResolution'] = [self.resolution_vocab.by_token[token].value for token in resolution]
+            # convert token to value
+            query['BCCResolution'] = [resolution_vocab.getTermByToken(token).value for token in resolution if token in resolution_vocab.by_token]
+
+        layer = self.request.get('datasets.filter.layer')
+        layer_vocab = self.dstools.layer_vocab
+        if layer:
+            query['BCCEnviroLayer'] = [layer_vocab.getTermByToken(token).value for token in layer if token in layer_vocab.by_token]
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
@@ -216,15 +280,16 @@ class DatasetsListingView(BrowserView):
                     query['Creator'] = vals
                 # FIXME: missing: ala
 
-        # add fixed query parameters:
-        query.update({
-            'path': {
-                # 'query': portal_state.navigation_root_path(),
-                'query': '/'.join(self.context.getPhysicalPath()),
+        # add path filter
+        if self.path:
+            query['path'] = {
+                'query': self.path,
                 'depth': -1
-            },
-            'object_provides': IDataset.__identifier__,
-        })
+            }
+
+        # add fixed query parameters:
+        query['object_provides'] = IDataset.__identifier__
+
         return query
 
     def datasetslisting(self):
@@ -243,8 +308,8 @@ class DatasetsListingView(BrowserView):
             query_params = self.contentFilterAQ()
         else:
             query_params = self.contentFilter()
-        b_size = int(self.request.get('b_size', 20))
-        b_start = int(self.request.get('b_start', 0))
+        b_size = safe_int(self.request.get('b_size'), 20)
+        b_start = safe_int(self.request.get('b_start'), 0)
         # get sort parameters
         orderby = self.request.get('datasets.filter.sort')
         orderby = {
@@ -274,18 +339,33 @@ class DatasetsListingView(BrowserView):
         batch = Batch(brains, b_size, b_start, orphan=0)
         return batch
 
+
+@implementer(IFolderContentsView)
+class DatasetsListingView(BrowserView):
+    '''
+    Accepted search parameters:
+
+    datasets.filter.text: searches full text index SearchableText
+    datasets.filter.genre: matches BCCDataGenre index
+    datasets.filter.resolution: matches in BCCResolution index
+    datasets.filter.source: ...
+    datasets.filter.sort: ....
+    datasets.filter.order: asc, desc
+    b_size: batch size
+    b_start: batch start
+    '''
+
     def __call__(self):
         # initialise instance variables, we'll do it here so that we have
         # security set up and have to do it only once per request
-        self.dstools = getMultiAdapter((self.context, self.request), name = "dataset_tools")
-        self.resolution_vocab = getUtility(IVocabularyFactory,  'resolution_source')(self.context)
-        self.source_vocab = SimpleVocabulary((
-            SimpleTerm('user', 'user', u'My Datasets'),
-            SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
-            # SimpleTerm('ala', 'ala', u'Imported from ALA'),
-            SimpleTerm('shared', 'shared', 'Shared'),
-        ))
+        self.dstools = getMultiAdapter((self.context, self.request),
+                                       name="dataset_tools")
         return super(DatasetsListingView, self).__call__()
+
+    def datasetslisting(self):
+        dslisttool = DatasetsListingTool(self.context, self.request)
+        dslisttool.path = '/'.join(self.context.getPhysicalPath())
+        return dslisttool.datasetslisting()
 
     # Various datasets listing helpers
     def genre_list(self):
@@ -300,7 +380,7 @@ class DatasetsListingView(BrowserView):
 
     def resolution_list(self):
         selected = self.request.get('datasets.filter.resolution', ())
-        for genre in self.resolution_vocab:
+        for genre in self.dstools.resolution_vocab:
             yield {
                 'selected': genre.token in selected,
                 'disabled': False,
@@ -310,7 +390,7 @@ class DatasetsListingView(BrowserView):
 
     def source_list(self):
         selected = self.request.get('datasets.filter.source', ())
-        for genre in self.source_vocab:
+        for genre in self.dstools.source_vocab:
             yield {
                 'selected': genre.token in selected,
                 'disabled': False,
@@ -323,120 +403,21 @@ class DatasetsListingPopup(BrowserView):
 
     genre = 'DataGenreSpeciesOccurrence'
 
-    def contentFilter(self):
-        portal_state = getMultiAdapter(
-            (self.context, self.request), name="plone_portal_state")
-        member = portal_state.member()
-
-        query = {}
-        text = self.request.get('datasets.filter.text')
-        if text:
-            query['SearchableText'] = text
-
-        genre = self.request.get('datasets.filter.genre')
-        if genre:
-            # validate input with vocab
-            query['BCCDataGenre'] = [g for g in genre if g in self.dstools.genre_vocab]
-        if not query.get('BCCDataGenre'):
-            # FIXME: this doesn't make sense, what about climate or whatever genre?
-            # if nothing selected use all values in vocab
-            query['BCCDataGenre'] = [self.genre]
-
-        if self.request.get('datasets.filter.enable_layers'):
-            layer = self.request.get('datasets.filter.layer')
-            if layer:
-                query['BCCEnviroLayer'] = [self.dstools.layer_vocab.by_token[token].value for token in layer]
-
-            resolution = self.request.get('datasets.filter.resolution')
-            if resolution:
-                query['BCCResolution'] = [self.resolution_vocab.by_token[token].value for token in resolution]
-
-        # FIXME: source filter is incomplete
-        source = self.request.get('datasets.filter.source')
-        if source:
-            for token in source:
-                if token == 'user':
-                    query['Creator'] = member.getId()
-                elif token == 'admin':
-                    query['Creator'] = 'BCCVL'
-                elif token == 'shared':
-                    pc = getToolByName(self.context, 'portal_catalog')
-                    vals = filter(lambda x: x not in ('BCCVL', member.getId()),
-                                  pc.uniqueValuesFor('Creator'))
-                    query['Creator'] = vals
-                # FIXME: missing: ala
-
-        # add fixed query parameters:
-        query.update({
-            'job_state': 'COMPLETED',
-            # 'path': {
-            #     # 'query': portal_state.navigation_root_path(),
-            #     'query': '/'.join(self.context.getPhysicalPath()),
-            #     'depth': -1
-            # },
-            'object_provides': IDataset.__identifier__,
-        })
-        return query
-
-    def datasetslisting(self):
-        """
-        Render the datasets listing section.
-
-        Accepted parameters:
-        - Batch range
-        - filters
-        - ajax ... render only list
-        - uuid + ajax ... render only one entry
-        """
-        query_params = self.contentFilter()
-        b_size = int(self.request.get('b_size', 20))
-        b_start = int(self.request.get('b_start', 0))
-        # get sort parameters
-        orderby = self.request.get('datasets.filter.sort')
-        orderby = {
-            'modified': ('modified', 'desc'),
-            'created': ('created', 'desc'),
-            'title': ('sortable_title', 'asc')
-        }.get(orderby, ('sortable_title', 'asc'))
-
-        # use descending as default for last modified sorting
-        # TODO: use different defaults for different filters?
-        order = self.request.get('datasets.filter.order', orderby[1])
-        if order not in ('asc', 'desc'):
-            order = orderby[1]
-
-        pc = getToolByName(self.context, 'portal_catalog')
-        from Products.CMFPlone import Batch
-        order = {'asc': 'ascending',
-                 'desc': 'descending'}.get(order)
-        query_params.update({
-            'sort_on': orderby[0],
-            'sort_order': order})
-        brains = pc.searchResults(query_params)  # show_all=1?? show_inactive=show_inactive?
-        from Products.CMFPlone import Batch
-        # TODO: batching doesn't work properly for layered view, as batch
-        #       is per dataset and not per layer as displayed
-        batch = Batch(brains, b_size, b_start, orphan=0)
-        return batch
-        #return brains
-
     def __call__(self):
         # initialise instance variables, we'll do it here so that we have
         # security set up and have to do it only once per request
-        self.dstools = getMultiAdapter((self.context, self.request), name="dataset_tools")
-        self.resolution_vocab = getUtility(IVocabularyFactory,  'resolution_source')(self.context)
-        self.source_vocab = SimpleVocabulary((
-            SimpleTerm('user', 'user', u'My Datasets'),
-            SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
-            # SimpleTerm('ala', 'ala', u'Imported from ALA'),
-            SimpleTerm('shared', 'shared', 'Shared'),
-        ))
+        self.dstools = getMultiAdapter((self.context, self.request),
+                                       name="dataset_tools")
         self.enable_layers = self.request.get('datasets.filter.enable_layers', False)
         return super(DatasetsListingPopup, self).__call__()
 
+    def datasetslisting(self):
+        dslisttool = DatasetsListingTool(self.context, self.request)
+        return dslisttool.datasetslisting()
+
     def source_list(self):
         selected = self.request.get('datasets.filter.source', ())
-        for genre in self.source_vocab:
+        for genre in self.dstools.source_vocab:
             yield {
                 'selected': genre.token in selected,
                 'disabled': False,
@@ -456,7 +437,7 @@ class DatasetsListingPopup(BrowserView):
 
     def resolution_list(self):
         selected = self.request.get('datasets.filter.resolution', None)
-        for genre in self.resolution_vocab:
+        for genre in self.dstools.resolution_vocab:
             yield {
                 'selected': genre.token == selected,
                 'disabled': False,
@@ -465,14 +446,15 @@ class DatasetsListingPopup(BrowserView):
             }
 
     def match_selectedlayers(self, md):
-        layers = self.request.get('datasets.filter.layer', ())
-        selected = [self.dstools.layer_vocab.getTermByToken(token).value for token in layers]
+        selected = self.request.get('datasets.filter.layer', ())
+        layer_vocab = self.dstools.layer_vocab
         # FIXME: there should never be a dataset without layers here
         for layer in md.get('layers', ()):
             if not selected:
                 # no filter set.. just yield everything
-                yield self.dstools.layer_vocab.getTerm(layer)
+                yield layer_vocab.getTerm(layer)
             else:
                 # filter set...
-                if layer in selected:
-                    yield self.dstools.layer_vocab.getTerm(layer)
+                layerterm = layer_vocab.getTerm(layer)
+                if layerterm.token in selected:
+                    yield layerterm

@@ -61,7 +61,7 @@
         <select id="datasets-filter-layer"
                 name="datasets.filter.layer:list"
                 multiple="multiple">
-          <option disabled="disbaled">Select Layers</option>
+          <option disabled="disabled">Select Layers</option>
           <option value="layerid"
                   tal:repeat="opt view/layer_list"
                   tal:attributes="selected opt/selected;
@@ -70,7 +70,9 @@
                   tal:content="opt/label">Layer title</option>
         </select>
         <select id="datasets-filter-resolution"
-                name="datasets.filter.resolution">
+                name="datasets.filter.resolution:list"
+                multiple="multiple">
+          <option disabled="disabled">Select Resolution</option>
           <option value="resolutionid"
                   tal:repeat="opt view/resolution_list"
                   tal:attributes="selected opt/selected;
