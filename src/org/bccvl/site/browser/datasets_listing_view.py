@@ -6,7 +6,6 @@ from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.interfaces import IDownloadInfo
 from org.bccvl.site.browser.interfaces import IDatasetTools
 from org.bccvl.site.api.dataset import getdsmetadata
-from org.bccvl.site.namespace import BCCVOCAB, BIOCLIM
 from Products.CMFCore.utils import getToolByName
 from zope.security import checkPermission
 from zope.component import getMultiAdapter, getUtility
@@ -113,7 +112,7 @@ class DatasetTools(BrowserView):
     @property
     def layer_vocab(self):
         if self._layer_vocab is None:
-            self._layer_vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.BioclimVocabulary')(self.context)
+            self._layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(self.context)
         return self._layer_vocab
 
 
@@ -322,7 +321,7 @@ class DatasetsListingView(BrowserView):
 
 class DatasetsListingPopup(BrowserView):
 
-    genre = BCCVOCAB['DataGenreSpeciesOccurrence']
+    genre = 'DataGenreSpeciesOccurrence'
 
     def contentFilter(self):
         portal_state = getMultiAdapter(
@@ -336,9 +335,11 @@ class DatasetsListingPopup(BrowserView):
 
         genre = self.request.get('datasets.filter.genre')
         if genre:
-            query['BCCDataGenre'] = [BCCVOCAB[g] for g in genre]
-        else:
-            # if nothing selcted use all values in vocab
+            # validate input with vocab
+            query['BCCDataGenre'] = [g for g in genre if g in self.dstools.genre_vocab]
+        if not query.get('BCCDataGenre'):
+            # FIXME: this doesn't make sense, what about climate or whatever genre?
+            # if nothing selected use all values in vocab
             query['BCCDataGenre'] = [self.genre]
 
         if self.request.get('datasets.filter.enable_layers'):
@@ -465,12 +466,15 @@ class DatasetsListingPopup(BrowserView):
 
     def match_selectedlayers(self, md):
         layers = self.request.get('datasets.filter.layer', ())
-        selected = [self.dstools.layer_vocab.by_token[token].value for token in layers]
-        for layer in md['layers']:
+        selected = [self.dstools.layer_vocab.getTermByToken(token).value for token in layers]
+        if 'layers' not in md:
+            import ipdb; ipdb.set_trace()
+        # FIXME: there should never be a dataset without layers here
+        for layer in md.get('layers', ()):
             if not selected:
                 # no filter set.. just yield everything
-                yield layer
+                yield self.dstools.layer_vocab.getTerm(layer)
             else:
                 # filter set...
-                if layer['layer'] in selected:
-                    yield layer
+                if layer in selected:
+                    yield self.dstools.layer_vocab.getTerm(layer)

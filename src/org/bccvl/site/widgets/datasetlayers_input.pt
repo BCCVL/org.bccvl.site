@@ -20,12 +20,12 @@
                                name string:${view/name}.dataset.${index};
                                "/>
         <input type="hidden" value="" name="form.widgets.fieldname.layer.0"
-               tal:attributes="value layer/layer;
+               tal:attributes="value layer/token;
                                name string:${view/name}.layer.${index};
                                "/>
         <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
         <span tal:content="brain/Title">Dataset</span>
-        <span tal:content="layer/label">Layer</span>
+        <span tal:content="layer/title">Layer</span>
         <!-- TODO: should this one be outside of the div here?
                    need to update load script to fetch it as well
                    though -->

@@ -87,6 +87,7 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
     """
 
     _res_vocab = None
+    _layer_vocab =  None
 
     def js(self):
         js = u"""
@@ -120,6 +121,11 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
             self._res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
         return self._res_vocab.getTerm(resvalue)
 
+    def layer_term(self, layervalue):
+        if not self._layer_vocab:
+            self._layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(self.context)
+        return self._layer_vocab.getTerm(layervalue)
+
     def items(self):
         # FIXME importing here to avoid circular import of IDataset
         from org.bccvl.site.api.dataset import getdsmetadata
@@ -130,16 +136,16 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
 
                 md = getdsmetadata(brain)
                 layers = self.value[uuid]
-                for layer in md['layers']:
-                    if not layer['layer'] in layers:
+                for layer, layeritem in md['layers'].iteritems():
+                    if not layer in layers:
                         continue
                     if 'filename' in layer:
-                        vizurl = '{0}#{1}'.format(md['vizurl'], layer['filename'])
+                        vizurl = '{0}#{1}'.format(md['vizurl'], layeritem['filename'])
                     else:
                         vizurl = md['vizurl']
                     yield {"brain": brain,
                            "resolution": self.resolution_term(brain['BCCResolution']),
-                           "layer": layer,
+                           "layer": self.layer_term(layer),
                            "vizurl": vizurl}
 
     def extract(self):
