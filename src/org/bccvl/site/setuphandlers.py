@@ -314,27 +314,36 @@ def migrate_to_bccvlmetadata(context, logger):
                                    archiveItem.identifier)
         # we have a couple of things stored on the archiveitem
         newitem = {}
-        extract_values(res, newitem, None,
+        extract_values(archiveItem, newitem, None,
                        ((BCCPROP['height'], 'height'),
                         (BCCPROP['width'], 'width'),
                         (NFO['fileSize'], 'fileSize')),
                        int)
-        extract_values(res, newitem, None,
+        extract_values(archiveItem, newitem, None,
                        ((BCCPROP['min'], 'min'),
                         (BCCPROP['max'], 'max')),
                        float)
-        extract_values(res, newitem, None,
+        extract_values(archiveItem, newitem, None,
                        ((BCCPROP['datatype'], 'datatype'),
                         (BCCPROP['rat'], 'rat'),
                         (GML['srsName'], 'srsName'),
                         (NFO['fileName'], 'fileName')),
                        unicode)
 
-        key = res.value(BIOCLIM['bioclimVariable'])
+        key = archiveItem.value(BIOCLIM['bioclimVariable'])
         if key:
             key = key.identifier
             if newitem:
+                if md.get('layers') is None:
+                    md['layers'] = {}
                 md['layers'][key] = newitem
+
+    # convert layer keys
+    for key in md.get('layers', {}).keys():
+        _, frag = urldefrag(key)
+        md['layers'][frag] = md['layers'][key]
+        del md['layers'][key]
+
 
     ###########################################################################
     # Other literals
