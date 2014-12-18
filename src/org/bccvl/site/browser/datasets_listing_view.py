@@ -467,8 +467,6 @@ class DatasetsListingPopup(BrowserView):
     def match_selectedlayers(self, md):
         layers = self.request.get('datasets.filter.layer', ())
         selected = [self.dstools.layer_vocab.getTermByToken(token).value for token in layers]
-        if 'layers' not in md:
-            import ipdb; ipdb.set_trace()
         # FIXME: there should never be a dataset without layers here
         for layer in md.get('layers', ()):
             if not selected:
