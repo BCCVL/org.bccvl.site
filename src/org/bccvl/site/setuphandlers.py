@@ -350,7 +350,7 @@ def migrate_to_bccvlmetadata(context, logger):
     # FIXME:  these are all vocab entries
     extract_values(res, md, None,
                    ((BCCPROP['datagenre'], 'genre'),
-                    (BCCPROP['emissionsscenario'], 'emsc'),
+                    (BCCPROP['emissionscenario'], 'emsc'),
                     (BCCPROP['gcm'], 'gcm'),
                     (BCCPROP['resolution'], 'resolution')),
                    unicode)
