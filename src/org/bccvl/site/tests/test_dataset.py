@@ -239,7 +239,50 @@ class TestDatasetImport(unittest.TestCase):
             self.assertEqual(set(item['actions'].keys()), action_keys)
             self.assertTrue(all(item['actions'].values()))
 
-    # TODO: test import action
+    def test_import_view_ala_import(self):
+        testdata = {
+            'taxonID': 'urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5',
+            'scientificName': 'Pteria penguin',
+            'vernacularName': 'Black Banded Winged Pearl Shell'
+        }
+        view =  self.getview()
+        view.request.form.update({
+            'import': 'Import',
+            'lsid': testdata['taxonID'],
+            'taxon': testdata['scientificName'],
+            'common': testdata['vernacularName']
+        })
+        # call view:
+        view()
+        # response should redirect to datasets
+        self.assertEqual(view.request.response.getStatus(), 302)
+        self.assertEqual(view.request.response.getHeader('Location'),
+                         self.portal.datasets.absolute_url())
+        # get new dataset and check state?
+        ds = self.portal.datasets.species['org-bccvl-content-dataset']
+        # check metadata
+        from org.bccvl.site.interfaces import IBCCVLMetadata
+        md = IBCCVLMetadata(ds)
+        self.assertEqual(md['species'], testdata)
+        # check job state
+        from org.bccvl.site.interfaces import IJobTracker
+        jt =  IJobTracker(ds)
+        self.assertEqual(jt.state, 'QUEUED')
+        # commit transaction to start job
+        import transaction
+        transaction.commit()
+        # celery should run in eager mode so our job state should be up to date as well
+        self.assertEqual(jt.state, 'COMPLETED')
+        # we should have a bit more metadat and still the same as before import
+        self.assertEqual(md['species'], testdata)
+        self.assertEqual(md['genre'], 'DataGenreSpeciesOccurrence')
+        self.assertEqual(md['rows'], 16)
+        self.assertEqual(md['headers'], ['species', 'lon', 'lat'])
+        self.assertEqual(md['bounds'], {'top': -5.166, 'right': 159.95, 'left': 48.218334197998, 'bottom': -23.94166})
+        # check that there is a file as well
+        self.assertIsNotNone(ds.file)
+        self.assertIsNotNone(ds.file.data)
+        self.assertGreater(len(ds.file.data), 0)
 
 
 class TestDatasetUpload(unittest.TestCase):
