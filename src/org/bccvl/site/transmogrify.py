@@ -303,7 +303,18 @@ class FileMetadataToBCCVL(object):
 
         # species:
         if filemd.get('species'):
-            bccvlmd.setdefault('species', {})['scientificName'] = filemd['species']
+            # check if 'species' is a set ... if it is the csv had multiple species names in it
+            # issue a warning and pick a random species name (in case there is non set already)
+            bccvlmd.setdefault('species', {})
+            if not bccvlmd['species'].get('scientificName'):
+                speciesmd = filemd['species']
+                # TODO: currently the file metadata extractor creates a set of species names
+                #       in case there are multiple species names in the csv file we should
+                #       create multiple datasets (possibly grouped?) or suppert datasets for multiple species
+                if isinstance(speciesmd, set):
+                    speciesmd = next(iter(speciesmd))
+                bccvlmd['species']['scientificname'] = speciesmd
+
 
 
 
