@@ -1,13 +1,14 @@
 from datetime import datetime
 from urlparse import urlsplit
 import os.path
+import tempfile
 from gu.z3cform.rdf.utils import Period
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
-from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo
+from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo, IBCCVLMetadata
 from org.bccvl.site.api import dataset
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
@@ -525,10 +526,11 @@ class ALAJobTracker(JobTracker):
     def start_job(self):
         if self.is_active():
             return 'error', u'Current Job is still running'
-        md = IGraph(self.context)
+        # The dataset object already exists and should have all required metadata
+        md = IBCCVLMetadata(self.context)
         # TODO: this assumes we have an lsid in the metadata
         #       should check for it
-        lsid = md.value(md.identifier, DWC['taxonID'])
+        lsid = md['species']['taxonID']
 
         # we need site-path, context-path and lsid for this job
         #site_path = '/'.join(api.portal.get().getPhysicalPath())
