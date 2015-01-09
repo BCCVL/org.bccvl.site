@@ -140,6 +140,8 @@ class ContextSource(object):
             'file': {
                 'file': filename,
             },
+            # TODO: consider deepcopy here (for now it's safe because all are normal dicts; no persistent dicts)
+            '_bccvlmetadata': dict(IBCCVLMetadata(self.context)),
             '_files': {
                 filename: {
                     # FIXME: there is some chaos here... do I really need name and filename?

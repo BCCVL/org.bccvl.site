@@ -1,3 +1,4 @@
+import transaction
 import unittest2 as unittest
 from zope.component import getMultiAdapter
 from plone.app.testing import TEST_USER_ID, setRoles
@@ -269,7 +270,6 @@ class TestDatasetImport(unittest.TestCase):
         jt =  IJobTracker(ds)
         self.assertEqual(jt.state, 'QUEUED')
         # commit transaction to start job
-        import transaction
         transaction.commit()
         # celery should run in eager mode so our job state should be up to date as well
         self.assertEqual(jt.state, 'COMPLETED')
@@ -331,11 +331,13 @@ class TestDatasetUpload(unittest.TestCase):
                          'http://nohost/plone/datasets')
         ds = self.portal.datasets['test.csv']
         self.assertEqual(ds.rightsstatement.raw, u'test rights')
-        self.assertEqual(ds.file.data, 'Name,lon,lat\nSpecies,1,2\nSpecies,2,3\n')
+        self.assertEqual(ds.file.data, 'species,lon,lat\nSpecies,1,2\nSpecies,2,3\n')
         from org.bccvl.site.interfaces import IBCCVLMetadata
         md = IBCCVLMetadata(ds)
         self.assertEqual(md['genre'], 'DataGenreSpeciesAbsence')
+        self.assertEqual(md['species']['taxonID'], u'test taxonid')
         self.assertEqual(md['species']['scientificName'], u'test species')
+        self.assertEqual(md['species']['vernacularName'], u'test it')
         self.assertEqual(md['rows'], 2)
 
 
