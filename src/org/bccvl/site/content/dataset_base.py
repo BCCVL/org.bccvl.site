@@ -8,13 +8,13 @@ from org.bccvl.site.content.dataset import ITraitsDataset
 
 class DatasetMetadataAdapter(object):
     """
-    Gives z3c.form datamanagers dictionary like access to the metadata object.
+    Gives z3c.form datamanagers attribute access to the metadata object.
 
     This class takes care of properly updateing the underlying storage object.
     """
     # There is a datamanager problem.
     # The Datamanager is looked up for the context (which returns an AttributeField manager)
-    # but then the Datamanager adapts adapts the context to this adapter and tries attribute
+    # but then the Datamanager adapts the context to this adapter and tries attribute
     # access which fails.
 
     def __init__(self, context):
@@ -33,6 +33,8 @@ class DatasetMetadataAdapter(object):
     def __setattr__(self, name, value):
         if name == '_data':
             self.__dict__['_data'] = value
+            # shortcut here to not store _data in metadata dictionary
+            return
         if name in ('scientificName', 'taxonID', 'vernacularName'):
             # FIXME: need a new dict here?
             ob = self._data.setdefault('species', {})
