@@ -3,7 +3,7 @@ import unittest2 as unittest
 from zope.component import getMultiAdapter
 from plone.app.testing import TEST_USER_ID, setRoles
 from org.bccvl.site import defaults
-from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
+from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING, BCCVL_FUNCTIONAL_TESTING
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.interfaces import IDownloadInfo
 
@@ -205,7 +205,10 @@ class TestDatasetTools(unittest.TestCase):
 
 class TestDatasetImport(unittest.TestCase):
 
-    layer = BCCVL_INTEGRATION_TESTING
+    # need functional testing here, because we commit transactions
+    # and access outside systems (ala)
+    # functional test layers setup and teardown a DemoStorage
+    layer = BCCVL_FUNCTIONAL_TESTING
 
     def getview(self):
         self.portal = self.layer['portal']
@@ -241,6 +244,7 @@ class TestDatasetImport(unittest.TestCase):
             self.assertTrue(all(item['actions'].values()))
 
     def test_import_view_ala_import(self):
+        # TODO: this test needs a running DataMover. (see below))
         testdata = {
             'taxonID': 'urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5',
             'scientificName': 'Pteria penguin',
@@ -270,6 +274,9 @@ class TestDatasetImport(unittest.TestCase):
         jt =  IJobTracker(ds)
         self.assertEqual(jt.state, 'QUEUED')
         # commit transaction to start job
+        # TODO: this test needs a running DataMover. (see below))
+        # TODO: we should Mock org.bccvl.tasks.datamover.DataMover (generate files as requested?)
+        #       and maybe org.bccvl.tasks.plone.import_ala
         transaction.commit()
         # celery should run in eager mode so our job state should be up to date as well
         self.assertEqual(jt.state, 'COMPLETED')
@@ -304,7 +311,7 @@ class TestDatasetUpload(unittest.TestCase):
         from ZPublisher.HTTPRequest import FileUpload
         from cgi import FieldStorage
         from StringIO import StringIO
-        data = "Name,lon,lat\nSpecies,1,2\nSpecies,2,3\n"
+        data = "species,lon,lat\nSpecies,1,2\nSpecies,2,3\n"
         env = {'REQUEST_METHOD': 'PUT'}
         headers = {'content-type': 'text/csv',
                    'content-length': str(len(data)),
