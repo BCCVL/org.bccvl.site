@@ -1,3 +1,4 @@
+from pkg_resources import resource_string
 import transaction
 import unittest2 as unittest
 from zope.component import getMultiAdapter
@@ -320,17 +321,17 @@ class TestDatasetUpload(unittest.TestCase):
                                              environ=env, headers=headers))
 
         view.request.form.update({
-            'speciesabsence.buttons.save': u'Save',
-            'speciesabsence.widgets.description': u'some test.csv file',
-            'speciesabsence.widgets.file': fileupload,
-            'speciesabsence.widgets.legalcheckbox': [u'selected'],
-            'speciesabsence.widgets.legalcheckbox-empty-marker': u'1',
-            'speciesabsence.widgets.rightsstatement': u'test rights',
-            'speciesabsence.widgets.rightsstatement.mimeType': u'text/html',
-            'speciesabsence.widgets.scientificName': u'test species',
-            'speciesabsence.widgets.taxonID': u'test taxonid',
-            'speciesabsence.widgets.title': u'test species title',
-            'speciesabsence.widgets.vernacularName': u'test it'
+            'speciesoccurrence.buttons.save': u'Save',
+            'speciesoccurrence.widgets.description': u'some test.csv file',
+            'speciesoccurrence.widgets.file': fileupload,
+            'speciesoccurrence.widgets.title': u'test species title',
+            'speciesoccurrence.widgets.legalcheckbox': [u'selected'],
+            'speciesoccurrence.widgets.legalcheckbox-empty-marker': u'1',
+            'speciesoccurrence.widgets.rightsstatement': u'test rights',
+            'speciesoccurrence.widgets.rightsstatement.mimeType': u'text/html',
+            'speciesoccurrence.widgets.scientificName': u'test species',
+            'speciesoccurrence.widgets.taxonID': u'test taxonid',
+            'speciesoccurrence.widgets.vernacularName': u'test it'
         })
         _ = view()
         self.assertEqual(self.portal.REQUEST.response.status, 302)
@@ -341,11 +342,119 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(ds.file.data, 'species,lon,lat\nSpecies,1,2\nSpecies,2,3\n')
         from org.bccvl.site.interfaces import IBCCVLMetadata
         md = IBCCVLMetadata(ds)
-        self.assertEqual(md['genre'], 'DataGenreSpeciesAbsence')
+        self.assertEqual(md['genre'], 'DataGenreSpeciesOccurrence')
         self.assertEqual(md['species']['taxonID'], u'test taxonid')
         self.assertEqual(md['species']['scientificName'], u'test species')
         self.assertEqual(md['species']['vernacularName'], u'test it')
         self.assertEqual(md['rows'], 2)
+
+    def test_upload_tif(self):
+        # upload a single layer tiff file
+        view = self.getview()
+        from ZPublisher.HTTPRequest import FileUpload
+        from cgi import FieldStorage
+        from StringIO import StringIO
+        data = resource_string(__name__, 'spc_obl_merc.tif')
+        env = {'REQUEST_METHOD': 'PUT'}
+        headers = {'content-type': 'text/csv',
+                   'content-length': str(len(data)),
+                   'content-disposition': 'attachment; filename=spc_obl_merc.tif'}
+        fileupload = FileUpload(FieldStorage(fp=StringIO(data),
+                                             environ=env, headers=headers))
+
+        view.request.form.update({
+            'climatecurrent.buttons.save': u'Save',
+            'climatecurrent.widgets.description': u'some test.tif file',
+            'climatecurrent.widgets.file': fileupload,
+            'climatecurrent.widgets.title': u'test single layer title',
+            'climatecurrent.widgets.legalcheckbox': [u'selected'],
+            'climatecurrent.widgets.legalcheckbox-empty-marker': u'1',
+            'climatecurrent.widgets.rightsstatement': u'test rights',
+            'climatecurrent.widgets.rightsstatement.mimeType': u'text/html',
+            'climatecurrent.widgets.resolution': u'Resolution5m',
+            'climatecurrent.widgets.temporal': u'2015',
+        })
+        _ = view()
+        self.assertEqual(self.portal.REQUEST.response.status, 302)
+        self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
+                         'http://nohost/plone/datasets')
+        ds = self.portal.datasets['spc_obl_merc.tif']
+        self.assertEqual(ds.rightsstatement.raw, u'test rights')
+        self.assertEqual(ds.file.data, data)
+        from org.bccvl.site.interfaces import IBCCVLMetadata
+        md = IBCCVLMetadata(ds)
+        self.assertEqual(md['genre'], 'DataGenreCC')
+        self.assertEqual(md['resolution'], u'Resolution5m')
+        self.assertEqual(md['temporal'], u'2015')
+        layermd = md['layers']['spc_obl_merc.tif']
+        self.assertEqual(layermd['filename'], 'spc_obl_merc.tif')
+        self.assertEqual(layermd['min'], 19.0)
+        self.assertEqual(layermd['max'], 128.0)
+        self.assertEqual(layermd['datatype'], 'continuous')
+        self.assertEqual(layermd['height'], 200)
+        self.assertEqual(layermd['width'], 200)
+        self.assertEqual(layermd['srs'], 'None:None')
+
+    def test_upload_zip(self):
+        # upload a zip in bccvl bagit format
+        view = self.getview()
+        from ZPublisher.HTTPRequest import FileUpload
+        from cgi import FieldStorage
+        from StringIO import StringIO
+        data = resource_string(__name__, 'spc_obl_merc.zip')
+        env = {'REQUEST_METHOD': 'PUT'}
+        headers = {'content-type': 'text/csv',
+                   'content-length': str(len(data)),
+                   'content-disposition': 'attachment; filename=spc_obl_merc.zip'}
+        fileupload = FileUpload(FieldStorage(fp=StringIO(data),
+                                             environ=env, headers=headers))
+
+        view.request.form.update({
+            'climatefuture.buttons.save': u'Save',
+            'climatefuture.widgets.description': u'some test.tif file',
+            'climatefuture.widgets.file': fileupload,
+            'climatefuture.widgets.title': u'test smulti layer title',
+            'climatefuture.widgets.legalcheckbox': [u'selected'],
+            'climatefuture.widgets.legalcheckbox-empty-marker': u'1',
+            'climatefuture.widgets.rightsstatement': u'test rights',
+            'climatefuture.widgets.rightsstatement.mimeType': u'text/html',
+            'climatefuture.widgets.emsc': u'SRESB2',
+            'climatefuture.widgets.gcm': u'cccma-cgcm31',
+            'climatefuture.widgets.resolution': u'Resolution5m',
+            'climatefuture.widgets.temporal': u'2015',
+        })
+        _ = view()
+        self.assertEqual(self.portal.REQUEST.response.status, 302)
+        self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
+                         'http://nohost/plone/datasets')
+        ds = self.portal.datasets['spc_obl_merc.zip']
+        self.assertEqual(ds.rightsstatement.raw, u'test rights')
+        self.assertEqual(ds.file.data, data)
+        from org.bccvl.site.interfaces import IBCCVLMetadata
+        md = IBCCVLMetadata(ds)
+        self.assertEqual(md['genre'], 'DataGenreFC')
+        self.assertEqual(md['resolution'], u'Resolution5m')
+        self.assertEqual(md['temporal'], u'2015')
+        self.assertEqual(md['emsc'], u'SRESB2')
+        self.assertEqual(md['gcm'], u'cccma-cgcm31')
+        layermd = md['layers']['spc_obl_merc/data/spc_obl_merc_1.tif']
+        self.assertEqual(layermd['filename'], 'spc_obl_merc/data/spc_obl_merc_1.tif')
+        self.assertEqual(layermd['min'], 19.0)
+        self.assertEqual(layermd['max'], 128.0)
+        self.assertEqual(layermd['datatype'], 'continuous')
+        self.assertEqual(layermd['height'], 200)
+        self.assertEqual(layermd['width'], 200)
+        self.assertEqual(layermd['srs'], 'None:None')
+        layermd = md['layers']['spc_obl_merc/data/spc_obl_merc_2.tif']
+        self.assertEqual(layermd['filename'], 'spc_obl_merc/data/spc_obl_merc_2.tif')
+        self.assertEqual(layermd['min'], 19.0)
+        self.assertEqual(layermd['max'], 128.0)
+        self.assertEqual(layermd['datatype'], 'continuous')
+        self.assertEqual(layermd['height'], 200)
+        self.assertEqual(layermd['width'], 200)
+        self.assertEqual(layermd['srs'], 'None:None')
+
+# TODO: test upload raster file with RAT
 
 
 # IDataset/edit

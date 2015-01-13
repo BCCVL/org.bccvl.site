@@ -148,7 +148,9 @@ class ContextSource(object):
                     'name': self.context.file.filename,
                     'filename': self.context.file.filename,
                     'contenttype': self.context.file.contentType,
-                    'path': self.context.file.open('r').name
+                    # data is a readable file like object
+                    # it may be an uncommitted blob file
+                    'data': self.context.file.open('r')
                 }
             }
         }
@@ -249,8 +251,8 @@ class FileMetadataToBCCVL(object):
                 yield item
                 continue
 
-            filemd = item.get(self.filemetadatakey, {})
-            filemd = filemd.get(fileid)
+            # get metadata for file itself _filemetadata
+            filemd = item.setdefault(self.filemetadatakey, {}).get(fileid, {})
             if not filemd:
                 # no filemetadata (delete or leave untouched?)
                 yield item
@@ -284,20 +286,31 @@ class FileMetadataToBCCVL(object):
             if contenttype and content.format != contenttype:
                 content.format = contenttype
 
+            # TODO: probably needs a different check for multi layer files in future
+            # store metadata in self.bccvlmdkey
+            bccvlmd = item.setdefault(self.bccvlmdkey, {})
+            self._update_bccvl_metadata(bccvlmd, filemd)
+            if content.format in ('application/zip', ):
+                # TODO: we also have metadata about the file itself, like filesize
+                # FIXME: here and in _extract_layer_metadata: filemetadata should probably be under key 'layers' and not 'files'
+                #        for now I put them under files to get them extracted
+                # multi layer metadata has archive filenames as keys in filemd (for main file)
+                # if it is a multi layer file check layers (files)
+                # go through all files in the dictionary and generate "layer/file" metadata
+                for filename, layermd in filemd.items():
+                    self._update_layer_metadata(bccvlmd, layermd['metadata'], filename)
+            else:
+                self._update_layer_metadata(bccvlmd, filemd, fileid)
 
-            # FIXME: not finished yet ... need to do raster metadata and others
-            self.update_bccvl_metadata(item, filemd)
+            # continue pipeline
             yield item
-            # if content.format in ('application/zip', ):
-            #     self.update_archive_items(content, filemd)
-            # else:
-            #     self.update_file_metadata(content, filemd)
-            # self.update_metadata(content, filemd)
-            # # continue pipe line
-            # yield item
 
-    def update_bccvl_metadata(self, item, filemd):
-        bccvlmd = item.setdefault(self.bccvlmdkey, {})
+    def _update_bccvl_metadata(self, bccvlmd, filemd):
+        # mostly CSV file metadata copy
+
+        # FIXME: filemd ... getting bounds, headers etc... from here... but what about multi file metadata? should get this stuff per file not from one..
+        #  -> maybe need to make sure that filemd is always a dictionary even for single file upload? (there is a difference for single and multilayer files)
+
         # csv metadata:
         for key in ('bounds', 'headers', 'rows'):
             if filemd.get(key):
@@ -317,181 +330,75 @@ class FileMetadataToBCCVL(object):
                     speciesmd = next(iter(speciesmd))
                 bccvlmd['species']['scientificname'] = speciesmd
 
+    def _update_layer_metadata(self, bccvlmd, filemd, fileid):
+        #  jsonmd: _bccvlmetadata
+        layermd = {}
+        # projection
+        if 'srs' in filemd:
+            layermd['srs'] = filemd['srs']
+        # other global fileds:
+        #    AREA_OR_POINT, PIXEL_SIZE, origin, projection, size, bounds
 
-
-
-
-    def update_resource_metadata(self, res, filemd, md, filename):
-        if not md:
-            return
-        # bonuds
-        # date
-        # csv: headers, rows, species (set)
-        # SRS
-        if 'srs' in md:
-            srs = md['srs']
-            if srs.lower().startswith('epsg:'):
-                srs = EPSG[srs[len("epsg:"):]]
-            else:
-                srs = URIRef(srs)
-            res.set(GML['srsName'], srs)
-        # band metadata
-        bandmd = md.get('band')
+        # check band metadata
+        bandmd =  filemd.get('band')
         if bandmd:
+            # TODO: assumes there is only one band
             bandmd = bandmd[0]
-            # mean, STATISTICS_MEAN
-            # stddev, STATISTICS_STDDEV
-            # size (x, y on band)
             min_ = bandmd.get('min') or bandmd.get('STATISTICS_MINIMUM')
             max_ = bandmd.get('max') or bandmd.get('STATISTICS_MAXIMUM')
+            mean_ = bandmd.get('mean') or bandmd.get('STATISTICS_MEAN')
+            stddev_ = bandmd.get('stddev') or bandmd.get('STATISTICS_STDDEV')
             width, height = bandmd.get('size', (None, None))
             if min_:
-                res.set(BCCPROP['min'], Literal(min_))
+                layermd['min'] = min_
             if max_:
-                res.set(BCCPROP['max'], Literal(max_))
+                layermd['max'] = max_
+            if mean_:
+                layermd['mean'] = mean_
+            if stddev_:
+                layermd['stddev'] = stddev_
+            if 'nodata' in bandmd:
+                layermd['nodata'] = bandmd['nodata']
             if width and height:
-                res.set(BCCPROP['width'], Literal(width))
-                res.set(BCCPROP['height'], Literal(height))
+                layermd['width'] = width
+                layermd['height'] = height
             # check if we have more info in layer?
             rat = bandmd.get('rat')
             if rat:
                 # FIXME: really a good way to store this?
-                res.set(BCCPROP['rat'], Literal(json.dumps(rat)))
-            # origin, 'Pixel Size', bounds
+                import ipdb; ipdb.set_trace()
+                layermd['rat'] = json.dumps(rat)
+            # other band metadata:
+            #    'color interpretation', 'data type', 'description', 'index',
+            #    'type': 'continuous'
 
             ##############################
             # Layer
             #    try to get a layer identifier from somewhere...
             #    from bccvlmetadata
-            bccvlmd = filemd.get('_bccvlmetadata', {})
+            jsonmd = filemd.get('_bccvlmetadata', {})
             data_type = None
-            fileinfo = bccvlmd.get('files', {})
-            fileinfo = fileinfo.get(filename, {})
+            fileinfo = jsonmd.get('files', {})
+            fileinfo = fileinfo.get(fileid, {})
             if 'layer' in fileinfo:
-                res.add(BIOCLIM['bioclimVariable'], BCCVLLAYER[fileinfo['layer']])
+                # TODO: check layer identifier?
+                layermd['layer'] = fileinfo['layer']
                 data_type = fileinfo.get('data_type')
             # check data_type (continuous, discrete)
             if not data_type:
-                data_type = bandmd.get('type', bccvlmd.get('data_type'))
+                data_type = bandmd.get('type', jsonmd.get('data_type'))
             if data_type and data_type.lower() == 'categorical':
-                res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeD'])
+                layermd['datatype'] = 'categorical'
             else:
-                res.set(BCCPROP['datatype'], BCCVOCAB['DataSetTypeC'])
+                layermd['datatype'] = 'continuous'
             # TODO: bbox: which units do we want bbox?
             #       lat/long?, whatever coordinates layer uses?
             # End Layer
             #############################
-
-    def update_file_metadata(self, content, md):
-        graph = IGraph(content)
-        res = Resource(graph, graph.identifier)
-        self.update_resource_metadata(res, md, md, content.file.filename)
-        # mark graph as modified
-        getUtility(IORDF).getHandler().put(graph)
-
-    def update_archive_items(self, content, md):
-        graph = IGraph(content)
-        res = Resource(graph, graph.identifier)
-
-        if (res.value(BCCPROP['hasArchiveItem'])):
-            # We delete old archive items and create new ones
-            ordf = getUtility(IORDF).getHandler()
-            # delete from graph
-            for uri in res.objects(BCCPROP['hasArchiveItem']):
-                # delete subgraphs from graph
-                graph.remove((uri.identifier, None, None))
-                # BBB: delete from store (old method)
-                ordf.remove(uri.identifier)
-            res.remove(BCCPROP['hasArchiveItem'])
-
-        for key, submd in md.items():
-            if not isinstance(submd, dict):
-                continue
-            if 'metadata' not in submd:
-                # skip non sub file items
-                continue
-            # generate new archive item
-            ordf = getUtility(IORDF)
-            ares = Resource(graph, ordf.generateURI())
-            # size (x, y on file)
-            ares.set(NFO['fileName'], Literal(submd['filename']))
-            ares.set(NFO['fileSize'], Literal(submd['file_size']))
-            ares.add(RDF['type'], NFO['ArchiveItem'])
-            #
-            self.update_resource_metadata(ares, md, submd.get('metadata', {}), key)
-
-            res.add(BCCPROP['hasArchiveItem'], ares)
-
-        # mark graph as modified
-        getUtility(IORDF).getHandler().put(graph)
-
-    def update_metadata(self, content, md):
-        # CSV: bounds, headers, rows, species (set)
-        graph = IGraph(content)
-        res = Resource(graph, graph.identifier)
-
-        #bounds = md.get('boutds')
-        rows = md.get('rows')
-        if rows:
-            res.set(BCCPROP['rows'], Literal(rows))
-
-        # do general '_bccvlmetadata' here
-        bmd = md.get('_bccvlmetadata')
-        if bmd:
-            if 'resolution' in bmd:
-                resmap = {
-                    '3 arcsec': BCCVOCAB['Resolution3s'],
-                    '9 arcsec': BCCVOCAB['Resolution9s'],
-                    '30 arcsec': BCCVOCAB['Resolution30s'],
-                    '180 arcsec': BCCVOCAB['Resolution3m'],
-                    '2.5 arcmin': BCCVOCAB['Resolution2_5m'],
-                    '3 arcmin': BCCVOCAB['Resolution3m'],
-                    '5 arcmin': BCCVOCAB['Resolution5m'],
-                    '10 arcmin': BCCVOCAB['Resolution10m'],
-                    '30 arcmin': BCCVOCAB['Resolution30m']
-                }
-                if bmd['resolution'] in resmap:
-                    res.set(BCCPROP['resolution'], resmap[bmd['resolution']])
-                else:
-                    LOG.warn('Unknown resolution: %s', bmd['resolution'])
-            if 'temporal_coverage' in bmd:
-                p = Period('')
-                p.start = bmd['temporal_coverage'].get('start')
-                p.end = bmd['temporal_coverage'].get('end')
-                p.scheme = 'W3C-DTF'
-                res.set(DC['temporal'], Literal(unicode(p), datatype=DC['Period']))
-            if 'gcm' in bmd:
-                res.set(BCCPROP['gcm'], BCCGCM[bmd['gcm']])
-            if 'emsc' in bmd:
-                res.set(BCCPROP['emissionscenario'], BCCEMSC[bmd['emsc']])
-            if 'genre' in bmd:
-                # It's a bit weird here, we have the genre
-                genremap = {'Environmental': BCCVOCAB['DataGenreE'],
-                            'Climate': BCCVOCAB['DataGenreCC'],
-                            'FutureClimate': BCCVOCAB['DataGenreFC']}
-                if bmd['genre'] in genremap:
-                    res.set(BCCPROP['datagenre'], genremap[bmd['genre']])
-            rights = []
-            if 'license' in bmd:
-                rights.append(u'<h4>License:</h4><p>{0}</p>'.format(bmd['license']))
-            if 'external_url' in bmd:
-                rights.append(u'<h4>External URL</h4><p><a href="{0}">{0}</a></p>'.format(bmd['external_url']))
-            if 'acknowledgement' in bmd:
-                acks = bmd['acknowledgement']
-                if not isinstance(acks, list):
-                    acks = [acks]
-                rights.append(u'<h4>Acknowledgement</h4><ul>')
-                for ack in acks:
-                    rights.append(u'<li>{0}</li>'.format(ack))
-                rights.append(u'</ul>')
-            if rights:
-                content.rightsstatement = u'\n'.join(rights)
-
-
-        # mark graph as modified - we have a copy of the graph... if anyone else
-        #     wants to see changes we have to put our copy back
-        getUtility(IORDF).getHandler().put(graph)
-
+        if layermd:
+            # TODO: check if filename really matches fileid? (or is this just item['_files'] id?)
+            layermd['filename'] = fileid
+            bccvlmd.setdefault('layers', {})[layermd.get('layer', fileid)] = layermd
 
 
 # '_files': {u'_field_file_bkgd.csv':
