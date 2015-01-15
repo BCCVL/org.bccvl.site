@@ -89,7 +89,7 @@ class ALASource(object):
                     'contenttype': 'text/csv',
                     'filename': '{}.csv'.format(self.lsid),
                 },
-                '_bccvlmetadata': bccvlmd,
+                'bccvlmetadata': bccvlmd,
                 # FIXME: don't load files into ram
                 '_files': {
                     'data.csv': {
@@ -141,7 +141,7 @@ class ContextSource(object):
                 'file': filename,
             },
             # TODO: consider deepcopy here (for now it's safe because all are normal dicts; no persistent dicts)
-            '_bccvlmetadata': dict(IBCCVLMetadata(self.context)),
+            'bccvlmetadata': dict(IBCCVLMetadata(self.context)),
             '_files': {
                 filename: {
                     # FIXME: there is some chaos here... do I really need name and filename?
@@ -172,7 +172,7 @@ class BCCVLMetadataUpdater(object):
 
         # keys for sections further down the chain
         self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
-        self.bccvlmdkey = options.get('bccvlmd-key', '_bccvlmetadata').strip()
+        self.bccvlmdkey = options.get('bccvlmd-key', 'bccvlmetadata').strip()
 
     def __iter__(self):
         # exhaust previous iterator
@@ -230,7 +230,7 @@ class FileMetadataToBCCVL(object):
         self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
         self.filemetadatakey = options.get('filemetadata-key',
                                            '_filemetadata').strip()
-        self.bccvlmdkey = options.get('bccvlmd-key', '_bccvlmetadata').strip()
+        self.bccvlmdkey = options.get('bccvlmd-key', 'bccvlmetadata').strip()
 
     def __iter__(self):
         # exhaust previous iterator

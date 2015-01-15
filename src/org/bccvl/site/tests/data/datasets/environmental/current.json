@@ -2,7 +2,7 @@
   "_type": "org.bccvl.content.dataset",
   "title": "Current",
   "_transitions": "publish",
-  "_bccvlmetadata": {
+  "bccvlmetadata": {
     "genre": "DataGenreCC",
     "resolution": "Resolution30s",
     "layers": {
