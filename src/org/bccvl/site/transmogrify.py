@@ -295,7 +295,7 @@ class FileMetadataToBCCVL(object):
                 # FIXME: here and in _extract_layer_metadata: filemetadata should probably be under key 'layers' and not 'files'
                 #        for now I put them under files to get them extracted
                 # get jsonmd if available
-                jsonmd = filemd.get('_bccvlmetadata.json')
+                jsonmd = filemd.get('_bccvlmetadata.json', {})
                 # multi layer metadata has archive filenames as keys in filemd (for main file)
                 # if it is a multi layer file check layers (files)
                 # go through all files in the dictionary and generate "layer/file" metadata
@@ -309,7 +309,7 @@ class FileMetadataToBCCVL(object):
                     self._update_layer_metadata(bccvlmd, layermd['metadata'], filename, jsonmd)
                     # FIXME: extract some of json metadata? like acknowledgement, etc...
             else:
-                self._update_layer_metadata(bccvlmd, filemd, fileid, None)
+                self._update_layer_metadata(bccvlmd, filemd, fileid, {})
 
             # continue pipeline
             yield item
