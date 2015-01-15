@@ -294,13 +294,22 @@ class FileMetadataToBCCVL(object):
                 # TODO: we also have metadata about the file itself, like filesize
                 # FIXME: here and in _extract_layer_metadata: filemetadata should probably be under key 'layers' and not 'files'
                 #        for now I put them under files to get them extracted
+                # get jsonmd if available
+                jsonmd = filemd.get('_bccvlmetadata.json')
                 # multi layer metadata has archive filenames as keys in filemd (for main file)
                 # if it is a multi layer file check layers (files)
                 # go through all files in the dictionary and generate "layer/file" metadata
                 for filename, layermd in filemd.items():
-                    self._update_layer_metadata(bccvlmd, layermd['metadata'], filename)
+                    if filename == '_bccvlmetadata.json':
+                        # ignore json metadata
+                        continue
+                    if not layermd.get('metadata'):
+                        # might happen for metadata json file, or aux.xml files, ...
+                        continue
+                    self._update_layer_metadata(bccvlmd, layermd['metadata'], filename, jsonmd)
+                    # FIXME: extract some of json metadata? like acknowledgement, etc...
             else:
-                self._update_layer_metadata(bccvlmd, filemd, fileid)
+                self._update_layer_metadata(bccvlmd, filemd, fileid, None)
 
             # continue pipeline
             yield item
@@ -330,8 +339,7 @@ class FileMetadataToBCCVL(object):
                     speciesmd = next(iter(speciesmd))
                 bccvlmd['species']['scientificname'] = speciesmd
 
-    def _update_layer_metadata(self, bccvlmd, filemd, fileid):
-        #  jsonmd: _bccvlmetadata
+    def _update_layer_metadata(self, bccvlmd, filemd, fileid, jsonmd):
         layermd = {}
         # projection
         if 'srs' in filemd:
@@ -366,7 +374,6 @@ class FileMetadataToBCCVL(object):
             rat = bandmd.get('rat')
             if rat:
                 # FIXME: really a good way to store this?
-                import ipdb; ipdb.set_trace()
                 layermd['rat'] = json.dumps(rat)
             # other band metadata:
             #    'color interpretation', 'data type', 'description', 'index',
@@ -376,16 +383,16 @@ class FileMetadataToBCCVL(object):
             # Layer
             #    try to get a layer identifier from somewhere...
             #    from bccvlmetadata
-            jsonmd = filemd.get('_bccvlmetadata', {})
             data_type = None
-            fileinfo = jsonmd.get('files', {})
-            fileinfo = fileinfo.get(fileid, {})
-            if 'layer' in fileinfo:
+            jsonfileinfo = jsonmd.get('files', {})
+            jsonfileinfo = jsonfileinfo.get(fileid, {})
+            if 'layer' in jsonfileinfo:
                 # TODO: check layer identifier?
-                layermd['layer'] = fileinfo['layer']
-                data_type = fileinfo.get('data_type')
+                layermd['layer'] = jsonfileinfo['layer']
+                data_type = jsonfileinfo.get('data_type')
             # check data_type (continuous, discrete)
             if not data_type:
+                # get global data_type if not a file specific one set
                 data_type = bandmd.get('type', jsonmd.get('data_type'))
             if data_type and data_type.lower() == 'categorical':
                 layermd['datatype'] = 'categorical'
