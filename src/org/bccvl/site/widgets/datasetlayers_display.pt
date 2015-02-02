@@ -25,7 +25,7 @@
                      brain item/brain;
                      ">
         <span tal:content="brain/Title">Dataset</span>
-        <span tal:content="layer/label">Layer</span>
+        <span tal:content="layer/title">Layer</span>
     </div>
   </tal:block>
 </div>
