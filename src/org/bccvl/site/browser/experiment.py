@@ -295,7 +295,7 @@ class SDMAdd(ParamGroupMixin, Add):
         newob.resolution = data['resolution']
         return newob
 
-    template = ViewPageTemplateFile("experiment_add.pt")
+    template = ViewPageTemplateFile("experiment_sdmadd.pt")
 
     def updateWidgets(self):
         super(SDMAdd, self).updateWidgets()
@@ -341,6 +341,8 @@ class SDMAdd(ParamGroupMixin, Add):
 class ProjectionAdd(Add):
 
     portal_type = 'org.bccvl.content.projectionexperiment'
+
+    template = ViewPageTemplateFile("experiment_projectionadd.pt")
 
     def validateAction(self, data):
         # ActionExecutionError ... form wide error
