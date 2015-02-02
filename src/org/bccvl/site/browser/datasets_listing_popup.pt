@@ -93,83 +93,87 @@
         </div>
       </div>
       <tal:repeat tal:repeat="item batch">
-      <!-- non layered datasets -->
-      <div class="row"
-           tal:condition="not:enable_layers"
-           tal:attributes="data-uuid item/UID"
-           tal:define="item_title_or_id item/pretty_title_or_id;
-                       item_icon python:plone_view.getIcon(item);
-                       item_creator item/Creator;
-                       item_modified item/ModificationDate;
-                       item_description item/Description;
-                       ">
-        <div class="cell position-0 width-1">
-          <img width="16" height="16"
-               src="" alt=""
-               tal:condition="item_icon/url"
-               tal:attributes="src item_icon/url;
-                               alt item_icon/description;
-                               title item_icon/title;
-                               width item_icon/width;
-                               height item_icon/height;" />
+        <!-- non layered datasets -->
+        <div class="row"
+             tal:condition="not:enable_layers"
+             tal:attributes="data-uuid item/UID"
+             tal:define="item_title_or_id item/pretty_title_or_id;
+                         item_icon python:plone_view.getIcon(item);
+                         item_creator item/Creator;
+                         item_modified item/ModificationDate;
+                         item_description item/Description;
+                         ">
+          <div class="cell position-0 width-1">
+            <input type="radio" name="selected-layer"
+                   tal:attributes="value string:select-${item/UID}" />
+            <!-- <img width="16" height="16" -->
+            <!--      src="" alt="" -->
+            <!--      tal:condition="item_icon/url" -->
+            <!--      tal:attributes="src item_icon/url; -->
+            <!--                      alt item_icon/description; -->
+            <!--                      title item_icon/title; -->
+            <!--                      width item_icon/width; -->
+            <!--                      height item_icon/height;" /> -->
+          </div>
+          <div class="cell position-1"
+               tal:condition="not:enable_layers">
+            <p tal:content="item_title_or_id">Item Title</p>
+            <p tal:content="item_description">Item description</p>
+            <p>Creator: <span tal:condition="item_creator"
+            tal:define="author python:pas_member.info(item_creator)"
+            tal:content="author/name_or_id">Bob Dobalina</span>
+            Modified: <span tal:content="python:toLocalizedTime(item_modified,long_format=1)">August 16, 2001 at 23:35:59</span>
+            </p>
+          </div>
         </div>
-        <div class="cell position-1"
-             tal:condition="not:enable_layers">
-          <p tal:content="item_title_or_id">Item Title</p>
-          <p tal:content="item_description">Item description</p>
-          <p>Creator: <span tal:condition="item_creator"
-          tal:define="author python:pas_member.info(item_creator)"
-          tal:content="author/name_or_id">Bob Dobalina</span>
-          Modified: <span tal:content="python:toLocalizedTime(item_modified,long_format=1)">August 16, 2001 at 23:35:59</span>
-          </p>
+        <!-- layered datasets -->
+        <div class="row"
+             tal:condition="enable_layers"
+             tal:attributes="data-uuid item/UID;
+                             data-layer layer/token"
+             tal:define="item_title_or_id item/pretty_title_or_id;
+                         item_icon python:plone_view.getIcon(item);
+                         item_creator item/Creator;
+                         item_modified item/ModificationDate;
+                         item_description item/Description;
+                         md python:dataset_tools.metadata(item);
+                         "
+             tal:repeat="layer python:view.match_selectedlayers(md)">
+          <div class="cell position-0 width-1">
+            <input type="checkbox" name="selected-layer"
+                   tal:attributes="value string:select-${item/UID}" />
+            <!-- <img width="16" height="16" -->
+            <!--      src="" alt="" -->
+            <!--      tal:condition="item_icon/url" -->
+            <!--      tal:attributes="src item_icon/url; -->
+            <!--                      alt item_icon/description; -->
+            <!--                      title item_icon/title; -->
+            <!--                      width item_icon/width; -->
+            <!--                      height item_icon/height;" /> -->
+          </div>
+          <div class="cell position-1">
+            <p tal:content="item_title_or_id">Item Title</p>
+            <p tal:content="item_description">Item description</p>
+            <p tal:content="layer/title">Layer title</p>
+            <p>Creator: <span tal:condition="item_creator"
+            tal:define="author python:pas_member.info(item_creator)"
+            tal:content="author/name_or_id">Bob Dobalina</span>
+            Modified: <span tal:content="python:toLocalizedTime(item_modified,long_format=1)">August 16, 2001 at 23:35:59</span>
+            </p>
+          </div>
         </div>
-      </div>
-      <!-- layered datasets -->
-      <div class="row"
-           tal:condition="enable_layers"
-           tal:attributes="data-uuid item/UID;
-                           data-layer layer/token"
-           tal:define="item_title_or_id item/pretty_title_or_id;
-                       item_icon python:plone_view.getIcon(item);
-                       item_creator item/Creator;
-                       item_modified item/ModificationDate;
-                       item_description item/Description;
-                       md python:dataset_tools.metadata(item);
-                       "
-           tal:repeat="layer python:view.match_selectedlayers(md)">
-        <div class="cell position-0 width-1">
-          <img width="16" height="16"
-               src="" alt=""
-               tal:condition="item_icon/url"
-               tal:attributes="src item_icon/url;
-                               alt item_icon/description;
-                               title item_icon/title;
-                               width item_icon/width;
-                               height item_icon/height;" />
-        </div>
+      </tal:repeat>
+      <div class="row" tal:condition="batch">
         <div class="cell position-1">
-          <p tal:content="item_title_or_id">Item Title</p>
-          <p tal:content="item_description">Item description</p>
-          <p tal:content="layer/title">Layer title</p>
-          <p>Creator: <span tal:condition="item_creator"
-          tal:define="author python:pas_member.info(item_creator)"
-          tal:content="author/name_or_id">Bob Dobalina</span>
-          Modified: <span tal:content="python:toLocalizedTime(item_modified,long_format=1)">August 16, 2001 at 23:35:59</span>
-          </p>
+          <div metal:use-macro="context/batch_macros/macros/navigation" />
         </div>
       </div>
-    </tal:repeat>
-    <div class="row" tal:condition="batch">
-      <div class="cell position-1">
-        <div metal:use-macro="context/batch_macros/macros/navigation" />
+      <div class="row"
+           tal:condition="not:batch">
+        <div class="cell position-1">
+          <p>No Datasets found</p>
+        </div>
       </div>
-    </div>
-    <div class="row"
-         tal:condition="not:batch">
-      <div class="cell position-1">
-        <p>No Datasets found</p>
-      </div>
-    </div>
     </div>
   </div>
 </html>
