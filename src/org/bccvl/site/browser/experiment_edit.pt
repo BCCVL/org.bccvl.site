@@ -5,22 +5,43 @@
       i18n:domain="plone"
       metal:use-macro="context/main_template/macros/master">
 
-    <metal:block fill-slot="main">
+  <head>
+    <metal:styleslot fill-slot="style_slot">
+      <link rel="stylesheet"
+            href="/++resource++bccvl/lib/bootstrap/css/bootstrap.css"/>
+      <style>
+        .modal.large {
+            width: 80%; /* responsive width */
+            margin-left: -40%; /* width/2 */
+        }
 
-        <h1 class="documentFirstHeading" tal:content="view/label | nothing" />
+        #datasets-popup-result .ui-selecting { background: #FECA40; }
+        #datasets-popup-result .ui-selected { background: #F39814; color: white; }
+      </style>
+    </metal:styleslot>
 
-        <div id="content-core">
-            <metal:block
-                use-macro="context/@@ploneform-macros/titlelessform" >
-          <metal:block fill-slot="fields">
-             <metal:fields use-macro="context/@@ploneform-macros/fields"/>
-             <!-- Algorithm parameter fieldsets -->
-             <metal:parameters use-macro="context/@@experiment-macros/algo_parameters"/>
-          </metal:block>
+    <metal:javascriptslot fill-slot="javascript_head_slot">
+      <!-- TODO: that grabs bootstrap from theme -->
+      <script type="text/javascript" src="/++resource++bccvl/lib/bootstrap/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="++resource++bccvl-widgets.js"></script>
+    </metal:javascriptslot>
+  </head>
+
+  <metal:block fill-slot="main">
+    <h1 class="documentFirstHeading" tal:content="view/label | nothing" />
+
+    <div id="content-core">
+      <metal:block
+          use-macro="context/@@ploneform-macros/titlelessform" >
+        <metal:block fill-slot="fields">
+          <metal:fields use-macro="context/@@ploneform-macros/fields"/>
+          <!-- Algorithm parameter fieldsets -->
+          <metal:parameters use-macro="context/@@experiment-macros/algo_parameters"/>
         </metal:block>
+      </metal:block>
 
-        </div>
+    </div>
 
-    </metal:block>
+  </metal:block>
 
 </html>
