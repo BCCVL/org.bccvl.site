@@ -63,7 +63,7 @@
 
     <browser:page
         name="datasets_listing_popup"
-        for="plone.app.contenttypes.interfaces.IFolder"
+        for="*"
         class=".datasets_listing_view.DatasetsListingPopup"
         permission="zope2.View"
         template="datasets_listing_popup.pt"
