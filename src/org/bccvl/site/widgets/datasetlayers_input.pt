@@ -39,11 +39,10 @@
         <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
         <span tal:content="brain/Title">Dataset</span>
         <span tal:content="layer/title">Layer</span>
-        <!-- TODO: should this one be outside of the div here?
-                   need to update load script to fetch it as well
-                   though -->
+      </div>
+      <div class="selecteditem"
+           tal:condition="repeat/item/end">
         <input type="hidden" value="" name="form.widgets.name.count"
-               tal:condition="repeat/item/end"
                tal:attributes="value repeat/item/number;
                                name string:${view/name}.count"/>
       </div>
