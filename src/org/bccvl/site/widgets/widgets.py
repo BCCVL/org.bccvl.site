@@ -17,6 +17,7 @@ from plone.app.uuid.utils import uuidToCatalogBrain
 from org.bccvl.site.interfaces import IDownloadInfo
 from plone.z3cform.interfaces import IDeferSecurityCheck
 from Products.CMFCore.utils import getToolByName
+import json
 
 
 # Wrap js code into a document.ready wrapper and CDATA section
@@ -56,20 +57,17 @@ class DatasetWidget(HTMLInputWidget, Widget):
         return brain
 
     def js(self):
-        js = u"""
-            bccvl.select_dataset($("a#%(fieldname)s-popup"), {
-                field: '%(fieldname)s',
-                genre: %(genre)s,
-                widgetname: '%(widgetname)s',
-                widgetid: '%(widgetid)s',
-                widgeturl: '%(widgeturl)s',
-            });""" % {
-            'fieldname': self.__name__,
-            'genre': self.genre,
-            'widgetname': self.name,
-            'widgetid': self.id,
-            'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
-                                                    self.__name__)}
+        js = u"".join((
+            u'bccvl.select_dataset($("a#', self.__name__, '-popup"),',
+            json.dumps({
+                'field': self.__name__,
+                'genre': self.genre,
+                'widgetname': self.name,
+                'widgetid': self.id,
+                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
+                                                        self.__name__)
+            }),
+            u');'))
         jswrap = getMultiAdapter((self.request, self), IJSWrapper)
         return jswrap % {'js':  js}
 
