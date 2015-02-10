@@ -7,9 +7,10 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
-from org.bccvl.site.widgets.widgets import SequenceCheckboxFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetLayersFieldWidget
+from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
+from org.bccvl.site.widgets.widgets import FutureDatasetsFieldWidget
 
 
 class IDataset(form.Schema):
@@ -107,48 +108,28 @@ class ISDMExperiment(IExperiment):
 
 class IProjectionExperiment(IExperiment):
 
-    form.widget(species_distribution_models=
-                'org.bccvl.site.widgets.widgets.DatasetsMultiSelectFieldWidget')
-    species_distribution_models = List(
+    # TODO: ignore context here? don't really need to store this?
+    form.widget('species_distribution_models',
+                ExperimentSDMFieldWidget,
+                errmsg=u"Please select at least 1 Species Distribution Model")
+    species_distribution_models = Dict(
         title=u'Species Distribution Models',
-        value_type=Choice(vocabulary='species_distributions_models_vocab'),
+        key_type=TextLine(),
+        value_type=List(value_type=TextLine(), required=True),
         default=None,
         required=True,
     )
 
-    # TODO: instead of form hints ... maybe set widgetfactory in form
-    #       updateWidgets?  form hint affects all forms ... using
-    #       updateWidgets would require to customise every form where
-    #       we want a custom widget
-    # TODO: could add parsley-attributes to the widget here
-    form.widget('years',
-                SequenceCheckboxFieldWidget,
-                errmsg=u"Please select at least 1 year.")
-    years = List(
-        title=u'Years',
-        value_type=Choice(source='fc_years_source'),
+    form.widget('future_climate_datasets',
+                FutureDatasetsFieldWidget,
+                genre=['DataGenreFC'],
+                errmsg=u"Please select at least 1 future climate dataset.",
+                vizclass=u'fine bccvl-absence-viz')
+    future_climate_datasets = List(
+        title=u'Future Climate Data',
+        value_type=TextLine(),
         default=None,
-        required=True,
-    )
-
-    form.widget('emission_scenarios',
-                SequenceCheckboxFieldWidget,
-                errmsg=u"Please select at least 1 emmission scenario.")
-    emission_scenarios = List(
-        title=u'Emission Scenarios',
-        value_type=Choice(vocabulary='emission_scenarios_source'),
-        default=None,
-        required=True,
-    )
-
-    form.widget('climate_models',
-                SequenceCheckboxFieldWidget,
-                errmsg=u"Please select at least 1 climate model.")
-    climate_models = List(
-        title=u'Climate Models',
-        value_type=Choice(source='global_climate_models_source'),
-        default=None,
-        required=True,
+        required=True
     )
 
 
