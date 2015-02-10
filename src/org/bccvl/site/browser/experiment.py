@@ -3,12 +3,11 @@ from z3c.form import button
 from z3c.form.form import extends, applyChanges
 from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
 from zope.schema.interfaces import RequiredMissing
-from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit
 from org.bccvl.site import MessageFactory as _
-from org.bccvl.site.api.dataset import getdsmetadata
 from zope.interface import Invalid
 from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
@@ -22,8 +21,6 @@ from decimal import Decimal
 from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
 import logging
-from Products.Five.browser import BrowserView
-from plone.app.uuid.utils import uuidToCatalogBrain
 
 LOG = logging.getLogger(__name__)
 
@@ -344,37 +341,22 @@ class ProjectionAdd(Add):
     template = ViewPageTemplateFile("experiment_projectionadd.pt")
 
     def validateAction(self, data):
+        """
+        Get resolution from SDM and use it to find future datasets
+
+        TODO: if required layers are not available in future datasets, use current layers from SDM
+        """
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
-        # FIXME: do spatial scale validation as well (find_projection
-        #       might be able to do it already)
-        # FIXME: when changing source model, adapt resolution
-        #        allow only from same resolution
-        #        find projection for this resolution
-        #        validate resolution on submit
-        #        check that layers in sdm match layers in future data (can this be a partial match as well?)
 
-        # FIXME: get rid of this as soon as UI supports it
-        # check if we have a resolution in the request and set it to
-        # whatever the sdm has if not there
-        resolution = data.get("resolution")
-        if resolution is None:
-            uuids = data.get('species_distribution_models')
-            from plone.app.uuid.utils import uuidToCatalogBrain
-            data['resolution'] = set()
-            for sdm in (uuidToCatalogBrain(uuid) for uuid in uuids):
-                md = IBCCVLMetadata(sdm)
-                data['resolution'].add(md['resolution'])
+        # TODO: do some validation here... but what?
 
-        if data['resolution']:
-            data['resolution'] = list(data['resolution'])
-            from org.bccvl.site.api.dataset import find_projections
-            result = find_projections(self.context, data.get('emission_scenarios'),
-                                      data.get('climate_models'),
-                                      data.get('years'),
-                                      data.get('resolution'))
-        if not len(result):
-            raise ActionExecutionError(Invalid(u"The combination of projection points does not match any datasets"))
+        # .... check if we have all datasets available?
+
+        #if not len(result):
+        #    raise ActionExecutionError(Invalid(u"The combination of projection points does not match any datasets"))
+        # TODO: match result layers with sdm layers and get missing layers from SDM?
+        #       -> only environmental? or missing climate layers as well?
 
 
 class BiodiverseAdd(Add):
@@ -400,6 +382,7 @@ class BiodiverseAdd(Add):
         prefix = '{}{}{}'.format(self.prefix, self.widgets.prefix, 'projection')
         count = self.request.get('{}.count'.format(prefix))
         try:
+            # TODO: sholud I catch a TypeError here as well?
             count = int(count)
             projdata = []
             for x in xrange(count):
