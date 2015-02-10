@@ -238,7 +238,7 @@ class SDMJobTracker(MultiJobTracker):
 
                 # Build job_params store them on result and submit job
                 result.job_params = {
-                    'resolution': self.context.resolution,
+                    'resolution': IBCCVLMetadata(self.context)['resolution'],
                     'function': func.getId(),
                     'species_occurrence_dataset': self.context.species_occurrence_dataset,
                     'species_absence_dataset': self.context.species_absence_dataset,
@@ -265,73 +265,29 @@ class SDMJobTracker(MultiJobTracker):
 @adapter(IProjectionExperiment)
 class ProjectionJobTracker(MultiJobTracker):
 
-    def _get_job_params(self, sdmuuid, year, emsc, gcm, dsbrain):
-        # sdm ... sdm projection result model
-        # climds ... future climate dataset brain
-
-        # build job_params and store on result
-        return {
-            'resolution': dsbrain.BCCResolution,
-            'species_distribution_models': sdmuuid,
-            # TODO: URI values or titles?
-            'year': year,
-            'emission_scenario': emsc,
-            'climate_models': gcm,
-            'future_climate_datasets': dsbrain.UID,
-        }
-
-    def _create_result_container(self, sdmuuid, climds):
+    def _create_result_container(self, sdmuuid, dsbrain, projlayers):
         # create result object:
         # get more metadata about dataset
-        dsmd = IResource(climds)
-        emsc = dsmd.value(BCCPROP['emissionscenario'])
-        gcm = dsmd.value(BCCPROP['gcm'])
-        period = dsmd.value(DCTERMS['temporal'])
-        # get display values for metadata
-        # TODO: get proper labels?
-        emsc = emsc.identifier.split('#', 1)[-1] if emsc else None
-        gcm = gcm.identifier.split('#', 1)[-1] if gcm else None
-        year = Period(period).start if period else None
+        dsmd = IBCCVLMetadata(dsbrain.getObject())
 
+        year = Period(dsmd['temporal']).start if dsmd['temporal'] else None
+        # TODO: get proper labels for emsc, gcm
         title = u'{} - project {}_{}_{} {}'.format(
-            self.context.title, emsc, gcm, year,
+            self.context.title, dsmd['emsc'], dsmd['gcm'], year,
             datetime.now().isoformat())
         result = createContentInContainer(
             self.context,
             'Folder',
             title=title)
-        result.job_params = self._get_job_params(sdmuuid, year, emsc, gcm, climds)
-        return result
-
-    def _store_experiment_metadata_on_result(self, result, sdmuuid, dsbrain):
-        # result ... result container
-        # sdm ... sdm model dataset uuid?
-        # dsbrain ... future climate layer dataset
-        def getThresholdsForSdm(context, sdmuuid):
-            pc = getToolByName(context, 'portal_catalog')
-            sdmbrain = uuidToCatalogBrain(sdmuuid)
-            # sdmbrain is the model dataset, and we want it's sibling evaluation results
-            path = '/'.join(sdmbrain.getPath().split('/')[:-1])
-            thrs = {}
-            for brain in pc.searchResults(
-                    path={'query': path, 'depth': 1},
-                    BCCDataGenre=BCCVOCAB['DataGenreSDMEval']):
-                dsobj = brain.getObject()
-                if not getattr(dsobj, 'thresholds', None):
-                    continue
-                # FIXME: this will overwrite duplicate threshold keys
-                #        from different datasets
-                # we make a copy and don't store a reference to the same dict
-                thrs.update(dsobj.thresholds)
-            return thrs
-
-        # FIXME: this will probably go away
-        result.experiment_infos = {
-            'sdm': {
-                'uuid': sdmuuid,
-                'thresholds': getThresholdsForSdm(self.context, sdmuuid),
+        result.job_params = {
+            'species_distribution_models': sdmuuid,
+            'year': year,
+            'emsc': dsmd['emsc'],
+            'gcm': dsmd['gcm'],
+            'resolution': dsmd['resolution'],
+            'future_climate_datasets': projlayers,
             }
-        }
+        return result
 
     def start_job(self, request):
         if not self.is_active():
@@ -342,21 +298,27 @@ class ProjectionJobTracker(MultiJobTracker):
                 # TODO: lookup by script type (Perl, Python, etc...)
                 return ('error',
                         u"Can't find method to run Projection Experiment")
-
-            # TODO: for each SDM we have to find the future datasets
-            # with appropriate resolution
-
-
-            # split jobs across future climate datasets and sdms
-            for sdmuuid in self.context.species_distribution_models:
-                sdmbrain = uuidToCatalogBrain(sdmuuid)
-                for dsbrain in dataset.find_projections(self.context,
-                                                        self.context.emission_scenarios,
-                                                        self.context.climate_models,
-                                                        self.context.years,
-                                                        sdmbrain.BCCResolution):
-                    result = self._create_result_container(sdmuuid, dsbrain)
-                    self._store_experiment_metadata_on_result(result, sdmuuid, dsbrain)
+            expuuid = self.context.species_distribution_models.keys()[0]
+            exp = uuidToObject(expuuid)
+            # TODO: what if two datasets provide the same layer?
+            # start a new job for each sdm and future dataset
+            for sdmuuid in self.context.species_distribution_models[expuuid]:
+                for dsuuid in self.context.future_climate_datasets:
+                    dsbrain = uuidToCatalogBrain(dsuuid)
+                    dsmd = IBCCVLMetadata(dsbrain.getObject())
+                    futurelayers = set(dsmd['layers'].keys())
+                    # match sdm exp layers with future dataset layers
+                    projlayers = {}
+                    for ds, dslayerset in exp.environmental_datasets.items():
+                        # add matching layers
+                        projlayers.setdefault(dsuuid, set()).update(dslayerset.intersection(futurelayers))
+                        # remove matching layers
+                        projlayers[ds] = dslayerset - futurelayers
+                        if not projlayers[ds]:
+                            # remove if all layers replaced
+                            del projlayers[ds]
+                    # create result
+                    result = self._create_result_container(sdmuuid, dsbrain, projlayers)
                     # submit job
                     LOG.info("Submit JOB project to queue")
                     method(result, "project")  # TODO: wrong interface
@@ -365,8 +327,6 @@ class ProjectionJobTracker(MultiJobTracker):
                                      'generate taskname: projection experiment')
                     resultjt.set_progress('PENDING',
                                           u'projection pending')
-            # TODO: add status message about mismatched sdms
-            # TODO: match layers as well?
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             # TODO: in case there is an error should we abort the transaction
