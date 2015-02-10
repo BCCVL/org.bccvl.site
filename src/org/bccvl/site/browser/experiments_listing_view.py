@@ -1,10 +1,12 @@
 from Products.Five import BrowserView
 from Products.CMFPlone.interfaces import IPloneSiteRoot
+from Products.CMFCore.utils import getToolByName
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
+from plone.app.contentlisting.interfaces import IContentListing
 from org.bccvl.site.interfaces import IBCCVLMetadata
-from org.bccvl.site.content.interfaces import IExperiment
+from org.bccvl.site.content.interfaces import IExperiment, ISDMExperiment
 from collections import defaultdict
 from zope.component import getUtility, queryUtility, getMultiAdapter
 from zope.schema.interfaces import IVocabularyFactory
@@ -177,3 +179,33 @@ class ExperimentsListingView(BrowserView):
             })
 
         return details
+
+
+class ExperimentsListingPopup(BrowserView):
+
+    experiment_type = ISDMExperiment.__identifier__
+
+    def __call__(self):
+
+        return super(ExperimentsListingPopup, self).__call__()
+
+    def experimentslisting(self):
+        site_path = queryUtility(IPloneSiteRoot).getPhysicalPath()
+        b_start = self.request.get('b_start', 0)
+        b_size = self.request.get('b_size', 20)
+        query = {
+            'path': {
+                'query': '/'.join(site_path + (defaults.EXPERIMENTS_FOLDER_ID, ))
+            },
+            'object_provides': self.experiment_type,
+            'sort_on': 'created',
+            'sort_order': 'descending',
+            # provide batch hints to catalog
+            'b_start': b_start,
+            'b_size': b_size
+        }
+        pc = getToolByName(self.context, 'portal_catalog')
+        results = pc.searchResults(query)
+        from Products.CMFPlone import Batch
+
+        return Batch(IContentListing(results), b_size, b_start)

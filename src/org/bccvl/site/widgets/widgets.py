@@ -1,23 +1,24 @@
-from zope.component import adapter, getMultiAdapter, getUtility
-from zope.interface import implementer, alsoProvides
-from zope.schema.interfaces import (ISequence, ITitledTokenizedTerm,
+from zope.component import getMultiAdapter, getUtility
+from zope.interface import implementer
+from zope.schema.interfaces import (ITitledTokenizedTerm,
                                     IVocabularyFactory)
 from z3c.form import util
-from z3c.form.interfaces import (IFieldWidget,  IFormLayer,
-                                 ITerms, IFormAware, NO_VALUE)
+from z3c.form.interfaces import (IFieldWidget, NO_VALUE)
 from z3c.form.widget import FieldWidget, Widget, SequenceWidget
-from z3c.form.browser.orderedselect import OrderedSelectWidget
 from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
                                      addFieldClass)
 from zope.i18n import translate
 from .interfaces import (IDatasetLayersWidget, IDatasetWidget,
-                         IOrderedCheckboxWidget, IDatasetsMultiSelectWidget,
+                         IDatasetsMultiSelectWidget,
+                         IExperimentSDMWidget,
+                         IFutureDatasetsWidget,
                          IJSWrapper)
 from plone.app.uuid.utils import uuidToCatalogBrain
-from org.bccvl.site.interfaces import IDownloadInfo
 from plone.z3cform.interfaces import IDeferSecurityCheck
 from Products.CMFCore.utils import getToolByName
+from org.bccvl.site.interfaces import IBCCVLMetadata
 import json
+from itertools import chain
 
 
 # Wrap js code into a document.ready wrapper and CDATA section
@@ -35,6 +36,7 @@ class DatasetWidget(HTMLInputWidget, Widget):
     """
 
     genre = None
+    multiple = None
 
     def item(self):
         brain = uuidToCatalogBrain(self.value)
@@ -61,6 +63,11 @@ def DatasetFieldWidget(field, request):
     return FieldWidget(field, DatasetWidget(request))
 
 
+# TODO: change the widget below? ...
+#       e.g. browse for datasets with layers and do layer selection on page (instead of popup)
+#       or: make layers a sort of fold down within dataset?
+#       or: ...
+
 @implementer(IDatasetLayersWidget)
 class DatasetLayersWidget(HTMLFormElement, Widget):
     """
@@ -68,8 +75,16 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
     render a default widget for values per key
     """
 
-    _res_vocab = None
-    _layer_vocab =  None
+    multiple = 'multiple'
+
+    _dstools = None
+
+    @property
+    def dstools(self):
+        if not self._dstools:
+            self._dstools = getMultiAdapter((self.context, self.request),
+                                            name="dataset_tools")
+        return self._dstools
 
     def js(self):
         js = u"""
@@ -90,24 +105,6 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
         jswrap = getMultiAdapter((self.request, self), IJSWrapper)
         return jswrap % {'js':  js}
 
-    def resolutions(self):
-        if self.value:
-            pc = getToolByName(self.context, 'portal_catalog')
-            brains = pc.searchResults(UID=self.value.keys())
-            # TODO: should use vocab to turn into token
-            return set(unicode(b['BCCResolution']) for b in brains)
-        return []
-
-    def resolution_term(self, resvalue):
-        if not self._res_vocab:
-            self._res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
-        return self._res_vocab.getTerm(resvalue)
-
-    def layer_term(self, layervalue):
-        if not self._layer_vocab:
-            self._layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(self.context)
-        return self._layer_vocab.getTerm(layervalue)
-
     def items(self):
         # FIXME importing here to avoid circular import of IDataset
         from org.bccvl.site.api.dataset import getdsmetadata
@@ -122,12 +119,13 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
                     if not layer in layers:
                         continue
                     if 'filename' in layer:
-                        vizurl = '{0}#{1}'.format(md['vizurl'], layeritem['filename'])
+                        vizurl = '{0}#{1}'.format(md['vizurl'],
+                                                  layeritem['filename'])
                     else:
                         vizurl = md['vizurl']
                     yield {"brain": brain,
-                           "resolution": self.resolution_term(brain['BCCResolution']),
-                           "layer": self.layer_term(layer),
+                           "resolution": self.dstools.resolution_vocab.getTerm(brain['BCCResolution']),
+                           "layer": self.dstools.layer_vocab.getTerm(layer),
                            "vizurl": vizurl}
 
     def extract(self):
@@ -162,9 +160,151 @@ def DatasetLayersFieldWidget(field, request):
     return FieldWidget(field,  DatasetLayersWidget(request))
 
 
+@implementer(IExperimentSDMWidget)
+class ExperimentSDMWidget(HTMLInputWidget, Widget):
+    """
+    Widget that stores an experiment uuid and a list of selected sdm model uuids.
+
+    Gives user the ability to select an experiment and pick a number of sdm models from within.
+    """
+
+    genre = ['DataGenreSDMModel']
+    multiple = None
+
+    def item(self):
+        # return dict with keys for experiment
+        # and subkey 'models' for models within experiment
+        item = {}
+        if self.value:
+            experiment_uuid = self.value.keys()[0]
+            expbrain = uuidToCatalogBrain(experiment_uuid)
+            item['title'] = expbrain.Title
+            item['uuid'] = expbrain.UID
+            exp = expbrain.getObject()
+            item['layers'] = set((chain(*exp.environmental_datasets.values())))
+            expmd = IBCCVLMetadata(exp)
+            item['resolution'] = expmd['resolution']
+            # now search all models within and add infos
+            pc = getToolByName(self.context, 'portal_catalog')
+            brains = pc.searchResults(path=expbrain.getPath(),
+                                      BCCDataGenre=self.genre)
+            # TODO: maybe as generator?
+            item['models'] = [{'uuid': brain.UID,
+                               'title': brain.Title,
+                               'selected': brain.UID in self.value[experiment_uuid]}
+                              for brain in brains]
+        return item
+
+    def js(self):
+        # TODO: search window to search for experiment
+        js = u"".join((
+            u'bccvl.select_dataset($("a#', self.__name__, '-popup"),',
+            json.dumps({
+                'field': self.__name__,
+                'genre': self.genre,
+                'widgetname': self.name,
+                'widgetid': self.id,
+                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
+                                                        self.__name__),
+                'remote': 'experiments_listing_popup'
+            }),
+            u');'))
+        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
+        return jswrap % {'js':  js}
+
+    def extract(self):
+        # extract the value for the widget from the request and return
+        # a tuple of (key,value) pairs
+        # get experiment uuid from request
+        uuid = self.request.get(self.name)
+        # get selcted model uuids if any..
+        # TODO: this supports only one experiment at the moment
+        modeluuids = self.request.get('{0}.model'.format(self.name),
+                                      [])
+        if not uuid:
+            return NO_VALUE
+        return {uuid: modeluuids}
+
+
+@implementer(IFieldWidget)
+def ExperimentSDMFieldWidget(field, request):
+    return FieldWidget(field, ExperimentSDMWidget(request))
+
+
+@implementer(IFutureDatasetsWidget)
+class FutureDatasetsWidget(HTMLFormElement, Widget):
+    """
+    render a list of checkboxes for keys in dictionary.
+    render a default widget for values per key
+    """
+
+    #TODO:  filter by:  text, gcm, emsc, year
+    #        hidden: resolution, layers
+
+    genre = ['DataGenreFC']
+    multiple = 'multiple'
+
+    _res_vocab = None
+    _layer_vocab = None
+
+    def js(self):
+        js = u"""
+            bccvl.select_dataset_future($("a#%(fieldname)s-popup"), {
+                field: '%(fieldname)s',
+                genre: %(genre)s,
+                widgetname: '%(widgetname)s:list',
+                widgetid: '%(widgetid)s',
+                widgeturl: '%(widgeturl)s',
+            });""" % {
+            'fieldname': self.__name__,
+            'genre': self.genre,
+            'widgetname': self.name,
+            'widgetid': self.id,
+            'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
+                                                    self.__name__)
+        }
+        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
+        return jswrap % {'js':  js}
+
+    def items(self):
+        if self.value:
+            for uuid in self.value:
+                brain = uuidToCatalogBrain(uuid)
+                # md = IBCCVLMetadata(brain.getObject())
+                yield {'title': brain.Title,
+                       'uuid': brain.UID,
+                       }
+
+    def extract(self):
+        # try to find up to count layers
+        uuid = self.request.get(self.name)
+        if not uuid:
+            return NO_VALUE
+        return uuid
+
+
+@implementer(IFieldWidget)
+def FutureDatasetsFieldWidget(field, request):
+    """
+    Widget to select datasets and layers
+    """
+    return FieldWidget(field, FutureDatasetsWidget(request))
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+# TODO: are the widgets below still in use?
 
 @implementer(IDatasetsMultiSelectWidget)
 class DatasetsMultiSelectWidget(HTMLInputWidget, SequenceWidget):

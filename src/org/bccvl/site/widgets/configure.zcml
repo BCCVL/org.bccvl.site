@@ -5,6 +5,9 @@
 
   <adapter factory=".converter.DatasetLayersConverter"/>
 
+  <adapter factory=".converter.ExperimentsSDMConverter"/>
+
+  <adapter factory=".converter.FutureDatasetsConverter"/>
 
   <adapter
       for="zope.interface.Interface
@@ -48,6 +51,55 @@
       layer="z3c.form.interfaces.IFormLayer"
       template="datasetlayers_display.pt"
       />
+
+    <adapter
+      for="zope.interface.Interface
+           .interfaces.IExperimentSDMWidget"
+      provides=".interfaces.IJSWrapper"
+      factory=".widgets.JS_WRAPPER_ADAPTER"
+      />
+
+    <z3c:widgetTemplate
+      mode="input"
+      widget=".interfaces.IExperimentSDMWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="experimentsdm_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="display"
+      widget=".interfaces.IExperimentSDMWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="experimentsdm_display.pt"
+      />
+
+
+  <adapter
+      for="zope.interface.Interface
+           .interfaces.IFutureDatasetsWidget"
+      provides=".interfaces.IJSWrapper"
+      factory=".widgets.JS_WRAPPER_ADAPTER"
+      />
+
+    <z3c:widgetTemplate
+      mode="input"
+      widget=".interfaces.IFutureDatasetsWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="futuredatasets_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="display"
+      widget=".interfaces.IFutureDatasetsWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="futuredatasets_display.pt"
+      />
+
+
+
+
+
+
 
     <z3c:widgetTemplate
       mode="input"

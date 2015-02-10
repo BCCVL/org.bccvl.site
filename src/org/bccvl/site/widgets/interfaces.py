@@ -17,6 +17,16 @@ class IDatasetsMultiSelectWidget(IWidget):
     pass
 
 
+class IExperimentSDMWidget(IWidget):
+
+    pass
+
+
+class IFutureDatasetsWidget(IWidget):
+
+    pass
+
+
 class IJSWrapper(Interface):
 
     pass
