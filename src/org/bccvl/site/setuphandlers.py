@@ -340,9 +340,12 @@ def migrate_to_bccvlmetadata(context, logger):
 
     # convert layer keys
     for key in md.get('layers', {}).keys():
-        _, frag = urldefrag(key)
-        md['layers'][frag] = md['layers'][key]
-        del md['layers'][key]
+        ns, frag = urldefrag(key)
+        if frag in md['layers']:
+            del md['layers'][frag]
+        if frag:
+            md['layers'][frag] = md['layers'][key]
+            del md['layers'][key]
 
 
     ###########################################################################
@@ -354,6 +357,10 @@ def migrate_to_bccvlmetadata(context, logger):
                     (BCCPROP['gcm'], 'gcm'),
                     (BCCPROP['resolution'], 'resolution')),
                    unicode)
+    # check if resolution is a property on context
+    if hasattr(context.aq_base, 'resolution'):
+        md['resolution'] = context.resolution
+        del context.resolution
     # FIXME: dc:format should match mimetype? what about zip files and conatined files?
     extract_values(res, md, None,
                    ((DCTERMS['temporal'], 'temporal'),),
@@ -390,7 +397,8 @@ def upgrade_170_200_1(context, logger=None):
     pc = getToolByName(context, 'portal_catalog')
     # FIXME: maybe not just datasets?
     # TODO: maybe don't create bccvl annotations for content we don't need it
-    for brain in pc.unrestrictedSearchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset')):
+    # FIXME: update attributes on context
+    for brain in pc.unrestrictedSearchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.sdmexperiment')):
             obj = brain.getObject()
             migrate_to_bccvlmetadata(obj, logger)
             obj.reindexObject()
