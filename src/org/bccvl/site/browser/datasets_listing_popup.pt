@@ -13,17 +13,12 @@
                   show_about python:not isAnon or site_properties.allowAnonymousViewAbout;
                   dummy python:request.response.setHeader('X-Theme-Disabled', 'True');
 
-                  item_uuid context/@@uuid;
-                  item python:context.portal_catalog.searchResults(UID=item_uuid)[0];
-
                   dataset_tools nocall:context/@@dataset_tools;
 
                   navigation_root_url context/@@plone_portal_state/navigation_root_url;
 
-                  xitem_id item/getId|item/id;
-                  xitem_type_title item/Type;
-                  xitem_created item/CreationDate;
-                  enable_layers python:request.get('datasets.filter.enable_layers', False);
+                  filters python:request.get('datasets.filters', ());
+                  multiple python:request.get('datasets.multiple', '');
                   "
       tal:omit-tag="">
 
@@ -32,7 +27,13 @@
     <form id="datasets-popup-searchform" action="" method="GET"
           tal:define="context_state context/@@plone_context_state"
           tal:attributes="action context_state/current_base_url">
-      <div class="cell position-0 width-5">
+      <input type="hidden" name="datasets.filters:list" value=""
+             tal:attributes="value val"
+             tal:repeat="val filters"/>
+      <input type="hidden" name="datasets.multiple" value=""
+             tal:attributes="value multiple"/>
+      <div class="cell position-0 width-4"
+           tal:condition="python: 'text' in filters">
         <input id="datasets-filter-text"
                name="datasets.filter.text" type="text"
                placeholder="Search Datesets" class="input-medium"
@@ -42,43 +43,82 @@
                tal:repeat="genre python:request.get('datasets.filter.genre')"/>
         <button class="btn" type="submit">Go!</button>
       </div>
-      <div class="cell position-4">
+      <div class="cell position-4 width-4"
+           tal:condition="python: 'source' in filters">
         <select id="datasets-filter-source"
                 name="datasets.filter.source:list"
                 multiple="multiple">
           <option disabled="disabled">Select a Source</option>
           <option value="optionvalue"
-                  tal:repeat="opt view/source_list"
+                  tal:repeat="opt view/dstools/source_list"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"
                   tal:content="opt/label">Option label</option>
         </select>
       </div>
-      <div class="cell position-8"
-           tal:condition="enable_layers">
-        <input name="datasets.filter.enable_layers" type="hidden" value="1"/>
+      <div class="cell position-8 width-4"
+           tal:condition="python: 'layer' in filters">
         <select id="datasets-filter-layer"
                 name="datasets.filter.layer:list"
                 multiple="multiple">
           <option disabled="disabled">Select Layers</option>
           <option value="layerid"
-                  tal:repeat="opt view/layer_list"
+                  tal:repeat="opt view/dstools/layer_list"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"
                   tal:content="opt/label">Layer title</option>
         </select>
+      </div>
+      <input type="hidden" name="datasets.filter.layer:list" value=""
+             tal:condition="python: 'layer' not in filters"
+             tal:attributes="value val"
+             tal:repeat="val python:request.get('datasets.filter.layer',())"/>
+      <div class="cell position-12 width-4"
+           tal:condition="python: 'resolution' in filters">
         <select id="datasets-filter-resolution"
                 name="datasets.filter.resolution:list"
                 multiple="multiple">
           <option disabled="disabled">Select Resolution</option>
           <option value="resolutionid"
-                  tal:repeat="opt view/resolution_list"
+                  tal:repeat="opt view/dstools/resolution_list"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"
                   tal:content="opt/label">Resolution title</option>
+        </select>
+      </div>
+      <input type="hidden" name="datasets.filter.resolution:list" value=""
+             tal:condition="python: 'resolution' not in filters"
+             tal:attributes="value val"
+             tal:repeat="val python:request.get('datasets.filter.resolution',())"/>
+      <div class="cell position-16 width-4"
+           tal:condition="python: 'emsc' in filters">
+        <select id="datasets-filter-emsc"
+                name="datasets.filter.emsc:list"
+                multiple="multiple">
+          <option disabled="disabled">Select Emission Scenario</option>
+          <option value="emscid"
+                  tal:repeat="opt view/dstools/emsc_list"
+                  tal:attributes="selected opt/selected;
+                                  disabled opt/disabled;
+                                  value opt/token;"
+                  tal:content="opt/label">Emsc title</option>
+        </select>
+      </div>
+      <div class="cell position-20 width-4"
+           tal:condition="python: 'gcm' in filters">
+        <select id="datasets-filter-gcm"
+                name="datasets.filter.gcm:list"
+                multiple="multiple">
+          <option disabled="disabled">Select Global Climate Model</option>
+          <option value="gcmid"
+                  tal:repeat="opt view/dstools/gcm_list"
+                  tal:attributes="selected opt/selected;
+                                  disabled opt/disabled;
+                                  value opt/token;"
+                  tal:content="opt/label">Gcm title</option>
         </select>
       </div>
 
@@ -95,7 +135,7 @@
       <tal:repeat tal:repeat="item batch">
         <!-- non layered datasets -->
         <div class="row"
-             tal:condition="not:enable_layers"
+             tal:condition="python: 'layer' not in filters"
              tal:attributes="data-uuid item/UID"
              tal:define="item_title_or_id item/pretty_title_or_id;
                          item_icon python:plone_view.getIcon(item);
@@ -105,18 +145,10 @@
                          ">
           <div class="cell position-0 width-1">
             <input type="radio" name="selected-layer"
-                   tal:attributes="value string:select-${item/UID}" />
-            <!-- <img width="16" height="16" -->
-            <!--      src="" alt="" -->
-            <!--      tal:condition="item_icon/url" -->
-            <!--      tal:attributes="src item_icon/url; -->
-            <!--                      alt item_icon/description; -->
-            <!--                      title item_icon/title; -->
-            <!--                      width item_icon/width; -->
-            <!--                      height item_icon/height;" /> -->
+                   tal:attributes="value string:select-${item/UID};
+                                   type python: 'checkbox' if multiple=='multiple' else 'radio'" />
           </div>
-          <div class="cell position-1"
-               tal:condition="not:enable_layers">
+          <div class="cell position-1">
             <p tal:content="item_title_or_id">Item Title</p>
             <p tal:content="item_description">Item description</p>
             <p>Creator: <span tal:condition="item_creator"
@@ -128,7 +160,7 @@
         </div>
         <!-- layered datasets -->
         <div class="row"
-             tal:condition="enable_layers"
+             tal:condition="python: 'layer' in filters"
              tal:attributes="data-uuid item/UID;
                              data-layer layer/token"
              tal:define="item_title_or_id item/pretty_title_or_id;
@@ -142,14 +174,6 @@
           <div class="cell position-0 width-1">
             <input type="checkbox" name="selected-layer"
                    tal:attributes="value string:select-${item/UID}" />
-            <!-- <img width="16" height="16" -->
-            <!--      src="" alt="" -->
-            <!--      tal:condition="item_icon/url" -->
-            <!--      tal:attributes="src item_icon/url; -->
-            <!--                      alt item_icon/description; -->
-            <!--                      title item_icon/title; -->
-            <!--                      width item_icon/width; -->
-            <!--                      height item_icon/height;" /> -->
           </div>
           <div class="cell position-1">
             <p tal:content="item_title_or_id">Item Title</p>

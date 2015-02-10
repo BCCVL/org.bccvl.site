@@ -42,6 +42,8 @@ class DatasetTools(BrowserView):
     _layer_vocab = None
     _source_vocab = None
     _resolution_vocab = None
+    _emsc_vocab = None
+    _gcm_vocab = None
 
     def get_transition(self, itemob=None):
         # TODO: should this return all possible transitions?
@@ -104,10 +106,21 @@ class DatasetTools(BrowserView):
         if self._genre_vocab is None:
             genre_list = ('DataGenreSpeciesOccurrence', 'DataGenreSpeciesAbsence',
                           'DataGenreSpeciesAbundance', 'DataGenreE',
-                          'DataGenreCC', 'DataGenreFC', 'DataGenreTraits')
+                          'DataGenreCC', 'DataGenreFC', 'DataGenreTraits',
+                          'DataGenreSDMModel')
             genre_source = getUtility(IVocabularyFactory, 'genre_source')(self.context)
             self._genre_vocab = SimpleVocabulary([genre_source.getTerm(genre) for genre in genre_list])
         return self._genre_vocab
+
+    def genre_list(self):
+        selected = self.request.get('datasets.filter.genre', ())
+        for genre in self.genre_vocab:
+            yield {
+                'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
 
     def genre_title(self, genre):
         try:
@@ -127,11 +140,63 @@ class DatasetTools(BrowserView):
             self._layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(self.context)
         return self._layer_vocab
 
+    def layer_list(self):
+        selected = self.request.get('datasets.filter.layer', ())
+        for genre in self.layer_vocab:
+            yield {
+                'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
+
     @property
     def resolution_vocab(self):
         if self._resolution_vocab is None:
             self._resolution_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
         return self._resolution_vocab
+
+    def resolution_list(self):
+        selected = self.request.get('datasets.filter.resolution', None)
+        for genre in self.resolution_vocab:
+            yield {
+                'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
+
+    @property
+    def emsc_vocab(self):
+        if self._emsc_vocab is None:
+            self._emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(self.context)
+        return self._emsc_vocab
+
+    def emsc_list(self):
+        selected = self.request.get('datasets.filter.emsc', ())
+        for genre in self.emsc_vocab:
+            yield {
+                'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
+
+    @property
+    def gcm_vocab(self):
+        if self._gcm_vocab is None:
+            self._gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(self.context)
+        return self._gcm_vocab
+
+    def gcm_list(self):
+        selected = self.request.get('datasets.filter.gcm', ())
+        for genre in self.gcm_vocab:
+            yield {
+                'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
 
     @property
     def source_vocab(self):
@@ -144,6 +209,18 @@ class DatasetTools(BrowserView):
                 SimpleTerm('shared', 'shared', 'Shared'),
             ))
         return self._source_vocab
+
+    def source_list(self):
+        selected = self.request.get('datasets.filter.source', ())
+        for genre in self.source_vocab:
+            yield {
+                'selected': genre.token in selected,
+                'disabled': False,
+                'token': genre.token,
+                'label': genre.title
+            }
+
+
 
 
 # FIXME: this view needs to exist for default browser layer as well
@@ -158,9 +235,13 @@ class DatasetsListingTool(BrowserView):
     Accepted search parameters:
 
     datasets.filter.text: searches full text index SearchableText
-    datasets.filter.genre: matches BCCDataGenre index
-    datasets.filter.resolution: matches in BCCResolution index
-    datasets.filter.source: ...
+    datasets.filter.genre:list: matches BCCDataGenre index
+    datasets.filter.resolution:list: matches in BCCResolution index
+    datasets.filter.layer:list: matches selected layers in BCCEnviroLayer
+    datasets.filter.emsc:list: matches emission scenarios in BCCEmissionScenario
+    datasets.filter.gcm:list: matches global ciruclation models in BCCGlobalClimateModel
+    TODO: datasets.filter.year:list: matches years in ????
+    datasets.filter.source:list: ...
     datasets.filter.sort: ....
     datasets.filter.order: asc, desc
     b_size: batch size
@@ -210,6 +291,18 @@ class DatasetsListingTool(BrowserView):
         layer_vocab = self.dstools.layer_vocab
         if layer:
             query_parts.append(In('BCCEnviroLayer', [layer_vocab.getTermByToken(token).value for token in layer if token in layer_vocab.by_token]))
+
+        emsc = self.request.get('datasets.filter.emsc')
+        emsc_vocab = self.dstools.emsc_vocab
+        if emsc:
+            query_parts.append(In('BCCEmissionScenario', [emsc_vocab.getTermByToken(token).value for token in emsc if token in emsc_vocab.by_token]))
+
+        gcm = self.request.get('datasets.filter.gcm')
+        gcm_vocab = self.dstools.gcm_vocab
+        if gcm:
+            query_parts.append(In('BCCGlobalClimateModel', [gcm_vocab.getTermByToken(token).value for token in gcm if token in gcm_vocab.by_token]))
+
+        # TODO: year
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
@@ -264,6 +357,18 @@ class DatasetsListingTool(BrowserView):
         layer_vocab = self.dstools.layer_vocab
         if layer:
             query['BCCEnviroLayer'] = [layer_vocab.getTermByToken(token).value for token in layer if token in layer_vocab.by_token]
+
+        emsc = self.request.get('datasets.filter.emsc')
+        emsc_vocab = self.dstools.emsc_vocab
+        if emsc:
+            query['BCCEmissionScenario'] = [emsc_vocab.getTermByToken(token).value for token in emsc if token in emsc_vocab.by_token]
+
+        gcm = self.request.get('datasets.filter.gcm')
+        gcm_vocab = self.dstools.gcm_vocab
+        if gcm:
+            query['BCCGlobalClimateModel'] = [gcm_vocab.getTermByToken(token).value for token in gcm if token in gcm_vocab.by_token]
+
+        # TODO: year
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
@@ -348,6 +453,10 @@ class DatasetsListingView(BrowserView):
     datasets.filter.text: searches full text index SearchableText
     datasets.filter.genre: matches BCCDataGenre index
     datasets.filter.resolution: matches in BCCResolution index
+    datasets.filter.layer:list: matches selected layers in BCCEnviroLayer
+    datasets.filter.emsc:list: matches emission scenarios in BCCEmissionScenario
+    datasets.filter.gcm:list: matches global ciruclation models in BCCGlobalClimateModel
+    # TODO: year
     datasets.filter.source: ...
     datasets.filter.sort: ....
     datasets.filter.order: asc, desc
@@ -367,39 +476,10 @@ class DatasetsListingView(BrowserView):
         dslisttool.path = '/'.join(self.context.getPhysicalPath())
         return dslisttool.datasetslisting()
 
-    # Various datasets listing helpers
-    def genre_list(self):
-        selected = self.request.get('datasets.filter.genre', ())
-        for genre in self.dstools.genre_vocab:
-            yield {
-                'selected': genre.token in selected,
-                'disabled': False,
-                'token': genre.token,
-                'label': genre.title
-            }
-
-    def resolution_list(self):
-        selected = self.request.get('datasets.filter.resolution', ())
-        for genre in self.dstools.resolution_vocab:
-            yield {
-                'selected': genre.token in selected,
-                'disabled': False,
-                'token': genre.token,
-                'label': genre.title
-            }
-
-    def source_list(self):
-        selected = self.request.get('datasets.filter.source', ())
-        for genre in self.dstools.source_vocab:
-            yield {
-                'selected': genre.token in selected,
-                'disabled': False,
-                'token': genre.token,
-                'label': genre.title
-            }
-
 
 class DatasetsListingPopup(BrowserView):
+    # TODO: ... maybe update the layers widget to select datasets,
+    #           and use widget on page to activate layers? (a bit like sdm experiment and model selection for Projectien experiment)
 
     genre = 'DataGenreSpeciesOccurrence'
 
@@ -408,42 +488,11 @@ class DatasetsListingPopup(BrowserView):
         # security set up and have to do it only once per request
         self.dstools = getMultiAdapter((self.context, self.request),
                                        name="dataset_tools")
-        self.enable_layers = self.request.get('datasets.filter.enable_layers', False)
         return super(DatasetsListingPopup, self).__call__()
 
     def datasetslisting(self):
         dslisttool = DatasetsListingTool(self.context, self.request)
         return dslisttool.datasetslisting()
-
-    def source_list(self):
-        selected = self.request.get('datasets.filter.source', ())
-        for genre in self.dstools.source_vocab:
-            yield {
-                'selected': genre.token in selected,
-                'disabled': False,
-                'token': genre.token,
-                'label': genre.title
-            }
-
-    def layer_list(self):
-        selected = self.request.get('datasets.filter.layer', ())
-        for genre in self.dstools.layer_vocab:
-            yield {
-                'selected': genre.token in selected,
-                'disabled': False,
-                'token': genre.token,
-                'label': genre.title
-            }
-
-    def resolution_list(self):
-        selected = self.request.get('datasets.filter.resolution', None)
-        for genre in self.dstools.resolution_vocab:
-            yield {
-                'selected': genre.token == selected,
-                'disabled': False,
-                'token': genre.token,
-                'label': genre.title
-            }
 
     def match_selectedlayers(self, md):
         selected = self.request.get('datasets.filter.layer', ())

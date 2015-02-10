@@ -60,7 +60,7 @@
                   name="datasets.filter.genre:list" multiple="multiple">
             <option disabled="disabled">Select a Genre</option>
             <option value="optionvalue"
-                    tal:repeat="opt view/genre_list"
+                    tal:repeat="opt view/dstools/genre_list"
                     tal:attributes="selected opt/selected;
                                     disabled opt/disabled;
                                     value opt/token;"
@@ -72,7 +72,7 @@
                   value="">
             <option disabled="disabled">Select a Resolution</option>
             <option value="optionvalue"
-                    tal:repeat="opt view/resolution_list"
+                    tal:repeat="opt view/dstools/resolution_list"
                     tal:attributes="selected opt/selected;
                                     disabled opt/disabled;
                                     value opt/token;"
@@ -83,7 +83,7 @@
                   multiple="multiple">
             <option disabled="disabled">Select a Source</option>
             <option value="optionvalue"
-                    tal:repeat="opt view/source_list"
+                    tal:repeat="opt view/dstools/source_list"
                     tal:attributes="selected opt/selected;
                                     disabled opt/disabled;
                                     value opt/token;"
