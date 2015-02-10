@@ -291,8 +291,7 @@ class SDMAdd(ParamGroupMixin, Add):
             applyChanges(group, content, data)
             new_params[group.toolkit] = content
         newob.parameters = new_params
-        # FIXME: resolution hack
-        newob.resolution = data['resolution']
+        IBCCVLMetadata(newob)['resolution'] = data['resolution']
         return newob
 
     template = ViewPageTemplateFile("experiment_sdmadd.pt")
