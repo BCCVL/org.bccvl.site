@@ -1,11 +1,5 @@
 from zope.interface import Interface
-from z3c.form.interfaces import IOrderedSelectWidget, IWidget
-
-
-class IOrderedCheckboxWidget(IOrderedSelectWidget):
-    """
-    Interface for Ordered select widget that renders checkboxes
-    """
+from z3c.form.interfaces import IWidget
 
 
 class IDatasetLayersWidget(IWidget):

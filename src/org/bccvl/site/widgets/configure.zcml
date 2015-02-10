@@ -5,12 +5,6 @@
 
   <adapter factory=".converter.DatasetLayersConverter"/>
 
-    <z3c:widgetTemplate
-      mode="input"
-      widget=".interfaces.IOrderedCheckboxWidget"
-      layer="z3c.form.interfaces.IFormLayer"
-      template="orderedcheckbox_input.pt"
-      />
 
   <adapter
       for="zope.interface.Interface

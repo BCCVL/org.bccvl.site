@@ -28,22 +28,6 @@ JS_WRAPPER = u"""//<![CDATA[
 JS_WRAPPER_ADAPTER = lambda req, widget: JS_WRAPPER
 
 
-@implementer(IOrderedCheckboxWidget)
-class OrderedCheckboxWidget(OrderedSelectWidget):
-    """
-    Class that implements IOrderedCheckboxWidget
-    """
-
-
-@adapter(ISequence,  IFormLayer)
-@implementer(IFieldWidget)
-def SequenceCheckboxFieldWidget(field,  request):
-    """
-    FieldWidget that uses OrderedCheckboxWidget
-    """
-    return FieldWidget(field,  OrderedCheckboxWidget(request))
-
-
 @implementer(IDatasetWidget)
 class DatasetWidget(HTMLInputWidget, Widget):
     """
