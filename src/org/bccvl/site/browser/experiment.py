@@ -200,7 +200,7 @@ class Edit(edit.DefaultEditForm):
     Edit Experiment
     """
 
-    pass
+    template = ViewPageTemplateFile("experiment_edit.pt")
 
 
 class SDMEdit(ParamGroupMixin, Edit):
@@ -208,13 +208,15 @@ class SDMEdit(ParamGroupMixin, Edit):
     Edit SDM Experiment
     """
 
-    template = ViewPageTemplateFile("experiment_edit.pt")
+    pass
 
 
 class Add(add.DefaultAddForm):
     """
     Add Experiment
     """
+
+    template = ViewPageTemplateFile("experiment_add.pt")
 
     extends(dexterity.DisplayForm,
             ignoreButtons=True)
@@ -291,8 +293,6 @@ class SDMAdd(ParamGroupMixin, Add):
         IBCCVLMetadata(newob)['resolution'] = data['resolution']
         return newob
 
-    template = ViewPageTemplateFile("experiment_sdmadd.pt")
-
     def updateWidgets(self):
         super(SDMAdd, self).updateWidgets()
         # TODO: the template checks required to set required class, but
@@ -337,8 +337,6 @@ class SDMAdd(ParamGroupMixin, Add):
 class ProjectionAdd(Add):
 
     portal_type = 'org.bccvl.content.projectionexperiment'
-
-    template = ViewPageTemplateFile("experiment_projectionadd.pt")
 
     def validateAction(self, data):
         """
@@ -440,7 +438,7 @@ class SpeciesTraitsAdd(Add):
         return newob
 
     # TODO: deprecate once data mover/manager API is finished?
-    template = ViewPageTemplateFile("experiment_add.pt")
+    #template = ViewPageTemplateFile("experiment_traitsadd.pt")
 
     def validateAction(self, data):
         # TODO: check data ...
