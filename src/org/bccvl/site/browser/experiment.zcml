@@ -104,6 +104,13 @@
         for="Products.CMFCore.interfaces.IFolderish"
         class=".experiment.SpeciesTraitsAdd"
         permission="org.bccvl.AddExperiment"
-    />
+        />
+
+    <browser:page
+        name="resultdownload"
+        for="*"
+        class=".result_download.ResultDownloadView"
+        permission="zope2.View"
+        />
 
 </configure>
