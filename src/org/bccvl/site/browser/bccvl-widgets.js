@@ -44,7 +44,8 @@ var bccvl = {};
                 widgetelement: 'div.selecteditem',
                 result_selector: '#datasets-popup-result',
                 result_child_selector: '#datasets-popup-result-list',
-                filters: ['text', 'source']
+                filters: ['text', 'source'],
+                experimenttype: undefined
             }, options );
 
             // variable names that make more sense
@@ -66,6 +67,10 @@ var bccvl = {};
                     paramlist.push({name: 'datasets.filter.genre:list',
                                     value: value});
                 });
+                if (settings.experimenttype) {
+                    paramlist.push({name: 'datasets.filter.experimenttype:list',
+                                    value: settings.experimenttype});
+                }
                 // bootstrap 2 modal does'n have loaded event so we have to do it ourselves
                 $modal.modal('show')
                     .find('.modal-body')
@@ -475,6 +480,180 @@ var bccvl = {};
                     }
 
                 });
+        };
+
+
+        // single/multi select dataset widget
+        // TODO: again a copy of bccvl.select_dataset
+        bccvl.select_experiment = function($element, options) {
+
+            // required options: field, genre
+
+            var settings = $.extend({
+                // These are the defaults.
+                target: '#' + options.field + '-modal',
+                remote: 'datasets_listing_popup', // modal box id
+                widgetname: 'form.widgets.' + options.field,
+                widgetid: 'form-widgets-' + options.field,
+                widgeturl: location.origin + location.pathname + '/++widget++' + options.field, // used to reload entire widget
+                widgetelement: 'div.selecteditem',
+                result_selector: '#datasets-popup-result',
+                result_child_selector: '#datasets-popup-result-list',
+                filters: ['text', 'source'],
+                experimenttype: undefined
+            }, options );
+
+            // TODO: this is different to original
+            //       there is also a hardcoded reference to another widget this one depends on
+            // init settings experimenttype from widget if necessary
+            var $experiment_type = $('#form-widgets-experiment_type');
+            if (!settings.experimenttype && $experiment_type.val()) {
+                settings.experimenttype = $experiment_type.val();
+            }
+            // end diff
+
+
+            // variable names that make more sense
+            var $modal = $(settings.target);
+            // move $modal to top level body element to avoid nested form elements
+            $modal.prependTo($('body'));
+
+            // hookup popup button/link to show modal
+            $element.click(function(event) {
+                event.preventDefault();
+                // show modal
+                var paramlist = [{name: 'datasets.multiple',
+                                  value: settings.multiple}];
+                $.each(settings.filters, function(index, value) {
+                    paramlist.push({name: 'datasets.filters:list',
+                                    value: value});
+                });
+                $.each(settings.genre, function(index, value) {
+                    paramlist.push({name: 'datasets.filter.genre:list',
+                                    value: value});
+                });
+                if (settings.experimenttype) {
+                    paramlist.push({name: 'datasets.filter.experimenttype:list',
+                                    value: settings.experimenttype});
+                }
+                // bootstrap 2 modal does'n have loaded event so we have to do it ourselves
+                $modal.modal('show')
+                    .find('.modal-body')
+                    .load(settings.remote + '?' + $.param(paramlist), function() {
+                        bind_events_on_modal_content();
+                    });
+            });
+
+            function load_search_results(url, params) {
+                $modal.find(settings.result_selector).load(
+                    url + ' ' + settings.result_child_selector, params,
+                    // reapply select events
+                    function() {
+                        selectable($modal.find(settings.result_child_selector));
+                        // intercept pagination links
+                        $modal.find('div.listingBar a').click( function(event) {
+                            event.preventDefault();
+                            load_search_results($(this).attr('href'));
+                        });
+                    }
+                );
+            };
+
+            // initialise modal when finished loading
+            function bind_events_on_modal_content() {
+                // hookup events within modal
+                $modal.find('form').submit(function(event) {
+                    event.preventDefault();
+                    load_search_results(
+                        $(this).attr('action'),
+                        $(this).serialize()
+                    );
+                });
+                // select on first load
+                selectable($modal.find(settings.result_child_selector));
+                // intercept pagination links
+                $modal.find('div.listingBar a').click( function(event) {
+                    event.preventDefault();
+                    load_search_results($(this).attr('href'));
+                });
+            };
+
+            // clear modal on close
+            $modal.on('hidden', function() {
+                $(this).removeData('modal');
+                $(this).find('.modal-body').empty();
+            });
+
+            // TODO: modified to accomodate for count field and include already selected datasets
+            // when user preses 'save' button in modal
+            $modal.find('button.btn-primary').click(function(event) {
+                event.preventDefault();
+                // get selected element
+                var $selected = $modal.find('.ui-selected');
+                var uuid = $selected.map(function() { return $(this).attr('data-uuid'); }).get();
+                // we have all the data we need so get rid of the modal
+                $modal.modal('hide');
+                if ($selected.length) {
+                    var params = [];
+                    // collect already selected datasets and models
+                    var $cursel = $('input[name^="' + settings.widgetname + '.experiment"]');
+                    var count = 0;
+                    $.each($cursel, function(index, dsinput) {
+                        params.push({name: settings.widgetname + '.experiment.' + count,
+                                     value: $(dsinput).val()});
+                        var $models = $('input[name^="' + $(dsinput).attr('name').replace(/\.experiment\./, '.model.') + '"]:checked');
+                        $.each($models, function(index, model) {
+                            params.push({name: settings.widgetname + '.model.' + count + ':list',
+                                         value: $(model).val()});
+                        });
+                        count +=1 ;
+                    });
+                    // collect newly selected datasets
+                    $.each(uuid, function(index, value) {
+                        params.push({name: settings.widgetname + '.experiment.' + count,
+                                     value: value});
+                        count += 1;
+                    });
+                    // add count parameter
+                    params.push({name: settings.widgetname + '.count',
+                                 value: count});
+                    // fetch html for widget
+                    $('#' + settings.widgetid + '-selected').load(
+                        settings.widgeturl + ' ' + settings.widgetelement,
+                        params,
+                        function(text, status, xhr) {
+                            // trigger change event when widget has been updated
+                            $(this).trigger('widgetChanged');
+                        }
+
+                    );
+                }
+            });
+
+            $('#' + settings.widgetid + '-selected').on('click', 'a:has(i.icon-remove)',
+                function(event){
+                    event.preventDefault();
+                    $(this).parents('div.selecteditem').remove();
+                    // trigger change event on widget update
+                    $(event.delegateTarget).trigger('widgetChanged');
+                }
+            );
+
+            // TODO: this is different to original
+            //       there is also a hardcoded reference to another widget this one depends on
+            $experiment_type
+                .on('change', function(event, par1, par2) {
+                    // update settings with new search parameters
+                    var exptype = $(this).val();
+                    // check if params have changed
+                    if (exptype != settings.experimenttype) {
+                        settings.experimenttype = exptype;
+                        // clear depndent widget
+                        var $elem1 = $('#' + settings.widgetid + '-selected');
+                        $elem1.find('div.selecteditem').remove();
+                    }
+                });
+
         };
 
 

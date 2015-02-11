@@ -12,6 +12,7 @@ from .interfaces import (IDatasetLayersWidget, IDatasetWidget,
                          IDatasetsMultiSelectWidget,
                          IExperimentSDMWidget,
                          IFutureDatasetsWidget,
+                         IExperimentResultWidget,
                          IJSWrapper)
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.z3cform.interfaces import IDeferSecurityCheck
@@ -168,6 +169,7 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
     Gives user the ability to select an experiment and pick a number of sdm models from within.
     """
 
+    experiment_type = None
     genre = ['DataGenreSDMModel']
     multiple = None
 
@@ -206,7 +208,8 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
                 'widgetid': self.id,
                 'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
                                                         self.__name__),
-                'remote': 'experiments_listing_popup'
+                'remote': 'experiments_listing_popup',
+                'experimenttype': self.experiment_type,
             }),
             u');'))
         jswrap = getMultiAdapter((self.request, self), IJSWrapper)
@@ -291,7 +294,92 @@ def FutureDatasetsFieldWidget(field, request):
     return FieldWidget(field, FutureDatasetsWidget(request))
 
 
+@implementer(IExperimentResultWidget)
+class ExperimentResultWidget(HTMLInputWidget, Widget):
+    """
+    Widget that stores an experiment uuid and a list of selected sdm model uuids.
 
+    Gives user the ability to select an experiment and pick a number of sdm models from within.
+    """
+
+    genre = ['DataGenreCP', 'DataGenreFP',
+             'DataGenreENDW_CWE', 'DataGenreENDW_WE',
+             'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
+             'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
+             'DataGenreREDUNDANCY_ALL',
+             'DataGenreRAREW_CWE', 'DataGenreRAREW_RICHNESS',
+             'DataGenreRAREW_WE']
+    multiple = 'multiple'
+
+    def items(self):
+        # return dict with keys for experiment
+        # and subkey 'models' for models within experiment
+        if self.value:
+            for experiment_uuid, model_uuids in self.value.items():
+                item = {}
+                expbrain = uuidToCatalogBrain(experiment_uuid)
+                item['title'] = expbrain.Title
+                item['uuid'] = expbrain.UID
+
+                # TODO: what else wolud I need from an experiment?
+                exp = expbrain.getObject()
+                expmd = IBCCVLMetadata(exp)
+                item['resolution'] = expmd.get('resolution')
+
+                # now search all models within and add infos
+                pc = getToolByName(self.context, 'portal_catalog')
+                brains = pc.searchResults(path=expbrain.getPath(),
+                                          BCCDataGenre=self.genre)
+                # TODO: maybe as generator?
+                item['models'] = [{'uuid': brain.UID,
+                                   'title': brain.Title,
+                                   'selected': brain.UID in self.value[experiment_uuid]}
+                                               for brain in brains]
+                yield item
+
+    def js(self):
+        # TODO: search window to search for experiment
+        js = u"".join((
+            u'bccvl.select_experiment($("a#', self.__name__, '-popup"),',
+            json.dumps({
+                'field': self.__name__,
+                'genre': self.genre,
+                'widgetname': self.name,
+                'widgetid': self.id,
+                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
+                                                        self.__name__),
+                'remote': 'experiments_listing_popup',
+                'multiple': self.multiple
+            }),
+            u');'))
+        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
+        return jswrap % {'js':  js}
+
+    def extract(self):
+        # extract the value for the widget from the request and return
+        # a tuple of (key,value) pairs
+        value = {}
+        try:
+            count = int(self.request.get('{}.count'.format(self.name)))
+        except:
+            count = 0
+        # no count?
+        if count <= 0:
+            return NO_VALUE
+        # try to find count experiments
+        for idx in range(0, count):
+            uuid = self.request.get('{}.experiment.{}'.format(self.name, idx))
+            models = self.request.get('{}.model.{}'.format(self.name, idx), [])
+            if uuid:
+                value[uuid] = models
+        if not value:
+            return NO_VALUE
+        return value
+
+
+@implementer(IFieldWidget)
+def ExperimentResultFieldWidget(field, request):
+    return FieldWidget(field, ExperimentResultWidget(request))
 
 
 

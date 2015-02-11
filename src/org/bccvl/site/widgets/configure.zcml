@@ -7,6 +7,8 @@
 
   <adapter factory=".converter.ExperimentsSDMConverter"/>
 
+  <adapter factory=".converter.ExperimentsResultConverter"/>
+
   <adapter factory=".converter.FutureDatasetsConverter"/>
 
   <adapter
@@ -73,8 +75,29 @@
       template="experimentsdm_display.pt"
       />
 
+    <adapter
+      for="zope.interface.Interface
+           .interfaces.IExperimentResultWidget"
+      provides=".interfaces.IJSWrapper"
+      factory=".widgets.JS_WRAPPER_ADAPTER"
+      />
 
-  <adapter
+    <z3c:widgetTemplate
+      mode="input"
+      widget=".interfaces.IExperimentResultWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="experimentresult_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="display"
+      widget=".interfaces.IExperimentResultWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="experimentresult_display.pt"
+      />
+
+
+    <adapter
       for="zope.interface.Interface
            .interfaces.IFutureDatasetsWidget"
       provides=".interfaces.IJSWrapper"

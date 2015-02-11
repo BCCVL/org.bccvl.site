@@ -10,6 +10,7 @@ from org.bccvl.site import MessageFactory as _
 from org.bccvl.site.widgets.widgets import DatasetFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetLayersFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
+from org.bccvl.site.widgets.widgets import ExperimentResultFieldWidget
 from org.bccvl.site.widgets.widgets import FutureDatasetsFieldWidget
 
 
@@ -111,6 +112,7 @@ class IProjectionExperiment(IExperiment):
     # TODO: ignore context here? don't really need to store this?
     form.widget('species_distribution_models',
                 ExperimentSDMFieldWidget,
+                experiment_type=ISDMExperiment.__identifier__,
                 errmsg=u"Please select at least 1 Species Distribution Model")
     species_distribution_models = Dict(
         title=u'Species Distribution Models',

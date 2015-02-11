@@ -22,6 +22,11 @@ class IExperimentSDMWidget(IWidget):
     pass
 
 
+class IExperimentResultWidget(IWidget):
+
+    pass
+
+
 class IFutureDatasetsWidget(IWidget):
 
     pass
