@@ -165,13 +165,6 @@ class IBiodiverseExperiment(IExperiment):
     # =>  species metadata filenaming
 
 
-class IEnsembleExperiment(IExperiment):
-
-    # datasets =
-
-    pass
-
-
 class ISpeciesTraitsExperiment(IExperiment):
 
     form.widget(algorithm=RadioFieldWidget)
@@ -199,4 +192,34 @@ class ISpeciesTraitsExperiment(IExperiment):
         vocabulary='species_traits_datasets_vocab',
         default=None,
         required=True,
+    )
+
+
+# TODO: use interfaces or portal_type?
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+EXPERIMENT_TYPE_VOCAB = SimpleVocabulary(
+    (SimpleTerm(ISDMExperiment.__identifier__, ISDMExperiment.__identifier__, u'SDM Experiment'),
+     SimpleTerm(IProjectionExperiment.__identifier__, IProjectionExperiment.__identifier__, u'Climate Change Experiment'),
+     SimpleTerm(IBiodiverseExperiment.__identifier__, IBiodiverseExperiment.__identifier__,  u'Biodiverse Experiment'))
+)
+
+
+class IEnsembleExperiment(IExperiment):
+
+    experiment_type = Choice(
+        title=u"Select Experiment Type",
+        vocabulary = EXPERIMENT_TYPE_VOCAB,
+        default=ISDMExperiment.__identifier__,
+        required=True
+    )
+
+    form.widget('datasets',
+                ExperimentResultFieldWidget,
+                errmsg=u"Please select at least 1 Experiment Result")
+    datasets = Dict(
+        title=u'Result Datasets',
+        key_type=TextLine(),
+        value_type=List(value_type=TextLine(), required=True),
+        default=None,
+        required=True
     )

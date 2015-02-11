@@ -1,5 +1,6 @@
 from datetime import datetime
 from urlparse import urlsplit
+from itertools import chain
 import os.path
 import tempfile
 from gu.z3cform.rdf.utils import Period
@@ -419,7 +420,7 @@ class EnsembleJobTracker(MultiJobTracker):
 
             # build job_params and store on result
             result.job_params = {
-                'datasets': list(self.context.dataset)
+                'datasets': list(chain.from_iterable(self.context.datasets.values()))
             }
 
             # submit job to queue

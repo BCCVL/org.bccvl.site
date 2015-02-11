@@ -415,47 +415,9 @@ class EnsembleAdd(Add):
 
     portal_type = "org.bccvl.content.ensemble"
 
-    def create(self, data):
-        # FIXME: store only selcted algos
-        # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
-        # we'll have to override it to find a place to apply our algo_group data'
-        newob = super(EnsembleAdd, self).create(data)
-        # and now apply data['projection']
-        newob.dataset = data['dataset']
-        return newob
-
     def validateAction(self, data):
         # TODO: check data ...
         pass
-
-    def extractData(self, setErrors=True):
-        data, errors = super(EnsembleAdd, self).extractData(setErrors)
-        # extract datasets and thresholds and convert to field values
-        prefix = '{}{}{}'.format(self.prefix, self.widgets.prefix, 'dataset')
-        count = self.request.get('{}.count'.format(prefix))
-        try:
-            count = int(count)
-            datasets = []
-            for x in xrange(count):
-                dsname = '{}.{}'.format(prefix, x)
-                # try to parse value as float... parsing as Decimal throws an unsupported error
-                datasets.append(self.request.get(dsname))
-            if not datasets:
-                # TODO: set errors
-                pass
-            data['dataset'] = datasets
-        except (Invalid, ValueError, MultipleErrors) as error:
-            #view = getMultiAdapter((error, self.request, widget, widget.field,
-            view = getMultiAdapter((error, self.request, None, None,
-                                    self.form, self.content), IErrorViewSnippet)
-            view.update()
-            # if self.setErrors:
-            #     widget.error = view
-            errors += (view, )
-        else:
-            # TODO: is this else part necessary?
-            data['dataset'] = datasets
-        return data, errors
 
 
 class SpeciesTraitsAdd(Add):
