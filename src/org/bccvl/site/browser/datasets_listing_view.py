@@ -157,7 +157,7 @@ class DatasetTools(BrowserView):
         return self._resolution_vocab
 
     def resolution_list(self):
-        selected = self.request.get('datasets.filter.resolution', None)
+        selected = self.request.get('datasets.filter.resolution', ())
         for genre in self.resolution_vocab:
             yield {
                 'selected': genre.token in selected,
