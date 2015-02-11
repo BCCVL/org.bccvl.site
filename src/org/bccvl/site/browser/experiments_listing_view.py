@@ -183,8 +183,6 @@ class ExperimentsListingView(BrowserView):
 
 class ExperimentsListingPopup(BrowserView):
 
-    experiment_type = ISDMExperiment.__identifier__
-
     def __call__(self):
 
         return super(ExperimentsListingPopup, self).__call__()
@@ -193,11 +191,12 @@ class ExperimentsListingPopup(BrowserView):
         site_path = queryUtility(IPloneSiteRoot).getPhysicalPath()
         b_start = self.request.get('b_start', 0)
         b_size = self.request.get('b_size', 20)
+        experiment_type = self.request.get('datasets.filter.experimenttype', None)
         query = {
             'path': {
                 'query': '/'.join(site_path + (defaults.EXPERIMENTS_FOLDER_ID, ))
             },
-            'object_provides': self.experiment_type,
+            'object_provides': experiment_type,
             'sort_on': 'created',
             'sort_order': 'descending',
             # provide batch hints to catalog

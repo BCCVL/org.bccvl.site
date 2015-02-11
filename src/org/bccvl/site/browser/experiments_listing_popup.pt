@@ -16,6 +16,7 @@
                   dataset_tools nocall:context/@@dataset_tools;
 
                   navigation_root_url context/@@plone_portal_state/navigation_root_url;
+                  multiple python:request.get('datasets.multiple', '');
                   "
       tal:omit-tag="">
 
@@ -24,6 +25,12 @@
     <form id="datasets-popup-searchform" action="" method="GET"
           tal:define="context_state context/@@plone_context_state"
           tal:attributes="action context_state/current_base_url">
+      <input type="hidden" name="datasets.multiple" value=""
+             tal:attributes="value multiple"/>
+      <input name="datasets.filter.experimenttype:list" type="hidden"
+             tal:attributes="value experimenttype"
+             tal:repeat="experimenttype
+                         python:request.get('datasets.filter.experimenttype')"/>
       <div class="cell position-0 width-5">
         <input id="datasets-filter-text"
                name="datasets.filter.text" type="text"
@@ -70,7 +77,8 @@
                          ">
           <div class="cell position-0 width-1">
             <input type="radio" name="selected-layer"
-                   tal:attributes="value string:select-${item/UID}" />
+                   tal:attributes="value string:select-${item/UID};
+                                   type python: 'checkbox' if multiple=='multiple' else 'radio'" />
           </div>
           <div class="cell position-1">
             <p tal:content="item_title">Item Title</p>
