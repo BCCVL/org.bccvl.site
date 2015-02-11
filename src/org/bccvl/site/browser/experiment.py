@@ -1,3 +1,4 @@
+from itertolls import chain
 from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
@@ -338,6 +339,12 @@ class ProjectionAdd(Add):
 
     portal_type = 'org.bccvl.content.projectionexperiment'
 
+    def create(self, data):
+        newob = super(ProjectionAdd, self).create(data)
+        # store resolution determined during validateAction
+        IBCCVLMetadata(newob)['resolution'] = data['resolution']
+        return newob
+
     def validateAction(self, data):
         """
         Get resolution from SDM and use it to find future datasets
@@ -347,14 +354,24 @@ class ProjectionAdd(Add):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
 
-        # TODO: do some validation here... but what?
-
-        # .... check if we have all datasets available?
-
-        #if not len(result):
-        #    raise ActionExecutionError(Invalid(u"The combination of projection points does not match any datasets"))
         # TODO: match result layers with sdm layers and get missing layers from SDM?
         #       -> only environmental? or missing climate layers as well?
+
+        datasets = data.get('future_climate_datasets', {}).keys()
+        if not datasets:
+            # FIXME: Make this a widget error, currently shown as form wide error
+            raise ActionExecutionError(Invalid('No future climate dataset selected.'))
+
+        # Determine lowest resolution
+        # FIXME: this is slow and needs improvements
+        #        and accessing _terms is not ideal
+        res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
+        resolution_idx = -1
+        for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+            idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+            if idx > resolution_idx:
+                resolution_idx = idx
+        data['resolution'] = res_vocab._terms[resolution_idx].value
 
 
 class BiodiverseAdd(Add):
@@ -413,9 +430,31 @@ class EnsembleAdd(Add):
 
     portal_type = "org.bccvl.content.ensemble"
 
+    def create(self, data):
+        newob = super(EnsembleAdd, self).create(data)
+        # store resolution determined during validateAction
+        IBCCVLMetadata(newob)['resolution'] = data['resolution']
+        return newob
+
     def validateAction(self, data):
-        # TODO: check data ...
-        pass
+
+        datasets = list(chain.from_iterable(data.get('datasets', {}).values()))
+        if not datasets:
+            # FIXME: Make this a widget error, currently shown as form wide error
+            raise ActionExecutionError(Invalid('No dataset selected.'))
+
+        # all selected datasets are combined into one ensemble analysis
+        # get resolution for ensembling
+        # Determine lowest resolution
+        # FIXME: this is slow and needs improvements
+        #        and accessing _terms is not ideal
+        res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
+        resolution_idx = -1
+        for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+            idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+            if idx > resolution_idx:
+                resolution_idx = idx
+        data['resolution'] = res_vocab._terms[resolution_idx].value
 
 
 class SpeciesTraitsAdd(Add):
