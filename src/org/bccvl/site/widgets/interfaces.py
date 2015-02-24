@@ -12,11 +12,6 @@ class IDatasetWidget(IWidget):
     pass
 
 
-class IDatasetsMultiSelectWidget(IWidget):
-
-    pass
-
-
 class IExperimentSDMWidget(IWidget):
 
     pass

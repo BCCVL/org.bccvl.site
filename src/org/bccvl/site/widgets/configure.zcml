@@ -142,23 +142,4 @@
       template="experimentresultprojection_display.pt"
       />
 
-
-
-
-
-
-    <z3c:widgetTemplate
-      mode="input"
-      widget=".interfaces.IDatasetsMultiSelectWidget"
-      layer="z3c.form.interfaces.IFormLayer"
-      template="datasetsmultiselect_input.pt"
-      />
-
-    <z3c:widgetTemplate
-      mode="display"
-      widget=".interfaces.IDatasetsMultiSelectWidget"
-      layer="z3c.form.interfaces.IFormLayer"
-      template="datasetsmultiselect_display.pt"
-      />
-
 </configure>
