@@ -334,10 +334,10 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                 brains = pc.searchResults(path=expbrain.getPath(),
                                           BCCDataGenre=self.genre)
                 # TODO: maybe as generator?
-                item['models'] = [{'uuid': brain.UID,
-                                   'title': brain.Title,
-                                   'selected': brain.UID in self.value[experiment_uuid]}
-                                               for brain in brains]
+                item['datasets'] = [{'uuid': brain.UID,
+                                     'title': brain.Title,
+                                     'selected': brain.UID in self.value[experiment_uuid]}
+                                                 for brain in brains]
                 yield item
 
     def js(self):
@@ -372,7 +372,7 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
         # try to find count experiments
         for idx in range(0, count):
             uuid = self.request.get('{}.experiment.{}'.format(self.name, idx))
-            models = self.request.get('{}.model.{}'.format(self.name, idx), [])
+            models = self.request.get('{}.dataset.{}'.format(self.name, idx), [])
             if uuid:
                 value[uuid] = models
         if not value:

@@ -22,7 +22,7 @@
     <tal:block tal:repeat="item view/items">
       <div id="" class="row">
         <span tal:content="item/title">Experiment Title</span>
-        <tal:block tal:repeat="model item/models">
+        <tal:block tal:repeat="model item/datasets">
           <span tal:condition="model/selected"
                 tal:content="model/title">Dataset Title</span>
         </tal:block>

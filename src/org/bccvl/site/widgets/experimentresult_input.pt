@@ -37,12 +37,12 @@
                  tal:attributes="value item/uuid;
                                  name string:${view/name}.experiment.${index};"/>
           <!-- List of Datesetss within experiment -->
-          <tal:repeat tal:repeat="model item/models">
+          <tal:repeat tal:repeat="model item/datasets">
             <div class="selectedmodels">
               <input type="checkbox" value=""
-                     name="form.widgets.fieldname.model.0:list"
+                     name="form.widgets.fieldname.dataset.0:list"
                      tal:attributes="value model/uuid;
-                                     name string:${view/name}.model.${index}:list;
+                                     name string:${view/name}.dataset.${index}:list;
                                      checked model/selected;"/>
               <span tal:content="model/title">Model Title</span>
             </div>
