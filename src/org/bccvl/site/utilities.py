@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from urlparse import urlsplit
 from itertools import chain
 import os.path
@@ -350,24 +351,27 @@ class BiodiverseJobTracker(MultiJobTracker):
                         u"Can't find method to run Biodiverse Experiment")
 
             # iterate over all datasets and group them by emsc,gcm,year
+            # FIXME: add resolution grouping?
             datasets = {}
-            for projds in self.context.projection:
-                dsobj = uuidToObject(projds['dataset'])
-                dsmd = IGraph(dsobj)
-                emsc = dsmd.value(dsmd.identifier, BCCPROP['emissionscenario'])
-                gcm = dsmd.value(dsmd.identifier, BCCPROP['gcm'])
-                period = dsmd.value(dsmd.identifier, DCTERMS['temporal'])
-                year = Period(period).start if period else None
-                key = (emsc, gcm, year)
-                if key not in datasets:
-                    datasets[key] = []
-                datasets[key].append(projds)
+            for projds, threshold in chain.from_iterable(map(lambda x: x.items(), self.context.projection.itervalues())):
+                dsobj = uuidToObject(projds)
+                dsmd = IBCCVLMetadata(dsobj)
+
+                # FIXME: sdm datasets have no resolution
+                emsc = dsmd.get('emsc')
+                gcm = dsmd.get('gcm')
+                period = dsmd.get('temporal')
+                resolution = dsmd.get('resolution')
+                if not period:
+                    year = 'current'
+                else:
+                    year = Period(period).start if period else None
+                key = (emsc, gcm, year, resolution)
+                datasets.setdefault(key, []).append((projds, threshold))
 
             # create one job per dataset group
             for key, datasets in datasets.items():
-                (emsc, gcm, year) = key
-                emsc = emsc.split('#', 1)[-1] if emsc else None
-                gcm = gcm.split('#', 1)[-1] if gcm else None
+                (emsc, gcm, year, resolution) = key
 
                 # create result object:
                 title = u'{} - biodiverse {}_{}_{} {}'.format(
@@ -378,10 +382,22 @@ class BiodiverseJobTracker(MultiJobTracker):
                     'Folder',
                     title=title)
 
+                dss = []
+                for ds, thresh in datasets:
+                    try:
+                        dst = Decimal(thresh)
+                    except:
+                        # seems like we have a threshold name .. try to resolve it
+                        dst = Decimal(dataset.getThresholds(ds, thresh)[ds][thresh])
+                    dss.append({
+                        'dataset': ds,
+                        'threshold': dst
+                    })
+
                 # build job_params and store on result
                 result.job_params = {
                     # datasets is a list of dicts with 'threshold' and 'uuid'
-                    'projections': datasets,
+                    'projections': dss,
                     'cluster_size': self.context.cluster_size,
                 }
 

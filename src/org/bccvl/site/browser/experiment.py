@@ -378,52 +378,10 @@ class BiodiverseAdd(Add):
 
     portal_type = "org.bccvl.content.biodiverseexperiment"
 
-    def create(self, data):
-        # FIXME: store only selcted algos
-        # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
-        # we'll have to override it to find a place to apply our algo_group data'
-        newob = super(BiodiverseAdd, self).create(data)
-        # and now apply data['projection']
-        newob.projection = data['projection']
-        return newob
-
     def validateAction(self, data):
         # TODO: check data ...
+        # ...
         pass
-
-    def extractData(self, setErrors=True):
-        data, errors = super(BiodiverseAdd, self).extractData(setErrors)
-        # extract datasets and thresholds and convert to field values
-        prefix = '{}{}{}'.format(self.prefix, self.widgets.prefix, 'projection')
-        count = self.request.get('{}.count'.format(prefix))
-        try:
-            # TODO: sholud I catch a TypeError here as well?
-            count = int(count)
-            projdata = []
-            for x in xrange(count):
-                dsname = '{}.{}.dataset'.format(prefix, x)
-                thname = '{}.{}.threshold'.format(prefix, x)
-                # try to parse value as float... parsing as Decimal throws an unsupported error
-                _ = float(self.request.get(thname))
-                # FIXME: may raise TypeError ... not caught below
-                projdata.append({'dataset': self.request.get(dsname),
-                                 'threshold': Decimal(self.request.get(thname))})
-            if not projdata:
-                # TODO: set errors
-                pass
-            data['projection'] = projdata
-        except (Invalid, ValueError, MultipleErrors) as error:
-            #view = getMultiAdapter((error, self.request, widget, widget.field,
-            view = getMultiAdapter((error, self.request, None, None,
-                                    self.form, self.content), IErrorViewSnippet)
-            view.update()
-            # if self.setErrors:
-            #     widget.error = view
-            errors += (view, )
-        else:
-            # TODO: is this else part necessary?
-            data['projection'] = projdata
-        return data, errors
 
 
 class EnsembleAdd(Add):
