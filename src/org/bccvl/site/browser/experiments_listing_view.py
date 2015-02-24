@@ -61,123 +61,17 @@ class ExperimentsListingView(BrowserView):
         }
 
     def experiment_details(self, expbrain):
-        # FIXME: this method is really slow, e.g. all the vocabs are re-read for each item
         details = {}
-
         if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
-            # TODO: duplicate code here... see org.bccvl.site.browser.widget.py
-            # TODO: generated list here not very useful,.... all layers over all sdms are concatenated
-            exp = expbrain.getObject()
-            for sdmuuid in exp.species_distribution_models:
-                sdm = uuidToObject(sdmuuid)
-                if sdm is not None:
-                    # TODO: in theory it could fail when trying to access parents as well?
-                    sdmresult = sdm.__parent__
-                    sdmexp = sdmresult.__parent__
-                    # TODO: absence data
-                    envlayers = []
-                    for envuuid, layers in sorted(sdmexp.environmental_datasets.items()):
-                        envbrain = uuidToCatalogBrain(envuuid)
-                        envtitle = envbrain.Title if envbrain else u'Missing dataset'
-                        envlayers.append(
-                            '{}: {}'.format(envtitle,
-                                            ', '.join(self.envlayervocab.getTerm(envlayer).title
-                                                      for envlayer in sorted(layers)))
-                        )
-
-                    toolkit = sdmresult.job_params['function']
-                    species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
-                else:
-                    # FIXME: should we prevent users from deleting / unsharing?
-                    toolkit = 'missing experiment'
-                    species_occ = ''
-                    envlayers = []
-
-            details.update({
-                'type': 'PROJECTION',
-                'functions': toolkit,
-                'species_occurrence': species_occ,
-                'species_absence': '',
-                'environmental_layers': ', '.join(envlayers)
-            })
+            details = projection_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.sdmexperiment':
-            # TODO: this is ripe for optimising so it doesn't run every time
-            # experiments are listed
-            environmental_layers = defaultdict(list)
-            exp = expbrain.getObject()
-            if exp.environmental_datasets:
-                for dataset, layers in exp.environmental_datasets.items():
-                    for layer in layers:
-                        environmental_layers[dataset].append(
-                            self.envlayervocab.getTerm(layer).title
-                        )
-
-            details.update({
-                'type': 'SDM',
-                'functions': ', '.join(
-                    get_title_from_uuid(func) for func in exp.functions
-                ),
-                'species_occurrence': get_title_from_uuid(
-                    exp.species_occurrence_dataset),
-                'species_absence': get_title_from_uuid(
-                    exp.species_absence_dataset),
-                'environmental_layers': ', '.join(
-                    '{}: {}'.format(get_title_from_uuid(dataset),
-                                    ', '.join(layers))
-                    for dataset, layers in environmental_layers.items()
-                ),
-            })
+            details = sdm_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
-            # FIXME: implement this
-            exp = expbrain.getObject()
-            species = set()
-            years = set()
-            emscs = set()
-            gcms = set()
-            for dsuuid in (x['dataset'] for x in exp.projection):
-                dsobj = uuidToObject(dsuuid)
-                if not dsobj:
-                    # TODO: can't access dateset anymore, let user know somehow
-                    continue
-                md = IBCCVLMetadata(dsobj)
-                species.add(md.get('species', {}).get('scientificName'))
-                period = md.get('temporal')
-                if period:
-                    years.add(Period(period).start)
-                gcm = md.get('gcm')
-                if gcm:
-                    gcms.add(gcm)
-                emsc = md.get('emsc')
-                if emsc:
-                    emscs.add(emsc)
-
-            details.update({
-                'type': 'BIODIVERSE',
-                'functions': 'endemism, redundancy',
-                'species_occurrence': ', '.join(sorted(species)),
-                'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
-                                                   ', '.join(sorted(gcms))),
-                'environmental_layers': ', '.join(sorted(years)),
-            })
+            details = biodiverse_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.ensemble':
-            # FIXME: implement this
-            details.update({
-                'type': 'ENSEMBLE',
-                'functions': '',
-                'species_occurrence': '',
-                'species_absence': '',
-                'environmental_layers': '',
-            })
+            details = ensemble_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.speciestraitsexperiment':
-            # FIXME: implement this
-            details.update({
-                'type': 'SECIES TRAITS',
-                'functions': '',
-                'species_occurrence': '',
-                'species_absence': '',
-                'environmental_layers': '',
-            })
-
+            details = speciestraits_listing_details(expbrain)
         return details
 
 
@@ -208,3 +102,144 @@ class ExperimentsListingPopup(BrowserView):
         from Products.CMFPlone import Batch
 
         return Batch(IContentListing(results), b_size, b_start)
+
+
+# FIXME: the methods below, should be looked up via named adapter or similar.
+#        furthermore, in the experimentlisting view it might be good to use
+#        templates / or macros that are lookup up via (view, request, context)
+#        to support different list item rendering based on view and context (re-use on listing page and popup listing?)
+    
+def sdm_listing_details(expbrain):
+    # TODO: this is ripe for optimising so it doesn't run every time
+    # experiments are listed
+    details = {}
+    environmental_layers = defaultdict(list)
+    exp = expbrain.getObject()
+    if exp.environmental_datasets:
+        for dataset, layers in exp.environmental_datasets.items():
+            for layer in layers:
+                environmental_layers[dataset].append(
+                    self.envlayervocab.getTerm(layer).title
+                )
+
+        details.update({
+            'type': 'SDM',
+            'functions': ', '.join(
+                get_title_from_uuid(func) for func in exp.functions
+            ),
+            'species_occurrence': get_title_from_uuid(
+                exp.species_occurrence_dataset),
+            'species_absence': get_title_from_uuid(
+                exp.species_absence_dataset),
+            'environmental_layers': ', '.join(
+                '{}: {}'.format(get_title_from_uuid(dataset),
+                                ', '.join(layers))
+                for dataset, layers in environmental_layers.items()
+            ),
+        })
+    return details
+    
+
+
+def projection_listing_details(expbrain):
+
+    # TODO: duplicate code here... see org.bccvl.site.browser.widget.py
+    # TODO: generated list here not very useful,.... all layers over all sdms are concatenated
+    details = {}
+    exp = expbrain.getObject()
+    for sdmuuid in exp.species_distribution_models:
+        sdm = uuidToObject(sdmuuid)
+        if sdm is not None:
+            # TODO: in theory it could fail when trying to access parents as well?
+            sdmresult = sdm.__parent__
+            sdmexp = sdmresult.__parent__
+            # TODO: absence data
+            envlayers = []
+            for envuuid, layers in sorted(sdmexp.environmental_datasets.items()):
+                envbrain = uuidToCatalogBrain(envuuid)
+                envtitle = envbrain.Title if envbrain else u'Missing dataset'
+                envlayers.append(
+                    '{}: {}'.format(envtitle,
+                                    ', '.join(self.envlayervocab.getTerm(envlayer).title
+                                              for envlayer in sorted(layers)))
+                )
+
+                toolkit = sdmresult.job_params['function']
+                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
+            else:
+                # FIXME: should we prevent users from deleting / unsharing?
+                toolkit = 'missing experiment'
+                species_occ = ''
+                envlayers = []
+
+        details.update({
+            'type': 'PROJECTION',
+            'functions': toolkit,
+            'species_occurrence': species_occ,
+            'species_absence': '',
+            'environmental_layers': ', '.join(envlayers)
+        })
+    return details
+
+
+def biodiverse_listing_details(expbrain):
+    details = {}
+    # FIXME: implement this
+    exp = expbrain.getObject()
+    species = set()
+    years = set()
+    emscs = set()
+    gcms = set()
+    for dsuuid in (x['dataset'] for x in exp.projection):
+        dsobj = uuidToObject(dsuuid)
+        if not dsobj:
+            # TODO: can't access dateset anymore, let user know somehow
+            continue
+        md = IBCCVLMetadata(dsobj)
+        species.add(md.get('species', {}).get('scientificName'))
+        period = md.get('temporal')
+        if period:
+            years.add(Period(period).start)
+        gcm = md.get('gcm')
+        if gcm:
+            gcms.add(gcm)
+        emsc = md.get('emsc')
+        if emsc:
+            emscs.add(emsc)
+
+        details.update({
+            'type': 'BIODIVERSE',
+            'functions': 'endemism, redundancy',
+            'species_occurrence': ', '.join(sorted(species)),
+            'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
+                                               ', '.join(sorted(gcms))),
+            'environmental_layers': ', '.join(sorted(years)),
+        })
+    return details
+    
+
+def ensemble_listing_details(expbrain):
+    # FIXME: implement this
+    details = {}
+    details.update({
+        'type': 'ENSEMBLE',
+        'functions': '',
+        'species_occurrence': '',
+        'species_absence': '',
+        'environmental_layers': '',
+    })
+    return details
+
+
+def speciestraits_listing_details(expbrain):
+    # FIXME: implement this
+    details = {}
+    details.update({
+        'type': 'SECIES TRAITS',
+        'functions': '',
+        'species_occurrence': '',
+        'species_absence': '',
+        'environmental_layers': '',
+    })
+    return details
+    
