@@ -4,12 +4,14 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
       metal:use-macro="context/main_template/macros/master"
+      tal:define="portal_url context/@@plone_portal_state/portal_url"
       i18n:domain="plone">
 
 
   <metal:styleslot fill-slot="style_slot">
     <link rel="stylesheet"
-          href="/++resource++bccvl/lib/bootstrap/css/bootstrap.css"/>
+          href="++resource++bccvl/lib/bootstrap/css/bootstrap.css"
+          tal:attributes="href string:${portal_url}/++resource++bccvl/lib/bootstrap/css/bootstrap.css"/>
     <style>
       .modal.large {
       width: 80%; /* responsive width */
@@ -22,8 +24,11 @@
   </metal:styleslot>
   <metal:javascriptslot fill-slot="javascript_head_slot">
     <!-- TODO: that grabs bootstrap from theme -->
-    <script type="text/javascript" src="/++resource++bccvl/lib/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="++resource++bccvl-widgets.js"></script>
+    <script type="text/javascript"
+            src="++resource++bccvl/lib/bootstrap/js/bootstrap.min.js"
+            tal:attributes="src string:${portal_url}/++resource++bccvl/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="++resource++bccvl-widgets.js"
+            tal:attributes="src string:${portal_url}/++resource++bccvl-widgets.js"></script>
   </metal:javascriptslot>
 
   <metal:main fill-slot="main">
