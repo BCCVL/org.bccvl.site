@@ -358,40 +358,7 @@ class DataSetManager(BrowserView):
     def getThresholds(self, datasets, thresholds=None):
         # datasets: a future projection dataset as a result of projectien experiment
         # thresholds: list of names to retrieve or all
-
-        # FIXME FIXME: don't know which thresholds to pull from here
-        #       store on resultc when importing/creating?
-        #       store link to sdm on result?
-        #       -> maybe store all necessary info to create an experiment from result?
-        #       ->
-        if not isinstance(datasets, list):
-            datasets = [datasets]
-        result = {}  # we have to return per experiment, per dataset/result
-        for dataset in datasets:
-            # 1. try to find sdm for projection
-            projobj = uuidToObject(dataset)
-            if projobj is None:
-                continue
-            # 2. thresholds can be found on result containers
-            #      and associated sdm
-            expinf = getattr(projobj.__parent__, 'experiment_infos', None)
-            if not expinf:
-                continue
-            ths = expinf.get('sdm', {}).get('thresholds', None)
-            if not ths:
-                continue
-            # FIXME: thresholds are no longer on result container, but on eval datasets...
-            #        add a more sane way to find thresholds faster if necessary
-            #        find on DataGenreSDMEval datasets
-
-            # ok we have thresholds, let's find the dataset uuid for this result
-            pc = getToolByName(self.context, 'portal_catalog')
-            if dataset not in result:
-                result[dataset] = {}
-            result[dataset].update(ths)
-        # FIXME: just broke usage of old experiments in biodiverse experiments
-        #        migrate? don't care? support both here?
-        return result
+        return dataset.getThresholds(datasets, thresholds)
 
 
 class DataSetAPI(BrowserView):
