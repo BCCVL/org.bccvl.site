@@ -1,4 +1,4 @@
-from itertolls import chain
+from itertools import chain
 from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
@@ -404,12 +404,17 @@ class EnsembleAdd(Add):
         # all selected datasets are combined into one ensemble analysis
         # get resolution for ensembling
         # Determine lowest resolution
-        # FIXME: this is slow and needs improvements
-        #        and accessing _terms is not ideal
+        # FIXME: An experiment should store the resolution metadata on the dataset
+        #        e.g. an SDM current projection needs to store resolution on tif file
         res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
         resolution_idx = -1
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
-            idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+            try:
+                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+            except:
+                # FIXME: remove this part
+                # get resolution from job_params
+                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.getObject().__parent__.job_params['resolution']))
             if idx > resolution_idx:
                 resolution_idx = idx
         data['resolution'] = res_vocab._terms[resolution_idx].value

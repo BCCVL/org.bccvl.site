@@ -11,6 +11,8 @@
 
   <adapter factory=".converter.FutureDatasetsConverter"/>
 
+  <adapter factory=".converter.ExperimentResultProjectionConverter"/>
+
   <adapter
       for="zope.interface.Interface
            .interfaces.IDatasetWidget"
@@ -118,6 +120,27 @@
       template="futuredatasets_display.pt"
       />
 
+
+    <adapter
+      for="zope.interface.Interface
+           .interfaces.IExperimentResultProjectionWidget"
+      provides=".interfaces.IJSWrapper"
+      factory=".widgets.JS_WRAPPER_ADAPTER"
+      />
+
+    <z3c:widgetTemplate
+      mode="input"
+      widget=".interfaces.IExperimentResultProjectionWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="experimentresultprojection_input.pt"
+      />
+
+    <z3c:widgetTemplate
+      mode="display"
+      widget=".interfaces.IExperimentResultProjectionWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="experimentresultprojection_display.pt"
+      />
 
 
 

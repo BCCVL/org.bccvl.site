@@ -7,11 +7,13 @@ from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
+# FIXME: remove form hints here and put them into special form schemata?
 from org.bccvl.site.widgets.widgets import DatasetFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetLayersFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultFieldWidget
 from org.bccvl.site.widgets.widgets import FutureDatasetsFieldWidget
+from org.bccvl.site.widgets.widgets import ExperimentResultProjectionFieldWidget
 
 
 class IDataset(form.Schema):
@@ -144,15 +146,27 @@ class IBiodiverseExperiment(IExperiment):
         required=False,
     )
 
-    # options: use dicts or other things here
-    #          number of items in both lists must match
-    # FIXME: this list will store a list of datests + threshold values
-    #        I don't have yet a widget for it so I can't add it to the interface'
-    # projection = List(
-    #     title=u'Projection Datasets',
-    #     default=None,
-    #     required=True,
-    #     )
+    # - Opt1 ... select experiments and pick datasets from experiment (like experimend sdm model select)
+    # - Opt2 ... I think it's better to select datasets and show them grouped by grouping criteria for biodiverse. May make searching easier as well?
+    # - Opt3 ... set criteria for grouping on page, and make search interface for specise only...
+    #            restricts to single biodiverse experiment?.
+    # - Opt4 ... make different interfaces .... optimised for different interests
+
+    # Key is the dataset uuid and value a threstold to apply
+    form.widget('projection',
+                ExperimentResultProjectionFieldWidget,
+                experiment_type=[ISDMExperiment.__identifier__,
+                                 IProjectionExperiment.__identifier__],
+                errmsg=u"Please select at least 1 dataset.")
+    projection = Dict(
+        title=u'Projection Datasets',
+        key_type=TextLine(),
+        value_type=Dict(
+            key_type=TextLine(),
+            value_type=TextLine()
+        ),
+        required=True,
+    )
 
     cluster_size = Choice(
         title=u'Cluster size',

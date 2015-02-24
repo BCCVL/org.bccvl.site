@@ -32,6 +32,11 @@ class IFutureDatasetsWidget(IWidget):
     pass
 
 
+class IExperimentResultProjectionWidget(IWidget):
+
+    pass
+
+
 class IJSWrapper(Interface):
 
     pass

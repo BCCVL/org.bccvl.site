@@ -1,3 +1,4 @@
+from decimal import Decimal
 from zope.component import getMultiAdapter, getUtility
 from zope.interface import implementer
 from zope.schema.interfaces import (ITitledTokenizedTerm,
@@ -13,11 +14,13 @@ from .interfaces import (IDatasetLayersWidget, IDatasetWidget,
                          IExperimentSDMWidget,
                          IFutureDatasetsWidget,
                          IExperimentResultWidget,
+                         IExperimentResultProjectionWidget,
                          IJSWrapper)
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.z3cform.interfaces import IDeferSecurityCheck
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.api import dataset
 import json
 from itertools import chain
 
@@ -382,9 +385,103 @@ def ExperimentResultFieldWidget(field, request):
     return FieldWidget(field, ExperimentResultWidget(request))
 
 
+@implementer(IExperimentResultProjectionWidget)
+class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
+    """
+    Widget that stores an experiment uuid and a list of selected projection output uuids, and threshold values.
+
+    Gives user the ability to select an experiment and pick a number of projection outputs from within.
+    """
+
+    experiment_type = None
+    genre = ['DataGenreCP', 'DataGenreFP']
+    multiple = 'multiple'
+
+    def items(self):
+        # return dict with keys for experiment
+        # and subkey 'models' for models within experiment
+        if self.value:
+            for experiment_uuid, model_uuids in self.value.items():
+                item = {}
+                expbrain = uuidToCatalogBrain(experiment_uuid)
+                item['title'] = expbrain.Title
+                item['uuid'] = expbrain.UID
+
+                # TODO: what else wolud I need from an experiment?
+                exp = expbrain.getObject()
+                expmd = IBCCVLMetadata(exp)
+                item['resolution'] = expmd.get('resolution')
+
+                # now search all datasets within and add infos
+                pc = getToolByName(self.context, 'portal_catalog')
+                brains = pc.searchResults(path=expbrain.getPath(),
+                                          BCCDataGenre=self.genre)
+                # TODO: maybe as generator?
+                item['datasets'] = []
+                for brain in brains:
+                    item['datasets'].append({
+                        'uuid': brain.UID,
+                        'title': brain.Title,
+                        'selected': brain.UID in self.value[experiment_uuid],
+                        'threshold': self.value[experiment_uuid].get(brain.UID),
+                        'thresholds': dataset.getThresholds(brain.UID)[brain.UID],
+                    })
+                yield item
+
+    def js(self):
+        # TODO: search window to search for experiment
+        js = u"".join((
+            u'bccvl.select_experiment($("a#', self.__name__, '-popup"),',
+            json.dumps({
+                'field': self.__name__,
+                'genre': self.genre,
+                'widgetname': self.name,
+                'widgetid': self.id,
+                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
+                                                        self.__name__),
+                'remote': 'experiments_listing_popup',
+                'multiple': self.multiple,
+                'experimenttype': self.experiment_type,
+            }),
+            u');'))
+        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
+        return jswrap % {'js':  js}
+
+    def extract(self):
+        # extract the value for the widget from the request and return
+        # a tuple of (key,value) pairs
+        # TODO: maybe turn this into a list to keep order of entries as is
+        value = {}
+        try:
+            count = int(self.request.get('{}.count'.format(self.name)))
+        except:
+            count = 0
+        # no count?
+        if count <= 0:
+            return NO_VALUE
+        # try to find count experiments
+        for idx in range(0, count):
+            uuid = self.request.get('{}.experiment.{}'.format(self.name, idx))
+            if not uuid:
+                continue
+            value[uuid] = {}
+            try:
+                dscount = int(self.request.get('{}.dataset.{}.count'.format(self.name, idx)))
+            except:
+                dscount = 0
+            for dsidx in range(0, dscount):
+                dsuuid = self.request.get('{}.dataset.{}.{}.uuid'.format(self.name, idx, dsidx))
+                dsth = self.request.get('{}.dataset.{}.{}.threshold'.format(self.name, idx, dsidx))
+                if dsuuid:
+                    value[uuid][dsuuid] = dsth
+        if not value:
+            return NO_VALUE
+        return value
 
 
-
+@implementer(IFieldWidget)
+def ExperimentResultProjectionFieldWidget(field, request):
+    return FieldWidget(field, ExperimentResultProjectionWidget(request))
 
 
 

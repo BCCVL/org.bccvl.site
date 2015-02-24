@@ -1,0 +1,75 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:omit-tag="">
+  <div id="fieldname-modal" class="modal large hide fade" tabindex="-1" role="dialog"
+       tal:attributes="id string:${view/field/__name__}-modal">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel"
+          tal:content="string:Select ${view/label}">Select a species distribution experiment</h3>
+    </div>
+    <div id="modal-body" class="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary">Select Experiment</button>
+    </div>
+  </div>
+  <script type="text/javascript"
+          tal:content="structure view/js"></script>
+  <a id="fieldname-popup" href="#"
+     tal:attributes="id string:${view/field/__name__}-popup"
+     tal:content="string:Select ${view/label}">Select SDM Experiment</a>
+  <div id="form-widgets-fieldname-selected"
+       tal:attributes="id string:${view/id}-selected">
+    <tal:block tal:repeat="item view/items">
+      <div class="selecteditem"
+           tal:define="index repeat/item/index;">
+        <div class="selectedexperiment">
+          <!-- TODO: show experiment infos -->
+          <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
+          <p class="experiment-title"
+             data-resolution=""
+             tal:attributes="data-resolution item/resolution"
+             tal:content="item/title">Experiment Title</p>
+          <input type="hidden" value="" name="form.widgets.fieldname.experiment.0"
+                 tal:attributes="value item/uuid;
+                                 name string:${view/name}.experiment.${index};"/>
+          <!-- List of Datesetss within experiment -->
+          <tal:repeat tal:repeat="dataset item/datasets">
+            <div class="selecteddatasets"
+                 tal:define="dsindex repeat/dataset/index;">
+              <input type="checkbox" value=""
+                     name="form.widgets.fieldname.dataset.0.0.uuid"
+                     tal:attributes="value dataset/uuid;
+                                     name string:${view/name}.dataset.${index}.${dsindex}.uuid;
+                                     checked dataset/selected;"/>
+              <select name="form.widgets.fieldname.dataset.0.0.threshold"
+                      tal:attributes="name string:${view/name}.dataset.${index}.${dsindex}.threshold;">
+                <tal:block tal:repeat="threshold dataset/thresholds">
+                  <option value=""
+                          tal:define="value python:dataset['thresholds'][threshold]"
+                          tal:attributes="value threshold;
+                                          selected python:dataset['threshold'] == threshold"
+                          tal:content="string:${threshold} (${value})"/>
+                </tal:block>
+              </select>
+              <span tal:content="dataset/title">Dataset Title</span>
+            </div>
+            <input type="hidden" value="" name="form.widgets.dataset.0.count"
+		   tal:condition="repeat/dataset/end"
+                   tal:attributes="value repeat/dataset/number;
+                                   name string:${view/name}.dataset.${index}.count;"/>
+          </tal:repeat>
+        </div>
+      </div>
+      <div class="selecteditem"
+           tal:condition="repeat/item/end">
+        <input type="hidden" value="" name="form.widgets.name.count"
+               tal:attributes="value repeat/item/number;
+                               name string:${view/name}.count"/>
+      </div>
+    </tal:block>
+  </div>
+</html>
