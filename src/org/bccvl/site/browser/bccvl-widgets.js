@@ -508,7 +508,7 @@ var bccvl = {};
             // init settings experimenttype from widget if necessary
             var $experiment_type = $('#form-widgets-experiment_type');
             if (!settings.experimenttype && $experiment_type.val()) {
-                settings.experimenttype = $experiment_type.val();
+                settings.experimenttype = [$experiment_type.val()];
             }
             // end diff
 
@@ -532,10 +532,10 @@ var bccvl = {};
                     paramlist.push({name: 'datasets.filter.genre:list',
                                     value: value});
                 });
-                if (settings.experimenttype) {
+                $.each(settings.experimenttype, function(index, value){
                     paramlist.push({name: 'datasets.filter.experimenttype:list',
-                                    value: settings.experimenttype});
-                }
+                                    value: value});
+                });
                 // bootstrap 2 modal does'n have loaded event so we have to do it ourselves
                 $modal.modal('show')
                     .find('.modal-body')
@@ -588,36 +588,49 @@ var bccvl = {};
             // when user preses 'save' button in modal
             $modal.find('button.btn-primary').click(function(event) {
                 event.preventDefault();
+
+		var $widgetroot = $('div[data-fieldname="' + settings.widgetname + '"]');
+		
                 // get selected element
                 var $selected = $modal.find('.ui-selected');
                 var uuid = $selected.map(function() { return $(this).attr('data-uuid'); }).get();
                 // we have all the data we need so get rid of the modal
                 $modal.modal('hide');
                 if ($selected.length) {
-                    var params = [];
-                    // collect already selected datasets and models
-                    var $cursel = $('input[name^="' + settings.widgetname + '.experiment"]');
-                    var count = 0;
-                    $.each($cursel, function(index, dsinput) {
-                        params.push({name: settings.widgetname + '.experiment.' + count,
-                                     value: $(dsinput).val()});
-                        var $models = $('input[name^="' + $(dsinput).attr('name').replace(/\.experiment\./, '.model.') + '"]:checked');
-                        $.each($models, function(index, model) {
-                            params.push({name: settings.widgetname + '.model.' + count + ':list',
-                                         value: $(model).val()});
-                        });
-                        count +=1 ;
-                    });
+		    var $count = $('input[name="' + settings.widgetname + '.count"]');
+		    // update count field to add new selection from modal
+		    var count = $count.val() || 0;
+		    $count.val(count + $selected.length);
+		    // collect already selected datasets
+		    var params = $widgetroot.find('input,select').serializeArray();
+		    
+                    // var params = [];
+                    // // collect already selected datasets
+                    // var $cursel = $('input[name^="' + settings.widgetname + '.experiment"]');
+                    // var count = 0;
+                    // $.each($cursel, function(index, dsinput) {
+                    //     params.push({name: settings.widgetname + '.experiment.' + count,
+                    //                  value: $(dsinput).val()});
+                    //     var $datasets = $('input[name^="' + $(dsinput).attr('name').replace(/\.experiment\./, '.dataset.') + '"]:checked');
+                    //     $.each($datasets, function(index, dataset) {
+                    //         params.push({name: settings.widgetname + '.dataset.' + count + ':list',
+                    //                      value: $(dataset).val()});
+                    //     });
+                    //     count +=1 ;
+                    // });
+
                     // collect newly selected datasets
                     $.each(uuid, function(index, value) {
                         params.push({name: settings.widgetname + '.experiment.' + count,
                                      value: value});
                         count += 1;
                     });
-                    // add count parameter
-                    params.push({name: settings.widgetname + '.count',
-                                 value: count});
-                    // fetch html for widget
+                    // add count parameter if it was not on page already
+		    if ($count.length == 0) {
+			params.push({name: settings.widgetname + '.count',
+                                     value: count});
+		    }
+                    //fetch html for widget
                     $('#' + settings.widgetid + '-selected').load(
                         settings.widgeturl + ' ' + settings.widgetelement,
                         params,
@@ -647,7 +660,7 @@ var bccvl = {};
                     var exptype = $(this).val();
                     // check if params have changed
                     if (exptype != settings.experimenttype) {
-                        settings.experimenttype = exptype;
+                        settings.experimenttype = [exptype];
                         // clear depndent widget
                         var $elem1 = $('#' + settings.widgetid + '-selected');
                         $elem1.find('div.selecteditem').remove();
@@ -655,6 +668,9 @@ var bccvl = {};
                 });
 
         };
+
+
+
 
 
     }(jQuery)
