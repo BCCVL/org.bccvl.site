@@ -221,6 +221,8 @@ def upgrade_160_170_1(context, logger=None):
 def migrate_to_bccvlmetadata(context, logger):
     """
     migrate rdf content to annotation based metadata.
+
+    TODO: check if this is re-runnable?
     """
     from org.bccvl.site.namespace import DWC, GML, NFO, TN
     from org.bccvl.site.namespace import BCCPROP, BIOCLIM
@@ -236,6 +238,7 @@ def migrate_to_bccvlmetadata(context, logger):
     #        also do that in indices and vocabularies
     res = IResource(context)
     md = IBCCVLMetadata(context)
+
 
     ###################################################################
     # helper methods:
@@ -301,8 +304,15 @@ def migrate_to_bccvlmetadata(context, logger):
         extract_values(res, md['layers'], key,
                        ((BCCPROP['datatype'], 'datatype'),
                         (BCCPROP['rat'], 'rat'),
-                        (GML['srsName'], 'srsName')),
+                        (GML['srsName'], 'srs')),
                        unicode)
+        # fixup datatype if any:
+        tmp_dt = md['layers'][key].get('datatype')
+        if tmp_dt:
+            dt_map = {u'DataSetTypeC': 'continuous'}
+            # set to continuous or default categorical
+            md['layers'][key]['datatype'] = dt_map.get(tmp_dt, 'categorical')
+
     # hasArchiveItem
     for archiveItem in res.objects(BCCPROP['hasArchiveItem']):
         # check if archiveItem is empty ... need to load graph otherwise
@@ -317,7 +327,7 @@ def migrate_to_bccvlmetadata(context, logger):
         extract_values(archiveItem, newitem, None,
                        ((BCCPROP['height'], 'height'),
                         (BCCPROP['width'], 'width'),
-                        (NFO['fileSize'], 'fileSize')),
+                        (NFO['fileSize'], 'file_size')),
                        int)
         extract_values(archiveItem, newitem, None,
                        ((BCCPROP['min'], 'min'),
@@ -326,9 +336,15 @@ def migrate_to_bccvlmetadata(context, logger):
         extract_values(archiveItem, newitem, None,
                        ((BCCPROP['datatype'], 'datatype'),
                         (BCCPROP['rat'], 'rat'),
-                        (GML['srsName'], 'srsName'),
-                        (NFO['fileName'], 'fileName')),
+                        (GML['srsName'], 'srs'),
+                        (NFO['fileName'], 'filename')),
                        unicode)
+        # fixup datatype if any:
+        tmp_dt = newitem.get('datatype')
+        if tmp_dt:
+            dt_map = {u'DataSetTypeC': 'continuous'}
+            # set to continuous or default categorical
+            newitem['datatype'] = dt_map.get(tmp_dt, 'categorical')
 
         key = archiveItem.value(BIOCLIM['bioclimVariable'])
         if key:
@@ -402,5 +418,7 @@ def upgrade_170_200_1(context, logger=None):
             obj = brain.getObject()
             migrate_to_bccvlmetadata(obj, logger)
             obj.reindexObject()
+
+    # FIXME: sdm layer reindex (and probably other metadata)
 
     # TODO: migrate all gu.repository.content.RepositoryItem to Folder
