@@ -356,8 +356,9 @@ class ProjectionAdd(Add):
 
         # TODO: match result layers with sdm layers and get missing layers from SDM?
         #       -> only environmental? or missing climate layers as well?
+        #       do matching here? or in job submit?
 
-        datasets = data.get('future_climate_datasets', {}).keys()
+        datasets = data.get('future_climate_datasets', [])
         if not datasets:
             # FIXME: Make this a widget error, currently shown as form wide error
             raise ActionExecutionError(Invalid('No future climate dataset selected.'))

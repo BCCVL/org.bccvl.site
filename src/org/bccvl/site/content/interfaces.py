@@ -114,7 +114,7 @@ class IProjectionExperiment(IExperiment):
     # TODO: ignore context here? don't really need to store this?
     form.widget('species_distribution_models',
                 ExperimentSDMFieldWidget,
-                experiment_type=ISDMExperiment.__identifier__,
+                experiment_type=[ISDMExperiment.__identifier__],
                 errmsg=u"Please select at least 1 Species Distribution Model")
     species_distribution_models = Dict(
         title=u'Species Distribution Models',

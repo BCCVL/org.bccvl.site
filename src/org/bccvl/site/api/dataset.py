@@ -1,8 +1,10 @@
 from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata
-from org.bccvl.site.content.interfaces import IDataset
+# had to remove this to avoid circular import because of form hints widgets in interfaces.py
+#from org.bccvl.site.content.interfaces import IDataset
 from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from Products.ZCatalog.interfaces import ICatalogBrain
+from plone.app.uuid.utils import uuidToObject
 
 
 # TODO: brains=True would be more useful for internal API?
@@ -22,7 +24,8 @@ def query(context=None, brains=False, **kw):
     # assume we have a context
     query = kw
     query.update({
-        'object_provides': IDataset.__identifier__,
+        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
+        #'object_provides': IDataset.__identifier__,
         'path': '/'.join(context.getPhysicalPath()),
     })
 

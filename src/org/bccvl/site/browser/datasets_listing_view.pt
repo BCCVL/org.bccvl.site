@@ -101,7 +101,6 @@
                      normalizeString nocall: context/plone_utils/normalizeString;
                      toLocalizedTime nocall: context/@@plone/toLocalizedTime;
                      site_properties context/portal_properties/site_properties;
-                     dataset_tools nocall:context/@@dataset_tools;
                      isAnon context/@@plone_portal_state/anonymous;
                      show_about python:not isAnon or site_properties.allowAnonymousViewAbout;">
       <div class="alert" tal:condition="not: batch">
@@ -144,7 +143,7 @@
                                     item_type item/portal_type;
                                     item_type_class python:'contenttype-' + normalizeString(item_type);
                                     item_genre item/BCCDataGenre;
-                                    item_genre_title python:dataset_tools.genre_title(item['BCCDataGenre']);
+                                    item_genre_title python:view.dstools.genre_title(item['BCCDataGenre']);
                                     item_wf_state item/review_state|python: context.portal_workflow.getInfoFor(item, 'review_state', '');
                                     item_wf_state_class python:'state-' + normalizeString(item_wf_state);
                                     use_view_action site_properties/typesUseViewActionInListings|python:();
