@@ -603,22 +603,6 @@ var bccvl = {};
 		    $count.val(count + $selected.length);
 		    // collect already selected datasets
 		    var params = $widgetroot.find('input,select').serializeArray();
-		    
-                    // var params = [];
-                    // // collect already selected datasets
-                    // var $cursel = $('input[name^="' + settings.widgetname + '.experiment"]');
-                    // var count = 0;
-                    // $.each($cursel, function(index, dsinput) {
-                    //     params.push({name: settings.widgetname + '.experiment.' + count,
-                    //                  value: $(dsinput).val()});
-                    //     var $datasets = $('input[name^="' + $(dsinput).attr('name').replace(/\.experiment\./, '.dataset.') + '"]:checked');
-                    //     $.each($datasets, function(index, dataset) {
-                    //         params.push({name: settings.widgetname + '.dataset.' + count + ':list',
-                    //                      value: $(dataset).val()});
-                    //     });
-                    //     count +=1 ;
-                    // });
-
                     // collect newly selected datasets
                     $.each(uuid, function(index, value) {
                         params.push({name: settings.widgetname + '.experiment.' + count,
