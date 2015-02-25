@@ -125,7 +125,7 @@ def getThresholds(datasets, thresholds=None):
             if 'thresholds' not in evalmd:
                 continue
             # TODO: merging of thresholds is random here
-          thresholds.update(evalmd['thresholds'])
+            thresholds.update(evalmd['thresholds'])
         result[dataset] = thresholds
     return result
 
