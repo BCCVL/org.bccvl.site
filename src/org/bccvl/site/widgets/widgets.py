@@ -89,6 +89,16 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
                                             name="dataset_tools")
         return self._dstools
 
+    def resolutions(self):
+        # helper method to show a warning to the user that selected datasets
+        # have different resolutions
+        if self.value:
+            pc = getToolByName(self.context, 'portal_catalog')
+            brains = pc.searchResults(UID=self.value.keys())
+            # TODO: should use vocab to turn into token
+            return set(unicode(b['BCCResolution']) for b in brains)
+        return []    
+
     def js(self):
         js = u"""
             bccvl.select_dataset_layers($("a#%(fieldname)s-popup"), {
