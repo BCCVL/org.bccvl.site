@@ -2,7 +2,8 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       tal:omit-tag="">
   <div class="selecteditem"
-       tal:define="item view/item">
+       tal:define="item view/item;
+                   id view/id">
     <span class="selected-option"
           tal:content="item/Title | string:No absence dataset selected">Species</span>
   </div>

@@ -19,15 +19,14 @@
   <a id="fieldname-popup" href="#"
      tal:attributes="id string:${view/field/__name__}-popup"
      tal:content="string:Select ${view/label}">Select Occurrence Dataset</a>
-  <div id="form-widgets-fieldname-selected"
-       tal:attributes="id string:${view/id}-selected">
+  <div id="form-widgets-fieldname"
+       tal:attributes="id string:${view/id}">
     <div class="selecteditem"
          tal:define="item view/item"
          tal:condition="python: view.value and item">
       <input type="hidden" value="" name="form.widgets.fieldname"
              tal:attributes="value view/value;
                              name view/name;
-                             id view/id;
                              required view/required;
                              "/>
       <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>

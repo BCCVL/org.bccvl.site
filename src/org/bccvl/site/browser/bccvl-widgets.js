@@ -142,17 +142,15 @@ var bccvl = {};
         };
         
 
-        // single/multi select dataset widget
+        // TODO: multi not implemented here?
         bccvl.select_dataset = function($element, options) {
 
             // required options: field, genre
-
             var settings = $.extend({
                 // These are the defaults.
-                widgetname: 'form.widgets.' + options.field,
-                widgetid: 'form-widgets-' + options.field,
+                widgetid: 'form-widget-' + options.field, // id of widget main top element
+                widgetname: 'form.widgets.' + options.field, // name of the input field
                 widgeturl: location.origin + location.pathname + '/++widget++' + options.field, // used to reload entire widget
-                widgetelement: 'div.selecteditem',
                 // modal settings
                 target: '#' + options.field + '-modal',
                 remote: 'datasets_listing_popup', // modal box id                
@@ -198,7 +196,7 @@ var bccvl = {};
                 }
             });
 
-            $('#' + settings.widgetid + '-selected').on('click', 'a:has(i.icon-remove)',
+            $('#' + settings.widgetid).on('click', 'a:has(i.icon-remove)',
                 function(event){
                     event.preventDefault();
                     $(this).parents('div.selecteditem').remove();
@@ -208,8 +206,8 @@ var bccvl = {};
             );
 
             function reload_widget(params) {
-                $('#' + settings.widgetid + '-selected').load(
-                    settings.widgeturl + ' ' + settings.widgetelement,
+                $('#' + settings.widgetid).load(
+                    settings.widgeturl + ' #' + settings.widgetid + ' >',
                     params,
                     function(text, status, xhr) {
                         // trigger change event when widget has been updated
@@ -226,13 +224,11 @@ var bccvl = {};
         bccvl.select_dataset_layers = function($element, options) {
 
             // required options: field, genre, multiple
-
             var settings = $.extend({
                 // These are the defaults.
-                widgetname: 'form.widgets.' + options.field,
-                widgetid: 'form-widgets-' + options.field,
+                widgetid: 'form-widgets-' + options.field, // id of widget main top element
+                widgetname: 'form.widgets.' + options.field, // name of the input field
                 widgeturl: location.origin + location.pathname + '/++widget++' + options.field,
-                widgetelement: 'div.selecteditem',
                 // modal settings
                 target: '#' + options.field + '-modal',
                 remote: 'datasets_listing_popup',
@@ -264,14 +260,14 @@ var bccvl = {};
 
             // when user preses 'save' button in modal
             modal.$element.on('modalapply', function(event) {
-		var $widgetroot = $('div[data-fieldname="' + settings.widgetname + '"]');                
+                var $widgetroot = $('#' + settings.widgetid);                
                 // get selected element
                 var $selected = modal.get_selected();
                 // we have all the data we need so get rid of the modal
                 modal.close();
                 if ($selected.length) {
                     // first update .count field on widget
-		    var $count = $('input[name="' + settings.widgetname + '.count"]');
+                    var $count = $('input[name="' + settings.widgetname + '.count"]');
                     var count = parseInt($count.val()) || 0;
                     $count.val(count + $selected.length);
                     // get current params from widget
@@ -285,16 +281,16 @@ var bccvl = {};
                         count += 1;
                     });
                     // add count parameter if it was not on page already
-		    if ($count.length == 0) {
-			params.push({name: settings.widgetname + '.count',
+                    if ($count.length == 0) {
+                        params.push({name: settings.widgetname + '.count',
                                      value: count});
-		    }
+                    }
                     // fetch html for widget
                     reload_widget(params);
                 }
             });
 
-            $('#' + settings.widgetid + '-selected').on('click', 'a:has(i.icon-remove)',
+            $('#' + settings.widgetid).on('click', 'a:has(i.icon-remove)',
                 function(event){
                     event.preventDefault();
                     $(this).parents('div.selecteditem').remove();
@@ -304,8 +300,8 @@ var bccvl = {};
             );
 
             function reload_widget(params) {
-                $('#' + settings.widgetid + '-selected').load(
-                    settings.widgeturl + ' ' + settings.widgetelement,
+                $('#' + settings.widgetid).load(
+                    settings.widgeturl + ' #' + settings.widgetid + ' >',
                     params,
                     function(text, status, xhr) {
                         // trigger change event when widget has been updated
@@ -328,10 +324,9 @@ var bccvl = {};
             // required options: field, genre
             var settings = $.extend({
                 // These are the defaults.
-                widgetname: 'form.widgets.' + options.field,
-                widgetid: 'form-widgets-' + options.field,
+                widgetid: 'form-widget-' + options.field, // id of widget main top element
+                widgetname: 'form.widgets.' + options.field, // name of the input field
                 widgeturl: location.origin + location.pathname + '/++widget++' + options.field, // used to reload entire widget
-                widgetelement: 'div.selecteditem',
                 // modal settings
                 target: '#' + options.field + '-modal',
                 remote: 'datasets_listing_popup', // modal box id
@@ -367,7 +362,7 @@ var bccvl = {};
             
             // when user preses 'save' button in modal
             modal.$element.on('modalapply', function(event) {
-                var $widgetroot = $('div[data-fieldname="' + settings.widgetname + '"]');
+                var $widgetroot = $('#' + settings.widgetid);
                 // get selected element
                 var $selected = modal.get_selected();
                 // we have all the data we need so get rid of the modal
@@ -385,18 +380,17 @@ var bccvl = {};
                 }
             });
 
-            $('#' + settings.widgetid + '-selected')
-                .on('click', 'a:has(i.icon-remove)',
-                    function(event){
-                        event.preventDefault();
-                        $(this).parents('div.selecteditem').remove();
-                        // trigger change event on widget update
-                        $(event.delegateTarget).trigger('widgetChanged');
-                    });
+            $('#' + settings.widgetid).on('click', 'a:has(i.icon-remove)',
+                function(event){
+                    event.preventDefault();
+                    $(this).parents('div.selecteditem').remove();
+                    // trigger change event on widget update
+                    $(event.delegateTarget).trigger('widgetChanged');
+            });
 
             function reload_widget(params) {
-                $('#' + settings.widgetid + '-selected').load(
-                    settings.widgeturl + ' ' + settings.widgetelement,
+                $('#' + settings.widgetid).load(
+                    settings.widgeturl + ' #' + settings.widgetid + ' >',
                     params,
                     function(text, status, xhr) {
                         // trigger change event when widget has been updated
@@ -427,8 +421,8 @@ var bccvl = {};
                         oldparams.resolution != newparams.resolution) {
                         // there are either no new settings or new settings are different
                         //let's update this widget here
-                        var $elem1 = $('#' + settings.widgetid + '-selected');
-                        $elem1.find('div.selecteditem').remove();
+                        // TODO: shall we reload the widget here? to make sure we have all empty input markers?
+                        $('#' + settings.widgetid).empty(); // clear widget
                         if (newparams === undefined || newparams === null) {
                             // reset initial filters
                             modal.set_initial_filters({
@@ -454,10 +448,9 @@ var bccvl = {};
 
             var settings = $.extend({
                 // These are the defaults.
-                widgetname: 'form.widgets.' + options.field,
-                widgetid: 'form-widgets-' + options.field,
+                widgetid: 'form-widget-' + options.field, // id of widget main top element
+                widgetname: 'form.widgets.' + options.field, // name of the input field
                 widgeturl: location.origin + location.pathname + '/++widget++' + options.field, // used to reload entire widget
-                widgetelement: 'div.selecteditem',
                 // modal settings
                 target: '#' + options.field + '-modal',
                 remote: 'datasets_listing_popup', // modal box id
@@ -499,18 +492,18 @@ var bccvl = {};
             // TODO: modified to accomodate for count field and include already selected datasets
             // when user preses 'save' button in modal
             modal.$element.on('modalapply', function(event) {
-		var $widgetroot = $('div[data-fieldname="' + settings.widgetname + '"]');		
+                var $widgetroot = $('#' + settings.widgetid);
                 // get selected element
                 var $selected = modal.get_selected();
                 // we have all the data we need so get rid of the modal
                 modal.close();
                 if ($selected.length) {
-		    var $count = $('input[name="' + settings.widgetname + '.count"]');
-		    // update count field to add new selection from modal
-		    var count = parseInt($count.val()) || 0;
-		    $count.val(count + $selected.length);
-		    // collect already selected datasets
-		    var params = $widgetroot.find('input,select').serializeArray();
+                    var $count = $('input[name="' + settings.widgetname + '.count"]');
+                    // update count field to add new selection from modal
+                    var count = parseInt($count.val()) || 0;
+                    $count.val(count + $selected.length);
+                    // collect already selected datasets
+                    var params = $widgetroot.find('input,select').serializeArray();
                     // collect newly selected datasets
                     $.each($selected, function(index, value) {
                         params.push({name: settings.widgetname + '.experiment.' + count,
@@ -518,16 +511,16 @@ var bccvl = {};
                         count += 1;
                     });
                     // add count parameter if it was not on page already
-		    if ($count.length == 0) {
-			params.push({name: settings.widgetname + '.count',
+                    if ($count.length == 0) {
+                        params.push({name: settings.widgetname + '.count',
                                      value: count});
-		    }
+                    }
                     //fetch html for widget
                     reload_widget(params);
                 }
             });
 
-            $('#' + settings.widgetid + '-selected').on('click', 'a:has(i.icon-remove)',
+            $('#' + settings.widgetid).on('click', 'a:has(i.icon-remove)',
                 function(event){
                     event.preventDefault();
                     $(this).parents('div.selecteditem').remove();
@@ -537,8 +530,8 @@ var bccvl = {};
             );
 
             function reload_widget(params) {
-                $('#' + settings.widgetid + '-selected').load(
-                    settings.widgeturl + ' ' + settings.widgetelement,
+                $('#' + settings.widgetid).load(
+                    settings.widgeturl + ' #' + settings.widgetid + ' >',
                     params,
                     function(text, status, xhr) {
                         // trigger change event when widget has been updated
@@ -558,9 +551,9 @@ var bccvl = {};
                     if (exptype != oldparams.experimenttype) {
                         // update the reference
                         oldparams['experimenttype:list'] = [exptype];
-                        // clear depndent widget
-                        var $elem1 = $('#' + settings.widgetid + '-selected');
-                        $elem1.find('div.selecteditem').remove();
+                        // clear dependent widget
+                        // TODO : shall we reload widget? (to get possible empty input markers)
+                        $('#' + settings.widgetid).empty();
                     }
                 });
 
