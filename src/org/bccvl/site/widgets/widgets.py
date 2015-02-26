@@ -22,6 +22,7 @@ from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.api import dataset
 import json
 from itertools import chain
+from collections import OrderedDict
 
 
 # Wrap js code into a document.ready wrapper and CDATA section
@@ -131,15 +132,24 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
                 for layer, layeritem in md['layers'].iteritems():
                     if not layer in layers:
                         continue
-                    if 'filename' in layer:
-                        vizurl = '{0}#{1}'.format(md['vizurl'],
-                                                  layeritem['filename'])
+                    mimetype = 'application/octet-stream'
+                    layerfile = None
+                    if 'filename' in layeritem:
+                        # FIXME: hardcoded mimetype logic for zip files.
+                        #        should draw mimetype info from layer metadata
+                        #        assumes there are only geotiff in zip files
+                        mimetype = 'image/geotiff'
+                        layerfile = layeritem['filename']
+                        vizurl = '{0}#{1}'.format(md['vizurl'], layerfile)
                     else:
                         vizurl = md['vizurl']
+                        mimetype = md['mimetype']
                     yield {"brain": brain,
                            "resolution": self.dstools.resolution_vocab.getTerm(brain['BCCResolution']),
                            "layer": self.dstools.layer_vocab.getTerm(layer),
-                           "vizurl": vizurl}
+                           "vizurl": vizurl,
+                           'mimetype': mimetype,
+                           'vizlayer': layerfile}
 
     def extract(self):
         # extract the value for the widget from the request and return
@@ -267,7 +277,7 @@ class FutureDatasetsWidget(HTMLFormElement, Widget):
             bccvl.select_dataset_future($("a#%(fieldname)s-popup"), {
                 field: '%(fieldname)s',
                 genre: %(genre)s,
-                widgetname: '%(widgetname)s:list',
+                widgetname: '%(widgetname)s',
                 widgetid: '%(widgetid)s',
                 widgeturl: '%(widgeturl)s',
             });""" % {
@@ -295,6 +305,9 @@ class FutureDatasetsWidget(HTMLFormElement, Widget):
         uuid = self.request.get(self.name)
         if not uuid:
             return NO_VALUE
+        if 'multiple':
+            # make sure we have only unique values
+            uuid = list(OrderedDict.fromkeys(uuid))
         return uuid
 
 
