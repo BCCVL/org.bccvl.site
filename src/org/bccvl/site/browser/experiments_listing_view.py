@@ -28,11 +28,11 @@ def get_title_from_uuid(uuid):
 @implementer(IFolderContentsView)
 class ExperimentsListingView(BrowserView):
 
+    dstools = None
+
     def __call__(self):
-        envvocab = getUtility(IVocabularyFactory,
-                              name='layer_source')
-        # TODO: could also cache the next call per request?
-        self.envlayervocab = envvocab(self.context)
+        self.dstools = getMultiAdapter((self.context, self.request),
+                                        name="dataset_tools")
         return super(ExperimentsListingView, self).__call__()
 
     def new_experiment_actions(self):
@@ -116,12 +116,6 @@ def sdm_listing_details(expbrain):
     environmental_layers = defaultdict(list)
     exp = expbrain.getObject()
     if exp.environmental_datasets:
-        for dataset, layers in exp.environmental_datasets.items():
-            for layer in layers:
-                environmental_layers[dataset].append(
-                    self.envlayervocab.getTerm(layer).title
-                )
-
         details.update({
             'type': 'SDM',
             'functions': ', '.join(
@@ -131,10 +125,10 @@ def sdm_listing_details(expbrain):
                 exp.species_occurrence_dataset),
             'species_absence': get_title_from_uuid(
                 exp.species_absence_dataset),
-            'environmental_layers': ', '.join(
-                '{}: {}'.format(get_title_from_uuid(dataset),
-                                ', '.join(layers))
-                for dataset, layers in environmental_layers.items()
+            'environmental_layers': ({
+                'title': get_title_from_uuid(dataset),
+                'layers': sorted(layers)
+                } for dataset, layers in exp.environmental_datasets.items()
             ),
         })
     return details
@@ -145,39 +139,36 @@ def projection_listing_details(expbrain):
 
     # TODO: duplicate code here... see org.bccvl.site.browser.widget.py
     # TODO: generated list here not very useful,.... all layers over all sdms are concatenated
+    # TODO: whata about future datasets?
     details = {}
     exp = expbrain.getObject()
     for sdmuuid in exp.species_distribution_models:
-        sdm = uuidToObject(sdmuuid)
-        if sdm is not None:
-            # TODO: in theory it could fail when trying to access parents as well?
-            sdmresult = sdm.__parent__
-            sdmexp = sdmresult.__parent__
+        sdmexp = uuidToObject(sdmuuid)
+        if sdmexp is not None:
             # TODO: absence data
             envlayers = []
             for envuuid, layers in sorted(sdmexp.environmental_datasets.items()):
                 envbrain = uuidToCatalogBrain(envuuid)
                 envtitle = envbrain.Title if envbrain else u'Missing dataset'
-                envlayers.append(
-                    '{}: {}'.format(envtitle,
-                                    ', '.join(self.envlayervocab.getTerm(envlayer).title
-                                              for envlayer in sorted(layers)))
-                )
-
-                toolkit = sdmresult.job_params['function']
+                envlayers.append({
+                    'title': envtitle,
+                    'layers': sorted(layers)
+                })
+                # TODO: job_params has only id of function not uuid ... not sure how to get to the title
+                toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params['function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
                 species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
-            else:
-                # FIXME: should we prevent users from deleting / unsharing?
-                toolkit = 'missing experiment'
-                species_occ = ''
-                envlayers = []
+        else:
+            # FIXME: should we prevent users from deleting / unsharing?
+            toolkits = 'missing experiment'
+            species_occ = ''
+            envlayers = []
 
         details.update({
             'type': 'PROJECTION',
-            'functions': toolkit,
+            'functions': toolkits,
             'species_occurrence': species_occ,
             'species_absence': '',
-            'environmental_layers': ', '.join(envlayers)
+            'environmental_layers': envlayers
         })
     return details
 
