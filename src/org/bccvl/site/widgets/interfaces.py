@@ -2,12 +2,12 @@ from zope.interface import Interface
 from z3c.form.interfaces import IWidget
 
 
-class IDatasetLayersWidget(IWidget):
+class IDatasetWidget(IWidget):
 
     pass
 
 
-class IDatasetWidget(IWidget):
+class IDatasetLayersWidget(IWidget):
 
     pass
 
