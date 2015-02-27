@@ -66,7 +66,7 @@ class ISDMExperiment(IExperiment):
                 DatasetFieldWidget,
                 genre=['DataGenreSpeciesOccurrence'],
                 errmsg=u"Please select at least 1 occurrence dataset.",
-                vizclass=u'fine bccvl-occurrence-viz')
+                vizclass=u'bccvl-occurrence-viz')
     species_occurrence_dataset = TextLine(
         title=u'Species Occurrence Datasets',
         default=None,
@@ -77,7 +77,7 @@ class ISDMExperiment(IExperiment):
                 DatasetFieldWidget,
                 genre=['DataGenreSpeciesAbsence'],
                 errmsg=u"Please select at least 1 emmission scenario.",
-                vizclass=u'fine bccvl-absence-viz')
+                vizclass=u'bccvl-absence-viz')
     species_absence_dataset = TextLine(
         title=u'Species Absence Datasets',
         default=None,
@@ -128,7 +128,7 @@ class IProjectionExperiment(IExperiment):
                 FutureDatasetsFieldWidget,
                 genre=['DataGenreFC'],
                 errmsg=u"Please select at least 1 future climate dataset.",
-                vizclass=u'fine bccvl-absence-viz')
+                vizclass=u'bccvl-absence-viz')
     future_climate_datasets = List(
         title=u'Future Climate Data',
         value_type=TextLine(),
@@ -202,7 +202,7 @@ class ISpeciesTraitsExperiment(IExperiment):
         DatasetFieldWidget,
         genre=['DataGenreTraits'],
         errmsg=u"Please select 1 species traits dataset.",
-        vizclass=u'fine bccvl-occurrence-viz')
+        vizclass=u'bccvl-auto-viz')
     data_table = TextLine(
         title=u'Species Traits Datasets',
         default=None,
