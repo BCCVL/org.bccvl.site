@@ -27,7 +27,7 @@ var bccvl = {};
                 $row.parent().find('div.row:has(input:checked)').addClass("ui-selected");
                 $row.parent().find('div.row:has(input:not(:checked))').removeClass("ui-selected");
             });
-        }
+        };
 
         // An object to handle Modal dialog for the widgets defined here
         function ModalBrowseSelect($modal, options) {
@@ -45,7 +45,8 @@ var bccvl = {};
             $modal.prependTo($('body'));
 
             // init modal events
-            $modal.on('hidden', this._clear);
+            $modal.on('hidden', _clear);
+
             // apply button clicked
             $modal.find('button.btn-primary').click(function(event) {
                 event.preventDefault();
@@ -140,8 +141,8 @@ var bccvl = {};
             }
                     
         };
-        
 
+        // single select widget        
         // TODO: multi not implemented here?
         bccvl.select_dataset = function($element, options) {
 
@@ -196,15 +197,18 @@ var bccvl = {};
                 }
             });
 
+            // allow user to remove selected elements
             $('#' + settings.widgetid).on('click', 'a:has(i.icon-remove)',
-                function(event){
+                function(event) {
                     event.preventDefault();
                     $(this).parents('div.selecteditem').remove();
                     // trigger change event on widget update
                     $(event.delegateTarget).trigger('widgetChanged');
+                    // TODO: shall we reload the widget?
                 }
             );
-
+            
+            // reload widget via ajax
             function reload_widget(params) {
                 $('#' + settings.widgetid).load(
                     settings.widgeturl + ' #' + settings.widgetid + ' >',
@@ -218,12 +222,11 @@ var bccvl = {};
 
         };
 
-        // TODO: differences to widget above:
-        //    - the way paramlist is being built different initialisation
-        //    - parameter list on select  layers button
-        bccvl.select_dataset_layers = function($element, options) {
+        // multi layer select widget
+        function select_dataset_layers($element, options) {
 
-            // required options: field, genre, multiple
+            // required options: field, genre
+
             var settings = $.extend({
                 // These are the defaults.
                 widgetid: 'form-widgets-' + options.field, // id of widget main top element
@@ -290,8 +293,9 @@ var bccvl = {};
                 }
             });
 
+            // allow user to remove selected elements
             $('#' + settings.widgetid).on('click', 'a:has(i.icon-remove)',
-                function(event){
+                function(event) {                                                        
                     event.preventDefault();
                     $(this).parents('div.selecteditem').remove();
                     // trigger change event on widget update
@@ -299,6 +303,7 @@ var bccvl = {};
                 }
             );
 
+            // reload widget via ajax
             function reload_widget(params) {
                 $('#' + settings.widgetid).load(
                     settings.widgeturl + ' #' + settings.widgetid + ' >',
@@ -317,7 +322,7 @@ var bccvl = {};
         //       -> needs better ajax param processing. (maybe via hidden input fields?)
 
         // single/multi select dataset widget
-        bccvl.select_dataset_future = function($element, options) {
+        function select_dataset_future($element, options) {
 
             // TODO: on init fetch settings.params from other widget
 
@@ -381,7 +386,7 @@ var bccvl = {};
             });
 
             $('#' + settings.widgetid).on('click', 'a:has(i.icon-remove)',
-                function(event){
+                function(event) {
                     event.preventDefault();
                     $(this).parents('div.selecteditem').remove();
                     // trigger change event on widget update
@@ -442,7 +447,7 @@ var bccvl = {};
 
         // single/multi select dataset widget
         // TODO: again a copy of bccvl.select_dataset
-        bccvl.select_experiment = function($element, options) {
+        function select_experiment($element, options) {
 
             // required options: field, genre
 
