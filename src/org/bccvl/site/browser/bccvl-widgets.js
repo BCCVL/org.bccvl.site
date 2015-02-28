@@ -1,7 +1,3 @@
-
-// namespace dictionary to hold all bccvl specific code / widgets
-var bccvl = {};
-
 (
 
     // TODO: there may be a problem here with various element ids. These widgets may produce/rely on
@@ -142,9 +138,9 @@ var bccvl = {};
                     
         };
 
-        // single select widget        
-        // TODO: multi not implemented here?
-        bccvl.select_dataset = function($element, options) {
+        // single select widget
+        // TODO: multi not implemented here?        
+        function select_dataset($element, options) {
 
             // required options: field, genre
             var settings = $.extend({
@@ -173,7 +169,7 @@ var bccvl = {};
                     }
                 }
             );
-            
+
             // hookup popup button/link to show modal
             $element.click(function(event) {
                 event.preventDefault();
@@ -210,11 +206,12 @@ var bccvl = {};
             
             // reload widget via ajax
             function reload_widget(params) {
-                $('#' + settings.widgetid).load(
+                var $widgetroot = $('#' + settings.widgetid);
+                $widgetroot.load(
                     settings.widgeturl + ' #' + settings.widgetid + ' >',
                     params,
                     function(text, status, xhr) {
-                        // trigger change event when widget has been updated
+                        // trigger change event on widget update                        
                         $(this).trigger('widgetChanged');
                     }
                 );
@@ -253,14 +250,14 @@ var bccvl = {};
                     }
                 }
             );
-            
+
             // hookup popup button/link to show modal
             $element.click(function(event) {
                 event.preventDefault();
                 // show modal
                 modal.show();
             });
-
+            
             // when user preses 'save' button in modal
             modal.$element.on('modalapply', function(event) {
                 var $widgetroot = $('#' + settings.widgetid);                
@@ -305,11 +302,12 @@ var bccvl = {};
 
             // reload widget via ajax
             function reload_widget(params) {
-                $('#' + settings.widgetid).load(
+                var $widgetroot = $('#' + settings.widgetid);
+                $widgetroot.load(
                     settings.widgeturl + ' #' + settings.widgetid + ' >',
                     params,
                     function(text, status, xhr) {
-                        // trigger change event when widget has been updated
+                        // trigger change event on widget update
                         $(this).trigger('widgetChanged');
                     }
                 );
@@ -394,7 +392,8 @@ var bccvl = {};
             });
 
             function reload_widget(params) {
-                $('#' + settings.widgetid).load(
+                var $widgetroot = $('#' + settings.widgetid);
+                $widgetroot.load(
                     settings.widgeturl + ' #' + settings.widgetid + ' >',
                     params,
                     function(text, status, xhr) {
@@ -535,12 +534,16 @@ var bccvl = {};
             );
 
             function reload_widget(params) {
-                $('#' + settings.widgetid).load(
+                var $widgetroot = $('#' + settings.widgetid);
+                $widgetroot.load(
                     settings.widgeturl + ' #' + settings.widgetid + ' >',
                     params,
                     function(text, status, xhr) {
                         // trigger change event when widget has been updated
                         $(this).trigger('widgetChanged');
+                        $.each($(this).find('select'), function(index, elem) {
+                            $(elem).selectize({create: true});
+                        });
                     }
                 );
             };
@@ -564,8 +567,15 @@ var bccvl = {};
 
         };
 
-
-
+        if (typeof bccvl === 'undefined') {
+            bccvl = {};
+        }
+        $.extend(bccvl, {
+            select_dataset: select_dataset,
+            select_dataset_layers: select_dataset_layers,
+            select_dataset_future: select_dataset_future,
+            select_experiment: select_experiment
+        });
 
 
     }(jQuery)
