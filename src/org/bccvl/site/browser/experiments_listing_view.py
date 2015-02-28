@@ -12,6 +12,7 @@ from zope.component import getUtility, queryUtility, getMultiAdapter
 from zope.schema.interfaces import IVocabularyFactory
 from gu.z3cform.rdf.utils import Period
 from org.bccvl.site import defaults
+from itertools import chain
 
 
 def get_title_from_uuid(uuid):
@@ -181,7 +182,7 @@ def biodiverse_listing_details(expbrain):
     years = set()
     emscs = set()
     gcms = set()
-    for dsuuid in (x['dataset'] for x in exp.projection):
+    for dsuuid in chain.from_iterable(map(lambda x: x.keys(), exp.projection.itervalues())):
         dsobj = uuidToObject(dsuuid)
         if not dsobj:
             # TODO: can't access dateset anymore, let user know somehow
@@ -197,14 +198,13 @@ def biodiverse_listing_details(expbrain):
         emsc = md.get('emsc')
         if emsc:
             emscs.add(emsc)
-
         details.update({
             'type': 'BIODIVERSE',
             'functions': 'endemism, redundancy',
             'species_occurrence': ', '.join(sorted(species)),
             'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
                                                ', '.join(sorted(gcms))),
-            'environmental_layers': ', '.join(sorted(years)),
+            'years': ', '.join(sorted(years))
         })
     return details
     
