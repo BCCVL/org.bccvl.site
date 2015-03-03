@@ -542,7 +542,8 @@
                         // trigger change event when widget has been updated
                         $(this).trigger('widgetChanged');
                         $.each($(this).find('select'), function(index, elem) {
-                            $(elem).selectize({create: true});
+                            $(elem).selectize({create: true,
+                                               persist: false});
                         });
                     }
                 );
