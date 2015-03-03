@@ -3,8 +3,13 @@ from collective.transmogrifier.transmogrifier import Transmogrifier
 from zope.interface import alsoProvides
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
+from zope.schema.interfaces import IVocabularyFactory
+from zope.component import getUtility
 from plone import api
+from plone.app.uuid.utils import uuidToObject
 import logging
+import re
+from urlparse import urldefrag
 
 
 LOG = logging.getLogger(__name__)
@@ -127,14 +132,13 @@ def update_bioclim_layer_uris(portal):
         sdm.environmental_datasets = newdict
         # do the same for all result.job_params within an sdm
         for result in sdm.values():
-            if not hasattr(result, 'job_params'):
+            if 'job_params' not in result.__dict__:
                 continue
             new_params = dict(result.job_params)
             for key in result.job_params.get('environmental_datasets', []):
                 new_params['environmental_datasets'][key] = convert_uri_list(result.job_params['environmental_datasets'][key])
             result.job_params = new_params
     # Replace all layer references in rdf
-    from zope.component import getUtility
     from gu.z3cform.rdf.interfaces import IORDF
     from org.bccvl.site.namespace import BIOCLIM
     handler = getUtility(IORDF).getHandler()
@@ -202,7 +206,6 @@ def upgrade_160_170_1(context, logger=None):
     # install plone default workflows
     setup.runImportStepFromProfile('profile-Products.CMFPlone:plone', 'workflow')
     setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
-    # TODO: reindex security?
     # install plone default rolemap?
     setup.runImportStepFromProfile('profile-Products.CMFPlone:plone', 'rolemap')
     setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
@@ -210,12 +213,6 @@ def upgrade_160_170_1(context, logger=None):
     setup.runImportStepFromProfile('profile-Products.CMFEditions:CMFEditions', 'rolemap')
     # update initial content and toolkits
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
-
-    # TODO: possible data structure strange on sdmexperiments
-    #    environmental_datasets a dict of sets (instead of list?)
-    # Examples:
-    # setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
-    # logger.info("%s fields converted." % count)
 
 
 def migrate_to_bccvlmetadata(context, logger):
@@ -229,16 +226,12 @@ def migrate_to_bccvlmetadata(context, logger):
     from ordf.namespace import DC as DCTERMS
     from rdflib import URIRef
     from rdflib.resource import Resource
-    from zope.component import getUtility
     from gu.z3cform.rdf.interfaces import IORDF,  IResource
     from org.bccvl.site.interfaces import IBCCVLMetadata
-    from urlparse import urldefrag
     from Acquisition import aq_base
-    # TODO: convert URIRef's to unicode
-    #        also do that in indices and vocabularies
+
     res = IResource(context)
     md = IBCCVLMetadata(context)
-
 
     ###################################################################
     # helper methods:
@@ -263,6 +256,96 @@ def migrate_to_bccvlmetadata(context, logger):
                 else:
                     mdata[key] = convert(val)
 
+    def extract_vocab_values(context, resource, mdata, mdkey, props, convert=unicode):
+        """
+        get dict from props[1] and convert value if exists with convert methad.
+        check if there is more than one value and use first that exists in vocab.
+        """
+        for prop, key, vocab in props:
+            vocabulary = getUtility(IVocabularyFactory, vocab)(context)
+            values = list(resource.objects(prop))
+            found = False
+            for val in values:
+                if hasattr(val, 'identifier'):
+                    val = val.identifier
+                if isinstance(val, URIRef):
+                    _, frag = urldefrag(val)
+                    if frag:
+                        val = frag
+                val = convert(val)
+                if val not in vocabulary:
+                    continue
+                # We have found something 
+                found = True
+                break
+            if not found and values:
+                # special handling for traitrs results
+                if val == 'UNKNOWN':
+                    val = 'DataGenreSTResult'
+                    found = True
+                    logger.warn('Fixing traits result %s', '/'.join(context.getPhysicalPath()))
+                elif val == 'BiodiverseModel':
+                    val = 'DataGenreBiodiverseModel'
+                    found = True
+                    logger.warn('Fixing biodiverse genre %s', '/'.join(context.getPhysicalPath()))
+                else:
+                    # We had some values but didn't find anything
+                    for t in vocabulary:
+                        if t.value.lower() in context.title.lower():
+                            val = t.value
+                            logger.warn("Guessing %s: %s for %s", key, t.title, '/'.join(context.getPhysicalPath()))
+                            found = True
+                            break
+            if found:
+                if mdkey:
+                    if mdata[mdkey] is None:
+                        mdata[mdkey] = {}
+                    mdata[mdkey][key] = val
+                else:
+                    mdata[key] = val
+            if not found and values:
+                logger.fatal("Couldn't find vocab value for %s: %s", key, '/'.join(context.getPhysicalPath()))
+        
+
+    def convert_uri_to_id(uri):
+        ns, frag = urldefrag(uri)
+        if frag:
+            return frag
+        if ns:
+            # probably already converted
+            return ns
+        raise ValueError("Can't convert concept uri to vocab identifier: %s", uri)
+
+    def extract_raster_metadata(res, lmd, key):
+        # res ... IResource
+        # lmd ... dict with
+        # key ... layer key in md['layers']
+        #
+        # datatype, height, width, max, min, srs
+        extract_values(res, lmd, key,
+                       ((BCCPROP['height'], 'height'),
+                        (BCCPROP['width'], 'width')),
+                       int)
+        extract_values(res, lmd, key,
+                       ((BCCPROP['min'], 'min'),
+                        (BCCPROP['max'], 'max')),
+                       float)
+        extract_values(res, lmd, key,
+                       ((BCCPROP['datatype'], 'datatype'),
+                        (BCCPROP['rat'], 'rat'),
+                        (GML['srsName'], 'srs'),
+                        (NFO['fileName'], 'filename')),
+                       unicode)
+        # fixup datatype if any:
+        if key:
+            layermd = lmd.get(key, {})
+        else:
+            layermd = lmd
+        if layermd is not None and 'datatype' in layermd:
+            dt_map = {u'DataSetTypeC': 'continuous'}
+            # set to continuous or default categorical
+            layermd['datatype'] = dt_map.get(layermd['datatype'], 'categorical')
+
     ###########################################################################
     # species info:
     species = {}
@@ -286,32 +369,12 @@ def migrate_to_bccvlmetadata(context, logger):
     # transition layer metadata
     # layers within an archive have an additional attribute fileName
     #    to identify the file within the archive.
-    # FIXME: experiments and results may have set this stuff differently?
     layers = [l.identifier for l in res.objects(BIOCLIM['bioclimVariable'])]
     if layers:
         md['layers'] = dict((unicode(l), None) for l in layers)
-        # there may be layer metadata directly on the object (usually only for single layer files)
-        # assume only one layer
+        # if there are no archiveItems we can assume there is only one layer
         key = md['layers'].keys()[0]
-        extract_values(res, md['layers'], key,
-                       ((BCCPROP['height'], 'height'),
-                        (BCCPROP['width'], 'width')),
-                       int)
-        extract_values(res, md['layers'], key,
-                       ((BCCPROP['min'], 'min'),
-                        (BCCPROP['max'], 'max')),
-                       float)
-        extract_values(res, md['layers'], key,
-                       ((BCCPROP['datatype'], 'datatype'),
-                        (BCCPROP['rat'], 'rat'),
-                        (GML['srsName'], 'srs')),
-                       unicode)
-        # fixup datatype if any:
-        tmp_dt = md['layers'][key].get('datatype')
-        if tmp_dt:
-            dt_map = {u'DataSetTypeC': 'continuous'}
-            # set to continuous or default categorical
-            md['layers'][key]['datatype'] = dt_map.get(tmp_dt, 'categorical')
+        extract_raster_metadata(res, md['layers'], key)
 
     # hasArchiveItem
     for archiveItem in res.objects(BCCPROP['hasArchiveItem']):
@@ -323,39 +386,20 @@ def migrate_to_bccvlmetadata(context, logger):
             archiveItem = Resource(handler.get(archiveItem.identifier),
                                    archiveItem.identifier)
         # we have a couple of things stored on the archiveitem
-        newitem = {}
-        extract_values(archiveItem, newitem, None,
-                       ((BCCPROP['height'], 'height'),
-                        (BCCPROP['width'], 'width'),
-                        (NFO['fileSize'], 'file_size')),
-                       int)
-        extract_values(archiveItem, newitem, None,
-                       ((BCCPROP['min'], 'min'),
-                        (BCCPROP['max'], 'max')),
-                       float)
-        extract_values(archiveItem, newitem, None,
-                       ((BCCPROP['datatype'], 'datatype'),
-                        (BCCPROP['rat'], 'rat'),
-                        (GML['srsName'], 'srs'),
-                        (NFO['fileName'], 'filename')),
-                       unicode)
-        # fixup datatype if any:
-        tmp_dt = newitem.get('datatype')
-        if tmp_dt:
-            dt_map = {u'DataSetTypeC': 'continuous'}
-            # set to continuous or default categorical
-            newitem['datatype'] = dt_map.get(tmp_dt, 'categorical')
-
         key = archiveItem.value(BIOCLIM['bioclimVariable'])
         if key:
             key = key.identifier
-            if newitem:
-                if md.get('layers') is None:
+            newlayermd = {}
+            extract_raster_metadata(archiveItem, newlayermd, None)
+            if newlayermd:
+                if 'layers' not in md or md['layers'] is None:
                     md['layers'] = {}
-                md['layers'][key] = newitem
+                md['layers'][key] = newlayermd
 
     # convert layer keys
     for key in md.get('layers', {}).keys():
+        # TODO: rather replace 'layers' completely if possible?
+        # TODO: check ... wolud this remove layers if key == frag?
         ns, frag = urldefrag(key)
         if frag in md['layers']:
             del md['layers'][frag]
@@ -363,29 +407,35 @@ def migrate_to_bccvlmetadata(context, logger):
             md['layers'][frag] = md['layers'][key]
             del md['layers'][key]
 
+    # convert raster metadata directly on object
+    extract_raster_metadata(res, md, None)
+
 
     ###########################################################################
     # Other literals
-    # FIXME:  these are all vocab entries
-    extract_values(res, md, None,
-                   ((BCCPROP['datagenre'], 'genre'),
-                    (BCCPROP['emissionscenario'], 'emsc'),
-                    (BCCPROP['gcm'], 'gcm'),
-                    (BCCPROP['resolution'], 'resolution')),
-                   unicode)
+    extract_vocab_values(context, res, md, None,
+                         ((BCCPROP['datagenre'], 'genre', 'genre_source'),
+                          (BCCPROP['emissionscenario'], 'emsc', 'emsc_source'),
+                          (BCCPROP['gcm'], 'gcm', 'gcm_source'),
+                          (BCCPROP['resolution'], 'resolution', 'resolution_source')),
+                          unicode)
     # check if resolution is a property on context
-    if hasattr(context.aq_base, 'resolution'):
-        md['resolution'] = context.resolution
+    if 'resolution' in context.__dict__:
+        if context.resolution: # value is not None?
+            # TODO: check vocab here as well
+            md['resolution'] = convert_uri_to_id(context.resolution)
         del context.resolution
-    # FIXME: dc:format should match mimetype? what about zip files and conatined files?
+
     extract_values(res, md, None,
                    ((DCTERMS['temporal'], 'temporal'),),
                    unicode)
 
     ###########################################################################
     # custom attributes directly on dataset:
-    if hasattr(aq_base(context), 'thresholds'):
-        md['thresholds'] = context.thresholds
+    if 'thresholds' in context.__dict__:
+        if context.thresholds:
+            md['thresholds'] = context.thresholds
+        del context.thresholds
 
     ###########################################################################
     # renamed attributes
@@ -396,8 +446,145 @@ def migrate_to_bccvlmetadata(context, logger):
         # repeatable.
         context.rightsstatement = context.rights
         context.rights = None
+        
+    ############ SDM experiment environmental_datasets
+    for uuid, layers in getattr(aq_base(context), 'environmental_datasets', {}).items():
+        new_layer_set = set(convert_uri_to_id(layeruri) for layeruri in layers)
+        # set if different
+        if layers != new_layer_set:
+            context.environmental_datasets[uuid] = new_layer_set
+
+    ########### fix up missing metadata
+    from org.bccvl.site.content.interfaces import IExperiment
+    if 'genre' not in md or not md['genre']:
+        if (
+            context.title.endswith('false_posivite_rates.Full.png') or
+            context.title.endswith('pdf.Full.png') or
+            context.title.endswith('hist.Full.png') or 
+            context.title.endswith('plots.pdf') or            
+            context.title.endswith('pstats.json') or
+            context.title.endswith('workenv.zip') or
+            context.title.endswith('.projection.out') or
+            IExperiment.providedBy(context)):
+            # return abov condition
+            return
+        if 'file' in context.__dict__ and context.file:
+            if context.file.filename == u'pROC.Full.png':
+                md['genre'] = 'DataGenreSDMEval'
+                context.title = u'ROC curve'
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+            elif context.file.filename == u'mean_response_curves_Phascolarctus.cinereus_AllData_Full_ANN.png':
+                md['genre'] = 'DataGenreSDMEval'
+                context.title = u'Mean Response Curves'
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+            elif context.file.filename.endswith('.csv'):
+                # probably a occurrence dataset
+                from csv import DictReader
+                csv = DictReader(context.file.open('r'))
+                if csv.fieldnames and 'lon' in csv.fieldnames and 'lat' in csv.fieldnames and 'species' in csv.fieldnames:
+                    row = csv.next()
+                    # convert filename
+                    taxon = context.file.filename.replace('_', ':').replace('biodiversity-org-au', 'biodiversity.org.au').replace('afd-taxon', 'afd.taxon').replace('.csv', '')
+                    # check if we have a -<n> at the end
+                    m = re.match(r'(.*:.*-.*-.*-.*-.*)(-\d)*', taxon)
+                    if m:
+                        taxon = m.group(1)
+                        md['genre'] = 'DataGenreSpeciesOccurrence'
+                        md['species'] = {
+                            'scientificName': row['species'],
+                            'taxonID': taxon
+                            }
+                        context.title = '{0} occurrence'.format(row['species'])
+                        logger.warn('Fixup genre and species %s', '/'.join(context.getPhysicalPath()))
+            elif context.file.filename == 'biodiverse_prefix_RAREW_RICHNESS.tif':
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+                md['genre'] = 'DataGenreRAREW_RICHNESS'
+                context.title = u'Rarity whole - Richness used in RAREW_CWE'
+            elif context.file.filename == 'biodiverse_prefix_RAREW_WE.tif':
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+                md['genre'] = 'DataGenreRAREW_WE'
+                context.title = u'Rarity whole - weighted rarity'
+            elif context.file.filename == 'biodiverse_prefix_RAREW_CWE.tif':
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+                md['genre'] = 'DataGenreRAREW_CWE'
+                context.title = u'Rarity whole - Corrected weighted rarity'
+            elif context.file.filename == 'proj_current_ClampingMask.tif':
+                md['genre'] = 'DataGenreClampingMask'
+                context.title = u'Clamping Mask'
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+            elif re.match(r'proj_current_.*\.tif', context.file.filename):
+                md['genre'] = 'DataGenreCP'
+                context.title = u'Projection to current'
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+            elif context.file.filename == u'model.object.RData.zip':
+                md['genre'] = 'DataGenreSDMModel'
+                context.title = u'R SDM Model object'
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+            elif context.file.filename == u'ann.Rout':
+                md['genre'] = 'DataGenreLog'
+                context.title = u'Log file'
+                logger.warn('Fixup genre %s', '/'.join(context.getPhysicalPath()))
+            elif context.file.filename == u'variableImportance.Full.txt':
+                md['genre'] = 'DataGenreSDMEval'
+                context.title = u'Model Evaluation'
+        else:
+            logger.fatal('Genre not set: %s', '/'.join(context.getPhysicalPath()))
 
 
+def migrate_result_folder(resultob):
+    from plone.app.contenttypes.content import Folder
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+
+    def convert_uri_to_id(uri):
+        ns, frag = urldefrag(uri)
+        if frag:
+            return frag
+        if ns:
+            # probably already converted
+            return ns
+        raise ValueError("Can't convert concept uri to vocab identifier: %s", uri)
+
+    gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(resultob)
+    emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(resultob)    
+    if 'job_params' not in resultob.__dict__:
+        # FIXME: could be an item in knowledge base
+        # we may have a body text and a logo here
+        # can't get rid of IRepositoryItem if we don't convert them
+        return
+    resultid = resultob.getId()
+    parent = resultob.__parent__
+    parent._delOb(resultid)
+    resultob.__class__ = Folder
+    resultob.portal_type = 'Folder'
+    parent._setOb(resultid, resultob)
+    # SDM:
+    job_params = resultob.job_params
+    for dsuuid, layers in job_params.get("environmental_datasets", {}).items():
+        # convert layeruris to ids
+        job_params['environmental_datasets'][dsuuid] = set(
+            convert_uri_to_id(layeruri) for layeruri in layers)
+    if 'resolution' in job_params:
+        job_params['resolution'] = convert_uri_to_id(job_params['resolution'])
+    # Projection:
+    if 'emission_scenario' in job_params:
+        job_params['emsc'] = job_params['emission_scenario']
+        if job_params['emsc'] not in emsc_vocab:
+            ob = uuidToObject(job_params['future_climate_datasets'])
+            job_params['emsc'] = IBCCVLMetadata(ob)['emsc']
+        del job_params['emission_scenario']
+    if 'climate_models' in job_params:
+        job_params['gcm'] = job_params['climate_models']
+        if job_params['gcm'] not in gcm_vocab:
+            ob = uuidToObject(job_params['future_climate_datasets'])
+            job_params['gcm'] = IBCCVLMetadata(ob)['gcm']
+        del job_params['climate_models']
+    if 'future_climate_datasets' in job_params:
+        if not isinstance(job_params['future_climate_datasets'], dict):
+            job_params['future_climate_datasets'] = {
+                job_params['future_climate_datasets']: set()
+            }
+
+    
 def upgrade_170_200_1(context, logger=None):
     # context is either the portal (called from setupVarious) or portal_setup when run via genericsetup
     if logger is None:
@@ -411,14 +598,83 @@ def upgrade_170_200_1(context, logger=None):
 
     # migrate rdf metadata
     pc = getToolByName(context, 'portal_catalog')
-    # FIXME: maybe not just datasets?
-    # TODO: maybe don't create bccvl annotations for content we don't need it
-    # FIXME: update attributes on context
-    for brain in pc.unrestrictedSearchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.sdmexperiment')):
-            obj = brain.getObject()
-            migrate_to_bccvlmetadata(obj, logger)
-            obj.reindexObject()
+        
+    # convert rdf metadata on all known objects..
+    for brain in list(pc.unrestrictedSearchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.sdmexperiment', 'org.bccvl.content.biodiverseexperiment', 'org.bccvl.content.projectionexperiment', 'org.bccvl.content.speciestraitsexperiment', 'org.bccvl.content.ensemble'))):
+        obj = brain.getObject()
+        logger.info("Migrating metadata %s", brain.getPath())
+        migrate_to_bccvlmetadata(obj, logger)
+        obj.reindexObject()
 
+    # convert result folder base class (and update job_params)
+    for brain in list(pc.unrestrictedSearchResults(portal_type='gu.repository.content.RepositoryItem')):
+        # needs to run after metadata migration and fix up
+        obj = brain.getObject()
+        logger.info("Migrating repositoryitem %s", brain.getPath())
+        migrate_result_folder(obj)
+        obj.reindexObject()
+    # migrate experiment objects (new properties and structures)
+    from org.bccvl.site.content.interfaces import IExperiment, ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment
+    for brain in list(pc.unrestrictedSearchResults(object_provides=IExperiment.__identifier__)):
+        exp = brain.getObject()
+        logger.info("Migrating experiment %s", brain.getPath())
+        # Ensemble:
+        if 'dataset' in exp.__dict__:
+            dsdict = {}
+            for dsuuid in exp.dataset:
+                dsob = uuidToObject(dsuuid)
+                dsexp = dsob.__parent__.__parent__
+                dsdict.setdefault(dsexp.UID(), []).append(dsuuid)
+                if ISDMExperiment.providedBy(exp):
+                    exp.experiment_type = ISDMExperiment.__identifier__
+                elif IProjectionExperiment.providedBy(exp):
+                    exp.experiment_type = IProjectionExperiment.__identifier__
+                elif IBiodiverseExperiment.providedBy(exp):
+                    exp.experiment_type = IBiodiverseExperiment.__identifier__
+            del exp.dataset
+            exp.datasets = dsdict
+        # Projection:
+        if 'species_distribution_models' in exp.__dict__:
+            dsdict = {}
+            for dsuuid in exp.species_distribution_models:
+                dsob = uuidToObject(dsuuid)
+                dsexp = dsob.__parent__.__parent__
+                dsdict.setdefault(dsexp.UID(), []).append(dsuuid)
+            exp.species_distribution_models = dsdict
+            # go through results and create future_climate_datasets
+            fcd = set()
+            for result in exp.values():
+                if isinstance(result.job_params['future_climate_datasets'], dict):
+                    fcd.update(result.job_params['future_climate_datasets'].keys())
+            exp.future_climate_datasets = list(fcd)
+        if 'years' in exp.__dict__:
+            del exp.years
+        if 'emission_scenarios' in exp.__dict__:
+            del exp.emission_scenarios
+        if 'climate_models' in exp.__dict__:
+            del exp.climate_models
+        # Biodiverse:
+        if 'projection' in exp.__dict__:
+            newproj = {}
+            for item in exp.projection:
+                dsob = uuidToObject(item['dataset'])
+                dsexp = dsob.__parent__.__parent__
+                newproj.setdefault(dsexp.UID(), {})[item['dataset']] = item['threshold']
+            exp.projection = newproj
+
+        exp.reindexObject()
+    # FIXEM: need to reindex at least object_provides (empty / index)
     # FIXME: sdm layer reindex (and probably other metadata)
 
-    # TODO: migrate all gu.repository.content.RepositoryItem to Folder
+    # TODO: missing threshold values?
+    # TODO: migrate RepositoryItems in knowledge base to Folder
+    #       don't forget to reindex once interface is gone entirely
+    # TODO: add more data fixups:
+    #       - if there is no 'rows', 'headers' for csv files
+    #       - no height, width, ... for raster files
+    # TODO: convert srs? (or leave as URI strings?)
+    # TODO: does md['layers'] need 'layer' id key as well in layermd?
+    # TODO: various png visualisations have no genre
+    # FIXME: pretty much all *projection.out files have a malformed mime type (None)
+    # TODO: move away from storing temproal metadat as dc:period
+    # TODO: delete subjecturi index column
