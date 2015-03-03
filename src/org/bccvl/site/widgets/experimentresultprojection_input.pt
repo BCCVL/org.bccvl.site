@@ -38,15 +38,17 @@
                                  name string:${view/name}.experiment.${index};"/>
           <!-- List of Datesetss within experiment -->
           <tal:repeat tal:repeat="dataset item/datasets">
-            <div class="selecteddatasets"
+            <div class="selecteddatasets controls-row"
                  tal:define="dsindex repeat/dataset/index;">
-              <input type="checkbox" value=""
+              <input type="checkbox" value="" class="span"
                      name="form.widgets.fieldname.dataset.0.0.uuid"
                      tal:attributes="value dataset/uuid;
                                      name string:${view/name}.dataset.${index}.${dsindex}.uuid;
                                      checked dataset/selected;"/>
               <select name="form.widgets.fieldname.dataset.0.0.threshold"
-                      tal:attributes="name string:${view/name}.dataset.${index}.${dsindex}.threshold;">
+                      class="span3"
+                      tal:attributes="name string:${view/name}.dataset.${index}.${dsindex}.threshold;
+                                      id string:${view/id}-dataset-${index}-${dsindex}-threshold;">
                 <tal:block tal:repeat="threshold dataset/thresholds">
                   <option value=""
                           tal:define="value python:dataset['thresholds'][threshold]"
@@ -55,7 +57,7 @@
                           tal:content="string:${threshold} (${value})"/>
                 </tal:block>
               </select>
-              <span tal:content="dataset/title">Dataset Title</span>
+              <span class="span3" tal:content="dataset/title">Dataset Title</span>
             </div>
             <input type="hidden" value="" name="form.widgets.dataset.0.count"
 		   tal:condition="repeat/dataset/end"
