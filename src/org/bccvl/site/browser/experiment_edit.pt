@@ -8,8 +8,8 @@
   <head>
     <metal:styleslot fill-slot="style_slot">
       <link rel="stylesheet"
-            href="/++resource++bccvl/lib/bootstrap/css/bootstrap.css"
-            tal:attributes="href string:${porta/_url)/++resource++bccvl/lib/bootstrap/css/bootstrap.css"/>
+            href="++resource++bccvl/lib/bootstrap/css/bootstrap.css"
+            tal:attributes="href string:${portal_url}/++resource++bccvl/lib/bootstrap/css/bootstrap.css"/>
       <link rel="stylesheet"
             href="++resource++bccvl/lib/selectize/selectize.bootstrap2.css"
             tal:attributes="href string:${portal_url}/++resource++bccvl/lib/selectize/selectize.bootstrap2.css"/>      
@@ -32,7 +32,8 @@
     <script type="text/javascript"
             src="++resource++bccvl/lib/selectize/selectize.min.js"
             tal:attributes="src string:${portal_url}/++resource++bccvl/lib/selectize/selectize.min.js"></script>      
-    <script type="text/javascript" src="++resource++bccvl-widgets.js"
+    <script type="text/javascript"
+            src="++resource++bccvl-widgets.js"
             tal:attributes="src string:${portal_url}/++resource++bccvl-widgets.js"></script>
     </metal:javascriptslot>
   </head>
