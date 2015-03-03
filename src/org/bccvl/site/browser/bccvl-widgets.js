@@ -469,6 +469,12 @@
             if (!settings.experimenttype && $experiment_type.val()) {
                 settings.experimenttype = [$experiment_type.val()];
             }
+            // init selectize boxes on page load
+            $.each($('#' + settings.widgetid).find('select'), function(index, elem) {
+                $(elem).selectize({create: true,
+                                   persist: false});
+            });
+            
             // end diff
 
             // modal dialog

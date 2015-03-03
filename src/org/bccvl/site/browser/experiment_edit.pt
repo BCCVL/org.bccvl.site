@@ -29,12 +29,13 @@
       <script type="text/javascript"
               src="++resource++bccvl/lib/bootstrap/js/bootstrap.min.js"
               tal:attributes="src string:${portal_url}/++resource++bccvl/lib/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript"
-            src="++resource++bccvl/lib/selectize/selectize.min.js"
-            tal:attributes="src string:${portal_url}/++resource++bccvl/lib/selectize/selectize.min.js"></script>      
-    <script type="text/javascript"
-            src="++resource++bccvl-widgets.js"
-            tal:attributes="src string:${portal_url}/++resource++bccvl-widgets.js"></script>
+      <script type="text/javascript"
+              src="++resource++bccvl/lib/selectize/selectize.min.js"
+              tal:attributes="src string:${portal_url}/++resource++bccvl/lib/selectize/selectize.min.js"></script>      
+      <script type="text/javascript"
+              src="++resource++bccvl-widgets.js"
+              tal:attributes="src string:${portal_url}/++resource++bccvl-widgets.js"></script>
+
     </metal:javascriptslot>
   </head>
 
