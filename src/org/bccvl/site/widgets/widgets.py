@@ -441,12 +441,20 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                 # TODO: maybe as generator?
                 item['datasets'] = []
                 for brain in brains:
+                    # FIXME: I need a different list of thresholds for display; esp. don't look up threshold, but take vales (threshold id and value) from field as is
+                    thresholds = dataset.getThresholds(brain.UID)[brain.UID]
+                    threshold = self.value[experiment_uuid].get(brain.UID)
+                    # is threshold in list?
+                    if threshold and threshold['label'] not in thresholds:
+                        # maybe a custom entered number?
+                        # ... I guess we don't really care as long as we produce the same the user entered. (validate?)
+                        thresholds[threshold['label']] = threshold['label']
                     item['datasets'].append({
                         'uuid': brain.UID,
                         'title': brain.Title,
                         'selected': brain.UID in self.value[experiment_uuid],
-                        'threshold': self.value[experiment_uuid].get(brain.UID),
-                        'thresholds': dataset.getThresholds(brain.UID)[brain.UID],
+                        'threshold': threshold,
+                        'thresholds': thresholds
                     })
                 yield item
 
@@ -495,7 +503,7 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                 dsuuid = self.request.get('{}.dataset.{}.{}.uuid'.format(self.name, idx, dsidx))
                 dsth = self.request.get('{}.dataset.{}.{}.threshold'.format(self.name, idx, dsidx))
                 if dsuuid:
-                    value[uuid][dsuuid] = dsth
+                    value[uuid][dsuuid] = {'label': dsth}
         if not value:
             return NO_VALUE
         return value

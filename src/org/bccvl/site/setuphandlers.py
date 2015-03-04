@@ -583,7 +583,15 @@ def migrate_result_folder(resultob):
             job_params['future_climate_datasets'] = {
                 job_params['future_climate_datasets']: set()
             }
-
+    if 'projections' in job_params:
+        newproj = {}
+        for item in job_params['projections']:
+            dsob = uuidToObject(item['dataset'])
+            dsexp = dsob.__parent__.__parent__
+            newproj.setdefault(dsexp.UID(), {})[item['dataset']] = {
+                'label': unicode(item['threshold']),
+                'value': item['threshold'] }
+        job_params['projections'] = newproj
     
 def upgrade_170_200_1(context, logger=None):
     # context is either the portal (called from setupVarious) or portal_setup when run via genericsetup
@@ -659,11 +667,13 @@ def upgrade_170_200_1(context, logger=None):
             for item in exp.projection:
                 dsob = uuidToObject(item['dataset'])
                 dsexp = dsob.__parent__.__parent__
-                newproj.setdefault(dsexp.UID(), {})[item['dataset']] = item['threshold']
+                newproj.setdefault(dsexp.UID(), {})[item['dataset']] = {
+                    'label': unicode(item['threshold']),
+                    'value': item['threshold'] }                
             exp.projection = newproj
 
         exp.reindexObject()
-    # FIXEM: need to reindex at least object_provides (empty / index)
+    # FIXME: need to reindex at least object_provides (empty / index)
     # FIXME: sdm layer reindex (and probably other metadata)
 
     # TODO: missing threshold values?

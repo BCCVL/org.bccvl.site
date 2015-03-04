@@ -384,14 +384,9 @@ class BiodiverseJobTracker(MultiJobTracker):
 
                 dss = []
                 for ds, thresh in datasets:
-                    try:
-                        dst = Decimal(thresh)
-                    except:
-                        # seems like we have a threshold name .. try to resolve it
-                        dst = Decimal(dataset.getThresholds(ds, thresh)[ds][thresh])
                     dss.append({
                         'dataset': ds,
-                        'threshold': dst
+                        'threshold': thresh
                     })
 
                 # build job_params and store on result

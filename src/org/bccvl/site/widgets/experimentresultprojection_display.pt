@@ -23,10 +23,11 @@
       <div id="" class="row">
         <span tal:content="item/title">Experiment Title</span>
         <tal:block tal:repeat="dataset item/datasets">
-          <span tal:condition="dataset/selected"
-                tal:content="dataset/title">Dataset Title</span>
-	  <span tal:condition="dataset/selected"
-		tal:content="dataset/threshold">Threshold value</span>
+          <tal:block tal:condition="dataset/selected">
+            <span tal:content="dataset/title">Dataset Title</span>
+	    <span tal:content="dataset/threshold/label">Threshold label:</span>
+	    <span tal:content="dataset/threshold/value">Threshold value</span>
+          </tal:block>
         </tal:block>
       </div>
     </tal:block>

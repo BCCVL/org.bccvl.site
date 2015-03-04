@@ -51,9 +51,10 @@
                                       id string:${view/id}-dataset-${index}-${dsindex}-threshold;">
                 <tal:block tal:repeat="threshold dataset/thresholds">
                   <option value=""
-                          tal:define="value python:dataset['thresholds'][threshold]"
+                          tal:define="value python:dataset['thresholds'][threshold];
+                                      thlabel dataset/threshold/label|nothing;"
                           tal:attributes="value threshold;
-                                          selected python:dataset['threshold'] == threshold"
+                                          selected python:thlabel == threshold"
                           tal:content="string:${threshold} (${value})"/>
                 </tal:block>
               </select>

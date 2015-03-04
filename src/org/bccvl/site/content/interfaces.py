@@ -163,7 +163,7 @@ class IBiodiverseExperiment(IExperiment):
         key_type=TextLine(),
         value_type=Dict(
             key_type=TextLine(),
-            value_type=TextLine()
+            value_type=Dict()
         ),
         required=True,
     )
