@@ -188,7 +188,7 @@ def biodiverse_listing_details(expbrain):
             # TODO: can't access dateset anymore, let user know somehow
             continue
         md = IBCCVLMetadata(dsobj)
-        species.add(md.get('species', {}).get('scientificName'))
+        species.add(md.get('species', {}).get('scientificName', ''))
         period = md.get('temporal')
         if period:
             years.add(Period(period).start)
