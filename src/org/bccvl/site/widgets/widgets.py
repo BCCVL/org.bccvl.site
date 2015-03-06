@@ -213,10 +213,11 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             brains = pc.searchResults(path=expbrain.getPath(),
                                       BCCDataGenre=self.genre)
             # TODO: maybe as generator?
-            item['models'] = [{'uuid': brain.UID,
+            item['models'] = [{'item': brain,
+                               'uuid': brain.UID,
                                'title': brain.Title,
                                'selected': brain.UID in self.value[experiment_uuid]}
-                              for brain in brains]
+                               for brain in brains]
         return item
 
     def js(self):
