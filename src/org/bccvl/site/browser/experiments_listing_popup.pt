@@ -16,6 +16,7 @@
                   dataset_tools nocall:context/@@dataset_tools;
 
                   navigation_root_url context/@@plone_portal_state/navigation_root_url;
+                  filters python:request.get('datasets.filters', ());
                   multiple python:request.get('datasets.multiple', '');
                   "
       tal:omit-tag="">
@@ -31,6 +32,9 @@
              tal:attributes="value experimenttype"
              tal:repeat="experimenttype
                          python:request.get('datasets.filter.experimenttype')"/>
+      <input type="hidden" name="datasets.filters:list" value=""
+             tal:attributes="value val"
+             tal:repeat="val filters"/>
       <div class="cell position-0 width-5">
         <input id="datasets-filter-text"
                name="datasets.filter.text" type="text"
