@@ -59,13 +59,13 @@
 
     <genericsetup:upgradeSteps
       source="1.7.0"
-      destination="2.0.0"
+      destination="1.8.0"
       profile="org.bccvl.site:default">
 
     <genericsetup:upgradeStep
-        title="Upgrade profile to version 2.0"
+        title="Upgrade profile to version 1.8"
         description="Updates registry and migrate metadata"
-        handler=".setuphandlers.upgrade_170_200_1"
+        handler=".setuphandlers.upgrade_170_180_1"
         />
 
   </genericsetup:upgradeSteps>
