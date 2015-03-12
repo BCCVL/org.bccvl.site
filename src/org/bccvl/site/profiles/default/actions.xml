@@ -41,4 +41,20 @@
     </object>
   </object>
 
+
+<!-- <object name="dataset" meta_type="CMF Action">
+        <object name="dataset_remove" meta_type="CMF Action" i18n:domain="plone">
+            <property name="title" i18n:translate="">Remove Dataset</property>
+            <property name="description" i18n:translate=""></property>
+            <property name="url_expr">string:$object_url/@@remove</property>
+            <property name="icon_expr"></property>
+            <property name="available_expr"></property>
+            <property name="permissions">
+                <element value="cmf.ModifyPortalContent" />
+            </property>
+            <property name="visible">True</property>
+        </object>
+    </object> -->
+
+
 </object>

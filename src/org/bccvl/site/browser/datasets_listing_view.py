@@ -186,6 +186,8 @@ class DatasetsListingView(BrowserView):
         member = portal_state.member()
 
         query = {}
+        
+        query['job_state'] = ['QUEUED', 'RUNNING', 'COMPLETED', 'FAILED']
 
         text = self.request.get('datasets.filter.text')
         if text:

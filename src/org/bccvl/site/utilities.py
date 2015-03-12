@@ -180,7 +180,7 @@ class JobTracker(object):
     #     - message ... short descr of activity
     #     - .... could be more here; e.g. percent complete, steps, etc..
 
-    _states = ('QUEUED', 'RUNNING', 'COMPLETED', 'FAILED')
+    _states = ('QUEUED', 'RUNNING', 'COMPLETED', 'FAILED', 'REMOVED')
 
     def __init__(self, context):
         self.context = context
@@ -214,7 +214,7 @@ class JobTracker(object):
 
     def is_active(self):
         return (self.state not in
-                (None, 'COMPLETED', 'FAILED'))
+                (None, 'COMPLETED', 'FAILED', 'REMOVED'))
 
     def new_job(self, taskid, name):
         self._state.clear()
