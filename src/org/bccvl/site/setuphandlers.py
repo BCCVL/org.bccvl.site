@@ -641,8 +641,8 @@ def upgrade_170_180_1(context, logger=None):
                     exp.experiment_type = IBiodiverseExperiment.__identifier__
             del exp.dataset
             exp.datasets = dsdict
-        # Projection:
-        if 'species_distribution_models' in exp.__dict__:
+        # Projection: (if species_distribution_models is dict then it's already in new format)
+        if 'species_distribution_models' in exp.__dict__ and not isinstance(exp.species_distribution_models, dict):
             dsdict = {}
             for dsuuid in exp.species_distribution_models:
                 dsob = uuidToObject(dsuuid)
@@ -661,8 +661,8 @@ def upgrade_170_180_1(context, logger=None):
             del exp.emission_scenarios
         if 'climate_models' in exp.__dict__:
             del exp.climate_models
-        # Biodiverse:
-        if 'projection' in exp.__dict__:
+        # Biodiverse: (if exp.projection is a list we have to migrate it to dict)
+        if 'projection' in exp.__dict__ and isinstance(exp.projection, list):
             newproj = {}
             for item in exp.projection:
                 dsob = uuidToObject(item['dataset'])
