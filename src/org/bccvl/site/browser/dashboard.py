@@ -13,9 +13,12 @@ class DashboardView(BrowserView):
         return super(DashboardView, self).__call__()
 
     def num_datasets(self):
-        return len(self.pc.searchResults(
+        # TODO: see if we can do this via indexing rather than filtering. 
+        all_ds = self.pc.searchResults(
             path='/'.join(self.portal.datasets.getPhysicalPath()),
-            object_provides=IDataset.__identifier__))
+            object_provides=IDataset.__identifier__)
+        ds = filter(lambda x: not IJobTracker(x.getObject()).state in ["FAILED","REMOVED"], all_ds  )
+        return len(ds)
 
     def num_experiments(self):
         return len(self.pc.searchResults(
@@ -23,13 +26,15 @@ class DashboardView(BrowserView):
             object_provides=IExperiment.__identifier__))
 
     def newest_datasets(self):
-        return self.pc.searchResults(
+        # TODO: see if we can do this via indexing rather than filtering. 
+        all_ds = self.pc.searchResults(
             path='/'.join(self.portal[defaults.DATASETS_FOLDER_ID].getPhysicalPath()),
             object_provides=IDataset.__identifier__,
             sort_on='modified',
             sort_order='descending',
-            sort_limit=3
-        )[:3]
+        )
+        ds = filter(lambda x: not IJobTracker(x.getObject()).state in ["FAILED","REMOVED"], all_ds  )
+        return ds[:3]
 
     def newest_experiments(self):
         return self.pc.searchResults(
@@ -47,5 +52,7 @@ class DashboardView(BrowserView):
             return "success"
         if job_state == 'FAILED':
             return "error"
+        if job_state == 'REMOVED':
+            return "removed"
         # everything else can only be in progress
         return "info"

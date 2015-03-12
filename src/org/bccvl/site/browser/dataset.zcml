@@ -28,6 +28,15 @@
             Pages, PagesPage -->
     <!-- TODO: check if Public permission is correct here -->
     <browser:page
+        for="..content.dataset.IDataset"
+        name="remove"
+        class=".dataset.DatasetRemoveView"
+        permission="cmf.ModifyPortalContent"
+        />
+
+
+    
+    <browser:page
         name="dataset_tools"
         for="*"
         permission="zope.Public"
