@@ -13,12 +13,10 @@ class DashboardView(BrowserView):
         return super(DashboardView, self).__call__()
 
     def num_datasets(self):
-        # TODO: see if we can do this via indexing rather than filtering. 
-        all_ds = self.pc.searchResults(
+        return len(self.pc.searchResults(
             path='/'.join(self.portal.datasets.getPhysicalPath()),
-            object_provides=IDataset.__identifier__)
-        ds = filter(lambda x: not IJobTracker(x.getObject()).state in ["FAILED","REMOVED"], all_ds  )
-        return len(ds)
+            job_state=("COMPLETED", "QEUED", "RUNNING"),            
+            object_provides=IDataset.__identifier__))
 
     def num_experiments(self):
         return len(self.pc.searchResults(
@@ -26,15 +24,14 @@ class DashboardView(BrowserView):
             object_provides=IExperiment.__identifier__))
 
     def newest_datasets(self):
-        # TODO: see if we can do this via indexing rather than filtering. 
-        all_ds = self.pc.searchResults(
+        return self.pc.searchResults(
             path='/'.join(self.portal[defaults.DATASETS_FOLDER_ID].getPhysicalPath()),
             object_provides=IDataset.__identifier__,
+            job_state=("COMPLETED", "QEUED", "RUNNING"),            
             sort_on='modified',
             sort_order='descending',
-        )
-        ds = filter(lambda x: not IJobTracker(x.getObject()).state in ["FAILED","REMOVED"], all_ds  )
-        return ds[:3]
+        )[:3]
+
 
     def newest_experiments(self):
         return self.pc.searchResults(
