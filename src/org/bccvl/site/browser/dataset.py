@@ -1,7 +1,7 @@
 #from plone.dexaterity.browser.view import DefaultView (template override in plone.app.dexterity.browser)
 
 
-from z3c.form import field, button
+from z3c.form import field, button, form
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
 from zope.event import notify
