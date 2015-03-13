@@ -107,6 +107,11 @@
       />
   
   <adapter
+      factory=".indexers.experiment_reference_indexer"
+      name="experiment_reference"
+      />
+
+  <adapter
       for=".content.interfaces.IExperiment
            Products.ZCatalog.interfaces.IZCatalog"
       factory=".indexers.JobStateIndexer"

@@ -92,6 +92,13 @@ def dataset_environmental_layer(obj, **kw):
     # otherwise index list of layers provided by dataset
     return md.get('layers', None)
 
+@indexer(IExperiment)
+def experiment_reference_indexer(object, **kw):
+    # TODO: Add Ensemble -> SDM, Proj, Biodiv, Biodiverse -> SDM, Proj
+    if IProjectionExperiment.providedBy(object):
+        return object.species_distribution_models.keys()
+    else:
+        pass
 
 @implementer(IIndexer)
 class JobStateIndexer(object):

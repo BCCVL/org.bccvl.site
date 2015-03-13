@@ -21,6 +21,9 @@
     <index name="job_state" meta_type="FieldIndex">
         <indexed_attr value="job_state"/>
     </index>
+    <index name="experiment_reference" meta_type="KeywordIndex">
+        <indexed_attr value="experiment_reference"/>
+    </index>
 
     <index name="BCCSpeciesLayer" meta_type="KeywordIndex" remove="True"/>
 
