@@ -15,7 +15,7 @@ class DashboardView(BrowserView):
     def num_datasets(self):
         return len(self.pc.searchResults(
             path='/'.join(self.portal.datasets.getPhysicalPath()),
-            job_state=("COMPLETED", "QEUED", "RUNNING"),            
+            job_state=("COMPLETED", "QUEUED", "RUNNING"),            
             object_provides=IDataset.__identifier__))
 
     def num_experiments(self):
@@ -27,7 +27,7 @@ class DashboardView(BrowserView):
         return self.pc.searchResults(
             path='/'.join(self.portal[defaults.DATASETS_FOLDER_ID].getPhysicalPath()),
             object_provides=IDataset.__identifier__,
-            job_state=("COMPLETED", "QEUED", "RUNNING"),            
+            job_state=("COMPLETED", "QUEUED", "RUNNING"),            
             sort_on='modified',
             sort_order='descending',
         )[:3]
