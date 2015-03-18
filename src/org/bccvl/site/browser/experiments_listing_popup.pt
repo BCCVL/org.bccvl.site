@@ -51,7 +51,7 @@
                 multiple="multiple">
           <option disabled="disabled">Select a Source</option>
           <option value="optionvalue"
-                  tal:repeat="opt view/dstools/source_list|nothing"
+                  tal:repeat="opt dataset_tools/source_list|nothing"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"

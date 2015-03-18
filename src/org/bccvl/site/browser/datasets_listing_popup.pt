@@ -50,7 +50,7 @@
                 multiple="multiple">
           <option disabled="disabled">Select a Source</option>
           <option value="optionvalue"
-                  tal:repeat="opt view/dstools/source_list"
+                  tal:repeat="opt dataset_tools/source_list"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"
@@ -64,7 +64,7 @@
                 multiple="multiple">
           <option disabled="disabled">Select Layers</option>
           <option value="layerid"
-                  tal:repeat="opt view/dstools/layer_list"
+                  tal:repeat="opt dataset_tools/layer_list"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"
@@ -82,7 +82,7 @@
                 multiple="multiple">
           <option disabled="disabled">Select Resolution</option>
           <option value="resolutionid"
-                  tal:repeat="opt view/dstools/resolution_list"
+                  tal:repeat="opt dataset_tools/resolution_list"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"
@@ -100,7 +100,7 @@
                 multiple="multiple">
           <option disabled="disabled">Select Emission Scenario</option>
           <option value="emscid"
-                  tal:repeat="opt view/dstools/emsc_list"
+                  tal:repeat="opt dataset_tools/emsc_list"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"
@@ -114,7 +114,7 @@
                 multiple="multiple">
           <option disabled="disabled">Select Global Climate Model</option>
           <option value="gcmid"
-                  tal:repeat="opt view/dstools/gcm_list"
+                  tal:repeat="opt dataset_tools/gcm_list"
                   tal:attributes="selected opt/selected;
                                   disabled opt/disabled;
                                   value opt/token;"

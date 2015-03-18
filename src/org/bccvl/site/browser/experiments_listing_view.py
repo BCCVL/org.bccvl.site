@@ -29,13 +29,6 @@ def get_title_from_uuid(uuid):
 @implementer(IFolderContentsView)
 class ExperimentsListingView(BrowserView):
 
-    dstools = None
-
-    def __call__(self):
-        self.dstools = getMultiAdapter((self.context, self.request),
-                                        name="dataset_tools")
-        return super(ExperimentsListingView, self).__call__()
-
     def new_experiment_actions(self):
         experimenttypes = ('org.bccvl.content.sdmexperiment',
                            'org.bccvl.content.projectionexperiment',
@@ -77,11 +70,6 @@ class ExperimentsListingView(BrowserView):
 
 
 class ExperimentsListingPopup(BrowserView):
-
-    def __call__(self):
-        self.dstools = getMultiAdapter((self.context, self.request),
-                                       name="dataset_tools")
-        return super(ExperimentsListingPopup, self).__call__()
 
     def experimentslisting(self):
         site_path = queryUtility(IPloneSiteRoot).getPhysicalPath()

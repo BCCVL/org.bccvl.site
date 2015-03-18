@@ -471,13 +471,6 @@ class DatasetsListingView(BrowserView):
     b_start: batch start
     '''
 
-    def __call__(self):
-        # initialise instance variables, we'll do it here so that we have
-        # security set up and have to do it only once per request
-        self.dstools = getMultiAdapter((self.context, self.request),
-                                       name="dataset_tools")
-        return super(DatasetsListingView, self).__call__()
-
     def datasetslisting(self):
         dslisttool = DatasetsListingTool(self.context, self.request)
         dslisttool.path = '/'.join(self.context.getPhysicalPath())
@@ -493,17 +486,15 @@ class DatasetsListingPopup(BrowserView):
     def __call__(self):
         # initialise instance variables, we'll do it here so that we have
         # security set up and have to do it only once per request
-        self.dstools = getMultiAdapter((self.context, self.request),
-                                       name="dataset_tools")
+        self.dslisttool = DatasetsListingTool(self.context, self.request)
         return super(DatasetsListingPopup, self).__call__()
 
     def datasetslisting(self):
-        dslisttool = DatasetsListingTool(self.context, self.request)
-        return dslisttool.datasetslisting()
+        return self.dslisttool.datasetslisting()
 
     def match_selectedlayers(self, md):
         selected = self.request.get('datasets.filter.layer', ())
-        layer_vocab = self.dstools.layer_vocab
+        layer_vocab = self.dslisttool.dstools.layer_vocab
         # FIXME: there should never be a dataset without layers here
         for layer in md.get('layers', ()):
             if not selected:
