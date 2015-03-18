@@ -25,21 +25,10 @@ from plone.dexterity.utils import createContentInContainer
 from gu.z3cform.rdf.utils import Period
 from decimal import Decimal
 from org.bccvl.site.api import dataset
+from org.bccvl.site.utils import DecimalJSONEncoder
 
 
 LOG = logging.getLogger(__name__)
-
-
-def decimal_encoder(o):
-    """ converts Decimal to something the json module can serialize.
-    Usually with python 2.7 float rounding this creates nice representations
-    of numbers, but there might be cases where rounding may cause problems.
-    E.g. if precision required is higher than default float rounding.
-    """
-    if isinstance(o, Decimal):
-        return float(o)
-    raise TypeError(repr(o) + " is not JSON serializable")
-
 
 # self passed in as *args
 @decorator  # well behaved decorator that preserves signature so that
@@ -82,7 +71,7 @@ def returnwrapper(f, *args, **kw):
 
     # if we don't have xmlrpc we serialise to json
     if not isxmlrpc:
-        ret = json.dumps(ret, default=decimal_encoder)
+        ret = DecimalJSONEncoder().encode(ret)
         view.request.response['CONTENT-TYPE'] = 'application/json'
     return ret
 

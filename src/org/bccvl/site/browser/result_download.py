@@ -3,9 +3,9 @@ from org.bccvl.site.content.interfaces import IBlobDataset
 from Products.CMFCore.utils import getToolByName
 from ZPublisher.Iterators import filestream_iterator
 from org.bccvl.site.api.dataset import getdsmetadata
+from org.bccvl.site.utils import DecimalJSONEncoder
 import os
 import os.path
-import json
 import tempfile
 import zipfile
 
@@ -57,7 +57,7 @@ class ResultDownloadView(BrowserView):
 
             # put metadata into zip
             zfile.writestr('/'.join((zfilename, 'bccvl', 'metadata.json')),
-                           json.dumps(metadata, indent=4))
+                           DecimalJSONEncoder(indent=4).encode(metadata))
             # finish zip file
             zfile.close()
 
