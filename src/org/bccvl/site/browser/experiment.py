@@ -66,9 +66,9 @@ class ParamGroupMixin(object):
             if self.mode == DISPLAY_MODE and toolkit.UID() not in functions:
                 # filter out unused algorithms in display mode
                 continue
-            # FIXME: need to cache
+            # FIXME: need to cache form schema
             try:
-                # FIXME: do some caching here
+                # FIXME: do some schema caching here
                 parameters_model = loadString(toolkit.schema)
             except Exception as e:
                 LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
