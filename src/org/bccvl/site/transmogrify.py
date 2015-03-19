@@ -308,7 +308,8 @@ class FileMetadataToBCCVL(object):
                         continue
                     self._update_layer_metadata(bccvlmd, layermd['metadata'], filename, jsonmd)
                     # FIXME: extract some of json metadata? like acknowledgement, etc...
-            else:
+            elif content.format not in ('text/csv', ):
+                # TODO: we should have a better check here whether to extract layer metadata for a single file dataset
                 self._update_layer_metadata(bccvlmd, filemd, fileid, {})
 
             # continue pipeline
@@ -342,13 +343,13 @@ class FileMetadataToBCCVL(object):
     def _update_layer_metadata(self, bccvlmd, filemd, fileid, jsonmd):
         layermd = {}
         # projection
-        if 'srs' in filemd:
-            layermd['srs'] = filemd['srs']
+        for key in ('srs', 'bounds', 'size', 'projection'):
+            if key in filemd:
+                layermd[key] = filemd[key]
         # other global fileds:
-        #    AREA_OR_POINT, PIXEL_SIZE, origin, projection, size, bounds
-
+        #    AREA_OR_POINT, PIXEL_SIZE, origin
         # check band metadata
-        bandmd =  filemd.get('band')
+        bandmd = filemd.get('band')
         if bandmd:
             # TODO: assumes there is only one band
             bandmd = bandmd[0]
