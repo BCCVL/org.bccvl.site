@@ -32,6 +32,9 @@ class BCCVLMetadata(object):
     def __setitem__(self, key, value):
         return self._md.__setitem__(key, value)
 
+    def __delitem__(self, key):
+        return self._md.__delitem__(key)
+
     def update(self, *args, **kw):
         return self._md.update(*args, **kw)
 
