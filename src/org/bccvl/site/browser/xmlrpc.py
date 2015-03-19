@@ -59,7 +59,7 @@ def returnwrapper(f, *args, **kw):
     # request.setBody ... would need to replace response instance of
     # request.response. (see ZPublisher.xmlprc.response, which wraps a
     # default Response)
-    # FIXME: this is a bad workaround for
+    # FIXME: this is a bad workaround for - this method sholud be wrapped around tools and then be exposed as BrowserView ... ont as tool and BrowserView
     #        we call these wrapped functions internally, from templates and
     #        as ajax calls and xmlrpc calls, and expect different return encoding.
     #        ajax: json
@@ -266,7 +266,6 @@ class DataSetManager(BrowserView):
                     BCCDataGenre=('DataGenreFP', 'DataGenreCP')):
                 # get year, gcm, emsc, species, filename/title, fileuuid
                 # TODO: Result is one file per species ... should this be a dict by species or year as well?
-                # FIXME: build on dataset, check if a sparql query using all dsbrains at once would be faster?
                 ds = dsbrain.getObject()
                 md = IBCCVLMetadata(ds)
                 # parse year

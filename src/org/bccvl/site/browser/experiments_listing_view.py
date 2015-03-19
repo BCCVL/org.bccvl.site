@@ -22,10 +22,6 @@ def get_title_from_uuid(uuid):
     return None
 
 
-# FIXME: this view needs to exist for default browser layer as well
-#        otherwise diazo.off won't find the page if set up.
-#        -> how would unthemed markup look like?
-#        -> theme would only have updated template.
 @implementer(IFolderContentsView)
 class ExperimentsListingView(BrowserView):
 
@@ -167,7 +163,6 @@ def projection_listing_details(expbrain):
                 toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params['function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
                 species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
         else:
-            # FIXME: should we prevent users from deleting / unsharing?
             toolkits = 'missing experiment'
             species_occ = ''
             envlayers = []
@@ -184,7 +179,6 @@ def projection_listing_details(expbrain):
 
 def biodiverse_listing_details(expbrain):
     details = {}
-    # FIXME: implement this
     exp = expbrain.getObject()
     species = set()
     years = set()

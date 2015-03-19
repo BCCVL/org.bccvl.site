@@ -361,9 +361,9 @@ def migrate_to_bccvlmetadata(context, logger):
     # CSV metadata
     if res.value(BCCPROP['rows']):
         md['rows'] = int(res.value(BCCPROP['rows']))
-    # FIXME: headernames ... put this info into separate section in md?
+    # FIXME: headernames ... put this info into separate section in md? (headers are not in rdf)
     #        can csv be sort of layer as well?
-    # FIXME: CSV can have bounding box
+    # FIXME: CSV can have bounding box (not in rdf)
 
     ###########################################################################
     # transition layer metadata

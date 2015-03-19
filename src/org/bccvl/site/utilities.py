@@ -84,9 +84,6 @@ def CatalogBrainDownloadInfo(brain):
     # brain has at least getURL, getRemoteUrl
 
 
-# FIXME: update JOB Info stuff.... for message queueing
-#
-# FIXME: define job state dictionary and possible states (esp. FINISHED states)
 @implementer(IJobTracker)
 class JobTracker(object):
     # TODO: maybe split state and progress....
@@ -357,7 +354,6 @@ class BiodiverseJobTracker(MultiJobTracker):
                 dsobj = uuidToObject(projds)
                 dsmd = IBCCVLMetadata(dsobj)
 
-                # FIXME: sdm datasets have no resolution
                 emsc = dsmd.get('emsc')
                 gcm = dsmd.get('gcm')
                 period = dsmd.get('temporal')
