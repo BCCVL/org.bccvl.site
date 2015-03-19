@@ -115,6 +115,18 @@
         />
 
     <browser:page
+        name="edit"
+        for="..content.experiment.ISpeciesTraitsExperiment"
+        class=".experiment.SpeciesTraitsEdit"
+        permission="cmf.ModifyPortalContent"/>
+
+    <browser:page
+        name="view"
+        for="..content.interfaces.ISpeciesTraitsExperiment"
+        class=".experiment.SpeciesTraitsView"
+        permission="zope2.View"/>
+
+    <browser:page
         name="resultdownload"
         for="*"
         class=".result_download.ResultDownloadView"

@@ -59,11 +59,11 @@ class ParamGroupMixin(object):
     def addToolkitFields(self):
         groups = []
         # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
-        func_vocab = getUtility(IVocabularyFactory, name='sdm_functions_source')
-        functions = getattr(self.context, 'functions', None) or ()
+        func_vocab = getUtility(IVocabularyFactory, name=self.func_vocab_name)
+        functions = getattr(self.context, self.func_select_field, None) or ()
         # TODO: could also use uuidToObject(term.value) instead of relying on BrainsVocabluary terms
         for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
-            if self.mode == DISPLAY_MODE and toolkit.UID() not in functions:
+            if self.mode == DISPLAY_MODE and not self.is_toolkit_selected(toolkit.UID(), functions):
                 # filter out unused algorithms in display mode
                 continue
             # FIXME: need to cache form schema
@@ -120,14 +120,14 @@ class ParamGroupMixin(object):
         return data, errors
 
     def applyChanges(self, data):
-        # FIXME: store only selected algos
         changed = super(ParamGroupMixin, self).applyChanges(data)
         # apply algo params:
         new_params = {}
         for group in self.param_groups:
-            content = group.getContent()
-            param_changed = applyChanges(group, content, data)
-            new_params[group.toolkit] = content
+            if self.is_toolkit_selected(group.toolkit, data[self.func_select_field]):
+                content = group.getContent()
+                param_changed = applyChanges(group, content, data)
+                new_params[group.toolkit] = content
         self.context.parameters = new_params
 
         return changed
@@ -167,33 +167,17 @@ class View(edit.DefaultEditForm):
             IStatusMessage(self.request).add(msg, type=msgtype)
         self.request.response.redirect(self.context.absolute_url())
 
-    # def render(self):
-    #     '''See interfaces.IForm'''
-    #     # render content template
-    #     import zope.component
-    #     from zope.pagetemplate.interfaces import IPageTemplate
-
-    #     if self.template is None:
-    #         template = zope.component.getMultiAdapter((self, self.request),
-    #             IPageTemplate)
-    #         return template(self)
-    #     return self.template()
-
-       # super does not work... expects different kind of template
-        # return super(View,  self).render()
-    #     template = getattr(self, 'template', None)
-    #     if template is not None:
-    #         return self.template.render(self)
-    #     return zope.publisher.publish.mapply(self.render, (), self.request)
-    # render.base_method = True
-
 
 class SDMView(ParamGroupMixin, View):
     """
     View SDM Experiment
     """
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'sdm_functions_source'
+    func_select_field = 'functions'
 
-    pass
+    def is_toolkit_selected(self, tid, data):
+        return tid in data
 
 
 class Edit(edit.DefaultEditForm):
@@ -208,8 +192,12 @@ class SDMEdit(ParamGroupMixin, Edit):
     """
     Edit SDM Experiment
     """
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'sdm_functions_source'
+    func_select_field = 'functions'
 
-    pass
+    def is_toolkit_selected(self, tid, data):
+        return tid in data
 
 
 class Add(add.DefaultAddForm):
@@ -279,17 +267,24 @@ class SDMAdd(ParamGroupMixin, Add):
 
     portal_type = "org.bccvl.content.sdmexperiment"
 
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'sdm_functions_source'
+    func_select_field = 'functions'
+
+    def is_toolkit_selected(self, tid, data):
+        return tid in data
+    
     def create(self, data):
-        # FIXME: store only selcted algos
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
         # we'll have to override it to find a place to apply our algo_group data'
         newob = super(SDMAdd, self).create(data)
         # apply values to algo dict manually to make sure we don't write data on read
         new_params = {}
         for group in self.param_groups:
-            content = group.getContent()
-            applyChanges(group, content, data)
-            new_params[group.toolkit] = content
+            if group.toolkit in data['functions']:
+                content = group.getContent()
+                applyChanges(group, content, data)
+                new_params[group.toolkit] = content
         newob.parameters = new_params
         IBCCVLMetadata(newob)['resolution'] = data['resolution']
         return newob
@@ -413,114 +408,66 @@ class EnsembleAdd(Add):
             try:
                 idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
             except:
-                # FIXME: remove this part
-                # get resolution from job_params
+                # FIXME: need faster way to order resolutions
                 idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.getObject().__parent__.job_params['resolution']))
             if idx > resolution_idx:
                 resolution_idx = idx
         data['resolution'] = res_vocab._terms[resolution_idx].value
 
 
-class SpeciesTraitsAdd(Add):
+class SpeciesTraitsView(ParamGroupMixin, View):
+    """
+    View SDM Experiment
+    """
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'traits_functions_source'
+    func_select_field = 'algorithm'
+
+    # override is_toolkit_selected
+    def is_toolkit_selected(self, tid, data):
+        return tid == data
+
+
+class SpeciesTraitsEdit(ParamGroupMixin, Edit):
+    """
+    Edit SDM Experiment
+    """
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'traits_functions_source'
+    func_select_field = 'algorithm'
+
+    # override is_toolkit_selected
+    def is_toolkit_selected(self, tid, data):
+        return tid == data
+
+
+class SpeciesTraitsAdd(ParamGroupMixin, Add):
 
     portal_type = "org.bccvl.content.speciestraitsexperiment"
 
-    # TODO: almost same as in SDMAdd
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'traits_functions_source'
+    func_select_field = 'algorithm'
+
+    # override is_toolkit_selected
+    def is_toolkit_selected(self, tid, data):
+        return tid == data
+    
     def create(self, data):
-        # FIXME: store only selcted algos
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
         # we'll have to override it to find a place to apply our algo_group data'
         newob = super(SpeciesTraitsAdd, self).create(data)
         # apply values to algo dict manually to make sure we don't write data on read
         new_params = {}
         for group in self.param_groups:
-            content = group.getContent()
-            applyChanges(group, content, data)
-            new_params[group.toolkit] = content
+            if group.toolkit == data['algorithm']:
+                content = group.getContent()
+                applyChanges(group, content, data)
+                new_params[group.toolkit] = content
         newob.parameters = new_params
         return newob
-
-    # TODO: deprecate once data mover/manager API is finished?
-    #template = ViewPageTemplateFile("experiment_traitsadd.pt")
 
     def validateAction(self, data):
         # TODO: check data ...
         pass
 
-    # TODO: all below here is almost like ParmsGroupMixin ->merge
-    param_groups = ()
-
-    def addAlgorithmFields(self):
-        groups = []
-        # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
-        func_vocab = getUtility(IVocabularyFactory, name='traits_functions_source')
-        algorithm = getattr(self.context, 'algorithm', None) or ()
-        for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
-            if self.mode == DISPLAY_MODE and toolkit.UID() != algorithm:
-                # filter out unused algorithms in display mode
-                continue
-            # FIXME: need to cache
-            try:
-                # FIXME: do some caching here
-                parameters_model = loadString(toolkit.schema)
-            except Exception as e:
-                LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
-                continue
-
-            parameters_schema = parameters_model.schema
-
-            param_group = ExperimentParamGroup(
-                self.context,
-                self.request,
-                self)
-            param_group.__name__ = "parameters_{}".format(toolkit.UID())
-            #param_group.prefix = ''+ form.prefix?
-            param_group.toolkit = toolkit.UID()
-            param_group.schema = parameters_schema
-            #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
-            #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
-            param_group.label = u"configuration for {}".format(toolkit.title)
-            if len(parameters_schema.names()) == 0:
-                param_group.description = u"No configuration options"
-            groups.append(param_group)
-
-        self.param_groups = groups
-
-    def updateFields(self):
-        super(SpeciesTraitsAdd, self).updateFields()
-        self.addAlgorithmFields()
-
-    def updateWidgets(self):
-        super(SpeciesTraitsAdd, self).updateWidgets()
-        # update groups here
-        for group in self.param_groups:
-            try:
-                group.update()
-            except Exception as e:
-                LOG.info("Group %s failed: %s", group.__name__, e)
-        # should group generation happen here in updateFields or in update?
-
-    def extractData(self, setErrors=True):
-        data, errors = super(SpeciesTraitsAdd, self).extractData(setErrors)
-        for group in self.param_groups:
-            groupData, groupErrors = group.extractData(setErrors=setErrors)
-            data.update(groupData)
-            if groupErrors:
-                if errors:
-                    errors += groupErrors
-                else:
-                    errors = groupErrors
-        return data, errors
-
-    def applyChanges(self, data):
-        # FIXME: store only selected algos
-        changed = super(SpeciesTraitsAdd, self).applyChanges(data)
-        # apply algo params:
-        new_params = {}
-        for group in self.param_groups:
-            content = group.getContent()
-            param_changed = applyChanges(group, content, data)
-            new_params[group.toolkit] = content
-        self.context.parameters = new_params
-
-        return changed
