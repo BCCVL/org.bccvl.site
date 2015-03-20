@@ -116,6 +116,11 @@ class JobTracker(object):
         0  if state1 == state2
         1  if state1 > state2
         """
+        if any(map(lambda x: x is None, [state1,state2])):
+            if all(map(lambda x: x is None, [state1,state2])):
+                return 0
+            return -1 if state1 is None else 1
+        
         # TODO: may raise ValueError if state not in list
         idx1 = self._states.index(state1)
         idx2 = self._states.index(state2)
