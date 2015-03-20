@@ -39,7 +39,8 @@ class DatasetRemoveView(form.Form):
         title = self.context.Title()
         parent = aq_parent(aq_inner(self.context))
         ## removed file working on frontend Javascript
-        self.context.file = None
+        if hasattr(self.context, "file"):
+            self.context.file = None
         jt = IJobTracker(self.context)
         jt.state = 'REMOVED'
         self.context.reindexObject()
