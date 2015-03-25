@@ -32,7 +32,6 @@ class DashboardView(BrowserView):
             sort_order='descending',
         )[:3]
 
-
     def newest_experiments(self):
         return self.pc.searchResults(
             path='/'.join(self.portal[defaults.EXPERIMENTS_FOLDER_ID].getPhysicalPath()),
@@ -43,13 +42,12 @@ class DashboardView(BrowserView):
         )[:3]
 
     def get_state_css(self, brain):
+        css_map = {
+            None: 'success',
+            'COMPLETED': 'success',
+            'FAILED': 'error',
+            'REMOVED': 'removed'
+        }
         # check job_state and return either success, error or block
         job_state = IJobTracker(brain.getObject()).state
-        if job_state in ('COMPLETED', None):
-            return "success"
-        if job_state == 'FAILED':
-            return "error"
-        if job_state == 'REMOVED':
-            return "removed"
-        # everything else can only be in progress
-        return "info"
+        return css_map.get(job_state, 'info')
