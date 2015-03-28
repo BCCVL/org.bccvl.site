@@ -407,6 +407,22 @@ def migrate_to_bccvlmetadata(context, logger):
             md['layers'][frag] = md['layers'][key]
             del md['layers'][key]
 
+    # if datagenre is not Current or Future Climate, we need layers_used instead of layers
+    # applies to at least DataGenreSDMModel, DataGenreClampingMask, DataGenreFP, DataGenreCP
+    if md.get('layers') and not all(l for l in md.get('layers').values()):
+        # Fix up 'layers' vs. 'layers_used'
+        layers_used = []
+        for lid, lval in md.get('layers').items():
+            if not lval:
+                layers_used.append(lid)
+        # remove keys from dict
+        map(lambda k: md['layers'].pop(k), layers_used)
+        # set new layers_used key
+        md['layers_used'] = tuple(layers_used)
+        # remove 'layers' key entirely if empty
+        if not md['layers']:
+            del md['layers']
+
     # convert raster metadata directly on object
     extract_raster_metadata(res, md, None)
 

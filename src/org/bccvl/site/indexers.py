@@ -43,7 +43,12 @@ def BCCExperimentResolution(object, **kw):
 
 @indexer(IDataset)
 def dataset_environmental_layer(object, **kw):
-    layers = IBCCVLMetadata(object).get('layers')
+    md = IBCCVLMetadata(object)
+    # if we have 'layers_used' index it
+    if 'layers_used' in md:
+        return md['layers_used']
+    # otherwise index list of layers provided by dataset
+    layers = md.get('layers')
     if layers:
         return layers.keys()
     return None
