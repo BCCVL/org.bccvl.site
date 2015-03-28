@@ -431,8 +431,15 @@ class EnsembleJobTracker(MultiJobTracker):
                 title=title)
 
             # build job_params and store on result
+            # FIXME: probably should split ensemble jobs based on resolution
+            #        for now pick first one to make result import work
+            #        datasets is dict with expkey and list of datasets...
+            #           can probably get resolution from exp or ds
+            dsid = self.context.datasets.values()[0][0]
+            dsmd = IBCCVLMetadata(uuidToObject(dsid))
             result.job_params = {
-                'datasets': list(chain.from_iterable(self.context.datasets.values()))
+                'datasets': list(chain.from_iterable(self.context.datasets.values())),
+                'resolution': dsmd['resolution']
             }
 
             # submit job to queue
