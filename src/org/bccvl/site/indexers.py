@@ -8,6 +8,7 @@ from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
+from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from gu.z3cform.rdf.utils import Period
 
