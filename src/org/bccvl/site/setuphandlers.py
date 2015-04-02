@@ -619,6 +619,7 @@ def upgrade_170_180_1(context, logger=None):
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')    
 
     # migrate rdf metadata
     pc = getToolByName(context, 'portal_catalog')
