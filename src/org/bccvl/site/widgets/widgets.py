@@ -1,15 +1,17 @@
 from decimal import Decimal
 from zope.component import getMultiAdapter, getUtility
-from zope.interface import implementer
+from zope.interface import implementer, implementer_only
 from zope.schema.interfaces import (ITitledTokenizedTerm,
                                     IVocabularyFactory)
 from z3c.form import util
 from z3c.form.interfaces import (IFieldWidget, NO_VALUE)
 from z3c.form.widget import FieldWidget, Widget, SequenceWidget
+from z3c.form.browser.checkbox import CheckBoxWidget
 from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
                                      addFieldClass)
 from zope.i18n import translate
 from .interfaces import (IDatasetLayersWidget, IDatasetWidget,
+                         IFunctionsWidget,
                          IExperimentSDMWidget,
                          IFutureDatasetsWidget,
                          IExperimentResultWidget,
@@ -31,6 +33,49 @@ JS_WRAPPER = u"""//<![CDATA[
 //]]>"""
 
 JS_WRAPPER_ADAPTER = lambda req, widget: JS_WRAPPER
+
+
+@implementer_only(IFunctionsWidget)
+class FunctionsWidget(HTMLInputWidget, SequenceWidget):
+    """
+    This is an updated standard CheckBoxWidget with proper handling of 
+    item list generation. It derives from ICheckBoxWidget as well to allow
+    re-use of the standard check box widget templates.
+    (Having this extra class allows to use special templates for functions field)
+    """
+
+    klass = u'checkbox-widget'
+    css = u'checkbox'
+
+    def isChecked(self, term):
+        return term.token in self.value
+    
+    def update(self):
+        super(FunctionsWidget, self).update()
+        addFieldClass(self)
+        
+    def items(self):
+        # TODO: check if we should cache the return list
+        if self.terms is None:  # update() not yet called
+            return ()
+        items = []
+        for count, term in enumerate(self.terms):
+            checked = self.isChecked(term)
+            id = '%s-%i' % (self.id, count)
+            if ITitledTokenizedTerm.providedBy(term):
+                label = translate(term.title, context=self.request,
+                                  default=term.title)
+            else:
+                label = util.toUnicode(term.value)
+            items.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
+                   'label':label, 'checked': checked,
+                   'subject': term.brain.Subject})
+        return items
+
+
+@implementer(IFieldWidget)
+def FunctionsFieldWidget(field, request):
+    return FieldWidget(field, FunctionsWidget(request))
 
 
 @implementer(IDatasetWidget)

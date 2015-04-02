@@ -3,17 +3,18 @@ from plone.directives import form
 from plone.namedfile.field import NamedBlobFile
 from plone.app.textfield import RichText as RichTextField
 from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text, Set
-from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from z3c.form.browser.radio import RadioFieldWidget
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
 # FIXME: remove form hints here and put them into special form schemata?
+from org.bccvl.site.widgets.widgets import FunctionsFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetLayersFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultFieldWidget
 from org.bccvl.site.widgets.widgets import FutureDatasetsFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultProjectionFieldWidget
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
 
 class IDataset(form.Schema):
@@ -54,7 +55,7 @@ class IExperiment(Interface):
 
 class ISDMExperiment(IExperiment):
 
-    form.widget(functions=CheckBoxFieldWidget)
+    form.widget('functions', FunctionsFieldWidget)
     functions = List(
         title=u'Algorithm',
         value_type=Choice(vocabulary='sdm_functions_source'),

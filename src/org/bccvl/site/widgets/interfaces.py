@@ -1,5 +1,10 @@
 from zope.interface import Interface
-from z3c.form.interfaces import IWidget
+from z3c.form.interfaces import IWidget, ICheckBoxWidget
+
+
+class IFunctionsWidget(ICheckBoxWidget):
+
+    pass
 
 
 class IDatasetWidget(IWidget):
