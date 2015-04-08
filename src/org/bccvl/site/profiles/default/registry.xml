@@ -140,17 +140,6 @@
       <element key="Folder">plone.content.folderView</element>
     </value>
   </record>
-  <!-- dexterity.membrane settings -->
-  <record name="dexterity.membrane.behavior.settings.IDexterityMembraneSettings.use_email_as_username">
-    <field type="plone.registry.field.Bool">
-    </field>
-    <value>False</value>
-  </record>
-  <record name="dexterity.membrane.behavior.settings.IDexterityMembraneSettings.use_uuid_as_userid">
-    <field type="plone.registry.field.Bool">
-    </field>
-    <value>False</value>
-  </record>
 
   <!-- <record name="plone.app.folderui.facet.Creator.description" interface="plone.app.folderui.interfaces.ICatalogFilterConfig" field="description"> -->
   <!--   <field type="plone.registry.field.TextLine"> -->

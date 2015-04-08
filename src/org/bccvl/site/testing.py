@@ -80,7 +80,6 @@ class BCCVLLayer(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         # load ZCML and use z2.installProduct here
         self.loadZCML('testing.zcml', package=org.bccvl.site.tests)
-        z2.installProduct(app, 'Products.membrane')
         z2.installProduct(app, 'plone.app.folderui')
         z2.installProduct(app, 'Products.DateRecurringIndex')
 
@@ -114,7 +113,6 @@ class BCCVLLayer(PloneSandboxLayer):
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'Products.DateRecurringIndex')
         z2.uninstallProduct(app, 'plone.app.folderui')
-        z2.uninstallProduct(app, 'Products.membrane')
 
     def addTestContent(self, portal):
         transmogrifier = Transmogrifier(portal)

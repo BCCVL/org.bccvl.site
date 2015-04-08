@@ -50,7 +50,6 @@ setup(
         #'collective.deletepermission', careful it interfers with delete buttons when not activated
         #'collective.z3cform.chosen',
         'plone.app.folderui',
-        'dexterity.membrane',
         'borg.localrole',
         'plone.app.contenttypes',
         'decorator',
@@ -82,7 +81,9 @@ setup(
         'test': ['plone.app.testing',
                  'unittest2'],
         'deprecated':  ['gu.repository.content',
-                        'gu.plone.rdf'],
+                        'gu.plone.rdf',
+                        'dexterity.membrane',
+                        ],
         'experimental': ['eea.facetednavigation']
     },
 

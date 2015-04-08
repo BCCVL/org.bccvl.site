@@ -1,7 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="org.bccvl"
     >
 
@@ -38,20 +37,6 @@
       name="edit"
       class=".dataset_edit.DatasetEditView"
       permission="cmf.ModifyPortalContent"
-      />
-
-
-  <!-- User and Group content objects -->
-  <adapter factory=".user.NameFromFullName" />
-
-  <adapter factory=".user.BCCVLUserProperties" />
-
-  <genericsetup:registerProfile
-      name="content"
-      title="BCCVL User / Group content"
-      description="BCCVL User and Group content types"
-      directory="../profiles/content"
-      provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
 </configure>

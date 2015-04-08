@@ -690,6 +690,31 @@ def upgrade_170_180_1(context, logger=None):
             exp.projection = newproj
 
         exp.reindexObject()
+
+    ###########################
+    # uninstall all membrane related things    
+    # workflows: bccvl_membrane_workflow (assigned to user and group)
+    wft = getToolByName(context, 'portal_workflow')
+    for wfid in ('bccvl_membrane_workflow'):
+        if wfid in wft:
+            del wft[wfid]
+    # types: org.bccvl.content.user, org.bccvl.content.group
+    pt = getToolByName(context, 'portal_types')
+    for ptid in ('org.bccvl.content.user', 'org.bccvl.content.group'):
+        if ptid in pt:
+            del pt[ptid]
+    # dexterity membrane -> run uninstall step (registry, controlpanel portal_controlpanel )
+    # products membrane -> run uninstall step (membrane_tool)
+    #                      pas plugins?
+    qs = getToolByName(context, 'portal_quickinstaller')
+    qs.uninstallProducts(['dexterity.membrane', 'membrane'])
+    # pas plugins from Products.Membrane
+    acl = portal.acl_users
+    for pasid in ('membrane_groups', 'membrane_properties',
+                  'membrane_roles', 'membrane_user_factory',
+                  'membrane_users'):
+        if pasid in acl:
+            del acl['pasid']
     # FIXME: need to reindex at least object_provides (empty / index)
     # FIXME: sdm layer reindex (and probably other metadata)
 

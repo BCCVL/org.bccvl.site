@@ -8,7 +8,6 @@
         <dependency>profile-collective.quickupload:default</dependency>
         <!-- <dependency>profile-collective.z3cform.colorpicker:default</dependency> -->
         <dependency>profile-collective.z3cform.widgets:default</dependency>
-        <dependency>profile-dexterity.membrane:default</dependency>
         <dependency>profile-plone.app.contenttypes:default</dependency>
 
         <!-- <dependency>profile-atreal.richfile.metadata:default</dependency> -->
@@ -26,8 +25,6 @@
         <!-- <dependency>profile-collective.geo.geographer:default</dependency> -->
         <!-- <dependency>profile-collective.geo.contentlocations:default</dependency> -->
         <dependency>profile-plone.app.folderui:default</dependency>
-
-        <dependency>profile-org.bccvl.site.content:content</dependency>
         <dependency>profile-plone.app.caching:default</dependency>
         <dependency>profile-plone.app.caching:with-caching-proxy-splitviews</dependency>
 
