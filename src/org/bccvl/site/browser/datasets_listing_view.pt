@@ -103,6 +103,7 @@
                      toLocalizedTime nocall: context/@@plone/toLocalizedTime;
                      site_properties context/portal_properties/site_properties;
                      isAnon context/@@plone_portal_state/anonymous;
+                     dataset_tools nocall:context/@@dataset_tools;
                      show_about python:not isAnon or site_properties.allowAnonymousViewAbout;">
       <div class="alert" tal:condition="not: batch">
         <p>No matches found</p>
