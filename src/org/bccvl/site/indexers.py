@@ -73,7 +73,11 @@ class JobStateIndexer(object):
                 # let's check if we have a file
                 if self.context.file is not None:
                     state = 'COMPLETED'
+                else:
+                    state = 'FAILED'
             elif IRemoteDataset.providedBy(self.context):
                 if self.context.remoteUrl:
                     state = 'COMPLETED'
+                else:
+                    state = 'FAILED'
         return state
