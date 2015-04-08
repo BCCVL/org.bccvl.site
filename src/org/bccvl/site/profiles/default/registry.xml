@@ -485,403 +485,403 @@
       <element>
         <element key="value">B05</element>
         <element key="title">B05 - Max Temperature of Warmest Month</element>
-        <element key="unit">"degrees C * 10"</element>
+        <element key="unit">degrees C * 10"</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B06</element>
         <element key="title">B06 - Min Temperature of Coldest Month</element>
-        <element key="unit">"degrees C * 10</element>
+        <element key="unit">degrees C * 10</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B07</element>
         <element key="title">B07 - Temperature Annual Range (BIO5-BIO6)</element>
-        <element key="unit">"degrees C * 10</element>
+        <element key="unit">degrees C * 10</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B08</element>
         <element key="title">B08 - Mean Temperature of Wettest Quarter</element>
-        <element key="unit">"degrees C * 10</element>
+        <element key="unit">degrees C * 10</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B09</element>
         <element key="title">B09 - Mean Temperature of Driest Quarter</element>
-        <element key="unit">"degrees C * 10</element>
+        <element key="unit">degrees C * 10</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B10</element>
-        <element key="title">"B10 - Mean Temperature of Warmest Quarter</element>
-        <element key="unit">"degrees C * 10</element>
+        <element key="title">B10 - Mean Temperature of Warmest Quarter</element>
+        <element key="unit">degrees C * 10</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B11</element>
-        <element key="title">"B11 - Mean Temperature of Coldest Quarter</element>
-        <element key="unit">"degrees C * 10</element>
+        <element key="title">B11 - Mean Temperature of Coldest Quarter</element>
+        <element key="unit">degrees C * 10</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B12</element>
-        <element key="title">"B12 - Annual Precipitation</element>
-        <element key="unit">"mm</element>
+        <element key="title">B12 - Annual Precipitation</element>
+        <element key="unit">mm</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B13</element>
-        <element key="title">"B13 - Precipitation of Wettest Month</element>
-        <element key="unit">"mm</element>
+        <element key="title">B13 - Precipitation of Wettest Month</element>
+        <element key="unit">mm</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B14</element>
-        <element key="title">"B14 - Precipitation of Driest Month</element>
-        <element key="unit">"mm</element>
+        <element key="title">B14 - Precipitation of Driest Month</element>
+        <element key="unit">mm</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B15</element>
-        <element key="title">"B15 - Precipitation Seasonality (Coefficient of Variation)</element>
-        <element key="unit">"dimensionless</element>
+        <element key="title">B15 - Precipitation Seasonality (Coefficient of Variation)</element>
+        <element key="unit">dimensionless</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B16</element>
-        <element key="title">"B16 - Precipitation of Wettest Quarter</element>
-        <element key="unit">"mm</element>
+        <element key="title">B16 - Precipitation of Wettest Quarter</element>
+        <element key="unit">mm</element>
          <element key="color">default</element>
       </element>
       <element>
         <element key="value">B17</element>
-        <element key="title">"B17 - Precipitation of Driest Quarter</element>
-        <element key="unit">"mm</element>
+        <element key="title">B17 - Precipitation of Driest Quarter</element>
+        <element key="unit">mm</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B18</element>
-        <element key="title">"B18 - Precipitation of Warmest Quarter</element>
-        <element key="unit">"mm</element>
+        <element key="title">B18 - Precipitation of Warmest Quarter</element>
+        <element key="unit">mm</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">B19</element>
-        <element key="title">"B19 - Precipitation of Coldest Quarter</element>
-        <element key="unit">"mm</element>
+        <element key="title">B19 - Precipitation of Coldest Quarter</element>
+        <element key="unit">mm</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">clay30</element>
-        <element key="title">"Clay content percentage 0-30 cm</element>
-        <element key="unit">"%</element>
+        <element key="title">Clay content percentage 0-30 cm</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">bd30</element>
-        <element key="title">"Bulk density 0-30 cm</element>
-        <element key="unit">"Mg/m3</element>
+        <element key="title">Bulk density 0-30 cm</element>
+        <element key="unit">Mg/m3</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ph_0_30</element>
-        <element key="title">"pH (Calcium Chloride 1:5) 0-30cm</element>
-        <element key="unit">"pH</element>
+        <element key="title">pH (Calcium Chloride 1:5) 0-30cm</element>
+        <element key="unit">pH</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pawc_1m</element>
-        <element key="title">"Plant available water capacity 0-1 m</element>
-        <element key="unit">"mm</element>
+        <element key="title">Plant available water capacity 0-1 m</element>
+        <element key="unit">mm</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">asc</element>
-        <element key="title">"Australian Soil Classification</element>
-        <element key="unit">"Soil class</element>
+        <element key="title">Australian Soil Classification</element>
+        <element key="unit">Soil class</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">vastgridv2_1k</element>
-        <element key="title">"National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008</element>
-        <element key="unit">"VAST classification</element>
+        <element key="title">National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008</element>
+        <element key="unit">VAST classification</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">multi_res_ridge_top_flat</element>
-        <element key="title">"Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)</element>
-        <element key="unit">"dimensionless</element>
+        <element key="title">Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)</element>
+        <element key="unit">dimensionless</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">multi_res_valley_bottom_flat</element>
-        <element key="title">"Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)</element>
-        <element key="unit">"dimensionless</element>
+        <element key="title">Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)</element>
+        <element key="unit">dimensionless</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">mth_FWDis</element>
-        <element key="title">"Monthly Local Discharge (Runoff+Drainage)</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Monthly Local Discharge (Runoff+Drainage)</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_mth_FWDis</element>
-        <element key="title">"Monthly Local Discharge (Runoff+Drainage) (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Monthly Local Discharge (Runoff+Drainage) (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_FWDis</element>
-        <element key="title">"Annual Local Discharge (Runoff+Drainage)</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Local Discharge (Runoff+Drainage)</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWDis</element>
-        <element key="title">"Annual Local Discharge (Runoff+Drainage) (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Local Discharge (Runoff+Drainage) (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_FWE</element>
-        <element key="title">"Annual Total Evaporation (Soil+Vegetation)</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Total Evaporation (Soil+Vegetation)</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWE</element>
-        <element key="title">"Annual Total Evaporation (Soil+Vegetation) (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Total Evaporation (Soil+Vegetation) (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_FWLch2</element>
-        <element key="title">"Annual Deep Drainage</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Deep Drainage</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWLch2</element>
-        <element key="title">"Annual Deep Drainage (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Deep Drainage (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_FWPT</element>
-        <element key="title">"Annual Potential Evaporation</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Potential Evaporation</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWPT</element>
-        <element key="title">"Annual Potential Evaporation (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Potential Evaporation (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_FWRun</element>
-        <element key="title">"Annual Surface Runoff</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Surface Runoff</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWRun</element>
-        <element key="title">"Annual Surface Runoff (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Surface Runoff (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_FWSoil</element>
-        <element key="title">"Annual Soil Evaporation</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Soil Evaporation</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWSoil</element>
-        <element key="title">"Annual Soil Evaporation (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Soil Evaporation (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_FWTra</element>
-        <element key="title">"Annual Total Transpiration</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Total Transpiration</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWTra</element>
-        <element key="title">"Annual Total Transpiration (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Total Transpiration (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_FWWater</element>
-        <element key="title">"Annual Open Water Evaporation ('pan' equiv)</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Open Water Evaporation ('pan' equiv)</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWWater</element>
-        <element key="title">"Annual Open Water Evaporation ('pan' equiv) (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Open Water Evaporation ('pan' equiv) (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_PhiE</element>
-        <element key="title">"Annual Daily Latent Heat Flux</element>
-        <element key="unit">"W/m^2</element>
+        <element key="title">Annual Daily Latent Heat Flux</element>
+        <element key="unit">W/m^2</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_PhiE</element>
-        <element key="title">"Annual Daily Latent Heat Flux (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Daily Latent Heat Flux (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_PhiH</element>
-        <element key="title">"Annual Daily Sensible Heat Flux</element>
-        <element key="unit">"W/m^2</element>
+        <element key="title">Annual Daily Sensible Heat Flux</element>
+        <element key="unit">W/m^2</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_PhiH</element>
-        <element key="title">"Annual Daily Sensible Heat Flux (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Daily Sensible Heat Flux (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_SolarMJ</element>
-        <element key="title">"Annual Incident solar radiation</element>
-        <element key="unit">"MJ/m^2/d</element>
+        <element key="title">Annual Incident solar radiation</element>
+        <element key="unit">MJ/m^2/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_SolarMJ</element>
-        <element key="title">"Annual Incident solar radiation (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Incident solar radiation (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_TempMax</element>
-        <element key="title">"Annual Daily maximum temperature</element>
-        <element key="unit">"degC</element>
+        <element key="title">Annual Daily maximum temperature</element>
+        <element key="unit">degC</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_TempMax</element>
-        <element key="title">"Annual Daily maximum temperature (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Daily maximum temperature (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_TempMin</element>
-        <element key="title">"Daily minimum temperature</element>
-        <element key="unit">"degC</element>
+        <element key="title">Daily minimum temperature</element>
+        <element key="unit">degC</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_TempMin</element>
-        <element key="title">"Daily minimum temperature (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Daily minimum temperature (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_WRel1</element>
-        <element key="title">"Annual Relative Soil Moisture (Upper Layer)</element>
-        <element key="unit">"Fraction (0-1)</element>
+        <element key="title">Annual Relative Soil Moisture (Upper Layer)</element>
+        <element key="unit">Fraction (0-1)</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel1</element>
-        <element key="title">"Annual Relative Soil Moisture (Upper Layer) (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Relative Soil Moisture (Upper Layer) (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_WRel1End</element>
-        <element key="title">"Annual Relative Soil Moisture (Upper Layer) at end of aggregation period</element>
-        <element key="unit">"Fraction (0-1)</element>
+        <element key="title">Annual Relative Soil Moisture (Upper Layer) at end of aggregation period</element>
+        <element key="unit">Fraction (0-1)</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel1End</element>
-        <element key="title">"Annual Relative Soil Moisture (Upper Layer) at end of aggregation period (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Relative Soil Moisture (Upper Layer) at end of aggregation period (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_WRel2</element>
-        <element key="title">"Annual Relative Soil Moisture (Lower Layer)</element>
-        <element key="unit">"Fraction (0-1)</element>
+        <element key="title">Annual Relative Soil Moisture (Lower Layer)</element>
+        <element key="unit">Fraction (0-1)</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel2</element>
-        <element key="title">"Annual Relative Soil Moisture (Lower Layer) (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Relative Soil Moisture (Lower Layer) (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_WRel2End</element>
-        <element key="title">"Annual Relative Soil Moisture (Lower Layer) at end of aggregation period</element>
-        <element key="unit">"Fraction (0-1)</element>
+        <element key="title">Annual Relative Soil Moisture (Lower Layer) at end of aggregation period</element>
+        <element key="unit">Fraction (0-1)</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel2End</element>
-        <element key="title">"Annual Relative Soil Moisture (Lower Layer) at end of aggregation period (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Relative Soil Moisture (Lower Layer) at end of aggregation period (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ann_Precip</element>
-        <element key="title">"Annual Precipitation</element>
-        <element key="unit">"mm/d</element>
+        <element key="title">Annual Precipitation</element>
+        <element key="unit">mm/d</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pcr_ann_Precip</element>
-        <element key="title">"Annual Relative Precipitation (Percentile Rank Data)</element>
-        <element key="unit">"%</element>
+        <element key="title">Annual Relative Precipitation (Percentile Rank Data)</element>
+        <element key="unit">%</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">DLCDv1_Class</element>
-        <element key="title">"Dynamic Land Cover Classification</element>
-        <element key="unit">"class</element>
+        <element key="title">Dynamic Land Cover Classification</element>
+        <element key="unit">class</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">trend_evi_max</element>
-        <element key="title">"Max Annual Enhanced Vegetation Index (EVI) trend</element>
-        <element key="unit">"dimensionless</element>
+        <element key="title">Max Annual Enhanced Vegetation Index (EVI) trend</element>
+        <element key="unit">dimensionless</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">trend_evi_min</element>
-        <element key="title">"Min Annual Enhanced Vegetation Index (EVI) trend</element>
-        <element key="unit">"dimensionless</element>
+        <element key="title">Min Annual Enhanced Vegetation Index (EVI) trend</element>
+        <element key="unit">dimensionless</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">trend_evi_mean</element>
-        <element key="title">"Mean Annual Enhanced Vegetation Index (EVI) trend</element>
-        <element key="unit">"dimensionless</element>
+        <element key="title">Mean Annual Enhanced Vegetation Index (EVI) trend</element>
+        <element key="unit">dimensionless</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">ai_yr</element>
-        <element key="title">"Global Aridity - Annual</element>
-        <element key="unit">"Aridity Index</element>
+        <element key="title">Global Aridity - Annual</element>
+        <element key="unit">Aridity Index</element>
         <element key="color">default</element>
       </element>
       <element>
         <element key="value">pet_he_yr</element>
-        <element key="title">"Global Potential Evapo-Transpiration (PET) - Annual</element>
-        <element key="unit">"mm/year</element>
+        <element key="title">Global Potential Evapo-Transpiration (PET) - Annual</element>
+        <element key="unit">mm/year</element>
         <element key="color">default</element>
       </element>
     </value>
