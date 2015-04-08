@@ -14,7 +14,7 @@ from plone.app.testing import SITE_OWNER_PASSWORD
 from zope.component import getMultiAdapter
 
 from org.bccvl.site import defaults
-from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from org.bccvl.site.testing import (BCCVL_INTEGRATION_TESTING,
                                     BCCVL_FUNCTIONAL_TESTING)
 
@@ -180,7 +180,8 @@ class ExperimentAddTest(unittest.TestCase):
         })
         form.update()
         # resolution should be set to the lowest of selected datasets
-        self.assertEqual(self.experiments['my-experiment'].resolution, 'Resolution2_5m')
+        expmd = IBCCVLMetadata(self.experiments['my-experiment'])
+        self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
 class ExperimentViewTest(unittest.TestCase):

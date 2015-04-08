@@ -193,7 +193,7 @@ class TestDatasetTools(unittest.TestCase):
     def test_genre_vocab(self):
         view = self.getview()
         data = view.genre_vocab
-        self.assertEqual(len(data), 7)
+        self.assertEqual(len(data), 8)
         item = next(iter(data))
         self.assertEqual(item.title, 'Species Occurrence')
         self.assertEqual(item.value, 'DataGenreSpeciesOccurrence')
@@ -393,7 +393,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(layermd['datatype'], 'continuous')
         self.assertEqual(layermd['height'], 200)
         self.assertEqual(layermd['width'], 200)
-        self.assertEqual(layermd['srs'], 'None:None')
+        self.assertEqual(layermd['srs'], None)
 
     def test_upload_zip(self):
         # upload a zip in bccvl bagit format
@@ -444,7 +444,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(layermd['datatype'], 'continuous')
         self.assertEqual(layermd['height'], 200)
         self.assertEqual(layermd['width'], 200)
-        self.assertEqual(layermd['srs'], 'None:None')
+        self.assertEqual(layermd['srs'], None)
         layermd = md['layers']['spc_obl_merc/data/spc_obl_merc_2.tif']
         self.assertEqual(layermd['filename'], 'spc_obl_merc/data/spc_obl_merc_2.tif')
         self.assertEqual(layermd['min'], 19.0)
@@ -452,7 +452,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(layermd['datatype'], 'continuous')
         self.assertEqual(layermd['height'], 200)
         self.assertEqual(layermd['width'], 200)
-        self.assertEqual(layermd['srs'], 'None:None')
+        self.assertEqual(layermd['srs'], None)
 
 # TODO: test upload raster file with RAT
 

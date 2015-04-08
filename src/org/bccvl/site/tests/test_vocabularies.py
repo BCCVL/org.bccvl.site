@@ -205,4 +205,4 @@ class GenreSourceTest(unittest.TestCase):
         self.assertIn(u'DataGenreE', source)
         term = source.getTerm(u'DataGenreE')
         self.assertEqual(term.value, u'DataGenreE')
-        self.assertEqual(len(source), 27)
+        self.assertEqual(len(source), 28)
