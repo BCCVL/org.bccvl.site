@@ -1,6 +1,5 @@
 import tempfile
 import os.path
-import time
 from zope.interface import provider
 from plone import api
 from org.bccvl.site.interfaces import IComputeMethod
@@ -22,7 +21,6 @@ def testjob(params, context):
             f = open(os.path.join(tmpdir, fname), 'w')
             f.write(str(range(1, 10)))
             f.close()
-            time.sleep(1)
         # 3. store results
         # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
         import_result(params, context)
