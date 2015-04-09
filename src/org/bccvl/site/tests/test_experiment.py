@@ -2,7 +2,6 @@ import unittest2 as unittest
 from urlparse import urljoin
 import re
 import time
-from itertools import chain
 import transaction
 
 from zope.component import createObject
@@ -11,27 +10,14 @@ from zope.component import queryUtility
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import SITE_OWNER_PASSWORD
 
-from zope.component import getMultiAdapter
-
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from org.bccvl.site.testing import (BCCVL_INTEGRATION_TESTING,
                                     BCCVL_FUNCTIONAL_TESTING)
+from org.bccvl.site.tests.utils import TestRequest, SDMExperimentHelper, ProjectionExperimentHelper
 
 
-from zope.interface import alsoProvides, implementer
-from plone.app.z3cform.interfaces import IPloneFormLayer
-from zope.publisher.browser import TestRequest as TestRequestBase
-from zope.annotation.interfaces import IAttributeAnnotatable
 
-
-@implementer(IPloneFormLayer, IAttributeAnnotatable)
-class TestRequest(TestRequestBase):
-    """Zope 3's TestRequest doesn't support item assignment, but Zope 2's
-    request does.
-    """
-    def __setitem__(self, key, value):
-        pass
 
 
 # do somebrowser testing here:
@@ -40,7 +26,7 @@ class TestRequest(TestRequestBase):
 # - check view page for elements
 # - see plone.app.contenttypes browser tests for how to
 
-class ExperimentAddTest(unittest.TestCase):
+class ExperimentSDMAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
     layer = BCCVL_FUNCTIONAL_TESTING
@@ -50,55 +36,11 @@ class ExperimentAddTest(unittest.TestCase):
     def setUp(self):
         self.portal = self.layer['portal']
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
-        # get some dataset shortcuts
-        self.algorithm = self.portal[defaults.TOOLKITS_FOLDER_ID]['bioclim']
         self.datasets = self.portal[defaults.DATASETS_FOLDER_ID]
-        abt = self.datasets[defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']
-        self.occur = abt['occurrence.csv']
-        self.absen = abt['absence.csv']
-        self.current = self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
-
-    def get_form(self):
-        """
-        fill out common stuff when creating a new experiment
-        """
-        # setup request layer
-        self.request = TestRequest()
-        # get add view
-        form = getMultiAdapter((self.experiments, self.request),
-                               name="newSpeciesDistribution")
-        # update the form once to initialise all widgets
-        form.update()
-        # go through all widgets on the form  and update the request with default values
-        data = {}
-        for widget in chain(
-                form.widgets.values(),
-                # skip standard plone groups
-                #chain.from_iterable(g.widgets.values() for g in form.groups),
-                chain.from_iterable(g.widgets.values() for g in form.param_groups)):
-            data[widget.name] = widget.value
-        data.update({
-            'form.widgets.IDublinCore.title': u"My Experiment",
-            'form.widgets.IDublinCore.description': u'This is my experiment description',
-            'form.widgets.functions': [self.algorithm.UID()],  # BIOCLIM
-            'form.widgets.species_occurrence_dataset': unicode(self.occur.UID()),  # ABT
-            'form.widgets.species_absence_dataset': unicode(self.absen.UID()),
-            'form.widgets.species_absence_points': [],
-            'form.widgets.resolution': ('Resolution2_5m', ),
-            # FIXME: shouldn't be necessary to use unicode here,... widget converter should take care of it
-            'form.widgets.environmental_datasets.dataset.0': unicode(self.current.UID()),
-            'form.widgets.environmental_datasets.layer.0': u'B01',
-            'form.widgets.environmental_datasets.dataset.1': unicode(self.current.UID()),
-            'form.widgets.environmental_datasets.layer.1': u'B02',
-            'form.widgets.environmental_datasets.count': '3',
-        })
-        self.request.form.update(data)
-        form = getMultiAdapter((self.experiments, self.request),
-                               name="newSpeciesDistribution")
-        return form
+        self.form = SDMExperimentHelper(self.portal)
 
     def test_add_experiment_missing_input(self):
-        form = self.get_form()
+        form = self.form.get_form()
         # remove required field
         del form.request.form['form.widgets.IDublinCore.title']
         form.request.form.update({
@@ -112,7 +54,7 @@ class ExperimentAddTest(unittest.TestCase):
         # IStatusMessage
 
     def test_add_experiment(self):
-        form = self.get_form()
+        form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
             })
@@ -122,7 +64,7 @@ class ExperimentAddTest(unittest.TestCase):
         self.assertEqual(len(form.widgets.errors), 0)
         self.assertIn('my-experiment', self.experiments)
         exp = self.experiments['my-experiment']
-        self.assertEqual(exp.environmental_datasets.keys(), [unicode(self.current.UID())])
+        self.assertEqual(exp.environmental_datasets.keys(), [unicode(self.form.current.UID())])
         self.assertEqual(exp.environmental_datasets.values(), [set([u'B01', u'B02'])])
         # get result container: (there is only one)
         self.assertEqual(len(exp.objectIds()), 1)
@@ -140,10 +82,12 @@ class ExperimentAddTest(unittest.TestCase):
         self.assertEqual(jt.state, u'COMPLETED')
         # and we should have a result as well
         self.assertGreaterEqual(len(result.keys()), 1)
+        # TODO: assrt two result folders,....
+        # TODO: check mix of jt.state (in multistate scenario with queued, running etc. mixed)
 
     def test_run_experiment_twice(self):
         # create experiment
-        form = self.get_form()
+        form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
             })
@@ -162,16 +106,14 @@ class ExperimentAddTest(unittest.TestCase):
         # following code will fail, bceause without site we can't find
         # a catalog without whchi we can't finde the toolkit by uuid
         jt.start_job(form.request)
-        # FIXME: why is this running?
+        # FIXME: why is this running? (would a transaction abort work as well? to refresh my object?)
         self.assertEqual(jt.state, u'RUNNING')
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
-        # TODO: assrt two result folders,....
-        # TODO: check mix of jt.state (in multistate scenario with queued, running etc. mixed)
 
     def test_mixed_resolution(self):
         current_1k_uuid = unicode(self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
-        form = self.get_form()
+        form = self.form.get_form()
         form.request.form.update({
             'form.buttons.create': 'Create',
             # select 1k dataset as well
@@ -184,7 +126,114 @@ class ExperimentAddTest(unittest.TestCase):
         self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
-class ExperimentViewTest(unittest.TestCase):
+class ExperimentProjectionAddTest(unittest.TestCase):
+
+    # Use functional layer for now to get a new demostorage layer for each test
+    layer = BCCVL_FUNCTIONAL_TESTING
+    # integration testing gives only a new transaction for each test (rolled back at end)
+    #layer = BCCVL_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer['portal']
+        self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
+        self.datasets = self.portal[defaults.DATASETS_FOLDER_ID]
+        # create and run sdm experiment
+        sdmform = SDMExperimentHelper(self.portal).get_form()
+        sdmform.request.form.update({
+            'form.buttons.save': 'Create and start',
+            })
+        # update form with updated request
+        sdmform.update()
+        transaction.commit()
+        # We should have only one SDM
+        sdmexp = self.experiments.values()[0]
+        self.form = ProjectionExperimentHelper(self.portal, sdmexp)
+        # TODO: setup shortcuts suitable for CC
+        #   need 2 future datasets with different resolutions
+        #   need 2 raster datasets for input, to check fallback of non-future layer
+
+    def test_add_experiment_missing_input(self):
+        form = self.form.get_form()
+        # remove required field
+        del form.request.form['form.widgets.IDublinCore.title']
+        form.request.form.update({
+            'form.buttons.create': 'Create',
+        })
+        # submit form
+        form.update()
+        errors = [e for e in form.widgets.errors]
+        self.assertEqual(len(errors), 1)
+        # check self.experiments still empty
+        # IStatusMessage
+
+    def test_add_experiment(self):
+        form = self.form.get_form()
+        form.request.form.update({
+            'form.buttons.save': 'Create and start',
+            })
+        # update form with updated request
+        form.update()
+        self.assertEqual(form.status, u'')
+        self.assertEqual(len(form.widgets.errors), 0)
+        self.assertIn('my-cc-experiment', self.experiments)
+        exp = self.experiments['my-cc-experiment']
+        # TODO: update asserts
+        self.assertEqual(exp.future_climate_datasets, [unicode(self.form.future.UID())])
+        # FIXME: submitting with an empty model list doesn't cause form to fail
+        self.assertEqual(exp.species_distribution_models,
+                         { self.form.sdmexp.UID(): [self.form.sdmmodel.UID()] })
+
+        # get result container: (there is only one)
+        self.assertEqual(len(exp.objectIds()), 1)
+        result = exp.objectValues()[0]
+        # FIXME: test result.job_params
+        self.assertEqual(result.job_params['future_climate_datasets'],
+                         {exp.future_climate_datasets[0]: set([u'B01',
+                                                               u'B02'])})
+        self.assertEqual(result.job_params['species_distribution_models'], exp.species_distribution_models.values()[0][0])  # only one experiment so only first model
+        self.assertEqual(result.job_params['resolution'], u'Resolution30m')
+        self.assertEqual(result.job_params['emsc'], u'RCP3PD')
+        self.assertEqual(result.job_params['gcm'], u'cccma-cgcm31')
+        self.assertEqual(result.job_params['year'], u'2015')        
+        # no result files yet
+        self.assertEqual(len(result.keys()), 0)
+        # test job state
+        jt = IJobTracker(exp)
+        self.assertEqual(jt.state, u'QUEUED')
+        # after transaction commit the job should finish
+        transaction.commit()
+        self.assertEqual(jt.state, u'COMPLETED')
+        # and we should have a result as well
+        self.assertGreaterEqual(len(result.keys()), 1)
+        # TODO: check result metadata
+
+    def test_mixed_resolution(self):
+        future_1k_uuid = unicode(self.datasets[defaults.DATASETS_CLIMATE_FOLDER_ID]['future_1k'].UID())
+        form = self.form.get_form()
+        form.request.form.update({
+            'form.buttons.save': 'Create and start',
+            # select 1k dataset as well
+            'form.widgets.future_climate_datasets': [future_1k_uuid],
+        })
+        form.update()
+        # run experiment
+        transaction.commit()
+        exp = self.experiments['my-cc-experiment']
+        result = exp.values()[0]
+        expmd = IBCCVLMetadata(exp)
+        # We should have the missing layers filled by sdm env layer datasets
+        self.assertEqual(result.job_params['future_climate_datasets'],
+                         {future_1k_uuid: set([u'B01']),
+                          self.form.sdmexp.environmental_datasets.keys()[0]: set([u'B02'])})
+        # resolution should be set to the lowest of selected datasets
+        self.assertEqual(expmd['resolution'], 'Resolution2_5m')
+        
+
+# Biodiverse: ... no real validation here
+# Ensemble: ... does resolution adaption
+# SpeciesTraits: ... has toolkit sub forms
+
+class ExperimentSDMViewTest(unittest.TestCase):
 
     pass
 
