@@ -1,0 +1,17 @@
+{
+    "_type": "org.bccvl.content.dataset",
+    "title": "Future 1k",
+    "_transitions": "publish",
+    "bccvlmetadata": {
+        "genre": "DataGenreFC",
+        "resolution": "Resolution2_5m",
+        "temporal": "start=2015; end=2015; scheme=W3C-DTF;",
+        "emsc": "RCP3PD",
+        "gcm": "cccma-cgcm31",
+        "layers": {
+            "B01":{
+                "fileName": "future/data/file1.tif"
+            }
+        }
+    }
+}

@@ -109,7 +109,7 @@ class TestDatasetListing(unittest.TestCase):
         view = self.getview()
         batch = view.datasetslisting()
         # test datasets list
-        self.assertEqual(batch.length, 6)
+        self.assertEqual(batch.length, 7)
         self.assertEqual(batch.pagesize, 20)
         item = batch[0]
         self.assertEqual(item.Title, 'Future')
