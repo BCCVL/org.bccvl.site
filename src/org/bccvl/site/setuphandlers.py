@@ -709,7 +709,7 @@ def upgrade_170_180_1(context, logger=None):
     qs = getToolByName(context, 'portal_quickinstaller')
     qs.uninstallProducts(['dexterity.membrane', 'membrane'])
     # pas plugins from Products.Membrane
-    acl = portal.acl_users
+    acl = getToolByName(context, 'acl_users')
     for pasid in ('membrane_groups', 'membrane_properties',
                   'membrane_roles', 'membrane_user_factory',
                   'membrane_users'):
