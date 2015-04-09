@@ -19,6 +19,7 @@ from org.bccvl.site.tests.utils import TestRequest
 from org.bccvl.site.tests.utils import SDMExperimentHelper
 from org.bccvl.site.tests.utils import ProjectionExperimentHelper
 from org.bccvl.site.tests.utils import BiodiverseExperimentHelper
+from org.bccvl.site.tests.utils import EnsembleExperimentHelper
 
 # do somebrowser testing here:
 # 1. test new template
@@ -304,7 +305,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # TODO: check result metadata
         
 
-class ExperimentBiodiverseAddTest(unittest.TestCase):
+class ExperimentEnsembleAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
     layer = BCCVL_FUNCTIONAL_TESTING
@@ -324,7 +325,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         transaction.commit()
         # We should have only one SDM
         sdmexp = self.experiments.values()[0]
-        self.form = BiodiverseExperimentHelper(self.portal, sdmexp)
+        self.form = EnsembleExperimentHelper(self.portal, sdmexp)
 
     def test_add_experiment_missing_input(self):
         form = self.form.get_form()
@@ -349,8 +350,29 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         form.update()
         self.assertEqual(form.status, u'')
         self.assertEqual(len(form.widgets.errors), 0)
-        self.assertIn('my-bd-experiment', self.experiments)
-        exp = self.experiments['my-bd-experiment']
+        self.assertIn('my-en-experiment', self.experiments)
+        exp = self.experiments['my-en-experiment']
+        self.assertEqual(exp.datasets,
+                         {unicode(self.form.sdmexp.UID()):
+                          [unicode(self.form.sdmproj.UID())]})
+        # get result container: (there is only one)
+        self.assertEqual(len(exp.objectIds()), 1)
+        result = exp.objectValues()[0]
+        # FIXME: test result.job_params
+        self.assertEqual(result.job_params['datasets'],
+                         [unicode(self.form.sdmproj.UID())])
+        self.assertEqual(result.job_params['resolution'], u'Resolution30s')
+        # no result files yet
+        self.assertEqual(len(result.keys()), 0)
+        # test job state
+        jt = IJobTracker(exp)
+        self.assertEqual(jt.state, u'QUEUED')
+        # after transaction commit the job should finish
+        transaction.commit()
+        self.assertEqual(jt.state, u'COMPLETED')
+        # and we should have a result as well
+        self.assertGreaterEqual(len(result.keys()), 1)
+        # TODO: check result metadata
         # TODO: update asserts
         self.assertEqual(exp.projection,
                          {unicode(self.form.sdmexp.UID()):

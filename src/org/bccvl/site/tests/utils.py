@@ -6,6 +6,7 @@ from zope.publisher.browser import TestRequest as TestRequestBase
 from plone.app.z3cform.interfaces import IPloneFormLayer
 
 from org.bccvl.site import defaults
+from org.bccvl.site.content.interfaces import ISDMExperiment
 
 
 @implementer(IPloneFormLayer, IAttributeAnnotatable)
@@ -160,4 +161,44 @@ class BiodiverseExperimentHelper(object):
         form = getMultiAdapter((self.experiments, self.request),
                                name="newBiodiverse")
         return form
+
     
+class EnsembleExperimentHelper(object):
+    """
+    A helper class to configure and run a SDM experiment during testing.
+    """
+
+    def __init__(self, portal, sdmexp):
+        # configure local variables on instance
+        self.portal = portal
+        self.sdmexp = sdmexp
+        self.sdmproj = sdmexp.values()[0]['proj_test.tif']
+        self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
+
+    def get_form(self):
+        """
+        fill out common stuff when creating a new experiment
+        """
+        # setup request layer
+        self.request = TestRequest()
+        # get add view
+        form = getMultiAdapter((self.experiments, self.request),
+                               name="newEnsemble")
+        # update the form once to initialise all widgets
+        form.update()
+        # go through all widgets on the form  and update the request with default values
+        data = {}
+        for widget in form.widgets.values():
+            data[widget.name] = widget.value
+        data.update({
+            'form.widgets.IDublinCore.title': u"My EN Experiment",
+            'form.widgets.IDublinCore.description': u'This is my experiment description',
+            'form.widgets.experiment_type': ISDMExperiment.__identifier__,
+            'form.widgets.datasets.count': '1',
+            'form.widgets.datasets.experiment.0': unicode(self.sdmexp.UID()),
+            'form.widgets.datasets.dataset.0': [unicode(self.sdmproj.UID())],
+        })
+        self.request.form.update(data)
+        form = getMultiAdapter((self.experiments, self.request),
+                               name="newEnsemble")
+        return form
