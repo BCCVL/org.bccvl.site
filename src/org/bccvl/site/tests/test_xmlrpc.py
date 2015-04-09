@@ -23,6 +23,9 @@ class DatasetManagerTest(unittest.TestCase):
 
     layer = BCCVL_INTEGRATION_TESTING
 
+    def test_dummy(self):
+        pass
+
 
 class DatasetAPITest(unittest.TestCase):
 # DataSetAPI():/dm/...
