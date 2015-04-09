@@ -714,7 +714,7 @@ def upgrade_170_180_1(context, logger=None):
                   'membrane_roles', 'membrane_user_factory',
                   'membrane_users'):
         if pasid in acl:
-            del acl['pasid']
+            del acl[pasid]
     # FIXME: need to reindex at least object_provides (empty / index)
     # FIXME: sdm layer reindex (and probably other metadata)
 
