@@ -1,20 +1,23 @@
 {
-  "_type": "org.bccvl.content.dataset",
-  "title": "Future",
-  "_transitions": "publish",
-  "bccvlmetadata": {
-    "genre": "DataGenreFC",
-    "resolution": "Resolution30m",
-    "layers": {
-      "http://example.com/file01":{
-        "fileName": "future/data/file1.tif"
-      },
-      "http://example.com/file02":{
-        "fileName": "future/data/file2.tif"
-      },
-      "http://example.com/file03":{
-        "fileName": "future/data/file3.tif"
-      }
+    "_type": "org.bccvl.content.dataset",
+    "title": "Future",
+    "_transitions": "publish",
+    "bccvlmetadata": {
+        "genre": "DataGenreFC",
+        "resolution": "Resolution30m",
+        "temporal": "start=2015; end=2015; scheme=W3C-DTF;",
+        "emsc": "RCP3PD",
+        "gcm": "cccma-cgcm31",
+        "layers": {
+            "B01":{
+                "fileName": "future/data/file1.tif"
+            },
+            "B02":{
+                "fileName": "future/data/file2.tif"
+            },
+            "B03":{
+                "fileName": "future/data/file3.tif"
+            }
+        }
     }
-  }
 }
