@@ -202,3 +202,49 @@ class EnsembleExperimentHelper(object):
         form = getMultiAdapter((self.experiments, self.request),
                                name="newEnsemble")
         return form
+
+    
+class SpeciesTraitsExperimentHelper(object):
+    """
+    A helper class to configure and run a SDM experiment during testing.
+    """
+
+    def __init__(self, portal):
+        # configure local variables on instance
+        self.portal = portal
+        self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
+        self.algorithm = self.portal[defaults.TOOLKITS_FOLDER_ID]['lm']
+        # get some dataset shortcuts
+        self.datasets = self.portal[defaults.DATASETS_FOLDER_ID]
+        self.traitsds = self.datasets['traits.csv']
+
+    def get_form(self):
+        """
+        fill out common stuff when creating a new experiment
+        """
+        # setup request layer
+        self.request = TestRequest()
+        # get add view
+        form = getMultiAdapter((self.experiments, self.request),
+                               name="newSpeciesTraits")
+        # update the form once to initialise all widgets
+        form.update()
+        # go through all widgets on the form  and update the request with default values
+        data = {}
+        for widget in chain(
+                form.widgets.values(),
+                # skip standard plone groups
+                #chain.from_iterable(g.widgets.values() for g in form.groups),
+                chain.from_iterable(g.widgets.values() for g in form.param_groups)):
+            data[widget.name] = widget.value
+        data.update({
+            'form.widgets.IDublinCore.title': u"My ST Experiment",
+            'form.widgets.IDublinCore.description': u'This is my experiment description',
+            'form.widgets.algorithm': [self.algorithm.UID()],
+            'form.widgets.formula': u'Z ~ X + Y',
+            'form.widgets.data_table': unicode(self.traitsds.UID())
+        })
+        self.request.form.update(data)
+        form = getMultiAdapter((self.experiments, self.request),
+                               name="newSpeciesTraits")
+        return form

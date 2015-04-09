@@ -1,0 +1,13 @@
+{
+  "_type": "org.bccvl.content.dataset",
+  "title": "Traits Data",
+  "_transitions": "publish",
+  "bccvlmetadata": {
+    "genre": "DataGenreSpeciesTraits",
+    "species": {
+      "scientificName": "Alectura lathami",
+      "vernacularName": "Australian Brush-turkey",
+      "taxonID": "urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986"
+    }
+  }
+}
