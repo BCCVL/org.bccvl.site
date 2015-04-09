@@ -89,11 +89,6 @@ class BCCVLLayer(PloneSandboxLayer):
         pwf.setDefaultChain('simple_publication_workflow')
         # use testing profile, to avoid trubles with collective.geo.mapwidget
         self.applyProfile(portal, 'org.bccvl.site.tests:testing')
-        # TODO: consider the following as alternative to set up content
-        # setRoles(portal, TEST_USER_ID, ['Manager'])
-        # login(portal, TEST_USER_NAME)
-        # do stuff
-        # setRoles(portal, TEST_USER_ID, ['Member'])
         # FIXME: for testing we access the site via localhost,
         #        so we can't use the localscript extraction plugin
         from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
@@ -102,11 +97,10 @@ class BCCVLLayer(PloneSandboxLayer):
         app = portal.getPhysicalRoot()
         z2.login(app['acl_users'], SITE_OWNER_NAME)
         self.addTestContent(portal)
+        # run all tests as our new test user
         login(portal, TEST_USER_NAME)
 
     def tearDown(self):
-
-        # import ipdb; ipdb.set_trace()
         # self.worker.stop()
         super(BCCVLLayer, self).tearDown()
 

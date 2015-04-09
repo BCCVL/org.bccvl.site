@@ -489,9 +489,13 @@ class DatasetsListingPopup(BrowserView):
         return self.dslisttool.datasetslisting()
 
     def match_selectedlayers(self, md):
+        # FIXME: this method filters the dataset result by the layer
+        #        search filter. Once we move to selecting whole datasets
+        #        instead of single layers in the popup view, we can get
+        #        rid of this.
         selected = self.request.get('datasets.filter.layer', ())
         layer_vocab = self.dslisttool.dstools.layer_vocab
-        # FIXME: there should never be a dataset without layers here
+        # FIXME: do we have to do anything special here far layers_used?
         for layer in md.get('layers', ()):
             if not selected:
                 # no filter set.. just yield everything
