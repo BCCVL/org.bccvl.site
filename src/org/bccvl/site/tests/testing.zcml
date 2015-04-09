@@ -21,13 +21,19 @@ overrides anything else in a stacked component registry scenario -->
     dependencies as well, should get rid of it or use only in
     integration tests -->
     <include package="gu.transmogrifier"/>
+    <!-- FIXME: get rid of deprecated package -->
+    <include package="gu.repository.content"/>
 
     <includeOverrides package="org.bccvl.site" file="overrides.zcml"/>
 
     <utility
-        component=".compute.testalgorithm"
+        component=".compute.testsdm"
         name="org.bccvl.site.content.interfaces.ISDMExperiment"/>
 
+    <utility
+        component=".compute.testprojection"
+        name="org.bccvl.site.content.interfaces.IProjectionExperiment"/>
+    
     <genericsetup:registerProfile
         name="testing"
         title="BCCVL Site Testing Profile"

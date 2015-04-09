@@ -11,13 +11,14 @@ from org.bccvl.tasks.plone import import_result, import_cleanup, set_progress, a
 @app.task()
 def testjob(params, context):
     """
-    An algorithm mack function, that generates some test result data.
+    An algorithm mock function, that generates some test result data.
     """
     # 1. write file into results_dir
     tmpdir = params['result']['results_dir']
     try:
         # 2. create some result files
-        for fname in ('testfile1.txt', ):
+        for fname in ('model.RData',
+                      'proj_test.tif'):
             f = open(os.path.join(tmpdir, fname), 'w')
             f.write(str(range(1, 10)))
             f.close()
@@ -36,13 +37,26 @@ def testjob(params, context):
 
 
 @provider(IComputeMethod) # TODO: would expect result as first argument?
-def testalgorithm(result, toolkit):
+def testsdm(result, toolkit):
     # submit test_job into queue
     member = api.user.get_current()
     params = {
         'result': {
             'results_dir': tempfile.mkdtemp(),
-            'outputs': {}
+            'outputs': {
+                'files': {
+                    '*.RData': {
+                        'title': 'Test SDM Model',
+                        'genre': 'DataGenreSDMModel',
+                        'mimetype': 'application/x-r-data'
+                    },
+                    "proj_*.tif": {
+                        "title": "Projection to current",
+                        "genre": "DataGenreCP",
+                        "mimetype": "image/geotiff"
+                    },
+                }
+            }
         },
     }
     context = {
@@ -61,6 +75,41 @@ def testalgorithm(result, toolkit):
     # ...  check what happens if task fails (e.g. remove 'experiment' in context)
     after_commit_task(testjob, params, context)
 
+
+@provider(IComputeMethod) # TODO: would expect result as first argument?
+def testprojection(result, toolkit):
+    # submit test_job into queue
+    member = api.user.get_current()
+    params = {
+        'result': {
+            'results_dir': tempfile.mkdtemp(),
+            'outputs': {
+                'files': {
+                    'proj_*.tif': {
+                        'title': 'Future Projection',
+                        'genre': 'DataGenreFP',
+                        'mimetype': 'image/geotiff',
+                    }
+                }
+            }
+        },
+    }
+    context = {
+        'context': '/'.join(result.getPhysicalPath()),
+        'user': {
+            'id': member.getUserName(),
+            'email': member.getProperty('email'),
+            'fullname': member.getProperty('fullname'),
+        },
+        'experiment': {
+            'title': result.__parent__.title,
+            'url': result.__parent__.absolute_url()
+        }
+    }
+    # TODO: create chain with import task?
+    # ...  check what happens if task fails (e.g. remove 'experiment' in context)
+    after_commit_task(testjob, params, context)
+    
 
 @app.task()
 def failingtestalgorithm(experiment, request):
