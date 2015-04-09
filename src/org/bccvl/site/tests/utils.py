@@ -117,4 +117,47 @@ class ProjectionExperimentHelper(object):
                                name="newProjection")
         return form
         
+
+class BiodiverseExperimentHelper(object):
+    """
+    A helper class to configure and run a SDM experiment during testing.
+    """
+
+    def __init__(self, portal, sdmexp):
+        # configure local variables on instance
+        self.portal = portal
+        self.sdmexp = sdmexp
+        self.sdmproj = sdmexp.values()[0]['proj_test.tif']
+        self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
+
+
+    def get_form(self):
+        """
+        fill out common stuff when creating a new experiment
+        """
+        # setup request layer
+        self.request = TestRequest()
+        # get add view
+        form = getMultiAdapter((self.experiments, self.request),
+                               name="newBiodiverse")
+        # update the form once to initialise all widgets
+        form.update()
+        # go through all widgets on the form  and update the request with default values
+        data = {}
+        for widget in form.widgets.values():
+            data[widget.name] = widget.value
+        data.update({
+            'form.widgets.IDublinCore.title': u"My BD Experiment",
+            'form.widgets.IDublinCore.description': u'This is my experiment description',
+            'form.widgets.projection.count': '1',
+            'form.widgets.projection.experiment.0': unicode(self.sdmexp.UID()),
+            'form.widgets.projection.dataset.0.count': 1,
+            'form.widgets.projection.dataset.0.0.uuid': unicode(self.sdmproj.UID()),
+            'form.widgets.projection.dataset.0.0.threshold': '0.0',
+            'form.widgets.cluster_size': '5000',
+        })
+        self.request.form.update(data)
+        form = getMultiAdapter((self.experiments, self.request),
+                               name="newBiodiverse")
+        return form
     

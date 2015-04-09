@@ -140,13 +140,6 @@ class IProjectionExperiment(IExperiment):
 
 class IBiodiverseExperiment(IExperiment):
 
-    resolution = Choice(
-        title=u'Resolution',
-        default=None,
-        vocabulary='resolution_source',
-        required=False,
-    )
-
     # - Opt1 ... select experiments and pick datasets from experiment (like experimend sdm model select)
     # - Opt2 ... I think it's better to select datasets and show them grouped by grouping criteria for biodiverse. May make searching easier as well?
     # - Opt3 ... set criteria for grouping on page, and make search interface for specise only...

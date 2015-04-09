@@ -1,5 +1,6 @@
 import unittest2 as unittest
 from urlparse import urljoin
+from decimal import Decimal
 import re
 import time
 import transaction
@@ -14,11 +15,10 @@ from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from org.bccvl.site.testing import (BCCVL_INTEGRATION_TESTING,
                                     BCCVL_FUNCTIONAL_TESTING)
-from org.bccvl.site.tests.utils import TestRequest, SDMExperimentHelper, ProjectionExperimentHelper
-
-
-
-
+from org.bccvl.site.tests.utils import TestRequest
+from org.bccvl.site.tests.utils import SDMExperimentHelper
+from org.bccvl.site.tests.utils import ProjectionExperimentHelper
+from org.bccvl.site.tests.utils import BiodiverseExperimentHelper
 
 # do somebrowser testing here:
 # 1. test new template
@@ -227,11 +227,156 @@ class ExperimentProjectionAddTest(unittest.TestCase):
                           self.form.sdmexp.environmental_datasets.keys()[0]: set([u'B02'])})
         # resolution should be set to the lowest of selected datasets
         self.assertEqual(expmd['resolution'], 'Resolution2_5m')
+
+
+class ExperimentBiodiverseAddTest(unittest.TestCase):
+
+    # Use functional layer for now to get a new demostorage layer for each test
+    layer = BCCVL_FUNCTIONAL_TESTING
+    # integration testing gives only a new transaction for each test (rolled back at end)
+    #layer = BCCVL_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer['portal']
+        self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
+        # create and run sdm experiment
+        sdmform = SDMExperimentHelper(self.portal).get_form()
+        sdmform.request.form.update({
+            'form.buttons.save': 'Create and start',
+            })
+        # update form with updated request
+        sdmform.update()
+        transaction.commit()
+        # We should have only one SDM
+        sdmexp = self.experiments.values()[0]
+        self.form = BiodiverseExperimentHelper(self.portal, sdmexp)
+
+    def test_add_experiment_missing_input(self):
+        form = self.form.get_form()
+        # remove required field
+        del form.request.form['form.widgets.IDublinCore.title']
+        form.request.form.update({
+            'form.buttons.create': 'Create',
+        })
+        # submit form
+        form.update()
+        errors = [e for e in form.widgets.errors]
+        self.assertEqual(len(errors), 1)
+        # check self.experiments still empty
+        # IStatusMessage
+
+    def test_add_experiment(self):
+        form = self.form.get_form()
+        form.request.form.update({
+            'form.buttons.save': 'Create and start',
+            })
+        # update form with updated request
+        form.update()
+        self.assertEqual(form.status, u'')
+        self.assertEqual(len(form.widgets.errors), 0)
+        self.assertIn('my-bd-experiment', self.experiments)
+        exp = self.experiments['my-bd-experiment']
+        # TODO: update asserts
+        self.assertEqual(exp.projection,
+                         {unicode(self.form.sdmexp.UID()):
+                          {unicode(self.form.sdmproj.UID()): {'value': Decimal('0.0'), 'label': '0.0'}}})
+        # FIXME: submitting with an empty model list doesn't cause form to fail
+        self.assertEqual(exp.cluster_size, 5000)
+
+        # get result container: (there is only one)
+        self.assertEqual(len(exp.objectIds()), 1)
+        result = exp.objectValues()[0]
+        # FIXME: test result.job_params
+        self.assertEqual(result.job_params['cluster_size'], 5000)
+        self.assertEqual(result.job_params['projections'], [{
+            "dataset": self.form.sdmproj.UID(),
+            "threshold": {'label': '0.0', 'value': Decimal('0.0')}}])
+        # no result files yet
+        self.assertEqual(len(result.keys()), 0)
+        # test job state
+        jt = IJobTracker(exp)
+        self.assertEqual(jt.state, u'QUEUED')
+        # after transaction commit the job should finish
+        transaction.commit()
+        self.assertEqual(jt.state, u'COMPLETED')
+        # and we should have a result as well
+        self.assertGreaterEqual(len(result.keys()), 1)
+        # TODO: check result metadata
         
 
-# Biodiverse: ... no real validation here
-# Ensemble: ... does resolution adaption
-# SpeciesTraits: ... has toolkit sub forms
+class ExperimentBiodiverseAddTest(unittest.TestCase):
+
+    # Use functional layer for now to get a new demostorage layer for each test
+    layer = BCCVL_FUNCTIONAL_TESTING
+    # integration testing gives only a new transaction for each test (rolled back at end)
+    #layer = BCCVL_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer['portal']
+        self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
+        # create and run sdm experiment
+        sdmform = SDMExperimentHelper(self.portal).get_form()
+        sdmform.request.form.update({
+            'form.buttons.save': 'Create and start',
+            })
+        # update form with updated request
+        sdmform.update()
+        transaction.commit()
+        # We should have only one SDM
+        sdmexp = self.experiments.values()[0]
+        self.form = BiodiverseExperimentHelper(self.portal, sdmexp)
+
+    def test_add_experiment_missing_input(self):
+        form = self.form.get_form()
+        # remove required field
+        del form.request.form['form.widgets.IDublinCore.title']
+        form.request.form.update({
+            'form.buttons.create': 'Create',
+        })
+        # submit form
+        form.update()
+        errors = [e for e in form.widgets.errors]
+        self.assertEqual(len(errors), 1)
+        # check self.experiments still empty
+        # IStatusMessage
+
+    def test_add_experiment(self):
+        form = self.form.get_form()
+        form.request.form.update({
+            'form.buttons.save': 'Create and start',
+            })
+        # update form with updated request
+        form.update()
+        self.assertEqual(form.status, u'')
+        self.assertEqual(len(form.widgets.errors), 0)
+        self.assertIn('my-bd-experiment', self.experiments)
+        exp = self.experiments['my-bd-experiment']
+        # TODO: update asserts
+        self.assertEqual(exp.projection,
+                         {unicode(self.form.sdmexp.UID()):
+                          {unicode(self.form.sdmproj.UID()): {'value': Decimal('0.0'), 'label': '0.0'}}})
+        # FIXME: submitting with an empty model list doesn't cause form to fail
+        self.assertEqual(exp.cluster_size, 5000)
+
+        # get result container: (there is only one)
+        self.assertEqual(len(exp.objectIds()), 1)
+        result = exp.objectValues()[0]
+        # FIXME: test result.job_params
+        self.assertEqual(result.job_params['cluster_size'], 5000)
+        self.assertEqual(result.job_params['projections'], [{
+            "dataset": self.form.sdmproj.UID(),
+            "threshold": {'label': '0.0', 'value': Decimal('0.0')}}])
+        # no result files yet
+        self.assertEqual(len(result.keys()), 0)
+        # test job state
+        jt = IJobTracker(exp)
+        self.assertEqual(jt.state, u'QUEUED')
+        # after transaction commit the job should finish
+        transaction.commit()
+        self.assertEqual(jt.state, u'COMPLETED')
+        # and we should have a result as well
+        self.assertGreaterEqual(len(result.keys()), 1)
+        # TODO: check result metadata
 
 class ExperimentSDMViewTest(unittest.TestCase):
 

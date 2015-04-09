@@ -33,6 +33,10 @@ overrides anything else in a stacked component registry scenario -->
     <utility
         component=".compute.testprojection"
         name="org.bccvl.site.content.interfaces.IProjectionExperiment"/>
+
+    <utility
+        component=".compute.testbiodiverse"
+        name="org.bccvl.site.content.interfaces.IBiodiverseExperiment"/>
     
     <genericsetup:registerProfile
         name="testing"

@@ -109,6 +109,42 @@ def testprojection(result, toolkit):
     # TODO: create chain with import task?
     # ...  check what happens if task fails (e.g. remove 'experiment' in context)
     after_commit_task(testjob, params, context)
+
+
+@provider(IComputeMethod) # TODO: would expect result as first argument?
+def testbiodiverse(result, toolkit):
+    # submit test_job into queue
+    member = api.user.get_current()
+    params = {
+        'result': {
+            'results_dir': tempfile.mkdtemp(),
+            'outputs': {
+                'files': {
+                    'proj_*.tif': {
+                        'title': 'Binary Image',
+                        'genre': 'DataGenreBinaryImage',
+                        'mimetype': 'image/geotiff',
+                    }
+                }
+            }
+        },
+    }
+    context = {
+        'context': '/'.join(result.getPhysicalPath()),
+        'user': {
+            'id': member.getUserName(),
+            'email': member.getProperty('email'),
+            'fullname': member.getProperty('fullname'),
+        },
+        'experiment': {
+            'title': result.__parent__.title,
+            'url': result.__parent__.absolute_url()
+        }
+    }
+    # TODO: create chain with import task?
+    # ...  check what happens if task fails (e.g. remove 'experiment' in context)
+    after_commit_task(testjob, params, context)
+
     
 
 @app.task()
