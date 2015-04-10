@@ -110,17 +110,18 @@ class DatasetTools(BrowserView):
     @property
     def genre_vocab(self):
         if self._genre_vocab is None:
-            genre_list = ('DataGenreSpeciesOccurrence', 'DataGenreSpeciesAbsence',
-                          'DataGenreSpeciesAbundance', 'DataGenreE',
-                          'DataGenreCC', 'DataGenreFC', 'DataGenreTraits',
-                          'DataGenreSDMModel')
-            genre_source = getUtility(IVocabularyFactory, 'genre_source')(self.context)
-            self._genre_vocab = SimpleVocabulary([genre_source.getTerm(genre) for genre in genre_list])
+            self._genre_vocab = getUtility(IVocabularyFactory, 'genre_source')(self.context)
         return self._genre_vocab
 
     def genre_list(self):
         selected = self.request.get('datasets.filter.genre', ())
         for genre in self.genre_vocab:
+            if genre.value not in (
+                'DataGenreSpeciesOccurrence', 'DataGenreSpeciesAbsence',
+                'DataGenreSpeciesAbundance', 'DataGenreE',
+                'DataGenreCC', 'DataGenreFC', 'DataGenreTraits',
+                'DataGenreSDMModel'):
+                continue
             yield {
                 'selected': genre.token in selected,
                 'disabled': False,
@@ -287,7 +288,11 @@ class DatasetsListingTool(BrowserView):
             query_parts.append(In('BCCDataGenre', [genre_vocab.getTermByToken(token).value for token in genre if token in genre_vocab.by_token]))
         else:
             # if nothing selcted use all values in vocab
-            query_parts.append(In('BCCDataGenre', list(genre_vocab.by_value.keys())))
+            query_parts.append(In('BCCDataGenre', (
+                'DataGenreSpeciesOccurrence', 'DataGenreSpeciesAbsence',
+                'DataGenreSpeciesAbundance', 'DataGenreE',
+                'DataGenreCC', 'DataGenreFC', 'DataGenreTraits',
+                'DataGenreSDMModel')))
 
         resolution = self.request.get('datasets.filter.resolution')
         resolution_vocab = self.dstools.resolution_vocab
@@ -355,7 +360,11 @@ class DatasetsListingTool(BrowserView):
             query['BCCDataGenre'] = [genre_vocab.getTermByToken(token).value for token in genre if token in genre_vocab.by_token]
         else:
             # if nothing selcted use all values in vocab
-            query['BCCDataGenre'] =  list(genre_vocab.by_value.keys())
+            query['BCCDataGenre'] = (
+                'DataGenreSpeciesOccurrence', 'DataGenreSpeciesAbsence',
+                'DataGenreSpeciesAbundance', 'DataGenreE',
+                'DataGenreCC', 'DataGenreFC', 'DataGenreTraits',
+                'DataGenreSDMModel')
 
         resolution = self.request.get('datasets.filter.resolution')
         resolution_vocab = self.dstools.resolution_vocab
