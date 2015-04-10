@@ -12,6 +12,7 @@ from zope.component import getMultiAdapter, getUtility
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 import Missing
+from gu.z3cform.rdf.utils import Period
 
 
 def get_title_from_uuid(uuid):
@@ -225,6 +226,12 @@ class DatasetTools(BrowserView):
                 'label': genre.title
             }
 
+
+    def format_period(self, period):
+        """
+        format period as displayable year.
+        """
+        return Period(period).start if period else ""
 
 
 
