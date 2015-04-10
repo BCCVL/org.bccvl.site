@@ -111,9 +111,6 @@ class TestDatasetListing(unittest.TestCase):
         # test datasets list
         self.assertEqual(batch.length, 7)
         self.assertEqual(batch.pagesize, 20)
-        item = batch[0]
-        self.assertEqual(item.Title, 'Future')
-        self.assertEqual(item.BCCDataGenre, 'DataGenreFC')
 
     def test_datasetslisting_occur(self):
         req = self.layer['request']
