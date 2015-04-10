@@ -25,7 +25,7 @@ class LayerSourceTest(unittest.TestCase):
         self.assertIn(u'B01', source)
         term = source.getTerm(u'B01')
         self.assertEqual(term.value, u'B01')
-        self.assertEqual(len(source), 71)
+        self.assertEqual(len(source), 107)
 
 
 class GCMSourceTest(unittest.TestCase):
@@ -47,7 +47,7 @@ class GCMSourceTest(unittest.TestCase):
         self.assertIn(u'cccma-cgcm31', source)
         term = source.getTerm(u'cccma-cgcm31')
         self.assertEqual(term.value, u'cccma-cgcm31')
-        self.assertEqual(len(source), 18)
+        self.assertEqual(len(source), 37)
 
 
 class EMSCSourceTest(unittest.TestCase):
