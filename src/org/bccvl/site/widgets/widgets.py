@@ -396,6 +396,7 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                 exp = expbrain.getObject()
                 expmd = IBCCVLMetadata(exp)
                 item['resolution'] = expmd.get('resolution')
+                item['brain'] = expbrain
 
                 # now search all models within and add infos
                 pc = getToolByName(self.context, 'portal_catalog')
@@ -404,6 +405,8 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                 # TODO: maybe as generator?
                 item['datasets'] = [{'uuid': brain.UID,
                                      'title': brain.Title,
+                                     'obj': brain.getObject(),
+                                     'md': IBCCVLMetadata(brain.getObject()),
                                      'selected': brain.UID in self.value[experiment_uuid]}
                                                  for brain in brains]
                 yield item
@@ -496,11 +499,11 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                         # ... I guess we don't really care as long as we produce the same the user entered. (validate?)
                         thresholds[threshold['label']] = threshold['label']
                     item['datasets'].append({
-                        'uuid': brain.UID,
-                        'title': brain.Title,
-                        'selected': brain.UID in self.value[experiment_uuid],
-                        'threshold': threshold,
-                        'thresholds': thresholds
+                         'uuid': brain.UID,
+                         'title': brain.Title,
+                         'selected': brain.UID in self.value[experiment_uuid],
+                         'threshold': threshold,
+                         'thresholds': thresholds
                     })
                 yield item
 
