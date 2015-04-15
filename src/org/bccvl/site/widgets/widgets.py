@@ -174,6 +174,7 @@ class DatasetLayersWidget(HTMLFormElement, Widget):
 
                 md = getdsmetadata(brain)
                 layers = self.value[uuid]
+                # FIXME: check if layers or layers_used here
                 for layer, layeritem in md['layers'].iteritems():
                     if not layer in layers:
                         continue
@@ -477,6 +478,7 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                 expbrain = uuidToCatalogBrain(experiment_uuid)
                 item['title'] = expbrain.Title
                 item['uuid'] = expbrain.UID
+                item['brain'] = expbrain
 
                 # TODO: what else wolud I need from an experiment?
                 exp = expbrain.getObject()
@@ -498,12 +500,19 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                         # maybe a custom entered number?
                         # ... I guess we don't really care as long as we produce the same the user entered. (validate?)
                         thresholds[threshold['label']] = threshold['label']
+                    dsobj = brain.getObject()
+                    dsmd = IBCCVLMetadata(dsobj)
                     item['datasets'].append({
                          'uuid': brain.UID,
                          'title': brain.Title,
                          'selected': brain.UID in self.value[experiment_uuid],
                          'threshold': threshold,
-                         'thresholds': thresholds
+                         'thresholds': thresholds,
+                         'brain': brain,
+                         'md': dsmd,
+                         'obj': dsobj,
+                         # TODO: this correct? only one layer ever?
+                         'layermd': dsmd['layers'].values()[0]
                     })
                 yield item
 
