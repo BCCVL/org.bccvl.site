@@ -48,10 +48,7 @@ def dataset_environmental_layer(object, **kw):
     if 'layers_used' in md:
         return md['layers_used']
     # otherwise index list of layers provided by dataset
-    layers = md.get('layers')
-    if layers:
-        return layers.keys()
-    return None
+    return md.get('layers', None)
 
 
 @implementer(IIndexer)

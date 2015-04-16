@@ -10,6 +10,7 @@ from plone.app.uuid.utils import uuidToObject
 import logging
 import re
 from urlparse import urldefrag
+from copy import copy
 
 
 LOG = logging.getLogger(__name__)
@@ -631,6 +632,46 @@ def upgrade_170_180_1(context, logger=None):
         migrate_to_bccvlmetadata(obj, logger)
         obj.reindexObject()
 
+    # fix up metadata for current projection datasets
+    for brain in list(pc.unrestrictedSearchResults(BCCDataGenre="DataGenreCP")):
+        ds = brain.getObject()
+        dsmd = IBCCVLMetadata(ds)
+        if 'layers' not in dsmd:
+            # set raster metadata correctly
+            layermd = {}
+            for key in ('min', 'max', 'height', 'width', 'srs', 'datatype'):
+                if key in dsmd:
+                    layermd[key] = dsmd.pop(key)
+            dsmd['layers'] = {ds.id: layermd}
+        if 'layers_used' not in dsmd:
+            # get layers_used from sdm experiment
+            exp = ds.__parent__.__parent__
+            layers_used = dict((x, None) for x in chain.from_iterable(exp.environmental_datasets.values()))
+            dsmd['layers_used'] = layes_used
+        
+    # fix up metadata for future projection datasets:
+    for brain in list(pc.unrestrictedSearchResults(BCCDataGenre="DataGenreFP")):
+        ds = brain.getObject()
+        dsmd = IBCCVLMetadata(ds)
+        if 'layers' not in dsmd:
+            layermd = {}
+            for key in ('min', 'max', 'height', 'width', 'srs', 'datatype'):
+                if key in dsmd:
+                    layermd[key] = dsmd.pop(key)
+            dsmd['layers'] = {ds.id: layermd}
+        if 'layers_used' not in dsmd:
+            # cet layers_used from sdm model used
+            sdm = uuidToObject(ds.__parent__.job_params['species_distribution_models'])
+            sdmmd = IBCCVLMetadata(sdm)
+            dsmd['layers_used'] = copy(sdmmd['layers_used'])
+
+    # make sure layers_used is a tuple
+    for dsbrain in list(pc.unrestrictedSearchResults(BCCDataGenre=['DataGenreSDMModel', 'DataGenreCP', 'DataGenreClampingMask', 'DataGenreFP'])):
+        ds = brain.getObject()
+        dsmd = IBCCVLMetadata(ds)
+        if not isinstance(dsmd.get('layers_used', ()), tuple):
+            dsmd['layers_used'] = tuple(dsmd['layers_used'])
+            
     # convert result folder base class (and update job_params)
     for brain in list(pc.unrestrictedSearchResults(portal_type='gu.repository.content.RepositoryItem')):
         # needs to run after metadata migration and fix up
