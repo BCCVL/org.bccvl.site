@@ -11,6 +11,7 @@ import logging
 import re
 from urlparse import urldefrag
 from copy import copy
+from itertools import chain
 
 
 LOG = logging.getLogger(__name__)
@@ -648,7 +649,7 @@ def upgrade_170_180_1(context, logger=None):
             # get layers_used from sdm experiment
             exp = ds.__parent__.__parent__
             layers_used = dict((x, None) for x in chain.from_iterable(exp.environmental_datasets.values()))
-            dsmd['layers_used'] = layes_used
+            dsmd['layers_used'] = layers_used
         
     # fix up metadata for future projection datasets:
     for brain in list(pc.unrestrictedSearchResults(BCCDataGenre="DataGenreFP")):
