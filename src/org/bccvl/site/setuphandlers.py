@@ -611,6 +611,7 @@ def migrate_result_folder(resultob):
         job_params['projections'] = newproj
     
 def upgrade_170_180_1(context, logger=None):
+    from org.bccvl.site.interfaces import IBCCVLMetadata
     # context is either the portal (called from setupVarious) or portal_setup when run via genericsetup
     if logger is None:
         # Called as upgrade step: define our own logger.
