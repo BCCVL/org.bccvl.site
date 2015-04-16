@@ -751,7 +751,13 @@ def upgrade_170_180_1(context, logger=None):
     # products membrane -> run uninstall step (membrane_tool)
     #                      pas plugins?
     qs = getToolByName(context, 'portal_quickinstaller')
-    qs.uninstallProducts(['dexterity.membrane', 'membrane'])
+    installed = [x['id'] for x in qs.listInstalledProducts()]
+    uninstall = []
+    for prod in ('dexterity.membrane', 'membrane', 'org.bccvl.site.content'):
+        if prod in installed:
+            uninstall.append(prod)
+    if uninstall:
+        qs.uninstallProducts(uninstall)
     # pas plugins from Products.Membrane
     acl = getToolByName(context, 'acl_users')
     for pasid in ('membrane_groups', 'membrane_properties',
