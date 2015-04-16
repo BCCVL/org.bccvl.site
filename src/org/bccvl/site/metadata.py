@@ -40,7 +40,7 @@ class BCCVLMetadata(object):
     def update(self, *args, **kw):
         return self._md.update(*args, **kw)
 
-    def get(self, k, default=__marker):
+    def get(self, k, default=None):
         return self._md.get(k, default)
 
     def keys(self):
