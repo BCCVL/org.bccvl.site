@@ -21,6 +21,8 @@ class BCCVLMetadata(object):
     Adapter to manage additional metadata for BCCVL Datasets.
     '''
 
+    __marker = object()
+
     def __init__(self, context):
         self.context = context
         annotations = IAnnotations(context)
@@ -38,7 +40,7 @@ class BCCVLMetadata(object):
     def update(self, *args, **kw):
         return self._md.update(*args, **kw)
 
-    def get(self, k, default=None):
+    def get(self, k, default=__marker):
         return self._md.get(k, default)
 
     def keys(self):
@@ -49,3 +51,8 @@ class BCCVLMetadata(object):
 
     def setdefault(self, key, default):
         return self._md.setdefault(key, default)
+
+    def pop(self, key, default=__marker):
+        if default is self.__marker:
+            return self._md.pop(key)
+        return self._md.pop(key, default)
