@@ -671,6 +671,7 @@ def upgrade_170_180_1(context, logger=None):
         dsmd = IBCCVLMetadata(ds)
         if not isinstance(dsmd.get('layers_used', ()), tuple):
             dsmd['layers_used'] = tuple(dsmd['layers_used'])
+        ds.reindexObject()
             
     # convert result folder base class (and update job_params)
     for brain in list(pc.unrestrictedSearchResults(portal_type='gu.repository.content.RepositoryItem')):
