@@ -634,45 +634,55 @@ def upgrade_170_180_1(context, logger=None):
         migrate_to_bccvlmetadata(obj, logger)
         obj.reindexObject()
 
-    # fix up metadata for current projection datasets
-    for brain in list(pc.unrestrictedSearchResults(BCCDataGenre="DataGenreCP")):
-        ds = brain.getObject()
-        dsmd = IBCCVLMetadata(ds)
-        if 'layers' not in dsmd:
-            # set raster metadata correctly
-            layermd = {}
-            for key in ('min', 'max', 'height', 'width', 'srs', 'datatype'):
-                if key in dsmd:
-                    layermd[key] = dsmd.pop(key)
-            dsmd['layers'] = {ds.id: layermd}
-        if 'layers_used' not in dsmd:
-            # get layers_used from sdm experiment
-            exp = ds.__parent__.__parent__
-            layers_used = dict((x, None) for x in chain.from_iterable(exp.environmental_datasets.values()))
-            dsmd['layers_used'] = layers_used
-        
-    # fix up metadata for future projection datasets:
-    for brain in list(pc.unrestrictedSearchResults(BCCDataGenre="DataGenreFP")):
-        ds = brain.getObject()
-        dsmd = IBCCVLMetadata(ds)
-        if 'layers' not in dsmd:
-            layermd = {}
-            for key in ('min', 'max', 'height', 'width', 'srs', 'datatype'):
-                if key in dsmd:
-                    layermd[key] = dsmd.pop(key)
-            dsmd['layers'] = {ds.id: layermd}
-        if 'layers_used' not in dsmd:
-            # cet layers_used from sdm model used
-            sdm = uuidToObject(ds.__parent__.job_params['species_distribution_models'])
-            sdmmd = IBCCVLMetadata(sdm)
-            dsmd['layers_used'] = copy(sdmmd['layers_used'])
-
     # make sure layers_used is a tuple
     for dsbrain in list(pc.unrestrictedSearchResults(BCCDataGenre=['DataGenreSDMModel', 'DataGenreCP', 'DataGenreClampingMask', 'DataGenreFP'])):
-        ds = brain.getObject()
+        ds = dsbrain.getObject()
         dsmd = IBCCVLMetadata(ds)
+        if dsmd.get('genre') in ('DataGenreCP', 'DataGenreFP', 'DataGenreClampingMask'):
+            # fix up metadata for projection datasets
+            if 'layers' not in dsmd:
+                layermd = {}
+                for key in ('min', 'max', 'height', 'width', 'srs', 'datatype'):
+                    if key in dsmd:
+                        layermd[key] = dsmd.pop(key)
+                dsmd['layers'] = {ds.id: layermd}
+
+        if dsmd.get('genre') == ('DataGenreCP', 'DataGenreClampingMask'):
+            if 'layers_used' not in dsmd:
+                # get layers_used from sdm experiment
+                exp = ds.__parent__.__parent__
+                layers_used = dict((x, None) for x in chain.from_iterable(exp.environmental_datasets.values()))
+                dsmd['layers_used'] = layers_used
+                
+        if dsmd.get('genre') == 'DataGenreFP':
+            if 'layers_used' not in dsmd:
+                # get layers_used from sdm model used
+                sdm = uuidToObject(ds.__parent__.job_params['species_distribution_models'])
+                sdmmd = IBCCVLMetadata(sdm)
+                dsmd['layers_used'] = copy(sdmmd['layers_used'])
+
+        # make sure layers_used is a tuple
         if not isinstance(dsmd.get('layers_used', ()), tuple):
             dsmd['layers_used'] = tuple(dsmd['layers_used'])
+
+        # make sure we have species metadata on dataset
+        if 'species' not in dsmd:
+            job_params = ds.__parent__.job_params
+            if 'species_occurrence_dataset' in job_params:
+                # sdm experiment
+                occurds = uuidToObject(job_params['species_occurrence_dataset'])
+                occurmd = IBCCVLMetadata(occurds)
+                dsmd['species'] = copy(occurmd['species'])
+            if 'species_distribution_models' in job_params:
+                # cc experiment
+                occurds = uuidToObject(job_params['species_distribution_models'])
+                occurmd = IBCCVLMetadata(occurds)
+                dsmd['species'] = copy(occurmd['species'])
+
+        if 'resolution' not in dsmd:
+            job_params = ds.__parent__.job_params
+            dsmd['resolution'] = job_params['resolution']
+                            
         ds.reindexObject()
             
     # convert result folder base class (and update job_params)
