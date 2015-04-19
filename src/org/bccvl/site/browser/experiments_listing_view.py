@@ -186,28 +186,27 @@ def biodiverse_listing_details(expbrain):
     gcms = set()
     for dsuuid in chain.from_iterable(map(lambda x: x.keys(), exp.projection.itervalues())):
         dsobj = uuidToObject(dsuuid)
-        if not dsobj:
-            # TODO: can't access dateset anymore, let user know somehow
-            continue
-        md = IBCCVLMetadata(dsobj)
-        species.add(md.get('species', {}).get('scientificName', ''))
-        period = md.get('temporal')
-        if period:
-            years.add(Period(period).start)
-        gcm = md.get('gcm')
-        if gcm:
-            gcms.add(gcm)
-        emsc = md.get('emsc')
-        if emsc:
-            emscs.add(emsc)
-        details.update({
-            'type': 'BIODIVERSE',
-            'functions': 'endemism, redundancy',
-            'species_occurrence': ', '.join(sorted(species)),
-            'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
-                                               ', '.join(sorted(gcms))),
-            'years': ', '.join(sorted(years))
-        })
+        # TODO: should inform user about missing dataset
+        if dsobj:
+            md = IBCCVLMetadata(dsobj)
+            species.add(md.get('species', {}).get('scientificName', ''))
+            period = md.get('temporal')
+            if period:
+                years.add(Period(period).start)
+            gcm = md.get('gcm')
+            if gcm:
+                gcms.add(gcm)
+            emsc = md.get('emsc')
+            if emsc:
+                emscs.add(emsc)
+    details.update({
+        'type': 'BIODIVERSE',
+        'functions': 'endemism, redundancy',
+        'species_occurrence': ', '.join(sorted(species)),
+        'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
+                                           ', '.join(sorted(gcms))),
+        'years': ', '.join(sorted(years))
+    })
     return details
     
 
