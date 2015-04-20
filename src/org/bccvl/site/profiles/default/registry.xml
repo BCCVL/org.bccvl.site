@@ -886,219 +886,297 @@
       </element>
       <element>
           <element key="value">TN1</element>
-          <element key="title">Monthly Average Minimum Temperature (Jan)</element>
+          <element key="title">Average Monthly Minimum Temperature (Jan)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN2</element>
-          <element key="title">Monthly Average Minimum Temperature (Feb)</element>
+          <element key="title">Average Monthly Minimum Temperature (Feb)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN3</element>
-          <element key="title">Monthly Average Minimum Temperature (Mar)</element>
+          <element key="title">Average Monthly Minimum Temperature (Mar)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN4</element>
-          <element key="title">Monthly Average Minimum Temperature (Apr)</element>
+          <element key="title">Average Monthly Minimum Temperature (Apr)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN5</element>
-          <element key="title">Monthly Average Minimum Temperature (May)</element>
+          <element key="title">Average Monthly Minimum Temperature (May)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN6</element>
-          <element key="title">Monthly Average Minimum Temperature (Jun)</element>
+          <element key="title">Average Monthly Minimum Temperature (Jun)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN7</element>
-          <element key="title">Monthly Average Minimum Temperature (Jul)</element>
+          <element key="title">Average Monthly Minimum Temperature (Jul)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN8</element>
-          <element key="title">Monthly Average Minimum Temperature (Aug)</element>
+          <element key="title">Average Monthly Minimum Temperature (Aug)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN9</element>
-          <element key="title">Monthly Average Minimum Temperature (Sep)</element>
+          <element key="title">Average Monthly Minimum Temperature (Sep)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN10</element>
-          <element key="title">Monthly Average Minimum Temperature (Oct)</element>
+          <element key="title">Average Monthly Minimum Temperature (Oct)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN11</element>
-          <element key="title">Monthly Average Minimum Temperature (Nov)</element>
+          <element key="title">Average Monthly Minimum Temperature (Nov)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TN12</element>
-          <element key="title">Monthly Average Minimum Temperature (Dec)</element>
+          <element key="title">Average Monthly Minimum Temperature (Dec)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM1</element>
+          <element key="title">Average Monthly Mean Temperature (Jan)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM2</element>
+          <element key="title">Average Monthly Mean Temperature (Feb)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM3</element>
+          <element key="title">Average Monthly Mean Temperature (Mar)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM4</element>
+          <element key="title">Average Monthly Mean Temperature (Apr)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM5</element>
+          <element key="title">Average Monthly Mean Temperature (May)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM6</element>
+          <element key="title">Average Monthly Mean Temperature (Jun)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM7</element>
+          <element key="title">Average Monthly Mean Temperature (Jul)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM8</element>
+          <element key="title">Average Monthly Mean Temperature (Aug)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM9</element>
+          <element key="title">Average Monthly Mean Temperature (Sep)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM10</element>
+          <element key="title">Average Monthly Mean Temperature (Oct)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM11</element>
+          <element key="title">Average Monthly Mean Temperature (Nov)</element>
+          <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">TM12</element>
+          <element key="title">Average Monthly Mean Temperature (Dec)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX1</element>
-          <element key="title">Monthly Average Maximum Temperature (Jan)</element>
+          <element key="title">Average Monthly Maximum Temperature (Jan)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX2</element>
-          <element key="title">Monthly Average Maximum Temperature (Feb)</element>
+          <element key="title">Average Monthly Maximum Temperature (Feb)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX3</element>
-          <element key="title">Monthly Average Maximum Temperature (Mar)</element>
+          <element key="title">Average Monthly Maximum Temperature (Mar)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX4</element>
-          <element key="title">Monthly Average Maximum Temperature (Apr)</element>
+          <element key="title">Average Monthly Maximum Temperature (Apr)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX5</element>
-          <element key="title">Monthly Average Maximum Temperature (May)</element>
+          <element key="title">Average Monthly Maximum Temperature (May)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX6</element>
-          <element key="title">Monthly Average Maximum Temperature (Jun)</element>
+          <element key="title">Average Monthly Maximum Temperature (Jun)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX7</element>
-          <element key="title">Monthly Average Maximum Temperature (Jul)</element>
+          <element key="title">Average Monthly Maximum Temperature (Jul)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX8</element>
-          <element key="title">Monthly Average Maximum Temperature (Aug)</element>
+          <element key="title">Average Monthly Maximum Temperature (Aug)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX9</element>
-          <element key="title">Monthly Average Maximum Temperature (Sep)</element>
+          <element key="title">Average Monthly Maximum Temperature (Sep)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX10</element>
-          <element key="title">Monthly Average Maximum Temperature (Oct)</element>
+          <element key="title">Average Monthly Maximum Temperature (Oct)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX11</element>
-          <element key="title">Monthly Average Maximum Temperature (Nov)</element>
+          <element key="title">Average Monthly Maximum Temperature (Nov)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">TX12</element>
-          <element key="title">Monthly Average Maximum Temperature (Dec)</element>
+          <element key="title">Average Monthly Maximum Temperature (Dec)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
         
       <element>
           <element key="value">PR1</element>
-          <element key="title">Monthly Total Precipitation (Jan)</element>
+          <element key="title">Average Monthly Precipitation (Jan)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR2</element>
-          <element key="title">Monthly Total Precipitation (Feb)</element>
+          <element key="title">Average Monthly Precipitation (Feb)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR3</element>
-          <element key="title">Monthly Total Precipitation (Mar)</element>
+          <element key="title">Average Monthly Precipitation (Mar)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR4</element>
-          <element key="title">Monthly Total Precipitation (Apr)</element>
+          <element key="title">Average Monthly Precipitation (Apr)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR5</element>
-          <element key="title">Monthly Total Precipitation (May)</element>
+          <element key="title">Average Monthly Precipitation (May)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR6</element>
-          <element key="title">Monthly Total Precipitation (Jun)</element>
+          <element key="title">Average Monthly Precipitation (Jun)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR7</element>
-          <element key="title">Monthly Total Precipitation (Jul)</element>
+          <element key="title">Average Monthly Precipitation (Jul)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR8</element>
-          <element key="title">Monthly Total Precipitation (Aug)</element>
+          <element key="title">Average Monthly Precipitation (Aug)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR9</element>
-          <element key="title">Monthly Total Precipitation (Sep)</element>
+          <element key="title">Average Monthly Precipitation (Sep)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR10</element>
-          <element key="title">Monthly Total Precipitation (Oct)</element>
+          <element key="title">Average Monthly Precipitation (Oct)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR11</element>
-          <element key="title">Monthly Total Precipitation (Nov)</element>
+          <element key="title">Average Monthly Precipitation (Nov)</element>
           <element key="unit">degrees C * 10</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">PR12</element>
-          <element key="title">Monthly Total Precipitation (Dec)</element>
+          <element key="title">Average Monthly Precipitation (Dec)</element>
           <element key="unit">degrees C * 10</element>
+          <element key="color">default</element>
+      </element>
+      <element>
+          <element key="value">Altitude</element>
+          <element key="title">Altitude (elevation above sea level) (m)</element>
+          <element key="unit">meter m</element>
           <element key="color">default</element>
       </element>
       
