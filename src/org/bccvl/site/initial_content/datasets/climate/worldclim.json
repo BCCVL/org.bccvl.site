@@ -1,0 +1,5 @@
+{
+  "_type": "Folder",
+  "title": "Worldclim",
+  "_transitions": ["show_internally", "publish_internally"]
+}
