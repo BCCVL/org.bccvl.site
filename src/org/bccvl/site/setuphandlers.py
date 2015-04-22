@@ -120,14 +120,6 @@ def update_bioclim_layer_uris(portal):
         OLDNS = Namespace(u'http://namespaces.bccvl.org.au/bioclim#')
         from org.bccvl.site.namespace import BCCVLLAYER as NEWNS
 
-        def convert_uri_list(oldlist):
-            newlist = []
-            for val in oldlist:
-                if val.startswith(OLDNS):
-                    val = URIRef(val.replace(OLDNS, NEWNS))
-                newlist.append(val)
-            return newlist
-
         newdict = {}
         for key in sdm.environmental_datasets:
             newdict[key] = convert_uri_list(sdm.environmental_datasets[key])
@@ -215,6 +207,16 @@ def upgrade_160_170_1(context, logger=None):
     setup.runImportStepFromProfile('profile-Products.CMFEditions:CMFEditions', 'rolemap')
     # update initial content and toolkits
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
+    
+def convert_uri_to_id(uri):
+    ns, frag = urldefrag(uri)
+    if frag:
+        return frag
+    if ns:
+        # probably already converted
+        return ns
+    raise ValueError("Can't convert concept uri to vocab identifier: %s", uri)
 
 
 def migrate_to_bccvlmetadata(context, logger):
@@ -308,16 +310,6 @@ def migrate_to_bccvlmetadata(context, logger):
             if not found and values:
                 logger.fatal("Couldn't find vocab value for %s: %s", key, '/'.join(context.getPhysicalPath()))
         
-
-    def convert_uri_to_id(uri):
-        ns, frag = urldefrag(uri)
-        if frag:
-            return frag
-        if ns:
-            # probably already converted
-            return ns
-        raise ValueError("Can't convert concept uri to vocab identifier: %s", uri)
-
     def extract_raster_metadata(res, lmd, key):
         # res ... IResource
         # lmd ... dict with
@@ -630,9 +622,7 @@ def upgrade_170_180_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
-    qi = getToolByName(portal, 'portal_quickinstaller')
-    if 'CMFPlacefulWorkflow' in (p['id'] for p in qi.listInstallableProducts()):
-        qi.installProduct('CMFPlacefulWorkflow')
+    setup.runAllImportStepsFromProfile('profile-Products.CMFPlacefulWorkflow:base')
 
     # migrate rdf metadata
     pc = getToolByName(context, 'portal_catalog')
@@ -642,6 +632,7 @@ def upgrade_170_180_1(context, logger=None):
         obj = brain.getObject()
         logger.info("Migrating metadata %s", brain.getPath())
         migrate_to_bccvlmetadata(obj, logger)
+        obj.reindexObject()
 
     # convert result folder base class (and update job_params)
     for brain in list(pc.unrestrictedSearchResults(portal_type='gu.repository.content.RepositoryItem')):
@@ -649,6 +640,8 @@ def upgrade_170_180_1(context, logger=None):
         obj = brain.getObject()
         logger.info("Migrating repositoryitem %s", brain.getPath())
         migrate_result_folder(obj)
+        obj.reindexObject()
+
     # migrate experiment objects (new properties and structures)
     from org.bccvl.site.content.interfaces import IExperiment, ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment
     for brain in list(pc.unrestrictedSearchResults(object_provides=IExperiment.__identifier__)):
@@ -699,6 +692,7 @@ def upgrade_170_180_1(context, logger=None):
                     'label': unicode(item['threshold']),
                     'value': item['threshold'] }                
             exp.projection = newproj
+        exp.reindexOject()
 
     # make sure layers_used is populated and a tuple
     for dsbrain in list(pc.unrestrictedSearchResults(BCCDataGenre=['DataGenreSDMModel', 'DataGenreCP', 'DataGenreClampingMask', 'DataGenreFP'])):
@@ -752,6 +746,8 @@ def upgrade_170_180_1(context, logger=None):
             # there might still be some URI refs in job_params resolution
             # job_params are not yet migrated at this stage
             dsmd['resolution'] = convert_uri_to_id(job_params['resolution'])
+
+        ds.reindexOject()
                             
     ###########################
     # uninstall all membrane related things    
@@ -788,7 +784,7 @@ def upgrade_170_180_1(context, logger=None):
             del acl[pasid]
             logger.info('removed pas plugin: %s', pasid)
 
-    logger.ingo("rebuilding catalog")
+    logger.info("rebuilding catalog")
     pc.clearFindAndRebuild()
     logger.info("finished")
 

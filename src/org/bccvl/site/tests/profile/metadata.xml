@@ -2,7 +2,8 @@
 <metadata>
     <version>1001</version>
     <dependencies>
-        <!-- <dependency>profile-Products.AutoUserMakerPASPlugin:default</dependency> -->
+      <dependency>profile-Products.CMFPlacefulWorkflow:base</dependency>
+      <!-- <dependency>profile-Products.AutoUserMakerPASPlugin:default</dependency> -->
         <dependency>profile-collective.onlogin:default</dependency>
         <dependency>profile-collective.quickupload:default</dependency>
         <!-- <dependency>profile-collective.z3cform.colorpicker:default</dependency> -->
