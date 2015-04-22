@@ -642,7 +642,6 @@ def upgrade_170_180_1(context, logger=None):
         obj = brain.getObject()
         logger.info("Migrating metadata %s", brain.getPath())
         migrate_to_bccvlmetadata(obj, logger)
-        obj.reindexObject()
 
     # convert result folder base class (and update job_params)
     for brain in list(pc.unrestrictedSearchResults(portal_type='gu.repository.content.RepositoryItem')):
@@ -650,7 +649,6 @@ def upgrade_170_180_1(context, logger=None):
         obj = brain.getObject()
         logger.info("Migrating repositoryitem %s", brain.getPath())
         migrate_result_folder(obj)
-        obj.reindexObject()
     # migrate experiment objects (new properties and structures)
     from org.bccvl.site.content.interfaces import IExperiment, ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment
     for brain in list(pc.unrestrictedSearchResults(object_provides=IExperiment.__identifier__)):
@@ -701,8 +699,6 @@ def upgrade_170_180_1(context, logger=None):
                     'label': unicode(item['threshold']),
                     'value': item['threshold'] }                
             exp.projection = newproj
-
-        exp.reindexObject()
 
     # make sure layers_used is populated and a tuple
     for dsbrain in list(pc.unrestrictedSearchResults(BCCDataGenre=['DataGenreSDMModel', 'DataGenreCP', 'DataGenreClampingMask', 'DataGenreFP'])):
@@ -757,8 +753,6 @@ def upgrade_170_180_1(context, logger=None):
             # job_params are not yet migrated at this stage
             dsmd['resolution'] = convert_uri_to_id(job_params['resolution'])
                             
-        ds.reindexObject()
-            
     ###########################
     # uninstall all membrane related things    
     # workflows: bccvl_membrane_workflow (assigned to user and group)
@@ -766,11 +760,13 @@ def upgrade_170_180_1(context, logger=None):
     for wfid in ('bccvl_membrane_workflow'):
         if wfid in wft:
             del wft[wfid]
+            logger.info('removed workflow: %s', wfid)
     # types: org.bccvl.content.user, org.bccvl.content.group
     pt = getToolByName(context, 'portal_types')
     for ptid in ('org.bccvl.content.user', 'org.bccvl.content.group'):
         if ptid in pt:
             del pt[ptid]
+            logger.info('removed type: %s', ptid)            
     # dexterity membrane -> run uninstall step (registry, controlpanel portal_controlpanel )
     # products membrane -> run uninstall step (membrane_tool)
     #                      pas plugins?
@@ -782,6 +778,7 @@ def upgrade_170_180_1(context, logger=None):
             uninstall.append(prod)
     if uninstall:
         qs.uninstallProducts(uninstall)
+        logger.info('uninstalled products: %s', uninstall)
     # pas plugins from Products.Membrane
     acl = getToolByName(context, 'acl_users')
     for pasid in ('membrane_groups', 'membrane_properties',
@@ -789,12 +786,12 @@ def upgrade_170_180_1(context, logger=None):
                   'membrane_users'):
         if pasid in acl:
             del acl[pasid]
-    # FIXME: need to reindex at least object_provides (empty / index)
-    # FIXME: sdm layer reindex (and probably other metadata)
+            logger.info('removed pas plugin: %s', pasid)
 
-    # TODO: missing threshold values?
-    # TODO: migrate RepositoryItems in knowledge base to Folder
-    #       don't forget to reindex once interface is gone entirely
+    logger.ingo("rebuilding catalog")
+    pc.clearFindAndRebuild()
+    logger.info("finished")
+
     # TODO: add more data fixups:
     #       - if there is no 'rows', 'headers' for csv files
     #       - no height, width, ... for raster files
@@ -802,5 +799,5 @@ def upgrade_170_180_1(context, logger=None):
     # TODO: does md['layers'] need 'layer' id key as well in layermd?
     # TODO: various png visualisations have no genre
     # FIXME: pretty much all *projection.out files have a malformed mime type (None)
-    # TODO: move away from storing temproal metadat as dc:period
+    # TODO: move away from storing temporal metadata as dc:period
     # TODO: delete subjecturi index column
