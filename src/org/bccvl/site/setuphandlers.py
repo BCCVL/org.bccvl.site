@@ -630,7 +630,9 @@ def upgrade_170_180_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
-    setup.runImportStepFromProfile('profile-Products.CMFPlacefulWorkflow:base', 'Products.CMFPlacefulWorkflow')
+    qi = getToolByName(portal, 'portal_quickinstaller')
+    if 'CMFPlacefulWorkflow' in (p['id'] for p in qi.listInstallableProducts()):
+        qi.installProduct('CMFPlacefulWorkflow')
 
     # migrate rdf metadata
     pc = getToolByName(context, 'portal_catalog')
