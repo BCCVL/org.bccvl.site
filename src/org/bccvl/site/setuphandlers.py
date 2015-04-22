@@ -546,21 +546,28 @@ def migrate_to_bccvlmetadata(context, logger):
                 md['genre'] = 'DataGenreSDMEval'
                 context.title = u'Model Evaluation'
         else:
-            logger.fatal('Genre not set: %s', '/'.join(context.getPhysicalPath()))
+            # We have no file. maybe it is a failed ala import?
+            if 'species' in md:
+                # TODO: check IJobTracker as well?
+                md['genre'] = 'DataGenreSpeciesOccurrence'
+                logger.warn('Fixup genre failed ala import %s', '/'.join(context.getPhysicalPath()))
+            else:
+                logger.fatal('Genre not set: %s', '/'.join(context.getPhysicalPath()))
+
+                
+def convert_uri_to_id(uri):
+    ns, frag = urldefrag(uri)
+    if frag:
+        return frag
+    if ns:
+        # probably already converted
+        return ns
+    raise ValueError("Can't convert concept uri to vocab identifier: %s", uri)
 
 
 def migrate_result_folder(resultob):
     from plone.app.contenttypes.content import Folder
     from org.bccvl.site.interfaces import IBCCVLMetadata
-
-    def convert_uri_to_id(uri):
-        ns, frag = urldefrag(uri)
-        if frag:
-            return frag
-        if ns:
-            # probably already converted
-            return ns
-        raise ValueError("Can't convert concept uri to vocab identifier: %s", uri)
 
     gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(resultob)
     emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(resultob)    
@@ -622,7 +629,8 @@ def upgrade_170_180_1(context, logger=None):
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
-    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')    
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile('profile-Products.CMFPlacefulWorkflow:base', 'Products.CMFPlacefulWorkflow')
 
     # migrate rdf metadata
     pc = getToolByName(context, 'portal_catalog')
@@ -634,57 +642,6 @@ def upgrade_170_180_1(context, logger=None):
         migrate_to_bccvlmetadata(obj, logger)
         obj.reindexObject()
 
-    # make sure layers_used is a tuple
-    for dsbrain in list(pc.unrestrictedSearchResults(BCCDataGenre=['DataGenreSDMModel', 'DataGenreCP', 'DataGenreClampingMask', 'DataGenreFP'])):
-        ds = dsbrain.getObject()
-        dsmd = IBCCVLMetadata(ds)
-        if dsmd.get('genre') in ('DataGenreCP', 'DataGenreFP', 'DataGenreClampingMask'):
-            # fix up metadata for projection datasets
-            if 'layers' not in dsmd:
-                layermd = {}
-                for key in ('min', 'max', 'height', 'width', 'srs', 'datatype'):
-                    if key in dsmd:
-                        layermd[key] = dsmd.pop(key)
-                dsmd['layers'] = {ds.id: layermd}
-
-        if dsmd.get('genre') == ('DataGenreCP', 'DataGenreClampingMask'):
-            if 'layers_used' not in dsmd:
-                # get layers_used from sdm experiment
-                exp = ds.__parent__.__parent__
-                layers_used = dict((x, None) for x in chain.from_iterable(exp.environmental_datasets.values()))
-                dsmd['layers_used'] = layers_used
-                
-        if dsmd.get('genre') == 'DataGenreFP':
-            if 'layers_used' not in dsmd:
-                # get layers_used from sdm model used
-                sdm = uuidToObject(ds.__parent__.job_params['species_distribution_models'])
-                sdmmd = IBCCVLMetadata(sdm)
-                dsmd['layers_used'] = copy(sdmmd['layers_used'])
-
-        # make sure layers_used is a tuple
-        if not isinstance(dsmd.get('layers_used', ()), tuple):
-            dsmd['layers_used'] = tuple(dsmd['layers_used'])
-
-        # make sure we have species metadata on dataset
-        if 'species' not in dsmd:
-            job_params = ds.__parent__.job_params
-            if 'species_occurrence_dataset' in job_params:
-                # sdm experiment
-                occurds = uuidToObject(job_params['species_occurrence_dataset'])
-                occurmd = IBCCVLMetadata(occurds)
-                dsmd['species'] = copy(occurmd['species'])
-            if 'species_distribution_models' in job_params:
-                # cc experiment
-                occurds = uuidToObject(job_params['species_distribution_models'])
-                occurmd = IBCCVLMetadata(occurds)
-                dsmd['species'] = copy(occurmd['species'])
-
-        if 'resolution' not in dsmd:
-            job_params = ds.__parent__.job_params
-            dsmd['resolution'] = job_params['resolution']
-                            
-        ds.reindexObject()
-            
     # convert result folder base class (and update job_params)
     for brain in list(pc.unrestrictedSearchResults(portal_type='gu.repository.content.RepositoryItem')):
         # needs to run after metadata migration and fix up
@@ -745,6 +702,61 @@ def upgrade_170_180_1(context, logger=None):
 
         exp.reindexObject()
 
+    # make sure layers_used is populated and a tuple
+    for dsbrain in list(pc.unrestrictedSearchResults(BCCDataGenre=['DataGenreSDMModel', 'DataGenreCP', 'DataGenreClampingMask', 'DataGenreFP'])):
+        ds = dsbrain.getObject()
+        dsmd = IBCCVLMetadata(ds)
+        if dsmd.get('genre') in ('DataGenreCP', 'DataGenreFP', 'DataGenreClampingMask'):
+            # fix up metadata for projection datasets
+            if 'layers' not in dsmd:
+                layermd = {}
+                for key in ('min', 'max', 'height', 'width', 'srs', 'datatype'):
+                    if key in dsmd:
+                        layermd[key] = dsmd.pop(key)
+                dsmd['layers'] = {ds.id: layermd}
+
+        if dsmd.get('genre') in ('DataGenreCP', 'DataGenreClampingMask'):
+            if 'layers_used' not in dsmd:
+                # get layers_used from sdm experiment
+                exp = ds.__parent__.__parent__
+                # parent can be sdm or cc experiment; CC covered in next if
+                if ISDMExperiment.providedBy(exp):
+                    layers_used = dict((x, None) for x in chain.from_iterable(exp.environmental_datasets.values()))
+                    dsmd['layers_used'] = layers_used
+                
+        if dsmd.get('genre') in ('DataGenreFP', 'DataGenreClampingMask'):
+            if 'layers_used' not in dsmd:
+                # get layers_used from sdm model used
+                sdm = uuidToObject(ds.__parent__.job_params['species_distribution_models'])
+                sdmmd = IBCCVLMetadata(sdm)
+                dsmd['layers_used'] = copy(sdmmd['layers_used'])
+
+        # make sure layers_used is a tuple
+        if not isinstance(dsmd.get('layers_used', ()), tuple):
+            dsmd['layers_used'] = tuple(dsmd['layers_used'])
+
+        # make sure we have species metadata on dataset
+        if 'species' not in dsmd:
+            job_params = ds.__parent__.job_params
+            if 'species_occurrence_dataset' in job_params:
+                # sdm experiment
+                occurds = uuidToObject(job_params['species_occurrence_dataset'])
+                occurmd = IBCCVLMetadata(occurds)
+                dsmd['species'] = copy(occurmd['species'])
+            if 'species_distribution_models' in job_params:
+                # cc experiment
+                occurds = uuidToObject(job_params['species_distribution_models'])
+                occurmd = IBCCVLMetadata(occurds)
+                dsmd['species'] = copy(occurmd['species'])
+
+        if 'resolution' not in dsmd:
+            job_params = ds.__parent__.job_params
+            # there might still be some URI refs in job_params resolution
+            # job_params are not yet migrated at this stage
+            dsmd['resolution'] = convert_uri_to_id(job_params['resolution'])
+                            
+        ds.reindexObject()
+            
     ###########################
     # uninstall all membrane related things    
     # workflows: bccvl_membrane_workflow (assigned to user and group)
