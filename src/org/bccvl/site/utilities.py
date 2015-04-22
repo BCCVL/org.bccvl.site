@@ -104,11 +104,20 @@ class JobTracker(object):
     def __init__(self, context):
         self.context = context
         annots = IAnnotations(self.context)
-        # FIXME: this is not the place to set the annotation dictionary
-        #        in case we only read from here we don't want to write'
         self._state = annots.get('org.bccvl.state', None)
-        if self._state is None:
+
+    def _getstate(self, key):
+        # if we don't have annotations none have been written yet
+        if self._state:
+            return self._state[key]
+        return None
+
+    def _setstate(self, **kw):
+        # We want to write annotations so make sure there is something to write to
+        if not self._state:
+            annots = IAnnotations(self.context)
             self._state = annots['org.bccvl.state'] = PersistentDict()
+        self._state.update(**kw)
 
     def _comparestate(self, state1, state2):
         """
@@ -128,37 +137,38 @@ class JobTracker(object):
 
     @property
     def state(self):
-        return self._state.get('state', None)
+        return self._getstate('state')
 
     @state.setter
     def state(self, state):
         # make sure we can only move forward in state
         if self._comparestate(self.state, state):
-            self._state['state'] = state
+            self._setstate(state=state)
 
     def is_active(self):
         return (self.state not in
                 (None, 'COMPLETED', 'FAILED', 'REMOVED'))
 
     def new_job(self, taskid, name):
-        self._state.clear()
-        self._state.update({
-            'state': 'QUEUED',
-            'taskid': taskid,
-            'name': name})
+        # clear state annotation
+        self._state = None
+        # create new state annotation
+        self._setstate(state='QUEUED',
+                       taskid=taskid,
+                       name=name)
 
     def set_progress(self, state, message, **kw):
-        self._state['progress'] = dict(
+        self._setstate(progress=dict(
             state=state,
             message=message,
             **kw
-        )
+        ))
 
     def start_job(self, request):
         raise NotImplementedError()
 
     def progress(self):
-        return self._state.get('progress', None)
+        return self._getstate('progress')
 
 
 class MultiJobTracker(JobTracker):
