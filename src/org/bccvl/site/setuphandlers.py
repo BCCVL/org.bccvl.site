@@ -692,7 +692,7 @@ def upgrade_170_180_1(context, logger=None):
                     'label': unicode(item['threshold']),
                     'value': item['threshold'] }                
             exp.projection = newproj
-        exp.reindexOject()
+        exp.reindexObject()
 
     # make sure layers_used is populated and a tuple
     for dsbrain in list(pc.unrestrictedSearchResults(BCCDataGenre=['DataGenreSDMModel', 'DataGenreCP', 'DataGenreClampingMask', 'DataGenreFP'])):
@@ -747,7 +747,7 @@ def upgrade_170_180_1(context, logger=None):
             # job_params are not yet migrated at this stage
             dsmd['resolution'] = convert_uri_to_id(job_params['resolution'])
 
-        ds.reindexOject()
+        ds.reindexObject()
                             
     ###########################
     # uninstall all membrane related things    
