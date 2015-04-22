@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<object name="knowledge_base_workflow" meta_type="WorkflowPolicy">
+ <property name="title">Knowledge Base Workflow</property>
+ <bindings>
+  <default>
+   <bound-workflow workflow_id="simple_publication_workflow"/>
+  </default>
+  <type default_chain="true" type_id="Collection"/>
+  <type default_chain="true" type_id="Document"/>
+  <type default_chain="true" type_id="Event"/>
+  <type default_chain="true" type_id="File"/>
+  <type default_chain="true" type_id="Folder"/>
+  <type default_chain="true" type_id="Image"/>
+  <type default_chain="true" type_id="Link"/>
+  <type default_chain="true" type_id="News Item"/>
+  <type default_chain="true" type_id="org.bccvl.content.dataset"/>
+  <type default_chain="true" type_id="org.bccvl.content.remotedataset"/>
+  <type default_chain="true" type_id="gu.repository.content.RepositoryItem"/>  
+  <type default_chain="true" type_id="gu.repository.content.RepositoryContainer"/>  
+ </bindings>
+</object>
