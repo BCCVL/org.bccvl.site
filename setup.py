@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.8.0-rc3'
+version = '1.8.0-rc4'
 
 setup(
     name='org.bccvl.site',
