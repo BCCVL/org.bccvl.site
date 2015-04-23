@@ -117,7 +117,7 @@ class JobTracker(object):
         if not self._state:
             annots = IAnnotations(self.context)
             self._state = annots['org.bccvl.state'] = PersistentDict()
-        self._state.update(**kw)
+        self._state.update(kw)
 
     def _comparestate(self, state1, state2):
         """
