@@ -77,6 +77,7 @@ def getdsmetadata(ds):
         '@type':  ds.portal_type,
         'url': ds.absolute_url(),
         'id': IUUID(ds),
+        'title': ds.title,
         'description': ds.description,
     }
     md.update(IBCCVLMetadata(ds))
