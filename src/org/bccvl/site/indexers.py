@@ -13,28 +13,28 @@ from gu.z3cform.rdf.utils import Period
 
 
 @indexer(IDataset)
-def dataset_BCCDataGenre(object, *kw):
-    return IBCCVLMetadata(object).get('genre')
+def dataset_BCCDataGenre(obj, *kw):
+    return IBCCVLMetadata(obj).get('genre')
 
 
 @indexer(IDataset)
-def dataset_BCCEmissionScenario(object, *kw):
-    return IBCCVLMetadata(object).get('emsc')
+def dataset_BCCEmissionScenario(obj, *kw):
+    return IBCCVLMetadata(obj).get('emsc')
 
 
 @indexer(IDataset)
-def dataset_BCCGlobalClimateModel(object, *kw):
-    return IBCCVLMetadata(object).get('gcm')
+def dataset_BCCGlobalClimateModel(obj, *kw):
+    return IBCCVLMetadata(obj).get('gcm')
 
 
 @indexer(IDataset)
-def BCCDatasetResolution(object, **kw):
-    return IBCCVLMetadata(object).get('resolution')
+def BCCDatasetResolution(obj, **kw):
+    return IBCCVLMetadata(obj).get('resolution')
 
 
 @indexer(IExperiment)
-def BCCExperimentResolution(object, **kw):
-    return IBCCVLMetadata(object).get('resolution')
+def BCCExperimentResolution(obj, **kw):
+    return IBCCVLMetadata(obj).get('resolution')
 
 @indexer(IDataset)
 def DatasetSearchableText(obj, **kw):
@@ -84,8 +84,8 @@ def DatasetSearchableText(obj, **kw):
 
 
 @indexer(IDataset)
-def dataset_environmental_layer(object, **kw):
-    md = IBCCVLMetadata(object)
+def dataset_environmental_layer(obj, **kw):
+    md = IBCCVLMetadata(obj)
     # if we have 'layers_used' index it
     if 'layers_used' in md:
         return md['layers_used']
