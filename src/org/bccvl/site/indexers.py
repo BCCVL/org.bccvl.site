@@ -1,11 +1,15 @@
 from plone.indexer.decorator import indexer
 from plone.indexer.interfaces import IIndexer
 from zope.interface import implementer
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
+from Products.CMFPlone.utils import safe_unicode
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
+from gu.z3cform.rdf.utils import Period
 
 
 @indexer(IDataset)
@@ -32,6 +36,44 @@ def BCCDatasetResolution(object, **kw):
 def BCCExperimentResolution(object, **kw):
     return IBCCVLMetadata(object).get('resolution')
 
+@indexer(IDataset)
+def DatasetSearchableText(obj, **kw):
+    md = IBCCVLMetadata(obj)
+    entries = [
+        safe_unicode(obj.id),
+        safe_unicode(obj.title) or u"",
+        safe_unicode(obj.description) or u""
+    ]
+    if 'layers' in md:
+        layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(obj)
+        for key in md['layers']:
+            if key not in layer_vocab:
+                continue
+            entries.append(
+                safe_unicode(layer_vocab.getTerm(key).title) or u""
+            )
+    if 'species' in md:
+        entries.extend((
+            safe_unicode(md.get('species', {}).get('scientificName')) or u"",
+            safe_unicode(md.get('species', {}).get('vernacularName')) or u"",
+        ))
+    if md.get('genre') == "DataGenreFC":
+        # year, gcm, emsc
+        emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(obj)
+        gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(obj)
+        year = Period(md.get('period','')).start
+        if md['emsc'] in emsc_vocab:
+            entries.append(
+                safe_unicode(emsc_vocab.getTerm(md['emsc']).title) or u""
+            )
+        if md['gcm'] in gcm_vocab:
+            entries.append(
+                safe_unicode(gcm_vocab.getTerm(md['gcm']).title) or u""
+            )
+        entries.append(safe_unicode(year) or u"")
+    elif md.get('genre') == "DataGenreCC":
+        entries.append(u"current")
+    return u" ".join(entries)
 
 # TODO: should be a DateRangeIndex (resolve partial dates to 1stday
 #       (start) and last day (end))

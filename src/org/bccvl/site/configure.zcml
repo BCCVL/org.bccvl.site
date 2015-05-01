@@ -102,6 +102,11 @@
       />
 
   <adapter
+      factory=".indexers.DatasetSearchableText"
+      name="SearchableText"
+      />
+  
+  <adapter
       for=".content.interfaces.IExperiment
            Products.ZCatalog.interfaces.IZCatalog"
       factory=".indexers.JobStateIndexer"
