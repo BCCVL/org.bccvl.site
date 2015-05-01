@@ -74,7 +74,7 @@ def getdsmetadata(ds):
     md = {
         #'@context': { },
         '@id': IUUID(ds),
-        '@type':  ds.portal_type,
+        '@type': ds.portal_type,
         'url': ds.absolute_url(),
         'id': IUUID(ds),
         'title': ds.title,
