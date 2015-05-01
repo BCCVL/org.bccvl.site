@@ -133,4 +133,11 @@
         permission="zope2.View"
         />
 
+    <browser:page
+        for="org.bccvl.site.content.interfaces.IExperiment"
+        name="remove"
+        class=".experiment_remove.ExperimentRemoveView"
+        permission="cmf.ModifyPortalContent"
+        />
+
 </configure>
