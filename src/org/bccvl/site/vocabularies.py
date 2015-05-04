@@ -284,17 +284,16 @@ genre_vocabulary = SimpleVocabulary([
     SimpleTerm("DataGenreENDW_CWE", "DataGenreENDW_CWE", "Endemism whole - Corrected Weighted Endemism"),
     SimpleTerm("DataGenreENDW_WE", "DataGenreENDW_WE", "Endemism whole- Weighted Endemism"),
     SimpleTerm("DataGenreENDW_RICHNESS", "DataGenreENDW_RICHNESS", "Endemism whole - Richness used in ENDW_CWE"),
-    SimpleTerm("DataGenreENDW_SINGLE", "DataGenreENDW_SINGLE", "Endemism whole - Unweigthed by the number of neighbours"),
-    SimpleTerm("DataGenreREDUNDANCY_SET1", "DataGenreREDUNDANCY_SET1", "Redundancy - neigbour set 1"),
-    SimpleTerm("DataGenreREDUNDANCY_SET2", "DataGenreREDUNDANCY_SET2", "Redundancy - neigbour set 2"),
-    SimpleTerm("DataGenreREDUNDANCY_ALL", "DataGenreREDUNDANCY_ALL", "Redundancy - both neigbour sets"),
+    SimpleTerm("DataGenreENDW_SINGLE", "DataGenreENDW_SINGLE", "Endemism whole - Unweighted by the number of neighbours"),
+    SimpleTerm("DataGenreREDUNDANCY_SET1", "DataGenreREDUNDANCY_SET1", "Redundancy - neighbour set 1"),
+    SimpleTerm("DataGenreREDUNDANCY_SET2", "DataGenreREDUNDANCY_SET2", "Redundancy - neighbour set 2"),
+    SimpleTerm("DataGenreREDUNDANCY_ALL", "DataGenreREDUNDANCY_ALL", "Redundancy - both neighbour sets"),
     SimpleTerm("DataGenreRAREW_CWE", "DataGenreRAREW_CWE", "Rarity whole - Corrected weighted rarity"),
     SimpleTerm("DataGenreRAREW_RICHNESS", "DataGenreRAREW_RICHNESS", "Rarity whole - Richness used in RAREW_CWE"),
     SimpleTerm("DataGenreRAREW_WE", "DataGenreRAREW_WE", "Rarity whole - weighted rarity"),
     SimpleTerm("DataGenreBiodiverseModel", "DataGenreBiodiverseModel", "Biodiverse output"),
     SimpleTerm("DataGenreEnsembleResult", "DataGenreEnsembleResult", "Ensembling output"),
 ])
-
 
 @provider(IVocabularyFactory)
 def genre_source(context):
