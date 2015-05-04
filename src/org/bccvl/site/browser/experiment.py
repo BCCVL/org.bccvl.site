@@ -357,6 +357,9 @@ class ProjectionAdd(Add):
         if not datasets:
             # FIXME: Make this a widget error, currently shown as form wide error
             raise ActionExecutionError(Invalid('No future climate dataset selected.'))
+        models = data.get('species_distribution_models', {})
+        if not tuple(chain.from_iterable(x for x in models.values())):
+            raise ActionExecutionError(Invalid('No source dataset selected.'))   
 
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
@@ -377,7 +380,9 @@ class BiodiverseAdd(Add):
     def validateAction(self, data):
         # TODO: check data ...
         # ...
-        pass
+        datasets = data.get('projection', {})
+        if not tuple(chain.from_iterable(x for x in datasets.values())):
+            raise ActionExecutionError(Invalid('No projection dataset selected.'))   
 
 
 class EnsembleAdd(Add):
@@ -391,7 +396,6 @@ class EnsembleAdd(Add):
         return newob
 
     def validateAction(self, data):
-
         datasets = list(chain.from_iterable(data.get('datasets', {}).values()))
         if not datasets:
             # FIXME: Make this a widget error, currently shown as form wide error
