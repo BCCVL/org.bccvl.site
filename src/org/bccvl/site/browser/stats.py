@@ -88,7 +88,7 @@ class StatisticsView(BrowserView):
         datasets = (x._unrestrictedGetObject() for x in self._datasets_added)
         owners = (x.getOwner() for x in datasets)
         return len(
-            [ x for x in owners if x.getUserName not in ('admin', 'bccvl',) ]
+            [ x for x in owners if x.getUserName() not in ('admin', 'bccvl',) ]
         )
 
     def datasets_added_failed(self):
