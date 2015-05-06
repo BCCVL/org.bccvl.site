@@ -17,12 +17,13 @@
         factory="z3c.form.datamanager.DictionaryField"
         />
 
-   <include file="api.zcml"/>
-   <include file="experiment.zcml"/>
-   <include file="dataset.zcml"/>
-   <include file="toolkit.zcml"/>
-   <include file="dashboard.zcml"/>
-
+    <include file="api.zcml"/>
+    <include file="experiment.zcml"/>
+    <include file="dataset.zcml"/>
+    <include file="toolkit.zcml"/>
+    <include file="dashboard.zcml"/>
+    <include file="stats.zcml" />
+   
     <utility
         factory=".ws.ALAService"/>
 

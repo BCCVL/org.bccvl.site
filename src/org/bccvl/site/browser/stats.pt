@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+<metal:content-body fill-slot="body">
+    <div id="content">
+        <table>
+            <tr>
+                <td>Users</td>
+                <td tal:content="view/users" />
+            </tr>
+            <tr>
+                <td>Institutions</td>
+                <td tal:content="view/institutions" />
+            </tr>
+            <tr>
+                <td>Datasets Added</td>
+                <td tal:content="view/datasets_added" />
+            </tr>
+            <tr>
+                <td>Datasets Generated</td>
+                <td tal:content="view/datasets_generated" />
+            </tr>
+            <tr>
+                <td>Experiments Run</td>
+                <td tal:content="view/experiments_run" />
+            </tr>
+            <tr>
+                <td>Experiment Types</td>
+                <td>
+                    <table>
+                        <tr tal:repeat="exp_type view/experiment_types">
+                            <td tal:content="python: exp_type[0]" />
+                            <td tal:content="python: exp_type[1]" />
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>Experiments Published</td>
+                <td tal:content="view/experiments_published" />
+            </tr>
+            <tr>
+                <td>Jobs Run</td>
+                <td tal:content="view/jobs" />
+            </tr>
+        </table>
+    </div>
+</metal:content-body>
+</body>
+</html>
