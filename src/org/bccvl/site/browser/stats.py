@@ -1,5 +1,5 @@
 from collections import Counter
-from zope.component import getUtility
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from plone import api
 from plone.app.contenttypes.interfaces import IFolder
@@ -13,7 +13,7 @@ def _count_classes(result_seq):
 
 class StatisticsView(BrowserView):
     def __call__(self):
-        _search = getUtility(self.context, 'portal_catalog').unrestrictedSearchResults
+        _search = getToolByName(self.context, 'portal_catalog').unrestrictedSearchResults
         
         experiments_path = dict(query='/'.join(self.context.experiments.getPhysicalPath()))
         self._experiments = _search(
@@ -36,11 +36,11 @@ class StatisticsView(BrowserView):
         datasets_path = dict(query='/'.join(self.context.datasets.getPhysicalPath()))
         self._datasets_in = _search(
             path=datasets_path,
-            object_provides=IDataset,
+            object_provides=IDataset.__identifier__,
         )
         self._datasets_gen = _search(
             path=experiments_path,
-            object_provides=IDataset,
+            object_provides=IDataset.__identifier__,
         )
 
         self._users = api.user.get_users()

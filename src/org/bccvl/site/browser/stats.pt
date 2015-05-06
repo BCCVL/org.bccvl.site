@@ -10,7 +10,7 @@
 
 <metal:content-body fill-slot="body">
     <div id="content">
-        <table>
+        <table class="site_stats">
             <tr>
                 <td>Users</td>
                 <td tal:content="view/users" />
