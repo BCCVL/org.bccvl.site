@@ -20,8 +20,20 @@
                 <td tal:content="view/institutions" />
             </tr>
             <tr>
-                <td>Datasets Added</td>
+                <td>Total Datasets Added</td>
                 <td tal:content="view/datasets_added" />
+            </tr>
+            <tr>
+                <td>Local Datasets</td>
+                <td tal:content="view/datasets_added_local" />
+            </tr>
+            <tr>
+                <td>Remote Datasets</td>
+                <td tal:content="view/datasets_added_remote" />
+            </tr>
+            <tr>
+                <td>Added By Users</td>
+                <td tal:content="view/datasets_added_users" />
             </tr>
             <tr>
                 <td>Datasets Generated</td>
