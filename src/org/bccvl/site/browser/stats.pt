@@ -10,14 +10,37 @@
 
 <metal:content-body fill-slot="body">
     <div id="content">
-        <table class="site_stats">
+        <table class="stats">
+            <tr class="stats_header">
+                <td colspan="2">Users</td>
+            </tr>
+            <!--<tr>-->
+                <!--<td>New (past 3 months)</td>-->
+                <!--<td tal:content="view/users_new" />-->
+            <!--</tr>-->
             <tr>
-                <td>Users</td>
-                <td tal:content="view/users" />
+                <td>Active (past 90 days)</td>
+                <td tal:content="view/users_active" />
             </tr>
             <tr>
-                <td>Institutions</td>
-                <td tal:content="view/institutions" />
+                <td>Total</td>
+                <td tal:content="view/users_total" />
+            </tr>
+            
+            <tr class="blank_row" />
+
+            <tr class="stats_header">
+                <td>Institution</td><td>Users</td>
+            </tr>
+            <tr tal:repeat="institution view/institutions">
+                <td tal:content="python: institution[0]" />
+                <td tal:content="python: institution[1]" />
+            </tr>
+            
+            <tr class="blank_row" />
+            
+            <tr class="stats_header">
+                <td>Datasets</td>
             </tr>
             <tr>
                 <td>Total Datasets Added</td>
@@ -39,29 +62,31 @@
                 <td>Datasets Generated</td>
                 <td tal:content="view/datasets_generated" />
             </tr>
+            
+            <tr class="blank_row" />
+            
+            <tr class="stats_header">
+                <td colspan="2">Experiments</td>
+            </tr>
+            <tr tal:repeat="exp_type view/experiment_types">
+                <td tal:content="python: exp_type[0]" />
+                <td tal:content="python: exp_type[1]" />
+            </tr>
             <tr>
-                <td>Experiments Run</td>
+                <td>Total Experiments</td>
                 <td tal:content="view/experiments_run" />
-            </tr>
-            <tr>
-                <td>Experiment Types</td>
-                <td>
-                    <table>
-                        <tr tal:repeat="exp_type view/experiment_types">
-                            <td tal:content="python: exp_type[0]" />
-                            <td tal:content="python: exp_type[1]" />
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td>Experiments Published</td>
-                <td tal:content="view/experiments_published" />
             </tr>
             <tr>
                 <td>Jobs Run</td>
                 <td tal:content="view/jobs" />
             </tr>
+            <tr>
+                <td>Published</td>
+                <td tal:content="view/experiments_published" />
+            </tr>
+            
+            <tr class="blank_row" />
+            
         </table>
     </div>
 </metal:content-body>

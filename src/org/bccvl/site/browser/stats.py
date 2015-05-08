@@ -1,4 +1,5 @@
 from collections import Counter
+from datetime import datetime, timedelta
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from plone import api
@@ -30,8 +31,6 @@ class StatisticsView(BrowserView):
             review_state='published',
         )
 
-        # XXX: loop through experiments & use the physical path of each to ensure
-        # only folders in experiments are included?
         self._jobs = _search(
             path=experiments_path,
             object_provides=IFolder.__identifier__,
@@ -61,15 +60,29 @@ class StatisticsView(BrowserView):
 
         self._users = api.user.get_users()
         emails = (u.getProperty('email') for u in self._users)
-        domains = set(e.split('@')[-1] for e in emails)
-        self._institutions = list(domains)
+        self._institutions = Counter(e.split('@')[-1] for e in emails) 
 
         return super(StatisticsView, self).__call__()
 
-    def users(self):
+    def users_total(self):
         return len(self._users)
     
+    def users_new(self):
+        return 999999
+    
+    def users_active(self):
+        furthest_login_time = datetime.now() - timedelta(days=90)
+        last_login_times = (x.getProperty('last_login_time') for x in self._users)
+        return len(
+            [x for x in last_login_times if x > furthest_login_time]
+        )
+
     def institutions(self):
+        return [
+            (domain, self._institutions[domain]) for domain in sorted(self.institutions)
+        ]
+
+    def institutions_total(self):
         return len(self._institutions)
     
     def datasets(self):
@@ -107,7 +120,10 @@ class StatisticsView(BrowserView):
         return len(self._experiments_pub)
     
     def experiment_types(self):
-        return _count_classes(self._experiments).iteritems()
+        experiments = _count_classes(self._experiments).iteritems()
+        return [
+            (exp.replace('Experiment',''), experiments[exp]) for exp in experiments
+        ]
         
     def jobs(self):
         return len(self._jobs)
