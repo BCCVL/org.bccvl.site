@@ -31,7 +31,7 @@
                 height: 10px;
             }
         </style>
-        <table class="stats">
+        <table id="statistics" class="stats">
             <tr class="stats_header">
                 <td colspan="2">Users</td>
             </tr>
