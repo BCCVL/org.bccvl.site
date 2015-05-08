@@ -72,7 +72,7 @@ class StatisticsView(BrowserView):
     
     def users_active(self):
         furthest_login_time = datetime.now() - timedelta(days=90)
-        last_login_times = (x.getProperty('last_login_time') for x in self._users)
+        last_login_times = (x.getProperty('last_login_time').utcdatetime() for x in self._users)
         return len(
             [x for x in last_login_times if x > furthest_login_time]
         )
