@@ -9,8 +9,7 @@
 <body>
 
 <metal:content-body fill-slot="body">
-    <div id="content">
-    <div class="row-fluid">
+    <div id="content" class="container bccvl-main">
         <script 
             type="text/plain" 
             src="/++resource++bccvl/js/excellentexport.min.js" 
@@ -117,7 +116,6 @@
             </tr>
             
         </table>
-    </div>
     </div>
 </metal:content-body>
 </body>
