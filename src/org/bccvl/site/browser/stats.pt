@@ -27,17 +27,17 @@
             <tr class="stats_header">
                 <td colspan="2">Users</td>
             </tr>
+            <tr>
+                <td>Total</td>
+                <td tal:content="view/users_total" style="text-align:right;" />
+            </tr>
             <!--<tr>-->
                 <!--<td>New (past 3 months)</td>-->
                 <!--<td tal:content="view/users_new" />-->
             <!--</tr>-->
             <tr>
                 <td>Active (past 90 days)</td>
-                <td tal:content="view/users_active" />
-            </tr>
-            <tr>
-                <td>Total</td>
-                <td tal:content="view/users_total" />
+                <td tal:content="view/users_active" style="text-align:right;" />
             </tr>
             
             <tr class="blank_row" />
@@ -47,7 +47,7 @@
             </tr>
             <tr tal:repeat="institution view/institutions">
                 <td tal:content="python: institution[0]" />
-                <td tal:content="python: institution[1]" style="text-align:right"/>
+                <td tal:content="python: institution[1]" style="text-align:right;" />
             </tr>
             
             <tr class="blank_row" />
@@ -56,24 +56,27 @@
                 <td colspan="2">Datasets</td>
             </tr>
             <tr>
-                <td>Total Datasets Added</td>
-                <td tal:content="view/datasets_added" style="text-align:right"/>
+                <td>Added Local</td>
+                <td tal:content="view/datasets_added_local" style="text-align:right;"/>
             </tr>
             <tr>
-                <td>Local Datasets</td>
-                <td tal:content="view/datasets_added_local" style="text-align:right"/>
+                <td>Added Remote</td>
+                <td tal:content="view/datasets_added_remote" style="text-align:right;" />
             </tr>
             <tr>
-                <td>Remote Datasets</td>
-                <td tal:content="view/datasets_added_remote" style="text-align:right" />
+                <td>&nbsp;</td>
+                <td tal:content="view/datasets_added" style="text-align:right;"/>
             </tr>
+            
+            <tr class="blank_row" />
+
             <tr>
                 <td>Added By Users</td>
-                <td tal:content="view/datasets_added_users" style="text-align:right" />
+                <td tal:content="view/datasets_added_users" style="text-align:right;" />
             </tr>
             <tr>
                 <td>Datasets Generated</td>
-                <td tal:content="view/datasets_generated" style="text-align:right" />
+                <td tal:content="view/datasets_generated" style="text-align:right;" />
             </tr>
             
             <tr class="blank_row" />
@@ -83,22 +86,23 @@
             </tr>
             <tr tal:repeat="exp_type view/experiment_types">
                 <td tal:content="python: exp_type[0]" />
-                <td tal:content="python: exp_type[1]" style="text-align:right" />
+                <td tal:content="python: exp_type[1]" style="text-align:right;" />
             </tr>
             <tr>
-                <td>Total Experiments</td>
-                <td tal:content="view/experiments_run" style="text-align:right" />
-            </tr>
-            <tr>
-                <td>Experiments Published</td>
-                <td tal:content="view/experiments_published" style="text-align:right" />
-            </tr>
-            <tr>
-                <td>Jobs Run</td>
-                <td tal:content="view/jobs" style="text-align:right" />
+                <td>&nbsp;</td>
+                <td tal:content="view/experiments_run" style="text-align:right;" />
             </tr>
             
             <tr class="blank_row" />
+            
+            <tr>
+                <td>Experiments Published</td>
+                <td tal:content="view/experiments_published" style="text-align:right;" />
+            </tr>
+            <tr>
+                <td>Jobs Run</td>
+                <td tal:content="view/jobs" style="text-align:right;" />
+            </tr>
             
         </table>
     </div>
