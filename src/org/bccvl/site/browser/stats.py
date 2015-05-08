@@ -122,7 +122,7 @@ class StatisticsView(BrowserView):
     def experiment_types(self):
         experiments = _count_classes(self._experiments).iteritems()
         return [
-            (exp.replace('Experiment',''), experiments[exp]) for exp in experiments
+            (exp.replace('Experiment',''), count) for exp, count in experiments
         ]
         
     def jobs(self):

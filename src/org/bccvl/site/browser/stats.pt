@@ -9,6 +9,19 @@
 <body>
 
 <metal:content-body fill-slot="body">
+    <style>
+        .stats_header {
+            text-align: center;
+            background-color: black;
+            color: white;
+        }
+        .stats td {
+            padding: 0 10px 0 10px;
+        }
+        .blank_row {
+            height: 10px;
+        }
+    </style>
     <div id="content">
         <table class="stats">
             <tr class="stats_header">
@@ -34,33 +47,33 @@
             </tr>
             <tr tal:repeat="institution view/institutions">
                 <td tal:content="python: institution[0]" />
-                <td tal:content="python: institution[1]" />
+                <td tal:content="python: institution[1]" style="text-align:right"/>
             </tr>
             
             <tr class="blank_row" />
             
             <tr class="stats_header">
-                <td>Datasets</td>
+                <td colspan="2">Datasets</td>
             </tr>
             <tr>
                 <td>Total Datasets Added</td>
-                <td tal:content="view/datasets_added" />
+                <td tal:content="view/datasets_added" style="text-align:right"/>
             </tr>
             <tr>
                 <td>Local Datasets</td>
-                <td tal:content="view/datasets_added_local" />
+                <td tal:content="view/datasets_added_local" style="text-align:right"/>
             </tr>
             <tr>
                 <td>Remote Datasets</td>
-                <td tal:content="view/datasets_added_remote" />
+                <td tal:content="view/datasets_added_remote" style="text-align:right" />
             </tr>
             <tr>
                 <td>Added By Users</td>
-                <td tal:content="view/datasets_added_users" />
+                <td tal:content="view/datasets_added_users" style="text-align:right" />
             </tr>
             <tr>
                 <td>Datasets Generated</td>
-                <td tal:content="view/datasets_generated" />
+                <td tal:content="view/datasets_generated" style="text-align:right" />
             </tr>
             
             <tr class="blank_row" />
@@ -70,19 +83,19 @@
             </tr>
             <tr tal:repeat="exp_type view/experiment_types">
                 <td tal:content="python: exp_type[0]" />
-                <td tal:content="python: exp_type[1]" />
+                <td tal:content="python: exp_type[1]" style="text-align:right" />
             </tr>
             <tr>
                 <td>Total Experiments</td>
-                <td tal:content="view/experiments_run" />
+                <td tal:content="view/experiments_run" style="text-align:right" />
+            </tr>
+            <tr>
+                <td>Experiments Published</td>
+                <td tal:content="view/experiments_published" style="text-align:right" />
             </tr>
             <tr>
                 <td>Jobs Run</td>
-                <td tal:content="view/jobs" />
-            </tr>
-            <tr>
-                <td>Published</td>
-                <td tal:content="view/experiments_published" />
+                <td tal:content="view/jobs" style="text-align:right" />
             </tr>
             
             <tr class="blank_row" />
