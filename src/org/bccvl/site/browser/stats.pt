@@ -9,23 +9,28 @@
 <body>
 
 <metal:content-body fill-slot="body">
-    <style>
-        .stats_header {
-            text-align: center;
-            background-color: black;
-            color: white;
-        }
-        .stats td {
-            padding: 0 10px 0 10px;
-        }
-        .tally {
-            border-top: 1px solid black;
-        }
-        .blank_row {
-            height: 10px;
-        }
-    </style>
     <div id="content">
+    <div class="row-fluid">
+        <script 
+            type="text/plain" 
+            src="/++resource++bccvl/js/excellentexport.min.js" 
+        ></script>
+        <style>
+            .stats_header {
+                text-align: center;
+                background-color: black;
+                color: white;
+            }
+            .stats td {
+                padding: 0 10px 0 10px;
+            }
+            .tally {
+                border-top: 1px solid black;
+            }
+            .blank_row {
+                height: 10px;
+            }
+        </style>
         <table class="stats">
             <tr class="stats_header">
                 <td colspan="2">Users</td>
@@ -112,6 +117,7 @@
             </tr>
             
         </table>
+    </div>
     </div>
 </metal:content-body>
 </body>
