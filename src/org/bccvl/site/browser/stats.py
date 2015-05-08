@@ -79,7 +79,7 @@ class StatisticsView(BrowserView):
 
     def institutions(self):
         return [
-            (domain, self._institutions[domain]) for domain in sorted(self.institutions)
+            (domain, self._institutions[domain]) for domain in sorted(self._institutions)
         ]
 
     def institutions_total(self):
