@@ -18,6 +18,9 @@
         .stats td {
             padding: 0 10px 0 10px;
         }
+        .tally {
+            border-top: 1px solid black;
+        }
         .blank_row {
             height: 10px;
         }
@@ -49,7 +52,11 @@
                 <td tal:content="python: institution[0]" />
                 <td tal:content="python: institution[1]" style="text-align:right;" />
             </tr>
-            
+            <tr>
+                <td>&nbsp;</td>
+                <td tal:content="view/users_total" style="text-align:right;" class="tally" />
+            </tr>
+
             <tr class="blank_row" />
             
             <tr class="stats_header">
@@ -65,7 +72,7 @@
             </tr>
             <tr>
                 <td>&nbsp;</td>
-                <td tal:content="view/datasets_added" style="text-align:right;"/>
+                <td tal:content="view/datasets_added" style="text-align:right;" class="tally"/>
             </tr>
             
             <tr class="blank_row" />
@@ -90,7 +97,7 @@
             </tr>
             <tr>
                 <td>&nbsp;</td>
-                <td tal:content="view/experiments_run" style="text-align:right;" />
+                <td tal:content="view/experiments_run" style="text-align:right;" class="tally" />
             </tr>
             
             <tr class="blank_row" />
