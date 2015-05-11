@@ -38,7 +38,7 @@
       <property name="icon_class" type="string">fa fa-bar-chart-o</property>
       <property name="url_expr" type="string">string:${globals_view/navigationRootUrl}/statistics</property>
       <property name="permissions">
-        <element value="org.bccvl.ViewStatistics"/>
+        <element value="org.bccvl: View Statistics"/>
       </property>
       <property name="visible">True</property>
     </object>
