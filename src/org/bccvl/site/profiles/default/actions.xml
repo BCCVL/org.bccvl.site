@@ -25,36 +25,41 @@
       <property name="icon_class" type="string">icon-bell</property>
     </object>
     <object name="details" meta_type="CMF Action" i18n:domain="plone">
+      <property name="icon_class" type="string">icon-info</property>      
       <property name="visible">False</property>
     </object>
     <object name="preferences" meta_type="CMF Action" i18n:domain="plone">
+      <property name="icon_class" type="string">icon-wrench</property>
       <property name="visible">False</property>
+    </object>
+    <object name="stats" meta_type="CMF Action" i18n:domain="bccvl">
+      <property name="title">View Site Statistics</property>
+      <property name="description">Show various statitistics about the site used for reporting</property>
+      <property name="icon_class" type="string">icon-bar-chart</property>
+      <property name="url_expr" type="string">string:${globals_view/navigationRootUrl}/@@statistics</property>
+      <property name="permissions">
+        <element value="org.bccvl.ViewStatistics"/>
+      </property>
+      <property name="visible">True</property>
     </object>
     <object name="plone_setup" meta_type="CMF Action" i18n:domain="plone">
       <property name="icon_class" type="string">icon-eye-open</property>
     </object>
+    <object name="login" meta_type="CMF Action" i18n:domain="plone">
+      <property name="icon_class" type="string">icon-sign-in</property>
+    </object>
+    <object name="join" meta_type="CMF Action" i18n:domain="plone">
+      <property name="icon_class" type="string">icon-thumbs-o-up</property>
+    </object>
     <object name="undo" meta_type="CMF Action" i18n:domain="plone">
+      <property name="icon_class" type="string">icon-undo</property>      
       <property name="visible">False</property>
     </object>
+    <object name="review-comments" meta_type="CMF Action" i18n:domain="plone">
+      <property name="icon_class" type="string">icon-comments-o</property>
+    </object>
     <object name="logout" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-eject</property>
+      <property name="icon_class" type="string">icon-sign-out</property>            
     </object>
   </object>
-
-
-<!-- <object name="dataset" meta_type="CMF Action">
-        <object name="dataset_remove" meta_type="CMF Action" i18n:domain="plone">
-            <property name="title" i18n:translate="">Remove Dataset</property>
-            <property name="description" i18n:translate=""></property>
-            <property name="url_expr">string:$object_url/@@remove</property>
-            <property name="icon_expr"></property>
-            <property name="available_expr"></property>
-            <property name="permissions">
-                <element value="cmf.ModifyPortalContent" />
-            </property>
-            <property name="visible">True</property>
-        </object>
-    </object> -->
-
-
 </object>
