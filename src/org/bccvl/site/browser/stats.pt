@@ -10,26 +10,6 @@
 
 <metal:content-body fill-slot="body">
     <div id="content" class="container bccvl-main">
-        <script 
-            type="text/plain" 
-            src="/++resource++bccvl/js/excellentexport.min.js" 
-        ></script>
-        <style>
-            .stats_header {
-                text-align: center;
-                background-color: black;
-                color: white;
-            }
-            .stats td {
-                padding: 0 10px 0 10px;
-            }
-            .tally {
-                border-top: 1px solid black;
-            }
-            .blank_row {
-                height: 10px;
-            }
-        </style>
         <table id="statistics" class="stats">
             <tr class="stats_header">
                 <td colspan="2">Users</td>
@@ -50,7 +30,7 @@
             <tr class="blank_row" />
 
             <tr class="stats_header">
-                <td>Institution</td><td>Users</td>
+                <td colspan="2">Users per Institution</td>
             </tr>
             <tr tal:repeat="institution view/institutions">
                 <td tal:content="python: institution[0]" />
