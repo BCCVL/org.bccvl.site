@@ -22,44 +22,44 @@
   <object name="user" meta_type="CMF Action Category">
     <object name="dashboard" meta_type="CMF Action" i18n:domain="plone">
       <property name="visible">True</property>
-      <property name="icon_class" type="string">icon-bell</property>
+      <property name="icon_class" type="string">fa fa-bell-o</property>
     </object>
     <object name="details" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-info</property>      
+      <property name="icon_class" type="string">fa fa-info</property>      
       <property name="visible">False</property>
     </object>
     <object name="preferences" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-wrench</property>
+      <property name="icon_class" type="string">fa fa-wrench</property>
       <property name="visible">False</property>
     </object>
-    <object name="stats" meta_type="CMF Action" i18n:domain="bccvl">
+    <object name="stats" meta_type="CMF Action" i18n:domain="bccvl" insert-before="plone_setup">
       <property name="title">View Site Statistics</property>
       <property name="description">Show various statitistics about the site used for reporting</property>
-      <property name="icon_class" type="string">icon-bar-chart</property>
-      <property name="url_expr" type="string">string:${globals_view/navigationRootUrl}/@@statistics</property>
+      <property name="icon_class" type="string">fa fa-bar-chart-o</property>
+      <property name="url_expr" type="string">string:${globals_view/navigationRootUrl}/statistics</property>
       <property name="permissions">
         <element value="org.bccvl.ViewStatistics"/>
       </property>
       <property name="visible">True</property>
     </object>
     <object name="plone_setup" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-eye-open</property>
+      <property name="icon_class" type="string">fa fa-eye</property>
     </object>
     <object name="login" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-sign-in</property>
+      <property name="icon_class" type="string">fa fa-sign-in</property>
     </object>
     <object name="join" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-thumbs-o-up</property>
+      <property name="icon_class" type="string">fa fa-thumbs-o-up</property>
     </object>
     <object name="undo" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-undo</property>      
+      <property name="icon_class" type="string">fa fa-undo</property>      
       <property name="visible">False</property>
     </object>
     <object name="review-comments" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-comments-o</property>
+      <property name="icon_class" type="string">fa fa-comments-o</property>
     </object>
     <object name="logout" meta_type="CMF Action" i18n:domain="plone">
-      <property name="icon_class" type="string">icon-sign-out</property>            
+      <property name="icon_class" type="string">fa fa-sign-out</property>            
     </object>
   </object>
 </object>
