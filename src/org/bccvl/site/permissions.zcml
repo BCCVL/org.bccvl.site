@@ -18,4 +18,9 @@
       title="org.bccvl: Add Dataset"
       />
 
+  <permission
+      id="org.bccvl.ViewStatistics"
+      title="org.bccvl: View Statistics"
+      />
+  
 </configure>

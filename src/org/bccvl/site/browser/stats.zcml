@@ -9,7 +9,7 @@
       name="statistics"
       for="plone.app.layout.navigation.interfaces.INavigationRoot"
       class=".stats.StatisticsView"
-      permission="zope2.View"
+      permission="org.bccvl.ViewStatistics"
       template="stats.pt"
   />
 
