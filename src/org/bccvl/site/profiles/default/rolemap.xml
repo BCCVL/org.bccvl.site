@@ -2,6 +2,7 @@
     <roles>
       <role name="Knowledgebase Editor"/>
       <role name="Knowledgebase Contributor"/>
+      <role name="BCCVL Report Viewer"/>
     </roles>
     <permissions>
         <permission name="org.bccvl: Add Experiment" acquire="False">
@@ -28,6 +29,10 @@
             <role name="Repository Contributor"/>
             <role name="Manager"/>
             <role name="Owner"/>
+        </permission>
+        <permission name="org.bccvl: View Statistics" acquire="True">
+            <role name="BCCVL Report Viewer"/>
+            <role name="Manager"/>
         </permission>
         <!-- see Products/CMFEditions/profiles/default/rolemap.xml
              for history permissions -->

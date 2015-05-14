@@ -797,3 +797,15 @@ def upgrade_170_180_1(context, logger=None):
     # FIXME: pretty much all *projection.out files have a malformed mime type (None)
     # TODO: move away from storing temporal metadata as dc:period
     # TODO: delete subjecturi index column
+
+
+def upgrade_180_181_1(context, logger=None):
+    # context is either the portal (called from setupVarious) or portal_setup when run via genericsetup
+    if logger is None:
+        # Called as upgrade step: define our own logger.
+        logger = LOG
+
+    # Run the following GS steps
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
