@@ -1,4 +1,6 @@
+import itertools
 from collections import Counter
+from operator import itemgetter
 from datetime import datetime, timedelta
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
@@ -21,10 +23,12 @@ class StatisticsView(BrowserView):
         _search = getToolByName(self.context, 'portal_catalog').unrestrictedSearchResults
         
         experiments_path = dict(query='/'.join(self.context.experiments.getPhysicalPath()))
-        self._experiments = _search(
+        _experiments = _search(
             path=experiments_path,
             object_provides=IExperiment.__identifier__
         )
+        self._experiments = [ x._unrestrictedGetObject() for x in _experiments ]
+
         self._experiments_pub = _search(
             path=experiments_path,
             object_provides=IExperiment.__identifier__,
@@ -78,9 +82,8 @@ class StatisticsView(BrowserView):
         )
 
     def institutions(self):
-        return [
-            (domain, self._institutions[domain]) for domain in sorted(self._institutions)
-        ]
+        by_institution = itemgetter(0) # sort by key
+        return sorted(self._institutions, key=by_institution)
 
     def institutions_total(self):
         return len(self._institutions)
@@ -120,10 +123,21 @@ class StatisticsView(BrowserView):
         return len(self._experiments_pub)
     
     def experiment_types(self):
-        experiments = _count_classes(self._experiments).iteritems()
-        return [
-            (exp.replace('Experiment',''), count) for exp, count in experiments
-        ]
+        experiments = Counter(
+            x.__class__.__name__.replace('Experiment','') for x in self._experiments
+        )
+        by_count = itemgetter(1) # sort by value
+        return sorted(experiments, key=by_count, reverse=True)
+        
+    def algorithm_types(self):
+        algorithms = (x.algorithms for x in self._experiments if hasattr(x, 'algorithms'))
+        functions = (x.functions for x in self._experiments if hasattr(x, 'functions'))
+        flat_functions = (i for y in functions for i in y)
+        algorithm_types= Counter(
+            x.title for x in itertools.chain(algorithms, flat_functions)
+        )
+        by_count = itemgetter(1) # sort by value
+        return sorted(algorithm_types.iteritems(), key=by_count, reverse=True)
         
     def jobs(self):
         return len(self._jobs)

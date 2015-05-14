@@ -95,6 +95,13 @@
                 <td tal:content="view/jobs" style="text-align:right;" />
             </tr>
             
+            <tr class="stats_header">
+                <td colspan="2">Algorithms</td>
+            </tr>
+            <tr tal:repeat="algo_type view/algorithm_types">
+                <td tal:content="python: algo_type[0]" />
+                <td tal:content="python: algo_type[1]" style="text-align:right;" />
+            </tr>
         </table>
     </div>
 </metal:content-body>
