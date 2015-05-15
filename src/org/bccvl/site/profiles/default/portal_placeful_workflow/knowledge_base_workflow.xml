@@ -15,7 +15,5 @@
   <type default_chain="true" type_id="News Item"/>
   <type default_chain="true" type_id="org.bccvl.content.dataset"/>
   <type default_chain="true" type_id="org.bccvl.content.remotedataset"/>
-  <type default_chain="true" type_id="gu.repository.content.RepositoryItem"/>  
-  <type default_chain="true" type_id="gu.repository.content.RepositoryContainer"/>  
  </bindings>
 </object>
