@@ -95,6 +95,8 @@
                 <td tal:content="view/jobs" style="text-align:right;" />
             </tr>
             
+            <tr class="blank_row" />
+            
             <tr class="stats_header">
                 <td colspan="2">Algorithms</td>
             </tr>

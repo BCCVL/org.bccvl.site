@@ -83,7 +83,7 @@ class StatisticsView(BrowserView):
 
     def institutions(self):
         by_institution = itemgetter(0) # sort by key
-        return sorted(self._institutions, key=by_institution)
+        return sorted(self._institutions.iteritems(), key=by_institution)
 
     def institutions_total(self):
         return len(self._institutions)
@@ -127,15 +127,14 @@ class StatisticsView(BrowserView):
             x.__class__.__name__.replace('Experiment','') for x in self._experiments
         )
         by_count = itemgetter(1) # sort by value
-        return sorted(experiments, key=by_count, reverse=True)
+        return sorted(experiments.iteritems(), key=by_count, reverse=True)
         
     def algorithm_types(self):
         algorithms = (x.algorithms for x in self._experiments if hasattr(x, 'algorithms'))
         functions = (x.functions for x in self._experiments if hasattr(x, 'functions'))
         flat_functions = (i for y in functions for i in y)
-        algorithm_types= Counter(
-            x.title for x in itertools.chain(algorithms, flat_functions)
-        )
+        algorithm_objs = (api.content.get(UID=x) for x in itertools.chain(algorithms, flat_functions))
+        algorithm_types= Counter(x.title for x in algorithm_objs)
         by_count = itemgetter(1) # sort by value
         return sorted(algorithm_types.iteritems(), key=by_count, reverse=True)
         
