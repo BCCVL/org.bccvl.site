@@ -36,6 +36,7 @@ Once we have a XMLRPC proxy we can just call the available methods.
      'species': {'scientificName': 'Alectura lathami',
                  'taxonID': 'urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986',
                  'vernacularName': 'Australian Brush-turkey'},
+     'title': 'ABT',
      'url': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv',
      'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
     >>> res['id'] == abtuid
@@ -63,6 +64,7 @@ have to pass in a parameter to tell it in which object we are interested.
      'species': {'scientificName': 'Alectura lathami',
                  'taxonID': 'urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986',
                  'vernacularName': 'Australian Brush-turkey'},
+     'title': 'ABT',
      'url': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv',
      'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
     >>> res['id'] == abtuid

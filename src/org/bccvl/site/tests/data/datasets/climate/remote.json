@@ -6,6 +6,9 @@
   "bccvlmetadata":{
     "genre": "DataGenreFC",
     "resolution": "Resolution30m",
+    "temporal": "start=2015; end=2015; scheme=W3C-DTF;",
+    "emsc": "RCP3PD",
+    "gcm": "cccma-cgcm31",
     "layers": {
       "http://example.com/file01":{
         "fileName": "remote/data/file1.tif"
