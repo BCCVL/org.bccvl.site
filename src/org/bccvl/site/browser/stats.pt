@@ -7,104 +7,110 @@
       i18n:domain="plone">
 
 <body>
-
 <metal:content-body fill-slot="body">
     <div id="content" class="container bccvl-main">
-        <table id="statistics" class="stats">
-            <tr class="stats_header">
-                <td colspan="2">Users</td>
-            </tr>
-            <tr>
-                <td>Total</td>
-                <td tal:content="view/users_total" style="text-align:right;" />
-            </tr>
-            <!--<tr>-->
+        <div id="statistics-layout" class="row-fluid">
+            <div class="span5">
+            <table id="statistics" class="stats">
+                <tr class="stats_header">
+                    <td colspan="2">Users</td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td tal:content="view/users_total" style="text-align:right;"/>
+                </tr>
+                <!--<tr>-->
                 <!--<td>New (past 3 months)</td>-->
                 <!--<td tal:content="view/users_new" />-->
-            <!--</tr>-->
-            <tr>
-                <td>Active (past 90 days)</td>
-                <td tal:content="view/users_active" style="text-align:right;" />
-            </tr>
-            
-            <tr class="blank_row" />
+                <!--</tr>-->
+                <tr>
+                    <td>Active (past 90 days)</td>
+                    <td tal:content="view/users_active" style="text-align:right;"/>
+                </tr>
 
-            <tr class="stats_header">
-                <td colspan="2">Users per Institution</td>
-            </tr>
-            <tr tal:repeat="institution view/institutions">
-                <td tal:content="python: institution[0]" />
-                <td tal:content="python: institution[1]" style="text-align:right;" />
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td tal:content="view/users_total" style="text-align:right;" class="tally" />
-            </tr>
+                <tr class="blank_row"/>
 
-            <tr class="blank_row" />
-            
-            <tr class="stats_header">
-                <td colspan="2">Datasets</td>
-            </tr>
-            <tr>
-                <td>Added Local</td>
-                <td tal:content="view/datasets_added_local" style="text-align:right;"/>
-            </tr>
-            <tr>
-                <td>Added Remote</td>
-                <td tal:content="view/datasets_added_remote" style="text-align:right;" />
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td tal:content="view/datasets_added" style="text-align:right;" class="tally"/>
-            </tr>
-            
-            <tr class="blank_row" />
+                <tr class="stats_header">
+                    <td colspan="2">Users per Institution</td>
+                </tr>
+                <tr tal:repeat="institution view/institutions">
+                    <td tal:content="python: institution[0]"/>
+                    <td tal:content="python: institution[1]" style="text-align:right;"/>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td tal:content="view/users_total" style="text-align:right;" class="tally"/>
+                </tr>
 
-            <tr>
-                <td>Added By Users</td>
-                <td tal:content="view/datasets_added_users" style="text-align:right;" />
-            </tr>
-            <tr>
-                <td>Datasets Generated</td>
-                <td tal:content="view/datasets_generated" style="text-align:right;" />
-            </tr>
-            
-            <tr class="blank_row" />
-            
-            <tr class="stats_header">
-                <td colspan="2">Experiments</td>
-            </tr>
-            <tr tal:repeat="exp_type view/experiment_types">
-                <td tal:content="python: exp_type[0]" />
-                <td tal:content="python: exp_type[1]" style="text-align:right;" />
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td tal:content="view/experiments_run" style="text-align:right;" class="tally" />
-            </tr>
-            
-            <tr class="blank_row" />
-            
-            <tr>
-                <td>Experiments Published</td>
-                <td tal:content="view/experiments_published" style="text-align:right;" />
-            </tr>
-            <tr>
-                <td>Jobs Run</td>
-                <td tal:content="view/jobs" style="text-align:right;" />
-            </tr>
-            
-            <tr class="blank_row" />
-            
-            <tr class="stats_header">
-                <td colspan="2">Algorithms</td>
-            </tr>
-            <tr tal:repeat="algo_type view/algorithm_types">
-                <td tal:content="python: algo_type[0]" />
-                <td tal:content="python: algo_type[1]" style="text-align:right;" />
-            </tr>
-        </table>
+                <tr class="blank_row"/>
+
+                <tr class="stats_header">
+                    <td colspan="2">Datasets</td>
+                </tr>
+                <tr>
+                    <td>Added Local</td>
+                    <td tal:content="view/datasets_added_local" style="text-align:right;"/>
+                </tr>
+                <tr>
+                    <td>Added Remote</td>
+                    <td tal:content="view/datasets_added_remote" style="text-align:right;"/>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td tal:content="view/datasets_added" style="text-align:right;" class="tally"/>
+                </tr>
+
+                <tr class="blank_row"/>
+
+                <tr>
+                    <td>Added By Users</td>
+                    <td tal:content="view/datasets_added_users" style="text-align:right;"/>
+                </tr>
+                <tr>
+                    <td>Datasets Generated</td>
+                    <td tal:content="view/datasets_generated" style="text-align:right;"/>
+                </tr>
+
+                <tr class="blank_row"/>
+
+                <tr class="stats_header">
+                    <td colspan="2">Experiments</td>
+                </tr>
+                <tr tal:repeat="exp_type view/experiment_types">
+                    <td tal:content="python: exp_type[0]"/>
+                    <td tal:content="python: exp_type[1]" style="text-align:right;"/>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td tal:content="view/experiments_run" style="text-align:right;" class="tally"/>
+                </tr>
+
+                <tr class="blank_row"/>
+
+                <tr>
+                    <td>Experiments Published</td>
+                    <td tal:content="view/experiments_published" style="text-align:right;"/>
+                </tr>
+                <tr>
+                    <td>Jobs Run</td>
+                    <td tal:content="view/jobs" style="text-align:right;"/>
+                </tr>
+
+                <tr class="blank_row"/>
+
+                <tr class="stats_header">
+                    <td colspan="2">Algorithms</td>
+                </tr>
+                <tr tal:repeat="algo_type view/algorithm_types">
+                    <td tal:content="python: algo_type[0]"/>
+                    <td tal:content="python: algo_type[1]" style="text-align:right;"/>
+                </tr>
+            </table>
+            </div>
+            <div class="span5 offset1">
+                <a download="bccvl-stats.xls" href="#" onclick="return ExcellentExport.excel(this, 'statistics', 'BCCVL usage statistics');">Export to Excel</a>            
+            </div>
+        </div>
     </div>
 </metal:content-body>
 </body>
