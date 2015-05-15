@@ -31,6 +31,7 @@ setup(
         'org.bccvl.theme',
         'Products.AutoUserMakerPASPlugin',
         'Products.ShibbolethPermissions',
+        'Products.CMFPlacefulWorkflow',
         'sc.social.like',
         'gu.transmogrifier',
         'plone.api',
