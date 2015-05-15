@@ -108,8 +108,9 @@
             </table>
             </div>
             <div class="span5 offset1">
-                <a class="btn btn-primary" download="bccvl-stats.xls" href="#" onclick="return ExcellentExport.excel(this, 'statistics', 'BCCVL usage statistics');">Export to Excel&nbsp;</a>
-                <i class="icon-chevron-down icon-white"></i>
+                <a class="btn btn-primary" download="bccvl-stats.xls" href="#" onclick="return ExcellentExport.excel(this, 'statistics', 'BCCVL usage statistics');">
+                    Export to Excel&nbsp;<i class="icon-chevron-down icon-white"></i>
+                </a>
             </div>
         </div>
     </div>
