@@ -13,7 +13,7 @@
             <div class="span5">
             <table id="statistics" class="stats">
                 <tr class="stats_header">
-                    <td colspan="2">Users</td>
+                    <td colspan="2"><h4>Users</h4></td>
                 </tr>
                 <tr>
                     <td>Total</td>
@@ -31,7 +31,7 @@
                 <tr class="blank_row"/>
 
                 <tr class="stats_header">
-                    <td colspan="2">Users per Institution</td>
+                    <td colspan="2"><h4>Users per Institution</h4></td>
                 </tr>
                 <tr tal:repeat="institution view/institutions">
                     <td tal:content="python: institution[0]"/>
@@ -45,7 +45,7 @@
                 <tr class="blank_row"/>
 
                 <tr class="stats_header">
-                    <td colspan="2">Datasets</td>
+                    <td colspan="2"><h4>Datasets</h4></td>
                 </tr>
                 <tr>
                     <td>Added Local</td>
@@ -74,7 +74,7 @@
                 <tr class="blank_row"/>
 
                 <tr class="stats_header">
-                    <td colspan="2">Experiments</td>
+                    <td colspan="2"><h4>Experiments</h4></td>
                 </tr>
                 <tr tal:repeat="exp_type view/experiment_types">
                     <td tal:content="python: exp_type[0]"/>
@@ -99,7 +99,7 @@
                 <tr class="blank_row"/>
 
                 <tr class="stats_header">
-                    <td colspan="2">Algorithms</td>
+                    <td colspan="2"><h4>Algorithms</h4></td>
                 </tr>
                 <tr tal:repeat="algo_type view/algorithm_types">
                     <td tal:content="python: algo_type[0]"/>
@@ -108,7 +108,8 @@
             </table>
             </div>
             <div class="span5 offset1">
-                <a download="bccvl-stats.xls" href="#" onclick="return ExcellentExport.excel(this, 'statistics', 'BCCVL usage statistics');">Export to Excel</a>            
+                <a download="bccvl-stats.xls" href="#" onclick="return ExcellentExport.excel(this, 'statistics', 'BCCVL usage statistics');">Export to Excel&nbsp;</a>
+                <i class="icon-chevron-down icon-white"></i>
             </div>
         </div>
     </div>
