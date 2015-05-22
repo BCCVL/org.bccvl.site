@@ -19,10 +19,9 @@
                       onkeypress view/onkeypress;
                       onkeydown view/onkeydown;
                       onkeyup view/onkeyup">
-  <tal:block repeat="item view/items">
-    <div id="" class="row">
-        <span tal:content="item/title">Dataset</span>
-    </div>
-  </tal:block>
+  <ul>
+    <li tal:repeat="item view/items"
+        tal:content="item/title">Dataset title</li>
+  </ul>
 </div>
 </html>

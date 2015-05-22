@@ -1,10 +1,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       tal:omit-tag="">
-  <div class="selecteditem"
-       tal:define="item view/item;
-                   id view/id">
-    <span class="selected-option"
-          tal:content="item/Title | string:No absence dataset selected">Species</span>
+  <div id="" class=""
+       tal:attributes="id view/id;
+                       class view/klass;
+                       style view/style;
+                       title view/title;
+                       lang view/lang;"
+       tal:define="items python: tuple(view.items())">
+    <ul>
+      <li tal:repeat="item items"
+          tal:content="item/Title">Species</li>
+      <li tal:condition="not: items">No absence dataset selected</li>
+    </ul>
   </div>
 </html>
