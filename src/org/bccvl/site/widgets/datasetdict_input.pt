@@ -25,26 +25,29 @@
        tal:attributes="id string:${view/id}">
     <tal:repeat tal:repeat="item view/items">
       <div class="selecteditem"
-           tal:define="layer item/layer;
-                       brain item/brain;
+           tal:define="brain item/brain;
                        index repeat/item/index;">
-        <input type="hidden" value="" name="form.widgets.fieldname.dataset.0"
-               tal:attributes="value brain/UID;
-                               name string:${view/name}.dataset.${index};
-                               "/>
-        <input type="hidden" value="" name="form.widgets.fieldname.layer.0"
-               tal:attributes="value layer/token;
-                               name string:${view/name}.layer.${index};
-                               "/>
         <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
+        <input type="hidden" value="" name="form.widgets.fieldname.item.0"
+               tal:attributes="value item/id;
+                               name string:${view/name}.item.${index};
+                               "/>
         <span tal:content="brain/Title">Dataset</span>
-        <span tal:content="layer/title">Layer</span>
+        <ul>
+          <li tal:repeat="subitem item/subitems">
+            <input type="checkbox" value="" name="form.widgets.fieldname.item.0.item:list"
+                   tal:attributes="value subitem/id;
+                                   name string:${view/name}.item.${index}.item:list;
+                                   checked subitem/selected"/>
+            <span tal:content="subitem/title">Layer</span>
+          </li>
+        </ul>
       </div>
       <div class="selecteditem"
            tal:condition="repeat/item/end">
         <input type="hidden" value="" name="form.widgets.name.count"
                tal:attributes="value repeat/item/number;
-                               name string:${view/name}.count"/>
+                               name string:${view/name}.count;"/>
       </div>
     </tal:repeat>
   </div>

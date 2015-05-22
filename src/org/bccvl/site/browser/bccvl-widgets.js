@@ -179,15 +179,20 @@
 
             // when user preses 'save' button in modal
             modal.$element.on('modalapply', function(event) {
+                var $widgetroot = $('#' + settings.widgetid);
                 // get selected element
                 var $selected = modal.get_selected();
                 // we have all the data we need so get rid of the modal
                 modal.close();
                 if ($selected.length) {
-                    // fetch html for widget
                     var params = [];
+                    if (settings.multiple) {
+                        // if multiple fetch current selection
+                        params = $widgetroot.find('input,select').serializeArray();
+                    }
                     $.each($selected, function(index, value){
-                        params.push({name: settings.widgetname, value: $(value).attr('data-uuid')});
+                        params.push({name: settings.widgetname + ':list',
+                                     value: $(value).attr('data-uuid')});
                     });
                     reload_widget(params);
                 }
@@ -220,7 +225,7 @@
         };
 
         // multi layer select widget
-        function select_dataset_layers($element, options) {
+        function select_dataset_dict($element, options) {
 
             // required options: field, genre
 
@@ -274,10 +279,8 @@
                     var params = $widgetroot.find('input,select').serializeArray();
                     // collect newly selected layers
                     $.each($selected, function(index, value){
-                        params.push({name: settings.widgetname + '.dataset.' + count,
+                        params.push({name: settings.widgetname + '.item.' + count,
                                      value: $(value).attr('data-uuid')});
-                        params.push({name: settings.widgetname + '.layer.' + count,
-                                     value: $(value).attr('data-layer')});
                         count += 1;
                     });
                     // add count parameter if it was not on page already
@@ -579,7 +582,7 @@
         }
         $.extend(bccvl, {
             select_dataset: select_dataset,
-            select_dataset_layers: select_dataset_layers,
+            select_dataset_dict: select_dataset_dict,
             select_dataset_future: select_dataset_future,
             select_experiment: select_experiment
         });

@@ -22,11 +22,10 @@
   <div id="form-widgets-fieldname"
        tal:attributes="id string:${view/id}">
     <div class="selecteditem"
-         tal:define="item view/item"
-         tal:condition="python: view.value and item">
-      <input type="hidden" value="" name="form.widgets.fieldname"
-             tal:attributes="value view/value;
-                             name view/name;
+         tal:repeat="item view/items">
+      <input type="hidden" value="" name="form.widgets.fieldname:list"
+             tal:attributes="value item/UID;
+                             name string:${view/name}:list;
                              required view/required;
                              "/>
       <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>

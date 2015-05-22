@@ -11,11 +11,9 @@ class IDatasetWidget(IWidget):
 
     pass
 
-
-class IDatasetLayersWidget(IWidget):
+class IDatasetDictWidget(IWidget):
 
     pass
-
 
 class IExperimentSDMWidget(IWidget):
 
