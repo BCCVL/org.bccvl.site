@@ -137,7 +137,7 @@
       <fieldset id="fieldset-userlist">
         <legend id="fieldsetlegend-fieldset-userlist">User List</legend>
         <div id="userlist_col1" class="cell position-0 width-8">
-          <table id="userlist" class="stats">
+          <table id="userlist" class="stats" border="1">
             <thead>
               <tr>
                 <th><h4>Login</h4></th><th><h4>Full name</h4></th><th><h4>Email</h4></th><th><h4>Last login</h4></th>
