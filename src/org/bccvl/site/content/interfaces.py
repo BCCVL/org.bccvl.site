@@ -165,7 +165,7 @@ class IBiodiverseExperiment(IExperiment):
     )
 
     cluster_size = Choice(
-        title=u'Cluster size',
+        title=u'Biodiverse cell size',
         description=u'x/y cell size in meter',
         default=5000,
         required=True,
