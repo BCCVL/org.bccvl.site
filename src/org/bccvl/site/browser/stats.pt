@@ -3,117 +3,164 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
+      tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime;"
       metal:use-macro="context/main_template/macros/master"
       i18n:domain="plone">
-
+  <head>
+    <metal:styleslot fill-slot="style_slot">
+      <style>
+        table#userlist {
+        width: 100%;
+        }
+      table#userlist td {
+      padding: 1pt;
+      }
+    </style>
+  </metal:styleslot>
+  
+      <metal:javascriptslot fill-slot="javascript_head_slot">
+        <!-- TODO: that grabs bootstrap from theme -->
+        <script type="text/javascript"
+                src="++resource++bccvl/lib/excellentexport/excellentexport.js"
+                tal:attributes="src string:${portal_url}/++resource++bccvl/lib/excellentexport/excellentexport.js"></script>
+      </metal:javascriptslot>
+  </head>
 <body>
 <metal:content-body fill-slot="body">
-    <div id="content" class="container bccvl-main">
-        <div id="statistics-layout" class="row-fluid">
-            <div class="span5">
-            <table id="statistics" class="stats">
-                <tr class="stats_header">
-                    <td colspan="2"><h4>Users</h4></td>
-                </tr>
-                <tr>
-                    <td>Total</td>
-                    <td tal:content="view/users_total" style="text-align:right;"/>
-                </tr>
-                <!--<tr>-->
-                <!--<td>New (past 3 months)</td>-->
-                <!--<td tal:content="view/users_new" />-->
-                <!--</tr>-->
-                <tr>
-                    <td>Active (past 90 days)</td>
-                    <td tal:content="view/users_active" style="text-align:right;"/>
-                </tr>
+  <div id="content" class="container bccvl-main">
+    <div class="enableFormTabbing">
+      <fieldset id="fieldset-stats">
+        <legend id="fieldsetlegend-fieldset-stats">Statistics</legend>
+        <div id="stats_col1" class="cell position-0 width-4">
+          <table id="statistics" class="stats">
+            <tr class="stats_header">
+              <td colspan="2"><h4>Users</h4></td>
+            </tr>
+            <tr>
+              <td>Total</td>
+              <td tal:content="view/users_total" style="text-align:right;"/>
+            </tr>
+            <!--<tr>-->
+            <!--<td>New (past 3 months)</td>-->
+            <!--<td tal:content="view/users_new" />-->
+            <!--</tr>-->
+            <tr>
+              <td>Active (past 90 days)</td>
+              <td tal:content="view/users_active" style="text-align:right;"/>
+            </tr>
+            
+            <tr class="blank_row"/>
+            
+            <tr class="stats_header">
+              <td colspan="2"><h4>Users per Institution</h4></td>
+            </tr>
+            <tr tal:repeat="institution view/institutions">
+              <td tal:content="python: institution[0]"/>
+              <td tal:content="python: institution[1]" style="text-align:right;"/>
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              <td tal:content="view/users_total" style="text-align:right;" class="tally"/>
+            </tr>
+            
+            <tr class="blank_row"/>
 
-                <tr class="blank_row"/>
-
-                <tr class="stats_header">
-                    <td colspan="2"><h4>Users per Institution</h4></td>
-                </tr>
-                <tr tal:repeat="institution view/institutions">
-                    <td tal:content="python: institution[0]"/>
-                    <td tal:content="python: institution[1]" style="text-align:right;"/>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td tal:content="view/users_total" style="text-align:right;" class="tally"/>
-                </tr>
-
-                <tr class="blank_row"/>
-
-                <tr class="stats_header">
-                    <td colspan="2"><h4>Datasets</h4></td>
-                </tr>
-                <tr>
-                    <td>Added Local</td>
-                    <td tal:content="view/datasets_added_local" style="text-align:right;"/>
-                </tr>
-                <tr>
-                    <td>Added Remote</td>
-                    <td tal:content="view/datasets_added_remote" style="text-align:right;"/>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td tal:content="view/datasets_added" style="text-align:right;" class="tally"/>
-                </tr>
-
-                <tr class="blank_row"/>
-
-                <tr>
-                    <td>Added By Users</td>
-                    <td tal:content="view/datasets_added_users" style="text-align:right;"/>
-                </tr>
-                <tr>
-                    <td>Datasets Generated</td>
-                    <td tal:content="view/datasets_generated" style="text-align:right;"/>
-                </tr>
-
-                <tr class="blank_row"/>
-
-                <tr class="stats_header">
-                    <td colspan="2"><h4>Experiments</h4></td>
-                </tr>
-                <tr tal:repeat="exp_type view/experiment_types">
-                    <td tal:content="python: exp_type[0]"/>
-                    <td tal:content="python: exp_type[1]" style="text-align:right;"/>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td tal:content="view/experiments_run" style="text-align:right;" class="tally"/>
-                </tr>
-
-                <tr class="blank_row"/>
-
-                <tr>
-                    <td>Experiments Published</td>
-                    <td tal:content="view/experiments_published" style="text-align:right;"/>
-                </tr>
-                <tr>
-                    <td>Jobs Run</td>
-                    <td tal:content="view/jobs" style="text-align:right;"/>
-                </tr>
-
-                <tr class="blank_row"/>
-
-                <tr class="stats_header">
-                    <td colspan="2"><h4>Algorithms</h4></td>
-                </tr>
-                <tr tal:repeat="algo_type view/algorithm_types">
-                    <td tal:content="python: algo_type[0]"/>
-                    <td tal:content="python: algo_type[1]" style="text-align:right;"/>
-                </tr>
-            </table>
-            </div>
-            <div class="span5 offset1">
-                <a class="btn btn-primary" download="bccvl-stats.xls" href="#" onclick="return ExcellentExport.excel(this, 'statistics', 'BCCVL usage statistics');">
-                    Export to Excel&nbsp;<i class="icon-chevron-down icon-white"></i>
-                </a>
-            </div>
+            <tr class="stats_header">
+              <td colspan="2"><h4>Datasets</h4></td>
+            </tr>
+            <tr>
+              <td>Added Local</td>
+              <td tal:content="view/datasets_added_local" style="text-align:right;"/>
+            </tr>
+            <tr>
+              <td>Added Remote</td>
+              <td tal:content="view/datasets_added_remote" style="text-align:right;"/>
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              <td tal:content="view/datasets_added" style="text-align:right;" class="tally"/>
+            </tr>
+            
+            <tr class="blank_row"/>
+            
+            <tr>
+              <td>Added By Users</td>
+              <td tal:content="view/datasets_added_users" style="text-align:right;"/>
+            </tr>
+            <tr>
+              <td>Datasets Generated</td>
+              <td tal:content="view/datasets_generated" style="text-align:right;"/>
+            </tr>
+            
+            <tr class="blank_row"/>
+            
+            <tr class="stats_header">
+              <td colspan="2"><h4>Experiments</h4></td>
+            </tr>
+            <tr tal:repeat="exp_type view/experiment_types">
+              <td tal:content="python: exp_type[0]"/>
+              <td tal:content="python: exp_type[1]" style="text-align:right;"/>
+            </tr>
+            <tr>
+              <td>&nbsp;</td>
+              <td tal:content="view/experiments_run" style="text-align:right;" class="tally"/>
+            </tr>
+            
+            <tr class="blank_row"/>
+            
+            <tr>
+              <td>Experiments Published</td>
+              <td tal:content="view/experiments_published" style="text-align:right;"/>
+            </tr>
+            <tr>
+              <td>Jobs Run</td>
+              <td tal:content="view/jobs" style="text-align:right;"/>
+            </tr>
+            
+            <tr class="blank_row"/>
+            
+            <tr class="stats_header">
+              <td colspan="2"><h4>Algorithms</h4></td>
+            </tr>
+            <tr tal:repeat="algo_type view/algorithm_types">
+              <td tal:content="python: algo_type[0]"/>
+              <td tal:content="python: algo_type[1]" style="text-align:right;"/>
+            </tr>
+          </table>
         </div>
+        <div id="stats_col2" class="cell position-4 width-2">
+          <a download="bccvl-stats.csv" href="#" onclick="return ExcellentExport.csv(this, 'statistics');">Export to CSV&nbsp;<i class="fa fa-chevron-down"></i></a>
+          <br/>
+          <a download="bccvl-stats.xsl" href="#" onclick="return ExcellentExport.excel(this, 'statistics', 'BCCVL usage statistics');">Export to Excel&nbsp;<i class="fa fa-chevron-down"></i></a>
+        </div>
+      </fieldset>
+      <fieldset id="fieldset-userlist">
+        <legend id="fieldsetlegend-fieldset-userlist">User List</legend>
+        <div id="userlist_col1" class="cell position-0 width-8">
+          <table id="userlist" class="stats">
+            <thead>
+              <tr>
+                <th><h4>Login</h4></th><th><h4>Full name</h4></th><th><h4>Email</h4></th><th><h4>Last login</h4></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr tal:repeat="member view/_users">
+                <td tal:content="python: member.getUserName()">Login name</td>
+                <td tal:content="python: member.getProperty('fullname')">User Name</td>
+                <td tal:content="python: member.getProperty('email')">user@email.com</td>
+                <td tal:content="python: toLocalizedTime(member.getProperty('last_login_time'))">last login</td>              
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="userlist_col2" class="cell position-8 width-2">
+          <a download="bccvl-stats.csv" href="#" onclick="return ExcellentExport.csv(this, 'userlist');">Export to CSV&nbsp;<i class="fa fa-chevron-down"></i></a>
+          <br/>
+          <a download="bccvl-stats.xsl" href="#" onclick="return ExcellentExport.excel(this, 'userlist', 'BCCVL user list');">Export to Excel&nbsp;<i class="fa fa-chevron-down"></i></a>
+        </div>
+      </fieldset>
     </div>
+  </div>
 </metal:content-body>
 </body>
 </html>
