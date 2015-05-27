@@ -1,6 +1,7 @@
 from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from zope import contenttype
 #from zope.publisher.browser import BrowserView as Z3BrowserView
 #from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
 #from zope.publisher.interfaces import IPublishTraverse
@@ -49,9 +50,15 @@ def returnwrapper(f, *args, **kw):
 
     isxmlrpc = False
     view = args[0]
-    if view.request['CONTENT_TYPE'] == 'text/xml':
-        # we have xmlrpc
-        isxmlrpc = True
+    try:
+        ct = contenttype.parse.parse(view.request['CONTENT_TYPE'])
+        if ct[0:2] == ('text', 'xml'):
+            # we have xmlrpc
+            isxmlrpc = True
+    except Exception as e:
+        # it's not valid xmlrpc
+        # TODO: log this ?
+        pass
 
     ret = f(*args, **kw)
     # return ACCEPT encoding here or IStreamIterator, that encodes
