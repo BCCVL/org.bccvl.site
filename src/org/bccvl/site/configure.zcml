@@ -57,6 +57,10 @@
       factory=".metadata.BCCVLMetadata"
       />
 
+  <adapter
+      factory=".metadata.ProvenanceData"
+      />
+
   <!-- download info adapters -->
   <adapter
       factory=".utilities.DatasetDownloadInfo"
