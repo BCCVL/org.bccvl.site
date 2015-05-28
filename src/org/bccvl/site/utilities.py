@@ -10,13 +10,12 @@ from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
-from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo, IBCCVLMetadata
+from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData
 from org.bccvl.site.api import dataset
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
 from plone import api
-from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from Products.ZCatalog.interfaces import ICatalogBrain
@@ -25,7 +24,6 @@ from zope.component import adapter, queryUtility
 from zope.interface import implementer
 import logging
 from plone.uuid.interfaces import IUUID
-from Products.CMFCore.utils import getToolByName
 
 LOG = logging.getLogger(__name__)
 
@@ -125,11 +123,11 @@ class JobTracker(object):
         0  if state1 == state2
         1  if state1 > state2
         """
-        if any(map(lambda x: x is None, [state1,state2])):
-            if all(map(lambda x: x is None, [state1,state2])):
+        if any(map(lambda x: x is None, [state1, state2])):
+            if all(map(lambda x: x is None, [state1, state2])):
                 return 0
             return -1 if state1 is None else 1
-        
+
         # TODO: may raise ValueError if state not in list
         idx1 = self._states.index(state1)
         idx2 = self._states.index(state2)
@@ -229,6 +227,112 @@ class MultiJobTracker(JobTracker):
 @adapter(ISDMExperiment)
 class SDMJobTracker(MultiJobTracker):
 
+    def _create_result_container(self, title):
+        result = createContentInContainer(
+            self.context, 'Folder', title=title)
+        return result
+
+    def _createProvenance(self, result):
+        provdata = IProvenanceData(result)
+        from rdflib import URIRef, Literal, Namespace, Graph
+        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        PROV = Namespace(u"http://www.w3.org/ns/prov#")
+        BCCVL = Namespace(u"http://ns.bccvl.org.au/")
+        LOCAL = Namespace(u"urn:bccvl:")
+        graph = Graph()
+        # the user is our agent
+
+        member = api.user.get_current()
+        username = member.getProperty('fullname') or member.getId()
+        user = LOCAL['user']
+        graph.add((user, RDF['type'], PROV['Agent']))
+        graph.add((user, RDF['type'], FOAF['Person']))
+        graph.add((user, FOAF['name'], Literal(username)))
+        graph.add((user, FOAF['mbox'], URIRef('mailto:{}'.format(member.getProperty('email')))))
+        # add software as agent
+        software = LOCAL['software']
+        graph.add((software, RDF['type'], PROV['Agent']))
+        graph.add((software, RDF['type'], PROV['SoftwareAgent']))
+        graph.add((software, FOAF['name'], Literal('BCCVL Job Script')))
+        # script content is stored somewhere on result and will be exported with zip?
+        #   ... or store along with pstats.json ? hidden from user
+
+        # -> execenvironment after import -> log output?
+        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        activity = LOCAL['activity']
+        graph.add((activity, RDF['type'], PROV['Activity']))
+        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        now = datetime.now().replace(microsecond=0)
+        graph.add((activity, PROV['startedAtTime'], Literal(now.isoformat(), datatype=XSD['dateTime'])))
+        graph.add((activity, PROV['hasAssociationWith'], user))
+        graph.add((activity, PROV['hasAssociationWith'], software))
+        # add job parameters to activity
+        for idx, (key, value) in enumerate(result.job_params.items()):
+            param = LOCAL[u'param_{}'.format(idx)]
+            graph.add((activity, BCCVL['algoparam'], param))
+            graph.add((param, BCCVL['name'], Literal(key)))
+            if key in ('species_occurrence_dataset', 'species_absence_dataset'):
+                if not result.job_params[key]:
+                    # skip empty values
+                    continue
+                graph.add((param, BCCVL['value'], LOCAL[key]))
+            elif key in ('environmental_datasets',):
+                graph.add((param, BCCVL['value'], LOCAL[key]))
+                for layer in result.job_params[key]:
+                    graph.add((param, BCCVL['layer'], LOCAL[layer]))
+            else:
+                graph.add((param, BCCVL['value'], Literal(value)))
+
+        # iterate over all input datasets and add them as entities
+        for key in ('species_occurrence_dataset', 'species_absence_dataset'):
+            dsbrain = uuidToCatalogBrain(result.job_params[key])
+            if not dsbrain:
+                continue
+            ds = dsbrain.getObject()
+            uri = LOCAL[key]
+            graph.add((uri, RDF['type'], PROV['Entity']))
+            #graph.add(uri, PROV['..'], Literal('')))
+            graph.add((uri, DCTERMS['creator'], Literal(ds.Creator())))
+            graph.add((uri, DCTERMS['title'], Literal(ds.title)))
+            graph.add((uri, DCTERMS['description'], Literal(ds.description)))
+            graph.add((uri, DCTERMS['rights'], Literal(ds.rights)))  # ds.rightsstatement
+            graph.add((uri, DCTERMS['format'], Literal(ds.file.contentType)))
+            # location / source
+            # graph.add(uri, DCTERMS['source'], Literal(''))
+            # TODO: genre ...
+            # TODO: resolution
+            # species metadata
+            md = IBCCVLMetadata(ds)
+            graph.add((uri, BCCVL['scientificName'], Literal(md['species']['scientificName'])))
+            graph.add((uri, BCCVL['taxonID'], URIRef(md['species']['taxonID'])))
+            graph.add((uri, DCTERMS['extent'], Literal('{} rows'.format(md['rows']))))
+            # ... species data, ... species id
+
+            # link with activity
+            graph.add((activity, PROV['used'], uri))
+        
+        for uuid, layers in result.job_params['environmental_datasets'].items():
+            key = 'environmental_datasets'
+            ds = uuidToObject(uuid)
+            uri = LOCAL[key]
+            graph.add((uri, RDF['type'], PROV['Entity']))
+            graph.add((uri, DCTERMS['creator'], Literal(ds.Creator())))
+            graph.add((uri, DCTERMS['title'], Literal(ds.title)))
+            graph.add((uri, DCTERMS['description'], Literal(ds.description)))
+            graph.add((uri, DCTERMS['rights'], Literal(ds.rights)))  # ds.rightsstatement
+            graph.add((uri, DCTERMS['format'], Literal(ds.file.contentType)))
+            # TODO: genre ...
+            for layer in layers:
+                graph.add((uri, BCCVL['layer'], LOCAL[layer]))
+            # location / source
+            # layers selected + layer metadata
+            # ... raster data, .. layers
+
+            # link with activity
+            graph.add((activity, PROV['used'], uri))
+    
+        provdata.data = graph.serialize(format="turtle")
+
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and multiple species input datasets
@@ -244,11 +348,8 @@ class SDMJobTracker(MultiJobTracker):
                 # create result object:
                 # TODO: refactor this out into helper method
                 title = u'{} - {} {}'.format(self.context.title, func.getId(),
-                                         datetime.now().strftime('YYYY-MM-DDTHH:MM:SS'))
-                result = createContentInContainer(
-                    self.context,
-                    'Folder',
-                    title=title)
+                                             datetime.now().strftime('YYYY-MM-DDTHH:MM:SS'))
+                result = self._create_result_container(title)
 
                 # Build job_params store them on result and submit job
                 result.job_params = {
@@ -262,6 +363,7 @@ class SDMJobTracker(MultiJobTracker):
                 }
                 # add toolkit params:
                 result.job_params.update(self.context.parameters[IUUID(func)])
+                self._createProvenance(result)
                 # submit job
                 LOG.info("Submit JOB %s to queue", func.getId())
                 method(result, func)

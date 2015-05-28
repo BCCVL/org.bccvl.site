@@ -62,4 +62,11 @@
         name="bccvl-widgets.js"
         file="bccvl-widgets.js"/>
 
+    <browser:page
+        name="prov.ttl"
+        for="Products.CMFCore.interfaces.IFolderish"
+        class=".metsview.ProvView"
+        permission="zope2.View"
+        />
+    
 </configure>

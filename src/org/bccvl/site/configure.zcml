@@ -175,6 +175,11 @@
       />
 
   <utility
+      component=".transmogrify.ProvenanceImporter"
+      name="org.bccvl.site.transmogrify.provenance"
+      />
+
+  <utility
       component=".vocabularies.sdm_functions_source"
       name="sdm_functions_source"
       />
