@@ -13,6 +13,8 @@ from zope.schema.interfaces import IVocabularyFactory
 from gu.z3cform.rdf.utils import Period
 from org.bccvl.site import defaults
 from itertools import chain
+from org.bccvl.site.browser.interfaces import IExperimentTools
+from zope.security import checkPermission
 
 
 def get_title_from_uuid(uuid):
@@ -21,6 +23,29 @@ def get_title_from_uuid(uuid):
         return obj.Title
     return None
 
+@implementer(IExperimentTools)
+class ExperimentTools(BrowserView):
+
+    def check_if_used(self, itemob=None):
+        itemob = itemob or self.context
+        portal_catalog = getToolByName(itemob, 'portal_catalog')
+        return len(list(portal_catalog.unrestrictedSearchResults(experiment_reference=itemob.UID()))) > 0
+
+    def get_depending_experiment_titles(self, itemob=None):
+        itemob = itemob or self.context
+        portal_catalog = getToolByName(itemob, 'portal_catalog')
+        ur = list(portal_catalog.unrestrictedSearchResults(experiment_reference=itemob.UID()))
+        rrpaths = map(lambda x: x.getPath(), portal_catalog.searchResults(experiment_reference=itemob.UID()))
+        return map(lambda x: x.Title if x.getPath() in rrpaths else "(Private - owned by %s)" % x._unrestrictedGetObject().getOwner().getUserName(), ur)
+
+
+
+    def can_modify(self, itemob=None):
+        try:
+            itemob = itemob or self.context
+            return checkPermission('cmf.ModifyPortalContent', itemob)
+        except Exception as e:
+            import pdb; pdb.set_trace()
 
 @implementer(IFolderContentsView)
 class ExperimentsListingView(BrowserView):
