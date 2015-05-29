@@ -8,7 +8,7 @@ from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
-from org.bccvl.site.content.interfaces import IProjectionExperiment
+from org.bccvl.site.content.interfaces import IProjectionExperiment, IEnsembleExperiment, IBiodiverseExperiment
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from gu.z3cform.rdf.utils import Period
 
@@ -98,6 +98,10 @@ def experiment_reference_indexer(object, **kw):
     # TODO: Add Ensemble -> SDM, Proj, Biodiv, Biodiverse -> SDM, Proj
     if IProjectionExperiment.providedBy(object):
         return object.species_distribution_models.keys()
+    elif IEnsembleExperiment.providedBy(object):
+        return object.datasets.keys()
+    elif IBiodiverseExperiment.providedBy(object):
+        return object.projection.keys()
     else:
         pass
 
