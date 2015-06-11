@@ -140,6 +140,7 @@ class OAuth2View(OAuthBaseView):
     def validate(self):
         """Validate a token with the OAuth provider Google.
         """
+        # TODO: OAuth2Session has attribute .authorized ... it only checks for presence of various tokens, but should be a good indicator of successfull authorisation
         token = self.getToken()
         try:
             # Defined at https://developers.google.com/accounts/docs/OAuth2LoginV1#validatingtoken
@@ -251,7 +252,7 @@ class OAuth1View(OAuthBaseView):
 
     # Figshare API
     def validate(self):
-        #oauth, tok = self.oauth_session()
+        # TODO: OAuth2Session has attribute .authorized ... it only checks for presence of various tokens, but should be a good indicator of successfull authorisation
         token = self.getToken()
         try:
             oauth = self.oauth_session(token=token)
