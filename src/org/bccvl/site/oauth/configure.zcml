@@ -28,4 +28,12 @@
       class=".oauthpanel.OAuthPreferencePanel"
       permission="cmf.SetOwnProperties"
       />
+
+  <browser:page
+      name="oauth"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".oauth.OAuthTraverser"
+      permission="zope2.View"
+      />
+  
 </configure>

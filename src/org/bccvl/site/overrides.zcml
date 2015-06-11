@@ -20,6 +20,6 @@
       factory=".patch.FileDescriptorStorable"
       />
 
-  <includeOverrides package=".oauth"/>
+  <includeOverrides package=".oauth" file="overrides.zcml"/>
 
 </configure>
