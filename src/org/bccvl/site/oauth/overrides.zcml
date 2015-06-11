@@ -1,0 +1,18 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      name="personal-information"
+      class=".overrides.UserDataPanelView"
+      permission="cmf.SetOwnProperties"
+      />
+
+  <browser:page
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      name="change-password"
+      class=".overrides.PasswordAccountPanel"
+      permission="cmf.SetOwnPassword"
+      />
+  
+</configure>
