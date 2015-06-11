@@ -20,4 +20,6 @@
       factory=".patch.FileDescriptorStorable"
       />
 
+  <includeOverrides package=".oauth"/>
+
 </configure>
