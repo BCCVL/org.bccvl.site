@@ -22,4 +22,10 @@
       class=".controlpanel.OAuthControlPanelView"
     />  
 
+  <browser:page
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      name="oauth-preferences"
+      class=".oauthpanel.OAuthPreferencePanel"
+      permission="cmf.SetOwnProperties"
+      />
 </configure>
