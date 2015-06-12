@@ -9,7 +9,7 @@ from org.bccvl.site import MessageFactory as _
 # FIXME: remove form hints here and put them into special form schemata?
 from org.bccvl.site.widgets.widgets import FunctionsFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetFieldWidget
-from org.bccvl.site.widgets.widgets import DatasetLayersFieldWidget
+from org.bccvl.site.widgets.widgets import DatasetDictFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultFieldWidget
 from org.bccvl.site.widgets.widgets import FutureDatasetsFieldWidget
@@ -99,8 +99,10 @@ class ISDMExperiment(IExperiment):
         required=False)
 
     form.widget('environmental_datasets',
-                DatasetLayersFieldWidget,
+                DatasetDictFieldWidget,
+                multiple='multiple',
                 genre=['DataGenreCC', 'DataGenreE'],
+                filters=['text', 'source', 'layer', 'resolution'],
                 errmsg=u"Please select at least 1 layer.")
     environmental_datasets = Dict(
         title=u'Climate & Environmental Datasets',
@@ -163,7 +165,7 @@ class IBiodiverseExperiment(IExperiment):
     )
 
     cluster_size = Choice(
-        title=u'Cluster size',
+        title=u'Biodiverse cell size',
         description=u'x/y cell size in meter',
         default=5000,
         required=True,

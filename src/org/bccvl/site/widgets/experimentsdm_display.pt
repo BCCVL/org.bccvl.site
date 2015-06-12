@@ -20,11 +20,14 @@
                        onkeypress view/onkeypress;
                        onkeydown view/onkeydown;
                        onkeyup view/onkeyup">
-    <p class="experiment-title"
-       tal:content="item/title">Experiment Title</p>
-    <div class="row" tal:repeat="model item/models">
-      <span tal:content="model/title"
-         tal:condition="model/selected">Model Title</span>
-    </div>
+    <ul>
+      <li>
+        <span tal:replace="item/title">Experiment Title</span>
+        <ul>
+          <li tal:repeat="model python: (model for model in item['models'] if model['selected'])"
+              tal:content="model/title">Model Title</li>
+        </ul>
+      </li>
+    </ul>
   </div>
 </html>

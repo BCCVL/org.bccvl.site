@@ -3,8 +3,12 @@
     xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="org.bccvl">
 
-  <adapter factory=".converter.DatasetLayersConverter"/>
+  <adapter factory=".converter.DatasetTextLineConverter"/>
 
+  <adapter factory=".converter.DatasetListConverter"/>
+
+  <adapter factory=".converter.DatasetDictConverter"/>    
+  
   <adapter factory=".converter.ExperimentsSDMConverter"/>
 
   <adapter factory=".converter.ExperimentsResultConverter"/>
@@ -34,28 +38,27 @@
       template="dataset_display.pt"
       />
 
-
-  <adapter
+    <adapter
       for="zope.interface.Interface
-           .interfaces.IDatasetLayersWidget"
+           .interfaces.IDatasetDictWidget"
       provides=".interfaces.IJSWrapper"
       factory=".widgets.JS_WRAPPER_ADAPTER"
       />
 
     <z3c:widgetTemplate
       mode="input"
-      widget=".interfaces.IDatasetLayersWidget"
+      widget=".interfaces.IDatasetDictWidget"
       layer="z3c.form.interfaces.IFormLayer"
-      template="datasetlayers_input.pt"
+      template="datasetdict_input.pt"
       />
 
     <z3c:widgetTemplate
       mode="display"
-      widget=".interfaces.IDatasetLayersWidget"
+      widget=".interfaces.IDatasetDictWidget"
       layer="z3c.form.interfaces.IFormLayer"
-      template="datasetlayers_display.pt"
+      template="datasetdict_display.pt"
       />
-
+    
     <adapter
       for="zope.interface.Interface
            .interfaces.IExperimentSDMWidget"

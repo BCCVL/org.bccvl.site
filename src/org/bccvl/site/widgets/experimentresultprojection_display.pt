@@ -19,17 +19,20 @@
                        onkeypress view/onkeypress;
                        onkeydown view/onkeydown;
                        onkeyup view/onkeyup">
-    <tal:block tal:repeat="item view/items">
-      <div id="" class="row">
-        <span tal:content="item/title">Experiment Title</span>
-        <tal:block tal:repeat="dataset item/datasets">
-          <tal:block tal:condition="dataset/selected">
-            <span tal:content="dataset/title">Dataset Title</span>
-	    <span tal:content="dataset/threshold/label">Threshold label:</span>
-	    <span tal:content="dataset/threshold/value">Threshold value</span>
+    <ul>
+      <tal:block tal:repeat="item view/items">
+        <li>
+          <span tal:replace="item/title">Experiment Title</span>
+          <tal:block tal:repeat="dataset item/datasets">
+            <tal:block tal:condition="dataset/selected">
+              <br/>
+              <span tal:content="dataset/title">Dataset Title</span>
+	      <span tal:content="dataset/threshold/label">Threshold label:</span>
+	      <span tal:content="dataset/threshold/value">Threshold value</span>
+            </tal:block>
           </tal:block>
-        </tal:block>
-      </div>
-    </tal:block>
+        </li>
+      </tal:block>
+    </ul>
   </div>
 </html>
