@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<object
+    name="portal_controlpanel"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="org.bccvl">
+
+    <configlet
+        title="BCCVL OAuth Settings"
+        action_id="org.bccvl.oauth.settings"
+        appId="org.bccvl"
+        category="Products"
+        condition_expr=""
+        url_expr="string:${portal_url}/@@oauth-controlpanel"
+        icon_expr="string:$portal_url/++resource++fingerprint.png"
+        visible="True"
+        i18n:attributes="title">
+      <permission>Manage portal</permission>
+    </configlet>
+    
+</object>

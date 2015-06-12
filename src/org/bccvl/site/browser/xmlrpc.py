@@ -515,7 +515,8 @@ class DataMover(BrowserView):
         }
         if common:
             md['species']['vernacularName'] = common
-
+        # reindex object to make sure everything is up to date
+        ds.reindexObject()
         IStatusMessage(self.request).add('New Dataset created',
                                          type='info')
 
