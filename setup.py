@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.8.2.dev0'
+version = '1.8.4.dev0'
 
 setup(
     name='org.bccvl.site',
@@ -62,6 +62,7 @@ setup(
         'quintagroup.transmogrifier',
         'org.bccvl.compute',
         'org.bccvl.tasks',
+        'requests-oauthlib',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
