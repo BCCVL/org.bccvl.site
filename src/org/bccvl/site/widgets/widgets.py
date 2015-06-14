@@ -334,12 +334,12 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
         # a tuple of (key,value) pairs
         # get experiment uuid from request
         uuid = self.request.get(self.name)
+        if not uuid:
+            return NO_VALUE
         # get selcted model uuids if any..
         # TODO: this supports only one experiment at the moment
         modeluuids = self.request.get('{0}.model'.format(self.name),
                                       [])
-        if not uuid:
-            return NO_VALUE
         return {uuid: modeluuids}
 
 
