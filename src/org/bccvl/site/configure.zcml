@@ -44,6 +44,7 @@
   <include package=".browser"/>
   <include package=".widgets"/>
   <include package=".portlets"/>
+  <include package=".oauth"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
 
@@ -55,6 +56,10 @@
   <!-- metadata adapter -->
   <adapter
       factory=".metadata.BCCVLMetadata"
+      />
+
+  <adapter
+      factory=".metadata.ProvenanceData"
       />
 
   <!-- download info adapters -->
@@ -173,6 +178,11 @@
   <utility
       component=".transmogrify.ContextSource"
       name="org.bccvl.site.transmogrify.contextsource"
+      />
+
+  <utility
+      component=".transmogrify.ProvenanceImporter"
+      name="org.bccvl.site.transmogrify.provenance"
       />
 
   <utility

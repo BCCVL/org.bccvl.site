@@ -2,7 +2,7 @@ from zope.interface import implementer
 from zope.component import adapter
 from zope.annotation import IAnnotations, IAttributeAnnotatable
 from persistent.dict import PersistentDict
-from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
 
 # TODO: this will become future work to enhance performance by
 # reducing the amonut of queries we have to do against the triple
@@ -56,3 +56,30 @@ class BCCVLMetadata(object):
         if default is self.__marker:
             return self._md.pop(key)
         return self._md.pop(key, default)
+
+
+PROV_KEY = 'org.bccvl.site.content.provenance'
+    
+@implementer(IProvenanceData)
+@adapter(IAttributeAnnotatable)
+class ProvenanceData(object):
+    '''
+    Adapter to manage provenance data on result containers
+    '''
+
+    __marker = object()
+
+    def __init__(self, context):
+        self.context = context
+        self.annots = IAnnotations(context)
+
+    @property
+    def data(self):
+        return self.annots.get(PROV_KEY)
+
+    @data.setter
+    def data(self, value):
+        # check if graph or string
+        # serialise or store as is
+        self.annots[PROV_KEY] = value
+    

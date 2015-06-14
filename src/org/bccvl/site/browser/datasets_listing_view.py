@@ -12,7 +12,7 @@ from zope.component import getMultiAdapter, getUtility
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 import Missing
-from gu.z3cform.rdf.utils import Period
+from org.bccvl.site.utils import Period
 
 
 def get_title_from_uuid(uuid):
