@@ -63,6 +63,7 @@ setup(
         'org.bccvl.compute',
         'org.bccvl.tasks',
         'requests-oauthlib',
+        'rdflib',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',

@@ -9,6 +9,7 @@ from zope.publisher.interfaces import NotFound
 #from functools import wraps
 from decorator import decorator
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
+from plone import api
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
@@ -534,3 +535,47 @@ class DataMover(BrowserView):
         #       use job tracking for status. (needs job annotations)
         dm = getUtility(IDataMover)
         return dm.check_move_status(job_id)
+
+
+class ExportResult(BrowserView):
+    # TODO: should be post only? see plone.security for 
+
+    # parameters needed:
+    #   ... serviceid ... service to export to
+
+    @returnwrapper
+    def export_result(self, serviceid):
+        # self.context should be a result
+        if not hasattr(self.context, 'job_params'):
+            raise NotFound(self.context, self.context.title, self.request)
+        # TODO: validate serviceid
+
+        import ipdb; ipdb.set_trace()
+
+        # start export job
+        context_path = '/'.join(self.context.getPhysicalPath())
+        member = api.user.get_current()
+
+        zipurl = self.context.absolute_url() + '/resultdownload'
+
+        from org.bccvl.tasks.result_export import result_export
+        from org.bccvl.tasks.plone import after_commit_task
+        export_task = result_export(
+            zipurl,
+            serviceid, {'context': context_path,
+                        'user': {
+                            'id': member.getUserName(),
+                            'email': member.getProperty('email'),
+                            'fullname': member.getProperty('fullname')
+                            }})
+        # queue job submission
+        after_commit_task(export_task)
+
+        # self.new_job('TODO: generate id', 'generate taskname: export_result')
+        # self.set_progress('PENDING', u'Result export pending')
+
+        status = 'info'
+        message = u'Job submitted {0} - {1}'.format(self.context.title, 'PENDING')
+
+        IStatusMessage(self.request).add(message, type=status)
+        return (status, message)

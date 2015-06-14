@@ -159,4 +159,16 @@
 
     </browser:view>
 
+    <browser:pages
+        class=".xmlrpc.ExportResult"
+        allowed_attributes="export_result"
+        for="Products.CMFCore.interfaces.IFolderish"
+        permission="cmf.ModifyPortalContent"
+        >
+      <browser:page
+          name="export_result"
+          attribute="export_result"
+          />
+    </browser:pages>
+
 </configure>
