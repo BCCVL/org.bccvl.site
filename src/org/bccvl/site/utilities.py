@@ -16,6 +16,7 @@ from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
 from plone import api
+from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from Products.ZCatalog.interfaces import ICatalogBrain
@@ -236,6 +237,7 @@ class SDMJobTracker(MultiJobTracker):
         provdata = IProvenanceData(result)
         from rdflib import URIRef, Literal, Namespace, Graph
         from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.resource import Resource
         PROV = Namespace(u"http://www.w3.org/ns/prov#")
         BCCVL = Namespace(u"http://ns.bccvl.org.au/")
         LOCAL = Namespace(u"urn:bccvl:")
@@ -244,44 +246,46 @@ class SDMJobTracker(MultiJobTracker):
 
         member = api.user.get_current()
         username = member.getProperty('fullname') or member.getId()
-        user = LOCAL['user']
-        graph.add((user, RDF['type'], PROV['Agent']))
-        graph.add((user, RDF['type'], FOAF['Person']))
-        graph.add((user, FOAF['name'], Literal(username)))
-        graph.add((user, FOAF['mbox'], URIRef('mailto:{}'.format(member.getProperty('email')))))
+        user = Resource(graph, LOCAL['user'])
+        user.add(RDF['type'], PROV['Agent'])
+        user.add(RDF['type'], FOAF['Person'])
+        user.add(FOAF['name'], Literal(username))
+        user.add(FOAF['mbox'],
+                 URIRef('mailto:{}'.format(member.getProperty('email'))))
         # add software as agent
-        software = LOCAL['software']
-        graph.add((software, RDF['type'], PROV['Agent']))
-        graph.add((software, RDF['type'], PROV['SoftwareAgent']))
-        graph.add((software, FOAF['name'], Literal('BCCVL Job Script')))
+        software = Resource(graph, LOCAL['software'])
+        software.add(RDF['type'], PROV['Agent'])
+        software.add(RDF['type'], PROV['SoftwareAgent'])
+        software.add(FOAF['name'], Literal('BCCVL Job Script'))
         # script content is stored somewhere on result and will be exported with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
         # -> source code ... maybe some link expression? stored on result ? separate entity?
-        activity = LOCAL['activity']
-        graph.add((activity, RDF['type'], PROV['Activity']))
+        activity = Resource(graph, LOCAL['activity'])
+        activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
         now = datetime.now().replace(microsecond=0)
-        graph.add((activity, PROV['startedAtTime'], Literal(now.isoformat(), datatype=XSD['dateTime'])))
-        graph.add((activity, PROV['hasAssociationWith'], user))
-        graph.add((activity, PROV['hasAssociationWith'], software))
+        activity.add(PROV['startedAtTime'],
+                     Literal(now.isoformat(), datatype=XSD['dateTime']))
+        activity.add(PROV['hasAssociationWith'], user)
+        activity.add(PROV['hasAssociationWith'], software)
         # add job parameters to activity
         for idx, (key, value) in enumerate(result.job_params.items()):
-            param = LOCAL[u'param_{}'.format(idx)]
-            graph.add((activity, BCCVL['algoparam'], param))
-            graph.add((param, BCCVL['name'], Literal(key)))
+            param = Resource(graph, LOCAL[u'param_{}'.format(idx)])
+            activity.add(BCCVL['algoparam'], param)
+            param.add(BCCVL['name'], Literal(key))
             if key in ('species_occurrence_dataset', 'species_absence_dataset'):
                 if not result.job_params[key]:
                     # skip empty values
                     continue
-                graph.add((param, BCCVL['value'], LOCAL[key]))
+                param.add(BCCVL['value'], LOCAL[value])
             elif key in ('environmental_datasets',):
-                graph.add((param, BCCVL['value'], LOCAL[key]))
+                param.add(BCCVL['value'], LOCAL[value])
                 for layer in result.job_params[key]:
-                    graph.add((param, BCCVL['layer'], LOCAL[layer]))
+                    param.add(BCCVL['layer'], LOCAL[layer])
             else:
-                graph.add((param, BCCVL['value'], Literal(value)))
+                param.add(BCCVL['value'], Literal(value))
 
         # iterate over all input datasets and add them as entities
         for key in ('species_occurrence_dataset', 'species_absence_dataset'):
@@ -289,47 +293,49 @@ class SDMJobTracker(MultiJobTracker):
             if not dsbrain:
                 continue
             ds = dsbrain.getObject()
-            uri = LOCAL[key]
-            graph.add((uri, RDF['type'], PROV['Entity']))
-            #graph.add(uri, PROV['..'], Literal('')))
-            graph.add((uri, DCTERMS['creator'], Literal(ds.Creator())))
-            graph.add((uri, DCTERMS['title'], Literal(ds.title)))
-            graph.add((uri, DCTERMS['description'], Literal(ds.description)))
-            graph.add((uri, DCTERMS['rights'], Literal(ds.rights)))  # ds.rightsstatement
-            graph.add((uri, DCTERMS['format'], Literal(ds.file.contentType)))
+            dsprov = Resource(graph, LOCAL[value])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            #dsprov.add(PROV['..'], Literal(''))
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            if IFile.providedBy(ds):
+                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
             # TODO: resolution
             # species metadata
             md = IBCCVLMetadata(ds)
-            graph.add((uri, BCCVL['scientificName'], Literal(md['species']['scientificName'])))
-            graph.add((uri, BCCVL['taxonID'], URIRef(md['species']['taxonID'])))
-            graph.add((uri, DCTERMS['extent'], Literal('{} rows'.format(md['rows']))))
+            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+            dsprov.add(DCTERMS['extent'], Literal('{} rows'.format(md['rows'])))
             # ... species data, ... species id
 
             # link with activity
-            graph.add((activity, PROV['used'], uri))
+            activity.add(PROV['used'], dsprov)
         
         for uuid, layers in result.job_params['environmental_datasets'].items():
             key = 'environmental_datasets'
             ds = uuidToObject(uuid)
-            uri = LOCAL[key]
-            graph.add((uri, RDF['type'], PROV['Entity']))
-            graph.add((uri, DCTERMS['creator'], Literal(ds.Creator())))
-            graph.add((uri, DCTERMS['title'], Literal(ds.title)))
-            graph.add((uri, DCTERMS['description'], Literal(ds.description)))
-            graph.add((uri, DCTERMS['rights'], Literal(ds.rights)))  # ds.rightsstatement
-            graph.add((uri, DCTERMS['format'], Literal(ds.file.contentType)))
+            dsprov = Resource(graph, LOCAL[key])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            if IFile.providedBy(ds):
+                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # TODO: genre ...
             for layer in layers:
-                graph.add((uri, BCCVL['layer'], LOCAL[layer]))
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
             # location / source
             # layers selected + layer metadata
             # ... raster data, .. layers
 
             # link with activity
-            graph.add((activity, PROV['used'], uri))
+            activity.add(PROV['used'], dsprov)
     
         provdata.data = graph.serialize(format="turtle")
 
@@ -405,6 +411,110 @@ class ProjectionJobTracker(MultiJobTracker):
             }
         return result
 
+    def _createProvenance(self, result):
+        provdata = IProvenanceData(result)
+        from rdflib import URIRef, Literal, Namespace, Graph
+        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.resource import Resource
+        PROV = Namespace(u"http://www.w3.org/ns/prov#")
+        BCCVL = Namespace(u"http://ns.bccvl.org.au/")
+        LOCAL = Namespace(u"urn:bccvl:")
+        graph = Graph()
+        # the user is our agent
+
+        member = api.user.get_current()
+        username = member.getProperty('fullname') or member.getId()
+        user = Resource(graph, LOCAL['user'])
+        user.add(RDF['type'], PROV['Agent'])
+        user.add(RDF['type'], FOAF['Person'])
+        user.add(FOAF['name'], Literal(username))
+        user.add(FOAF['mbox'],
+                 URIRef('mailto:{}'.format(member.getProperty('email'))))
+        # add software as agent
+        software = Resource(graph, LOCAL['software'])
+        software.add(RDF['type'], PROV['Agent'])
+        software.add(RDF['type'], PROV['SoftwareAgent'])
+        software.add(FOAF['name'], Literal('BCCVL Job Script'))
+        # script content is stored somewhere on result and will be exported with zip?
+        #   ... or store along with pstats.json ? hidden from user
+
+        # -> execenvironment after import -> log output?
+        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        activity = Resource(graph, LOCAL['activity'])
+        activity.add(RDF['type'], PROV['Activity'])
+        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        now = datetime.now().replace(microsecond=0)
+        activity.add(PROV['startedAtTime'],
+                     Literal(now.isoformat(), datatype=XSD['dateTime']))
+        activity.add(PROV['hasAssociationWith'], user)
+        activity.add(PROV['hasAssociationWith'], software)
+        # add job parameters to activity
+        for idx, (key, value) in enumerate(result.job_params.items()):
+            param = Resource(graph, LOCAL[u'param_{}'.format(idx)])
+            activity.add(BCCVL['algoparam'], param)
+            param.add(BCCVL['name'], Literal(key))
+            # We have only dataset references as parameters
+            if key in ('future_climate_datasets',):
+                for dsuuid in value.keys():
+                    param.add(BCCVL['value'], LOCAL[dsuuid])
+            elif key in ('species_distribution_models',):
+                param.add(BCCVL['value'], LOCAL[value])
+            else:
+                param.add(BCCVL['value'], Literal(value))
+        # iterate over all input datasets and add them as entities
+        for key in ('species_distribution_models',):
+            dsbrain = uuidToCatalogBrain(result.job_params[key])
+            if not dsbrain:
+                continue
+            ds = dsbrain.getObject()
+            dsprov = Resource(graph, LOCAL[result.job_params[key]])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            #dsprov.add(PROV['..'], Literal(''))
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            # location / source
+            # graph.add(uri, DCTERMS['source'], Literal(''))
+            # TODO: genre ...
+            # TODO: resolution
+            # species metadata
+            md = IBCCVLMetadata(ds)
+            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+
+            # ... species data, ... species id
+            for layer in md.get('layers_used',()):
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
+
+            # link with activity
+            activity.add(PROV['used'], dsprov)
+        
+        for uuid, layers in result.job_params['future_climate_datasets'].items():
+
+            key = 'future_climate_datasets'
+            ds = uuidToObject(uuid)
+            dsprov = Resource(graph, LOCAL[uuid])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            if IFile.providedBy(ds):
+                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            # TODO: genre, resolution, emsc, gcm, year(s) ...
+            for layer in layers:
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
+            # location / source
+            # layers selected + layer metadata
+            # ... raster data, .. layers
+
+            # link with activity
+            activity.add(PROV['used'], dsprov)
+    
+        provdata.data = graph.serialize(format="turtle")
+    
     def start_job(self, request):
         if not self.is_active():
             # get utility to execute this experiment
@@ -435,6 +545,8 @@ class ProjectionJobTracker(MultiJobTracker):
                             del projlayers[ds]
                     # create result
                     result = self._create_result_container(sdmuuid, dsbrain, projlayers)
+                    # update provenance
+                    self._createProvenance(result)
                     # submit job
                     LOG.info("Submit JOB project to queue")
                     method(result, "project")  # TODO: wrong interface
@@ -454,6 +566,91 @@ class ProjectionJobTracker(MultiJobTracker):
 @adapter(IBiodiverseExperiment)
 class BiodiverseJobTracker(MultiJobTracker):
 
+    def _createProvenance(self, result):
+        provdata = IProvenanceData(result)
+        from rdflib import URIRef, Literal, Namespace, Graph
+        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.resource import Resource
+        PROV = Namespace(u"http://www.w3.org/ns/prov#")
+        BCCVL = Namespace(u"http://ns.bccvl.org.au/")
+        LOCAL = Namespace(u"urn:bccvl:")
+        graph = Graph()
+        # the user is our agent
+
+        member = api.user.get_current()
+        username = member.getProperty('fullname') or member.getId()
+        user = Resource(graph, LOCAL['user'])
+        user.add(RDF['type'], PROV['Agent'])
+        user.add(RDF['type'], FOAF['Person'])
+        user.add(FOAF['name'], Literal(username))
+        user.add(FOAF['mbox'],
+                 URIRef('mailto:{}'.format(member.getProperty('email'))))
+        # add software as agent
+        software = Resource(graph, LOCAL['software'])
+        software.add(RDF['type'], PROV['Agent'])
+        software.add(RDF['type'], PROV['SoftwareAgent'])
+        software.add(FOAF['name'], Literal('BCCVL Job Script'))
+        # script content is stored somewhere on result and will be exported with zip?
+        #   ... or store along with pstats.json ? hidden from user
+
+        # -> execenvironment after import -> log output?
+        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        activity = Resource(graph, LOCAL['activity'])
+        activity.add(RDF['type'], PROV['Activity'])
+        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        now = datetime.now().replace(microsecond=0)
+        activity.add(PROV['startedAtTime'],
+                     Literal(now.isoformat(), datatype=XSD['dateTime']))
+        activity.add(PROV['hasAssociationWith'], user)
+        activity.add(PROV['hasAssociationWith'], software)
+        # add job parameters to activity
+        for idx, (key, value) in enumerate(result.job_params.items()):
+            param = Resource(graph, LOCAL[u'param_{}'.format(idx)])
+            activity.add(BCCVL['algoparam'], param)
+            param.add(BCCVL['name'], Literal(key))
+            # We have only dataset references as parameters
+            if key in ('projections',):
+                for val in value:
+                    param.add(BCCVL['value'], LOCAL[val['dataset']])
+            else:
+                param.add(BCCVL['value'], Literal(value))
+        # iterate over all input datasets and add them as entities
+        for value in result.job_params['projections']:
+            dsbrain = uuidToCatalogBrain(value['dataset'])
+            if not dsbrain:
+                continue
+            ds = dsbrain.getObject()
+            dsprov = Resource(graph, LOCAL[value['dataset']])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            #dsprov.add(PROV['..'], Literal(''))
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            # threshold used:
+            # FIXME: what's the label of manually entered value?
+            dsprov.add(BCCVL['threshold_label'], Literal(value['threshold']['label']))
+            dsprov.add(BCCVL['threshold_value'], Literal(value['threshold']['value']))
+            # location / source
+            # graph.add(uri, DCTERMS['source'], Literal(''))
+            # TODO: genre ...
+            # TODO: resolution
+            # species metadata
+            md = IBCCVLMetadata(ds)
+            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+
+            # ... species data, ... species id
+            for layer in md.get('layers_used',()):
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
+
+            # link with activity
+            activity.add(PROV['used'], dsprov)
+            
+        provdata.data = graph.serialize(format="turtle")
+
+    
     def start_job(self, request):
         # TODO: split biodiverse job across years, gcm, emsc
         if not self.is_active():
@@ -513,6 +710,8 @@ class BiodiverseJobTracker(MultiJobTracker):
                     'projections': dss,
                     'cluster_size': self.context.cluster_size,
                 }
+                # update provenance
+                self._createProvenance(result)
 
                 # submit job to queue
                 LOG.info("Submit JOB Biodiverse to queue")
@@ -530,6 +729,87 @@ class BiodiverseJobTracker(MultiJobTracker):
 @adapter(IEnsembleExperiment)
 class EnsembleJobTracker(MultiJobTracker):
 
+    def _createProvenance(self, result):
+        provdata = IProvenanceData(result)
+        from rdflib import URIRef, Literal, Namespace, Graph
+        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.resource import Resource
+        PROV = Namespace(u"http://www.w3.org/ns/prov#")
+        BCCVL = Namespace(u"http://ns.bccvl.org.au/")
+        LOCAL = Namespace(u"urn:bccvl:")
+        graph = Graph()
+        # the user is our agent
+
+        member = api.user.get_current()
+        username = member.getProperty('fullname') or member.getId()
+        user = Resource(graph, LOCAL['user'])
+        user.add(RDF['type'], PROV['Agent'])
+        user.add(RDF['type'], FOAF['Person'])
+        user.add(FOAF['name'], Literal(username))
+        user.add(FOAF['mbox'],
+                 URIRef('mailto:{}'.format(member.getProperty('email'))))
+        # add software as agent
+        software = Resource(graph, LOCAL['software'])
+        software.add(RDF['type'], PROV['Agent'])
+        software.add(RDF['type'], PROV['SoftwareAgent'])
+        software.add(FOAF['name'], Literal('BCCVL Job Script'))
+        # script content is stored somewhere on result and will be exported with zip?
+        #   ... or store along with pstats.json ? hidden from user
+
+        # -> execenvironment after import -> log output?
+        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        activity = Resource(graph, LOCAL['activity'])
+        activity.add(RDF['type'], PROV['Activity'])
+        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        now = datetime.now().replace(microsecond=0)
+        activity.add(PROV['startedAtTime'],
+                     Literal(now.isoformat(), datatype=XSD['dateTime']))
+        activity.add(PROV['hasAssociationWith'], user)
+        activity.add(PROV['hasAssociationWith'], software)
+        # add job parameters to activity
+        for idx, (key, value) in enumerate(result.job_params.items()):
+            param = Resource(graph, LOCAL[u'param_{}'.format(idx)])
+            activity.add(BCCVL['algoparam'], param)
+            param.add(BCCVL['name'], Literal(key))
+            # We have only dataset references as parameters
+            if key in ('datasets',):
+                for dsuuid in value:
+                    param.add(BCCVL['value'], LOCAL[dsuuid])
+            else:
+                param.add(BCCVL['value'], Literal(value))
+        # iterate over all input datasets and add them as entities
+        for dsuuid in result.job_params['datasets']:
+            dsbrain = uuidToCatalogBrain(dsuuid)
+            if not dsbrain:
+                continue
+            ds = dsbrain.getObject()
+            dsprov = Resource(graph, LOCAL[result.job_params[key]])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            #dsprov.add(PROV['..'], Literal(''))
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            # location / source
+            # graph.add(uri, DCTERMS['source'], Literal(''))
+            # TODO: genre ...
+            # TODO: resolution
+            # species metadata
+            md = IBCCVLMetadata(ds)
+            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+
+            # ... species data, ... species id
+            for layer in md.get('layers_used',()):
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
+            for layer in md.get('layers', ()):
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
+            # link with activity
+            activity.add(PROV['used'], dsprov)
+            
+        provdata.data = graph.serialize(format="turtle")
+    
     def start_job(self, request):
         if not self.is_active():
             # get utility to execute this experiment
@@ -558,6 +838,8 @@ class EnsembleJobTracker(MultiJobTracker):
                 'datasets': list(chain.from_iterable(self.context.datasets.values())),
                 'resolution': dsmd['resolution']
             }
+            # update provenance
+            self._createProvenance(result)
 
             # submit job to queue
             LOG.info("Submit JOB Ensemble to queue")
@@ -575,6 +857,85 @@ class EnsembleJobTracker(MultiJobTracker):
 @adapter(ISpeciesTraitsExperiment)
 class SpeciesTraitsJobTracker(MultiJobTracker):
 
+    def _createProvenance(self, result):
+        provdata = IProvenanceData(result)
+        from rdflib import URIRef, Literal, Namespace, Graph
+        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.resource import Resource
+        PROV = Namespace(u"http://www.w3.org/ns/prov#")
+        BCCVL = Namespace(u"http://ns.bccvl.org.au/")
+        LOCAL = Namespace(u"urn:bccvl:")
+        graph = Graph()
+        # the user is our agent
+
+        member = api.user.get_current()
+        username = member.getProperty('fullname') or member.getId()
+        user = Resource(graph, LOCAL['user'])
+        user.add(RDF['type'], PROV['Agent'])
+        user.add(RDF['type'], FOAF['Person'])
+        user.add(FOAF['name'], Literal(username))
+        user.add(FOAF['mbox'],
+                 URIRef('mailto:{}'.format(member.getProperty('email'))))
+        # add software as agent
+        software = Resource(graph, LOCAL['software'])
+        software.add(RDF['type'], PROV['Agent'])
+        software.add(RDF['type'], PROV['SoftwareAgent'])
+        software.add(FOAF['name'], Literal('BCCVL Job Script'))
+        # script content is stored somewhere on result and will be exported with zip?
+        #   ... or store along with pstats.json ? hidden from user
+
+        # -> execenvironment after import -> log output?
+        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        activity = Resource(graph, LOCAL['activity'])
+        activity.add(RDF['type'], PROV['Activity'])
+        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        now = datetime.now().replace(microsecond=0)
+        activity.add(PROV['startedAtTime'],
+                     Literal(now.isoformat(), datatype=XSD['dateTime']))
+        activity.add(PROV['hasAssociationWith'], user)
+        activity.add(PROV['hasAssociationWith'], software)
+        # add job parameters to activity
+        for idx, (key, value) in enumerate(result.job_params.items()):
+            param = Resource(graph, LOCAL[u'param_{}'.format(idx)])
+            activity.add(BCCVL['algoparam'], param)
+            param.add(BCCVL['name'], Literal(key))
+            # We have only dataset references as parameters
+            if key in ('data_table',):
+                param.add(BCCVL['value'], LOCAL[dsuuid])
+            else:
+                param.add(BCCVL['value'], Literal(value))
+        # iterate over all input datasets and add them as entities
+        for key in ('data_table',):
+            dsbrain = uuidToCatalogBrain(result.job_params[key])
+            if not dsbrain:
+                continue
+            ds = dsbrain.getObject()
+            dsprov = Resource(graph, LOCAL[result.job_params[key]])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            #dsprov.add(PROV['..'], Literal(''))
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            # location / source
+            # graph.add(uri, DCTERMS['source'], Literal(''))
+            # TODO: genre ...
+            # TODO: resolution
+            # species metadata
+            md = IBCCVLMetadata(ds)
+            # dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            # dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+
+            # ... species data, ... species id
+            for layer in md.get('layers_used',()):
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
+
+            # link with activity
+            activity.add(PROV['used'], dsprov)
+            
+        provdata.data = graph.serialize(format="turtle")
+    
     def start_job(self, request):
         if not self.is_active():
             # get utility to execute this experiment
@@ -603,6 +964,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             }
             # add toolkit params:
             result.job_params.update(self.context.parameters[algorithm.UID])
+            # update provenance
+            self._createProvenance(result)
             # submit job
             LOG.info("Submit JOB %s to queue", algorithm.id)
             method(result, algorithm.getObject())
@@ -620,6 +983,47 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 @adapter(IDataset)
 class ALAJobTracker(JobTracker):
 
+    def _createProvenance(self, result):
+        provdata = IProvenanceData(result)
+        from rdflib import URIRef, Literal, Namespace, Graph
+        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.resource import Resource
+        PROV = Namespace(u"http://www.w3.org/ns/prov#")
+        BCCVL = Namespace(u"http://ns.bccvl.org.au/")
+        LOCAL = Namespace(u"urn:bccvl:")
+        graph = Graph()
+        # the user is our agent
+
+        member = api.user.get_current()
+        username = member.getProperty('fullname') or member.getId()
+        user = Resource(graph, LOCAL['user'])
+        user.add(RDF['type'], PROV['Agent'])
+        user.add(RDF['type'], FOAF['Person'])
+        user.add(FOAF['name'], Literal(username))
+        user.add(FOAF['mbox'],
+                 URIRef('mailto:{}'.format(member.getProperty('email'))))
+        # add software as agent
+        software = Resource(graph, LOCAL['software'])
+        software.add(RDF['type'], PROV['Agent'])
+        software.add(RDF['type'], PROV['SoftwareAgent'])
+        software.add(FOAF['name'], Literal('BCCVL ALA Importer'))
+        # script content is stored somewhere on result and will be exported with zip?
+        #   ... or store along with pstats.json ? hidden from user
+
+        # -> execenvironment after import -> log output?
+        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        activity = Resource(graph, LOCAL['activity'])
+        activity.add(RDF['type'], PROV['Activity'])
+        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        now = datetime.now().replace(microsecond=0)
+        activity.add(PROV['startedAtTime'],
+                     Literal(now.isoformat(), datatype=XSD['dateTime']))
+        activity.add(PROV['hasAssociationWith'], user)
+        activity.add(PROV['hasAssociationWith'], software)
+        # add job parameters to activity
+    
+        provdata.data = graph.serialize(format="turtle")
+    
     def start_job(self):
         if self.is_active():
             return 'error', u'Current Job is still running'
@@ -646,6 +1050,8 @@ class ALAJobTracker(JobTracker):
                                'fullname': member.getProperty('fullname')
                            }})
         # TODO: add title, and url for dataset? (like with experiments?)
+        # update provenance
+        self._createProvenance(self.context)
         after_commit_task(ala_import_task)
 
         # FIXME: we don't have a backend task id here as it will be started
