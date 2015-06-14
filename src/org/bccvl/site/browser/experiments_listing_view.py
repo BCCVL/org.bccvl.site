@@ -10,8 +10,8 @@ from org.bccvl.site.content.interfaces import IExperiment, ISDMExperiment
 from collections import defaultdict
 from zope.component import getUtility, queryUtility, getMultiAdapter
 from zope.schema.interfaces import IVocabularyFactory
-from gu.z3cform.rdf.utils import Period
 from org.bccvl.site import defaults
+from org.bccvl.site.utils import Period
 from itertools import chain
 
 

@@ -4,7 +4,7 @@ from urlparse import urlsplit
 from itertools import chain
 import os.path
 import tempfile
-from gu.z3cform.rdf.utils import Period
+from org.bccvl.site.utils import Period
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (

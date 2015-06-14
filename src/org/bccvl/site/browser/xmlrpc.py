@@ -23,10 +23,9 @@ import json
 from Products.statusmessages.interfaces import IStatusMessage
 from org.bccvl.site.browser.ws import IDataMover, IALAService
 from plone.dexterity.utils import createContentInContainer
-from gu.z3cform.rdf.utils import Period
 from decimal import Decimal
 from org.bccvl.site.api import dataset
-from org.bccvl.site.utils import DecimalJSONEncoder
+from org.bccvl.site.utils import DecimalJSONEncoder, Period
 
 
 LOG = logging.getLogger(__name__)
