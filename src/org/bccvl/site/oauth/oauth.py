@@ -1,19 +1,26 @@
 #
 import json
 import logging
+from urlparse import urljoin
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from plone import api
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 from zope.interface import implementer
-from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces import NotFound, BadRequest, Unauthorized
 from zope.publisher.interfaces import IPublishTraverse
 from .interfaces import IOAuth1Settings, IOAuth2Settings
 
 
 LOG = logging.getLogger(__name__)
 
+def check_authenticated(func):
+    def check(self, *args, **kw):
+        if api.user.is_anonymous():
+            raise Unauthorized()
+        return func(*args, **kw)
+    return check
 
 class OAuthBaseView(BrowserView):
 
@@ -73,8 +80,12 @@ class OAuth2View(OAuthBaseView):
         scope = ['https://www.googleapis.com/auth/userinfo.email',
                  'https://www.googleapis.com/auth/userinfo.profile']
 
+        redirect_url = self.config.redirect_url
+        if not redirect_url:
+            redirect_url = urljoin(self.request.getURL(), 'callback')
+            
         oauth = OAuth2Session(self.config.client_id, state=state,
-                              redirect_uri=self.config.redirect_url, token=token,
+                              redirect_uri=redirect_url, token=token,
                               auto_refresh_kwargs={'client_id': self.config.client_id,
                                                    'client_secret': self.config.client_secret},
                               auto_refresh_url=self.config.refresh_url,
@@ -82,22 +93,7 @@ class OAuth2View(OAuthBaseView):
                               scope=scope)
         return oauth
 
-    def __call__(self):
-        if self.is_callback():
-            # This is very likey a oauth2 "callback"
-            state, return_url = self.session.get(self._skey)
-            token = self.callback(state, return_url)
-            # delete oauth state
-            if self.session.has_key(self._skey):
-                del self.session[self._skey]
-            self.setToken(token)
-        else:
-            # initiate authorisation
-            state = self.authorize()
-            # store state for callback
-            self.session[self._skey] = (state, self.request.environ['HTTP_REFERER'])
-        # TODO: either callback or authorize should initiate a redirect
-
+    @check_authenticated
     def authorize(self, access_type='offline', approval_prompt='force'):
         # redirect to external service authorisation page
         oauth = self.oauth_session()
@@ -106,11 +102,12 @@ class OAuth2View(OAuthBaseView):
             # access_type and approval_prompt are Google specific extra
             # parameters.
             access_type=access_type, approval_prompt=approval_prompt)
-        # state ... roundtripped by google, can be used to verify response
-        self.request.response.redirect(authorization_url)
+        # state ... roundtripped by oauth, can be used to verify response
+        return_url = self.request.get('HTTP_REFERER')
+        self.session[self._skey] = (state, return_url)
         # redirect to auth url?
-        # TODO: return something about success?
-        return state
+        self.request.response.redirect(authorization_url)
+        # TODO: what about failures here? return success/failure
 
     def is_callback(self):
         # check if request is a authorize "callback"
@@ -118,7 +115,14 @@ class OAuth2View(OAuthBaseView):
                 and 'code' in self.request.form
                 and 'state' in self.request.form)
 
+    @check_authenticated
     def callback(self, state=None, return_url=None):
+        if not self.is_callback():
+            # TODO: maybe rais some other error here?
+            raise NotFound(self.context, 'callback', self.request)
+        # get current state to verify callback
+        state, return_url = self.session.get(self._skey)
+        # verify oauth callback
         oauth = self.oauth_session(state=state)
         # TODO: there should be a better way to get the full request url
         authorization_response = self.request.getURL() + '?' + self.request['QUERY_STRING']
@@ -133,9 +137,18 @@ class OAuth2View(OAuthBaseView):
             # Google specific extra parameter used for client
             # authentication
             client_secret=self.config.client_secret)
+        # store token and clean up session
+        if self.session.has_key(self._skey):
+            del self.session[self._skey]
+        self.setToken(token)
         # Do another redirect to clean up the url
         self.request.response.redirect(return_url or self.request.getURL())
-        return token
+
+    @check_authenticated
+    def accesstoken(self):
+        # return full access token for current user
+        self.request.response['CONTENT-TYPE'] = 'application/json'
+        return json.dumps(self.getToken())
 
     def validate(self):
         """Validate a token with the OAuth provider Google.
@@ -187,33 +200,22 @@ class OAuth1View(OAuthBaseView):
         if not token:
             # token should contain access token if available
             token = {}
+
+        redirect_url = self.config.redirect_url
+        if not redirect_url:
+            redirect_url = urljoin(self.request.getURL(), 'callback')
+            
         # TODO: for ourselves we need to put static token key into resource_owner_xx
         oauth = OAuth1Session(client_key=self.config.client_key,
                               client_secret=self.config.client_secret,
                               resource_owner_key=token.get('oauth_token'),
                               resource_owner_secret=token.get('oauth_token_secret'),
                               verifier=token.get('oauth_verifier'),
-                              callback_uri=self.config.redirect_url,
+                              callback_uri=redirect_url,
                               signature_type='auth_header')
         return oauth
 
-    def __call__(self):
-        if self.is_callback():
-            # This is very likey a oauth2 "callback"
-            # TODO: catch no session
-            auth_token, return_url = self.session.get(self._skey)
-            access_token = self.callback(auth_token, return_url)
-            # delete oauth state
-            if self.session.has_key(self._skey):
-                del self.session[self._skey]
-            self.setToken(access_token)
-        else:
-            # initiate oauth authorisation
-            token = self.authorize()
-            # store state for callback
-            self.session[self._skey] = (token, self.request.environ['HTTP_REFERER'])
-        # TODO: either callback or authorize should initiate a redirect
-
+    @check_authenticated
     def authorize(self):
         # redirect to external service authorisation page
         oauth = self.oauth_session()
@@ -221,18 +223,24 @@ class OAuth1View(OAuthBaseView):
         request_token = oauth.fetch_request_token(self.config.request_url)
         # get the authorization url and redirect user to it
         authorization_url = oauth.authorization_url(self.config.authorization_url)
-        # state ... roundtripped by google, can be used to verify response
-        self.request.response.redirect(authorization_url)
+        # state ... roundtripped by oauth, can be used to verify response
+        return_url = self.request.get("HTTP_REFERER")
+        self.session[self._skey] = (request_token, return_url)
         # redirect to auth url?
-        # TODO: return something about success?
-        return request_token
+        self.request.response.redirect(authorization_url)
+        # TODO: return something about success / failure?
 
     def is_callback(self):
         return ('oauth_verifier' in self.request.form
                 and 'oauth_token' in self.request.form
                 and self.config.oauth_url in self.request.environ['HTTP_REFERER'])
 
-    def callback(self, token, return_url=None):
+    @check_authenticated
+    def callback(self):
+        if not self.is_callback():
+            raise NotFound(self.context, 'callback', self.request)
+        # get info from session and request
+        token, return_url = self.session.get(self._skey)
         # get auth_token to fetch access_token
         # token should be the request token used to initiate the authorization
         # start an oauth session with all our old tokens from authorize
@@ -246,10 +254,19 @@ class OAuth1View(OAuthBaseView):
         # We have got a request token with verifier. (already set in oauth session)
         # Fetch the final access token
         access_token = oauth.fetch_access_token(self.config.access_url)
+        # clean up session and store token for user
+        if self.session.has_key(self._skey):
+            del self.session[self._skey]
+        self.setToken(access_token)
         # redirect to last known address?
         self.request.response.redirect(return_url or self.request.getURL())
-        return access_token
 
+    @check_authenticated
+    def accesstoken(self):
+        # return full access token for current user
+        self.request.response['CONTENT-TYPE'] = 'application/json'
+        return json.dumps(self.getToken())
+    
     # Figshare API
     def validate(self):
         # TODO: OAuth2Session has attribute .authorized ... it only checks for presence of various tokens, but should be a good indicator of successfull authorisation
@@ -275,16 +292,34 @@ class OAuth1View(OAuthBaseView):
 # TODO: always the sam e.... IPublishTraverse or ITraverse?
 @implementer(IPublishTraverse)
 class OAuthTraverser(BrowserView):
+    # parse urls like oauth/<serviceid>/<command>
+
+    _serviceid = None
+    _view = None
 
     def publishTraverse(self, context, name):
-        registry = getUtility(IRegistry)
-        coll = registry.collectionOfInterface(IOAuth1Settings)
-        for cid, config in coll.items():
-            if cid == name:
-                return OAuth1View(self.context, self.request, config)
-        coll = registry.collectionOfInterface(IOAuth2Settings)
-        for cid, config in coll.items():
-            if cid == name:
-                return OAuth2View(self.context, self.request, config)
-        # raise NotFound
-        raise NotFound(self, name, self.request)
+        # no serviceid yet ? .... name should be it
+        if not self._serviceid:
+            registry = getUtility(IRegistry)
+            coll = registry.collectionOfInterface(IOAuth1Settings)
+            for cid, config in coll.items():
+                if cid == name:
+                    self._serviceid = name
+                    self._view = OAuth1View(self.context, self.request, config)
+                    return self
+            coll = registry.collectionOfInterface(IOAuth2Settings)
+            for cid, config in coll.items():
+                if cid == name:
+                    self._serviceid = name
+                    self._view = OAuth2View(self.context, self.request, config)
+                    return self
+            # raise NotFound
+            raise NotFound(self, name, self.request)
+        else:
+            # we have a serviceid ... name should now be a command
+            if name in ('authorize', 'callback', 'accesstoken'):
+                return getattr(self._view, name)
+            raise NotFound(self, name, self.request)
+
+    def __call__(self):
+        raise BadRequest('Missing parameter')
