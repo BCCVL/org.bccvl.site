@@ -10,6 +10,7 @@ from zope.component import getUtility
 from zope.interface import implementer
 from zope.publisher.interfaces import NotFound, BadRequest, Unauthorized
 from zope.publisher.interfaces import IPublishTraverse
+from zope.security import checkPermission
 from .interfaces import IOAuth1Settings, IOAuth2Settings
 
 
@@ -146,9 +147,19 @@ class OAuth2View(OAuthBaseView):
 
     @check_authenticated
     def accesstoken(self):
+        # FIXME: this is a quick workaround, user parameter should not be here
+        if checkPermission('cmf.ManagePortal', self.context):
+            # we are admin ... check if user is set
+            username = self.request.form.get('user')
+            member = api.user.get(username=username)
+            access_token = member.getProperty(self._property, "")
+            if access_token:
+                access_token = json.loads(token)
+        else:
+            access_token = self.getToken()
         # return full access token for current user
         self.request.response['CONTENT-TYPE'] = 'application/json'
-        return json.dumps(self.getToken())
+        return json.dumps(access_token)
 
     def validate(self):
         """Validate a token with the OAuth provider Google.
@@ -263,9 +274,20 @@ class OAuth1View(OAuthBaseView):
 
     @check_authenticated
     def accesstoken(self):
+        # FIXME: this is a quick workaround, user parameter should not be here
+        # allow for user parameter in case we are admin
+        if checkPermission('cmf.ManagePortal', self.context):
+            # we are admin ... check if user is set
+            username = self.request.form.get('user')
+            member = api.user.get(username=username)
+            access_token = member.getProperty(self._property, "")
+            if access_token:
+                access_token = json.loads(token)
+        else:
+            access_token = self.getToken()
         # return full access token for current user
         self.request.response['CONTENT-TYPE'] = 'application/json'
-        return json.dumps(self.getToken())
+        return json.dumps(access_token)
     
     # Figshare API
     def validate(self):
