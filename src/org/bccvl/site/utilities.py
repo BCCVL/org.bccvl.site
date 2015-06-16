@@ -354,7 +354,7 @@ class SDMJobTracker(MultiJobTracker):
                 # create result object:
                 # TODO: refactor this out into helper method
                 title = u'{} - {} {}'.format(self.context.title, func.getId(),
-                                             datetime.now().strftime('YYYY-MM-DDTHH:MM:SS'))
+                                             datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                 result = self._create_result_container(title)
 
                 # Build job_params store them on result and submit job
@@ -396,7 +396,7 @@ class ProjectionJobTracker(MultiJobTracker):
         # TODO: get proper labels for emsc, gcm
         title = u'{} - project {}_{}_{} {}'.format(
             self.context.title, dsmd['emsc'], dsmd['gcm'], year,
-            datetime.now().strftime('YYYY-MM-DDTHH:MM:SS'))
+            datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
         result = createContentInContainer(
             self.context,
             'Folder',
@@ -687,11 +687,11 @@ class BiodiverseJobTracker(MultiJobTracker):
                 if year == 'current':
                     title = u'{} - biodiverse {} {}'.format(
                         self.context.title, year,
-                        datetime.now().strftime('YYYY-MM-DDTHH:MM:SS'))
+                        datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                 else:
                     title = u'{} - biodiverse {}_{}_{} {}'.format(
                         self.context.title, emsc, gcm, year,
-                        datetime.now().strftime('YYYY-MM-DDTHH:MM:SS'))
+                        datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                 result = createContentInContainer(
                     self.context,
                     'Folder',
@@ -821,7 +821,7 @@ class EnsembleJobTracker(MultiJobTracker):
 
             # create result container
             title = u'{} - ensemble {}'.format(
-                self.context.title, datetime.now().strftime('YYYY-MM-DDTHH:MM:SS'))
+                self.context.title, datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
             result = createContentInContainer(
                 self.context,
                 'Folder',
@@ -950,7 +950,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             # create result object:
             # TODO: refactor this out into helper method
             title = u'{} - {} {}'.format(self.context.title, algorithm.id,
-                                     datetime.now().strftime('YYYY-MM-DDTHH:MM:SS'))
+                                     datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
             result = createContentInContainer(
                 self.context,
                 'Folder',
