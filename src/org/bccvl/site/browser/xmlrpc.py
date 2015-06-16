@@ -543,14 +543,13 @@ class ExportResult(BrowserView):
     # parameters needed:
     #   ... serviceid ... service to export to
 
+    # FIXME: should probably be a post only request?
     @returnwrapper
     def export_result(self, serviceid):
         # self.context should be a result
         if not hasattr(self.context, 'job_params'):
             raise NotFound(self.context, self.context.title, self.request)
         # TODO: validate serviceid
-
-        import ipdb; ipdb.set_trace()
 
         # start export job
         context_path = '/'.join(self.context.getPhysicalPath())
@@ -578,4 +577,10 @@ class ExportResult(BrowserView):
         message = u'Job submitted {0} - {1}'.format(self.context.title, 'PENDING')
 
         IStatusMessage(self.request).add(message, type=status)
+        nexturl = self.request.get('HTTP-REFERER')
+        if not nexturl:
+            # this method should only be called on a result folder
+            # we should be able to safely redirect back to the pacent experiment
+            nexturl = self.context.__parent__.absolute_url()
+        self.request.response.redirect(nexturl, 307)
         return (status, message)
