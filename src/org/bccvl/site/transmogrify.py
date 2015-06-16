@@ -469,7 +469,6 @@ class ProvenanceImporter(object):
 
             # FIXME: need a better distinction between result import
             #        and ala import (prov data from parent or obj)
-            from celery.contrib import rdb; rdb.set_trace()
             if '_ala_provenance' in item:
                 # ALA import?
                 context = obj
