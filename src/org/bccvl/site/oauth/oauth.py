@@ -161,6 +161,23 @@ class OAuth2View(OAuthBaseView):
         self.request.response['CONTENT-TYPE'] = 'application/json'
         return json.dumps(access_token)
 
+    @check_authenticated
+    def clienttoken(self):
+        # only admin can fetch client token
+        if not checkPermission('cmf.ManagePortal', self.context):
+            raise Unauthorized()
+        self.request.response['CONTENT-TYPE'] = 'application/json'        
+        return json.dumps({
+            'client_id': self.config.client_id,
+            'redirect_uri': self.config.redirect_url,
+            'auto_refresh_kwargs': {
+                'client_id': self.config.client_id,
+                'client_secret': self.config.client_secret,
+            },
+            'auto_refresh_url': self.config.refresh_url
+        })
+        
+
     def validate(self):
         """Validate a token with the OAuth provider Google.
         """
@@ -288,6 +305,17 @@ class OAuth1View(OAuthBaseView):
         # return full access token for current user
         self.request.response['CONTENT-TYPE'] = 'application/json'
         return json.dumps(access_token)
+
+    @check_authenticated
+    def clienttoken(self):
+        # only admin can fetch client token
+        if not checkPermission('cmf.ManagePortal', self.context):
+            raise Unauthorized()
+        self.request.response['CONTENT-TYPE'] = 'application/json'
+        return json.dumps({
+            'client_key': self.config.client_key,
+            'client_secret': self.config.client_secret,
+        })
     
     # Figshare API
     def validate(self):
@@ -339,7 +367,7 @@ class OAuthTraverser(BrowserView):
             raise NotFound(self, name, self.request)
         else:
             # we have a serviceid ... name should now be a command
-            if name in ('authorize', 'callback', 'accesstoken'):
+            if name in ('authorize', 'callback', 'accesstoken', 'clienttoken'):
                 return getattr(self._view, name)
             raise NotFound(self, name, self.request)
 
