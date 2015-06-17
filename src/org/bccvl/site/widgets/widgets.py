@@ -338,6 +338,8 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             return NO_VALUE
         # get selcted model uuids if any..
         # TODO: this supports only one experiment at the moment
+        if isinstance(uuid, list):
+            uuid = uuid[0]
         modeluuids = self.request.get('{0}.model'.format(self.name),
                                       [])
         return {uuid: modeluuids}
