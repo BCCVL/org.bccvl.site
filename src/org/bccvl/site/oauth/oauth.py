@@ -17,7 +17,7 @@ from .interfaces import IOAuth1Settings, IOAuth2Settings
 LOG = logging.getLogger(__name__)
 
 def check_authenticated(func):
-    def check(self, *args, **kw):
+    def check(*args, **kw):
         if api.user.is_anonymous():
             raise Unauthorized()
         return func(*args, **kw)
