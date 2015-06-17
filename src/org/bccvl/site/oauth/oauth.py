@@ -83,7 +83,7 @@ class OAuth2View(OAuthBaseView):
         redirect_url = self.config.redirect_url
         if not redirect_url:
             redirect_url = urljoin(self.request.getURL(), 'callback')
-            
+
         oauth = OAuth2Session(self.config.client_id, state=state,
                               redirect_uri=redirect_url, token=token,
                               auto_refresh_kwargs={'client_id': self.config.client_id,
@@ -165,7 +165,7 @@ class OAuth2View(OAuthBaseView):
         # only admin can fetch client token
         if not checkPermission('cmf.ManagePortal', self.context):
             raise Unauthorized()
-        self.request.response['CONTENT-TYPE'] = 'application/json'        
+        self.request.response['CONTENT-TYPE'] = 'application/json'
         return json.dumps({
             'client_id': self.config.client_id,
             'redirect_uri': self.config.redirect_url,
@@ -175,7 +175,7 @@ class OAuth2View(OAuthBaseView):
             },
             'auto_refresh_url': self.config.refresh_url
         })
-        
+
 
     def validate(self):
         """Validate a token with the OAuth provider Google.
@@ -231,7 +231,7 @@ class OAuth1View(OAuthBaseView):
         redirect_url = self.config.redirect_url
         if not redirect_url:
             redirect_url = urljoin(self.request.getURL(), 'callback')
-            
+
         # TODO: for ourselves we need to put static token key into resource_owner_xx
         oauth = OAuth1Session(client_key=self.config.client_key,
                               client_secret=self.config.client_secret,
@@ -273,7 +273,7 @@ class OAuth1View(OAuthBaseView):
         # start an oauth session with all our old tokens from authorize
         oauth = self.oauth_session(token=token)  # should return token
         # now we can update our session with the authorize response
-        # TODO: there should be a better way to get the full request url        
+        # TODO: there should be a better way to get the full request url
         authorization_response = self.request.getURL() + '?' + self.request['QUERY_STRING']
         # Parsing the url, updates the state of oauth session as well
         request_token = oauth.parse_authorization_response(authorization_response)
@@ -318,7 +318,7 @@ class OAuth1View(OAuthBaseView):
             'client_key': self.config.client_key,
             'client_secret': self.config.client_secret,
         })
-    
+
     # Figshare API
     def validate(self):
         # TODO: OAuth2Session has attribute .authorized ... it only checks for presence of various tokens, but should be a good indicator of successfull authorisation
@@ -333,11 +333,11 @@ class OAuth1View(OAuthBaseView):
             params = None
 
             response = oauth.get('http://api.figshare.com/v1/my_data/articles', params=params)
-            #data=json.dumps(body), headers=headers)    
+            #data=json.dumps(body), headers=headers)
             #/articles
             return True
         except Exception as e:
-            LOG.info('OAuth validate failed: %s', e)            
+            LOG.info('OAuth validate failed: %s', e)
             return False
 
 
