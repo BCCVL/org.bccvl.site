@@ -303,7 +303,10 @@ class OAuth1View(OAuthBaseView):
             access_token = self.getToken()
         # return full access token for current user
         self.request.response['CONTENT-TYPE'] = 'application/json'
-        return json.dumps(access_token)
+        return json.dumps({
+            'oauth_token': access_token['oauth_token'],
+            'oauth_token_secret': access_token['oauth_token_secret']
+        })
 
     @check_authenticated
     def clienttoken(self):
