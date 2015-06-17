@@ -2,7 +2,6 @@ from decimal import Decimal
 import json
 import re
 
-
 class DecimalJSONEncoder(json.JSONEncoder):
 
     def default(self, o):

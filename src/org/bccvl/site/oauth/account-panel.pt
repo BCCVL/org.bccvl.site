@@ -27,6 +27,7 @@
                 tal:define="view_name view/__name__"
                 i18n:domain="plone">
 
+              <!-- TODO: render tabs from user actions ? -->
                 <li id="contentview-user_data-personal-information"
                     tal:define="link view/getPersonalInfoLink;
                                 selected python:view_name=='personal-information'"
