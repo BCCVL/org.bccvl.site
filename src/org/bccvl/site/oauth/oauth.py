@@ -31,8 +31,7 @@ class OAuthBaseView(BrowserView):
     config = None
 
     def __init__(self, context, request, config):
-        self.context = context
-        self.request = request
+        super(OAuthBaseView, self).__init__(context, request)
         self._property = self._property.format(config.id)
         self._skey = self._skey.format(config.id)
         self.config = config
@@ -299,7 +298,7 @@ class OAuth1View(OAuthBaseView):
             member = api.user.get(username=username)
             access_token = member.getProperty(self._property, "")
             if access_token:
-                access_token = json.loads(token)
+                access_token = json.loads(access_token)
         else:
             access_token = self.getToken()
         # return full access token for current user
