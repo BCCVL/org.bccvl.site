@@ -1,7 +1,9 @@
 from Products.CMFCore.utils import getToolByName
-from zope.interface import alsoProvides
-from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
+from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
+from plone import api
+from zope.annotations.interfaces import IAnnotations
+from zope.interface import alsoProvides
 import logging
 
 
@@ -116,6 +118,11 @@ def upgrade_181_190_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
     setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
     setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    setup.runImportStepFromProfile(PROFILE_ID, 'registry')
+    # finally remove the internal rdf graph which may still linger around
+    pannots = IAnnotations(api.portal.get())
+    if 'gu.plone.rdf' in pannots:
+        del pannots['gu.plone.rdf']
     # rebuild the catalog to make sure new indices are populated
     logger.info("rebuilding catalog")
     pc = getToolByName(context, 'portal_catalog')
