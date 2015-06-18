@@ -86,6 +86,7 @@ setup(
         ],
         'deprecated':  [
             'dexterity.membrane',  # pulls in collective.indexing (persistent tool)
+            'gu.z3cform.rdf',  # needed because there maf be some persistent utilihes registered SparqlInstanceVocabularyFactory
             'plone.app.folderui',
         ],
         'experimental': [
