@@ -85,8 +85,6 @@ setup(
             'unittest2'
         ],
         'deprecated':  [
-            'gu.repository.content',
-            'gu.plone.rdf',
             'dexterity.membrane',  # pulls in collective.indexing (persistent tool)
             'plone.app.folderui',
         ],
