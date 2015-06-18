@@ -60,9 +60,9 @@ class ResultDownloadView(BrowserView):
             # put metadata into zip
             # provenance data stored on result container
             provdata = IProvenanceData(self.context)
-            zfile.writestr('/'.join((zfilename, 'prov.ttl')),
-                           provdata.data)
-
+            if not provdata.data is None:
+                zfile.writestr('/'.join((zfilename, 'prov.ttl')),
+                               provdata.data)
             # add mets.xml
             metsview = getMultiAdapter((self.context, self.request), name="mets.xml")
             zfile.writestr('/'.join((zfilename, 'mets.xml')),
