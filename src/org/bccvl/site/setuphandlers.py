@@ -2,7 +2,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from plone import api
-from zope.annotations.interfaces import IAnnotations
+from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
 import logging
 
