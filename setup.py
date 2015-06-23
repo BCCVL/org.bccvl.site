@@ -48,6 +48,8 @@ setup(
         'collective.quickupload',
         'collective.onlogin',
         'collective.z3cform.widgets',
+        'collective.indexing',
+        'plone.app.folderui',
         #'collective.deletepermission', careful it interfers with delete buttons when not activated
         #'collective.z3cform.chosen',
         'borg.localrole',
@@ -85,9 +87,7 @@ setup(
             'unittest2'
         ],
         'deprecated':  [
-            'dexterity.membrane',  # pulls in collective.indexing (persistent tool)
             'gu.z3cform.rdf',  # needed because there maf be some persistent utilihes registered SparqlInstanceVocabularyFactory
-            'plone.app.folderui',
         ],
         'experimental': [
             'eea.facetednavigation'

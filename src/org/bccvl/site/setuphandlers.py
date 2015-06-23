@@ -118,7 +118,7 @@ def upgrade_181_190_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
     setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
     setup.runImportStepFromProfile(PROFILE_ID, 'actions')
-    setup.runImportStepFromProfile(PROFILE_ID, 'registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     # finally remove the internal rdf graph which may still linger around
     pannots = IAnnotations(api.portal.get())
     if 'gu.plone.rdf' in pannots:
