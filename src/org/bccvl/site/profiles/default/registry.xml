@@ -891,43 +891,7 @@
       </element>
       <element>
           <element key="value">GPP4</element>
-          <element key="title">Minimum GPP for 2000</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
-      </element>
-      <element>
-          <element key="value">GPP5</element>
-          <element key="title">Minimum GPP for 2001</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
-      </element>
-      <element>
-          <element key="value">GPP6</element>
-          <element key="title">Minimum GPP for 2002</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
-      </element>
-      <element>
-          <element key="value">GPP7</element>
-          <element key="title">Minimum GPP for 2003</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
-      </element>
-      <element>
-          <element key="value">GPP8</element>
-          <element key="title">Minimum GPP for 2004</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
-      </element>
-      <element>
-          <element key="value">GPP9</element>
-          <element key="title">Minimum GPP for 2005</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
-      </element>
-      <element>
-          <element key="value">GPP10</element>
-          <element key="title">Minimum GPP for 2006</element>
+          <element key="title">Annual mean GPP</element>
           <element key="unit">mol CO2 per m^2</element>
           <element key="color">default</element>
       </element>
