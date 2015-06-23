@@ -26,6 +26,10 @@
     </object>
     <object name="details" meta_type="CMF Action" i18n:domain="plone">
       <property name="icon_class" type="string">fa fa-info</property>      
+      <property name="visible">True</property>
+    </object>
+    <object name="oauthprefs" meta_type="CMF Action" i18n:domain="bccvl">
+      <property name="icon_class" type="string">fa fa-user-secret"</property>
       <property name="visible">False</property>
     </object>
     <object name="preferences" meta_type="CMF Action" i18n:domain="plone">

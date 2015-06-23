@@ -58,6 +58,10 @@
       factory=".metadata.BCCVLMetadata"
       />
 
+  <adapter
+      factory=".metadata.ProvenanceData"
+      />
+
   <!-- download info adapters -->
   <adapter
       factory=".utilities.DatasetDownloadInfo"
@@ -107,6 +111,11 @@
       name="SearchableText"
       />
   
+  <adapter
+      factory=".indexers.experiment_reference_indexer"
+      name="experiment_reference"
+      />
+
   <adapter
       for=".content.interfaces.IExperiment
            Products.ZCatalog.interfaces.IZCatalog"
@@ -169,6 +178,11 @@
   <utility
       component=".transmogrify.ContextSource"
       name="org.bccvl.site.transmogrify.contextsource"
+      />
+
+  <utility
+      component=".transmogrify.ProvenanceImporter"
+      name="org.bccvl.site.transmogrify.provenance"
       />
 
   <utility

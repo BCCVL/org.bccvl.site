@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<mets 
+    xmlns="http://www.loc.gov/METS/"
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    tal:define="mets options/mets"
+    TYPE="dataset">
+
+  <!-- TODO: check contents -->
+  <metsHdr 
+      CREATEDATE="2014-08-18T00:00:00"
+      RECORDSTATUS="published"
+      tal:attributes="CREATEDATE mets/created">
+    <agent ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="Software">
+      <name>BCCVL</name>
+    </agent>
+  </metsHdr>
+
+  <dmdSec ID="DMD-1">
+    <!-- The METS Package as a whole -->
+    <mdWrap MDTYPE="MODS">
+      <xmlData>
+        <mods xmlns="http://www.loc.gov/mods/v3"
+              xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/mods/v3/mods-3-4.xsd">
+          <genre authority="dct">Dataset</genre>
+                    
+          <titleInfo displayLabel="Title">
+            <title tal:content="mets/title">Title</title>
+          </titleInfo>
+                    
+          <abstract type="text" displayLabel="Description"
+                    tal:content="mets/description">Description</abstract>
+                    
+          <!-- TODO: could use job run start end time here -->
+          <!-- should be optionial? -->
+          <!-- <originInfo> -->
+          <!--   <dateCaptured point="start" encoding="iso8601">{{ collection_period.start }}</dateCaptured> -->
+          <!--   <dateCaptured point="end" encoding="iso8601">{{ collection_period.end }}</dateCaptured> -->
+          <!-- </originInfo> -->
+                    
+          <!-- user who created this result -->
+          <name type="personal" tal:repeat="user mets/creators">
+            <namePart type="fullname" tal:content="user">Auther Name</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator">cre</roleTerm>
+              <roleTerm type="text" authority="marcrelator">creator</roleTerm>
+            </role>
+          </name>
+
+          <!-- user who created this result -->
+          <name type="personal" tal:repeat="user mets/contributors">
+            <namePart type="fullname" tal:content="user">Auther Name</namePart>
+            <role>
+              <roleTerm type="code" authority="marcrelator">ctb</roleTerm>
+              <roleTerm type="text" authority="marcrelator">contributor</roleTerm>
+            </role>
+          </name>
+          
+          <!-- TODO: is this free text? could describe anything ... file format, textual description... e.g.: BCCVL SDM Result -->
+          <!-- <typeOfResource displayLabel="Format Type">{{ resource_type|lower }}</typeOfResource> -->
+
+          <!-- TODO: again ... whatever I want? -->
+          <!-- <genre  -->
+          <!--     type="work-type" authority="griffith-format-types" -->
+          <!--     displayLabel="Format Type">{{ format_type|lower }}</genre> -->
+
+          <subject displayLabel="Keyword"
+                   tal:condition="mets/subjects">
+            <topic tal:repeat="keyword mets/subjects"
+                   tal:content="keyword">Keyword </topic>
+          </subject>
+                
+          <!-- TODO: keep this around and fill with coverage data? -->
+          <!-- <subject displayLabel="Place Name"> -->
+          <!--   {# TODO: deal with KML & co-ords separately? #} -->
+          <!--   <geographic>{{ location }}</geographic> -->
+          <!-- </subject> -->
+
+          <!-- TODO: this wolud be the coverage data esp. interesting in case of future climate?
+               TODO: would we add emsc and gcm like this? -->
+          <!-- <subject displayLabel="Subject Period"> -->
+          <!--   <temporal encoding="iso8601" point="start">{{ subject_period.from }}</temporal> -->
+          <!--   <temporal encoding="iso8601" point="end">{{ subject_period.to }}</temporal> -->
+          <!--   <temporal>{{ subject_period.text }}</temporal> -->
+          <!-- </subject> -->
+                
+          <!-- TODO: could add a link to the experiment location or BCCVL -->
+          <!-- <relatedItem> -->
+          <!--   <titleInfo><title>{{ link.title }}</title></titleInfo> -->
+          <!--   <location> -->
+          <!--     <url {% if link.title %}displayLabel="{{ link.title }}"{%- endif %}>{{ link.url }}</url> -->
+          <!--     </location> -->
+          <!-- </relatedItem> -->
+
+          <accessCondition type="useAndReproduction"
+                           tal:condition="mets/rights"
+                           tal:content="mets/rights">Rights</accessCondition>
+                
+          <recordInfo>
+            <recordContentSource valueURI="https://www.bccvl.org.au">Biodiversity and Climate Change Virtual Lab</recordContentSource>
+            <recordCreationDate encoding="iso8601"
+                                tal:content="mets/created">iso date time</recordCreationDate>
+            <recordOrigin>org.bccvl.site</recordOrigin>
+          </recordInfo>
+        </mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+
+  <!-- Overall metadata about content -->
+  <!-- <amdSec ID="AMD-1"> -->
+  <!--   <rightsMD ID="AMD-RIGHTSMD-LICENCE"> -->
+  <!--     <mdRef LOCTYPE="URL"  -->
+  <!--            xlink:type="simple"  -->
+  <!--            xlink:href="licence.txt" -->
+  <!--            MDTYPE="OTHER"  -->
+  <!--            OTHERMDTYPE="DSpaceDepositLicense"  -->
+  <!--            MIMETYPE="text/plain" -->
+  <!--            /> -->
+  <!--   </rightsMD> -->
+  <!-- </amdSec> -->
+  <!-- <amdSec ID="AMD-2"> -->
+  <!--   <rightsMD ID="AMD-RIGHTSMD-1"> -->
+  <!--     <mdWrap MDTYPE="OTHER"  -->
+  <!--             OTHERMDTYPE="METSRIGHTS"> -->
+  <!--       <xmlData  -->
+  <!--           xmlns:rights="http://cosimo.stanford.edu/sdr/metsrights/" -->
+  <!--           xsi:schemaLocation="http://cosimo.stanford.edu/sdr/metsrights/ http://cosimo.stanford.edu/sdr/metsrights.xsd"> -->
+  <!--         <rights:RightsDeclarationMD  -->
+  <!--             xmlns:rights="http://cosimo.stanford.edu/sdr/metsrights/" -->
+  <!--             RIGHTSCATEGORY="LICENSED"> -->
+  <!--           <rights:Context CONTEXTCLASS="GENERAL PUBLIC"> -->
+  <!--             <rights:Permissions  -->
+  <!--                 DISCOVER="false" -->
+  <!--                 DISPLAY="false" -->
+  <!--                 MODIFY="false" -->
+  <!--                 DELETE="false"/> -->
+  <!--           </rights:Context> -->
+  <!--         </rights:RightsDeclarationMD> -->
+  <!--       </xmlData> -->
+  <!--     </mdWrap> -->
+  <!--   </rightsMD> -->
+  <!-- </amdSec> -->
+  <amdSec ID="AMD-3">
+    <digiprovMD ID="AMD-3-PROV">
+      <mdRef LOCTYPE="URL"
+             xlink:type="simple" xlink:href="prov.ttl"
+             MDTYPE="OTHER"
+             MDOTHERMDTYPE="W3CPROV"
+             MIMETYPE="text/turtle"/>
+    </digiprovMD>
+  </amdSec>
+
+  <fileSec>
+    <!-- license file ... optional? -->
+    <!-- <fileGrp ADMID="AMD-1" USE="LICENSE"> -->
+    <!-- <fileGrp USE="LICENSE">       -->
+    <!--        TODO: more attributes like SIZE=, CHECKSUM=, CHECKSUMTYPE= -\-> -->
+    <!--   <file ID="FILE-LICENCE"  -->
+    <!--         MIMETYPE="text/plain; charset=utf-8"> -->
+    <!--     <FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="licence.txt"/> -->
+    <!--   </file> -->
+    <!-- </fileGrp> -->
+    <!-- metadata ; this file -->
+    <!-- <fileGrp ADMID="AMD-2" USE="METADATA"> -->
+    <fileGrp USE="METADATA">      
+      <file ID="FILE-METS" 
+            MIMETYPE="text/xml; charset=utf-8" >
+        <FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="mets.xml"
+                tal:attributes="xlink:href string:${context/title}/mets.xml"/>
+      </file>
+    </fileGrp>
+
+    <fileGrp USE="METADATA">
+      <file ID="FILE-PROV" 
+            MIMETYPE="text/turtle; charset=utf-8" >
+        <FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="prov.ttl"
+                tal:attributes="xlink:href string:${context/title}/prov.ttl"/>
+      </file>
+    </fileGrp>
+    
+    <!-- data content -->
+    <fileGrp USE="ORIGINAL">
+      <!-- metadata files -->
+      <file ID="File-ID"
+            tal:repeat="item mets/content"
+            tal:attributes="ID string: FILE-${repeat/item/index};
+                            MIMETYPE item/mimetype">
+        <!-- more attrs like CHECKSUM, CHECKSUMTYPE, SIZE, CREATED, MIMETYPE -->
+        <FLocat LOCTYPE="URL"
+                xlink:href="title/data/filename"
+                tal:attributes="xlink:href item/filename"></FLocat>
+      </file>
+    </fileGrp>
+
+  </fileSec>
+
+  <!-- TODO: capture overall rights here ? -->
+  <!-- <rightsMD> -->
+  <!-- </rightsMD> -->
+
+</mets>

@@ -1,4 +1,5 @@
 from zope.interface import Interface
+from zope.schema import Text
 
 
 class IDownloadInfo(Interface):
@@ -38,3 +39,11 @@ class IBCCVLMetadata(Interface):
     Interface to access BCCVL specific metadata.
     """
     # FIXME: add IDict or IMapping as base interface?
+
+    
+class IProvenanceData(Interface):
+    """
+    Interface to access Provenance specific metadata.
+    """
+
+    data = Text()

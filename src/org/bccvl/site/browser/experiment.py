@@ -1,5 +1,4 @@
 from itertools import chain
-from plone.directives import dexterity
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
 from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
@@ -7,7 +6,7 @@ from zope.schema.interfaces import RequiredMissing
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
-from plone.dexterity.browser import add, edit
+from plone.dexterity.browser import add, edit, view
 from org.bccvl.site import MessageFactory as _
 from zope.interface import Invalid
 from plone.z3cform.fieldsets.group import Group
@@ -144,7 +143,7 @@ class View(edit.DefaultEditForm):
     # enctype = None
     mode = DISPLAY_MODE
 
-    extends(dexterity.DisplayForm)
+    extends(view.DefaultView)
 
     template = ViewPageTemplateFile("experiment_view.pt")
 
@@ -207,7 +206,7 @@ class Add(add.DefaultAddForm):
 
     template = ViewPageTemplateFile("experiment_add.pt")
 
-    extends(dexterity.DisplayForm,
+    extends(view.DefaultView,
             ignoreButtons=True)
 
     buttons = button.Buttons(add.DefaultAddForm.buttons['cancel'])

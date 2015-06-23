@@ -50,7 +50,6 @@ setup(
         'collective.z3cform.widgets',
         #'collective.deletepermission', careful it interfers with delete buttons when not activated
         #'collective.z3cform.chosen',
-        'plone.app.folderui',
         'borg.localrole',
         'plone.app.contenttypes',
         'decorator',
@@ -63,6 +62,7 @@ setup(
         'org.bccvl.compute',
         'org.bccvl.tasks',
         'requests-oauthlib',
+        'rdflib',
         #'python-openid', # enable openid
         #'plone.app.openid',  # try to load configure stuff
         #'atreal.richfile.qualifier',
@@ -80,13 +80,24 @@ setup(
         #'plone.app.relationfield',
     ],
     extras_require={
-        'test': ['plone.app.testing',
-                 'unittest2'],
-        'deprecated':  ['gu.repository.content',
-                        'gu.plone.rdf',
-                        'dexterity.membrane',
-                        ],
-        'experimental': ['eea.facetednavigation']
+        'test': [
+            'plone.app.testing',
+            'unittest2'
+        ],
+        'deprecated':  [
+            'dexterity.membrane',  # pulls in collective.indexing (persistent tool)
+            'gu.z3cform.rdf',  # needed because there maf be some persistent utilihes registered SparqlInstanceVocabularyFactory
+            'plone.app.folderui',
+        ],
+        'experimental': [
+            'eea.facetednavigation'
+        ],
+        'wsgi': [
+            'Paste',
+            'PasteScript',
+            'repoze.tm2',
+            'repoze.retry'
+        ]
     },
 
     entry_points="""

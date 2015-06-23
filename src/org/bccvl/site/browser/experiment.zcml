@@ -37,6 +37,14 @@
     />
 
     <browser:page
+        name="experiment_tools"
+        for="*"
+        permission="zope2.View"
+        class=".experiments_listing_view.ExperimentTools"
+        allowed_interface=".interfaces.IExperimentTools"
+        />
+
+    <browser:page
         name="experiments_listing_view"
         for="plone.app.contenttypes.interfaces.IFolder"
         class=".experiments_listing_view.ExperimentsListingView"
@@ -131,6 +139,13 @@
         for="*"
         class=".result_download.ResultDownloadView"
         permission="zope2.View"
+        />
+
+    <browser:page
+        for="org.bccvl.site.content.interfaces.IExperiment"
+        name="remove"
+        class=".experiment_remove.ExperimentRemoveView"
+        permission="cmf.ModifyPortalContent"
         />
 
 </configure>

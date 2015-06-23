@@ -30,7 +30,7 @@
                         />
                     </h3>
                     <ul>
-                        <li tal:repeat="item python:result.getObject().restrictedTraverse('@@folderListing')()">
+                        <li tal:repeat="item python:result.getObject().restrictedTraverse('@@folderListing')(portal_type='org.bccvl.content.dataset')">
                             <a href="#" data-mimetype="application/octet-stream"
                                tal:content="item/Title"
                                tal:attributes="href string:${item/getURL}${item/appendViewAction};

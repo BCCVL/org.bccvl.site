@@ -1,9 +1,11 @@
 from Products.Five import BrowserView
+from org.bccvl.site.interfaces import IProvenanceData
 from org.bccvl.site.content.interfaces import IBlobDataset
 from Products.CMFCore.utils import getToolByName
 from ZPublisher.Iterators import filestream_iterator
 from org.bccvl.site.api.dataset import getdsmetadata
 from org.bccvl.site.utils import DecimalJSONEncoder
+from zope.component import getMultiAdapter
 import os
 import os.path
 import tempfile
@@ -56,8 +58,15 @@ class ResultDownloadView(BrowserView):
             # TODO: add experiment result metadata
 
             # put metadata into zip
-            zfile.writestr('/'.join((zfilename, 'bccvl', 'metadata.json')),
-                           DecimalJSONEncoder(indent=4).encode(metadata))
+            # provenance data stored on result container
+            provdata = IProvenanceData(self.context)
+            if not provdata.data is None:
+                zfile.writestr('/'.join((zfilename, 'prov.ttl')),
+                               provdata.data)
+            # add mets.xml
+            metsview = getMultiAdapter((self.context, self.request), name="mets.xml")
+            zfile.writestr('/'.join((zfilename, 'mets.xml')),
+                           metsview.render())
             # finish zip file
             zfile.close()
 
@@ -65,7 +74,7 @@ class ResultDownloadView(BrowserView):
 
             # create response
             self.request.response.setHeader('Content-Type', 'application/zip')
-            self.request.response.setHeader('Content-Disposition',' attachment; filename={}.zip'.format(zfilename))
+            self.request.response.setHeader('Content-Disposition', 'attachment; filename="{}.zip"'.format(zfilename))
             self.request.response.setHeader('Content-Length', '{}'.format(os.path.getsize(fname)))
             return tmpfile_stream_iterator(fname)
         except Exception as e:
