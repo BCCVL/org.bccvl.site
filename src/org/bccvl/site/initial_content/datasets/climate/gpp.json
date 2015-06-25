@@ -1,0 +1,5 @@
+{
+  "_type": "Folder",
+  "title": "Gross Primary Product",
+  "_transitions": ["show_internally", "publish_internally"]
+}
