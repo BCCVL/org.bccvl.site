@@ -59,6 +59,8 @@ class BCCVLUploadForm(DefaultAddForm):
 
         tm = Transmogrifier(new_object)
         tm('org.bccvl.site.add_file_metadata')
+        # We have to reindex after updating the object
+        new_object.reindexObject()
 
     def nextURL(self):
         # redirect to default datasets page
