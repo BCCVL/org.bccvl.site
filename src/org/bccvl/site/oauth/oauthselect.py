@@ -14,10 +14,14 @@ class OAuthSelectModal(BrowserView):
         registry = getUtility(IRegistry)
         coll = registry.collectionOfInterface(IOAuth1Settings)
         for provider, config in coll.items():
-            yield OAuth1View(self.context, self.request, config)
+            view = OAuth1View(self.context, self.request, config)
+            if view.hasToken():
+                yield view
         coll = registry.collectionOfInterface(IOAuth2Settings)
         for provider, config in coll.items():
-            yield OAuth2View(self.context, self.request, config)
+            view = OAuth2View(self.context, self.request, config)
+            if view.hasToken():
+                yield view
 
     def __call__(self):
         return self.template()
