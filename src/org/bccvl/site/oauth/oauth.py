@@ -74,6 +74,11 @@ class OAuthBaseView(BrowserView):
         except Exception:
             return False
 
+    def clearToken(self):
+        # get token for current user
+        member = api.user.get_current()
+        member.setProperty(self._property, "")
+
 
 class OAuth2View(OAuthBaseView):
 
@@ -375,7 +380,7 @@ class OAuthTraverser(BrowserView):
             raise NotFound(self, name, self.request)
         else:
             # we have a serviceid ... name should now be a command
-            if name in ('authorize', 'callback', 'accesstoken', 'clienttoken'):
+            if name in ('authorize', 'callback', 'accesstoken', 'clienttoken', 'cleartoken'):
                 return getattr(self._view, name)
             raise NotFound(self, name, self.request)
 
