@@ -90,14 +90,13 @@
           <div id="content-core">
 
             <fieldset>
-              <h5>Active OAuth authorisations</h5>
-              <p class="discreet">BCCVL is allowed to access the following services</p>
-              <table>
+              <p>BCCVL has access to the following services:</p>
+              <table class="table">
                 <thead>
                   <tr>
                     <th>Oauth provider</th>
                     <th>State</th>
-                    <th>Authorize</th>
+                    <th>Authorise</th>
                     <th>Revoke</th>
                   </tr>
                 </thead>
@@ -105,7 +104,8 @@
                   <tr tal:repeat="oauth view/services">
                     <td tal:content="oauth/config/id"></td>
                     <td tal:content="oauth/validate"></td>
-                    <td><a href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/authorize">Authorize</a></td>
+                    <td>
+                      <a class="btn btn-mini btn-primary" href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/authorize">Authorise</a></td>
                     <td></td>
                   </tr>
                 </tbody>
