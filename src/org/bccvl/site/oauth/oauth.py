@@ -348,7 +348,7 @@ class OAuth1View(OAuthBaseView):
             response = oauth.get('http://api.figshare.com/v1/my_data/articles', params=params)
             #data=json.dumps(body), headers=headers)
             #/articles
-            return True
+            return response.status_code == 200
         except Exception as e:
             LOG.info('OAuth validate failed: %s', e)
             return False
