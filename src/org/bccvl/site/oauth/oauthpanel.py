@@ -7,7 +7,7 @@ from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 from .interfaces import IOAuth1Settings, IOAuth2Settings
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from oauth import OAuth1View, OAuth2View
+from .oauth import OAuth1View, OAuth2View
 
 
 class OAuthPreferencePanel(BrowserView):
