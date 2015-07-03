@@ -68,6 +68,12 @@ class OAuthBaseView(BrowserView):
         # property_plugins = acl_users.plugins.listPlugins(IPropertiesPlugin)
         member.setProperties({self._property: json.dumps(token)})
 
+    def hasToken(self):
+        try:
+            return bool(self.getToken())
+        except Exception:
+            return False
+
 
 class OAuth2View(OAuthBaseView):
 
