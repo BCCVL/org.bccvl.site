@@ -105,8 +105,11 @@
                     <td tal:content="oauth/config/id"></td>
                     <td tal:content="oauth/validate"></td>
                     <td>
-                      <a class="btn btn-mini btn-primary" href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/authorize">Authorise</a></td>
-                    <td></td>
+                      <a href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/authorize">Authorise</a>
+                    </td>
+                    <td>
+                      <a href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/cleartoken">Revoke</a>
+                    </td>
                   </tr>
                 </tbody>
               </table>
