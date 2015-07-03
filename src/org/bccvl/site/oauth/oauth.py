@@ -77,7 +77,7 @@ class OAuthBaseView(BrowserView):
     def cleartoken(self):
         # get token for current user
         member = api.user.get_current()
-        member.setProperty(self._property, "")
+        member.setProperties({self._property: ""})
         return_url = self.request.get('HTTP_REFERER')
         self.request.response.redirect(return_url)
 
