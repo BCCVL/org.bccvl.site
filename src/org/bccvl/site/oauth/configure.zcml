@@ -35,5 +35,12 @@
       class=".oauth.OAuthTraverser"
       permission="zope2.View"
       />
+
+  <browser:page
+      name="oauthselect"
+      for="Products.CMFCore.interfaces.IFolderish"
+      class=".oauthselect.OAuthSelectModal"
+      permission="cmf.ModifyPortalContent"
+      />
   
 </configure>
