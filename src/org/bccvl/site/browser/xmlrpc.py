@@ -515,8 +515,6 @@ class DataMover(BrowserView):
         }
         if common:
             md['species']['vernacularName'] = common
-        # reindex object to make sure everything is up to date
-        ds.reindexObject()
         IStatusMessage(self.request).add('New Dataset created',
                                          type='info')
 
@@ -524,6 +522,8 @@ class DataMover(BrowserView):
         # TODO: make this named adapter
         jt = IJobTracker(ds)
         status, message = jt.start_job()
+        # reindex object to make sure everything is up to date
+        ds.reindexObject()
         # Job submission state notifier
         IStatusMessage(self.request).add(message, type=status)
 
