@@ -538,7 +538,7 @@ class DataMover(BrowserView):
 
 
 class ExportResult(BrowserView):
-    # TODO: should be post only? see plone.security for 
+    # TODO: should be post only? see plone.security for
 
     # parameters needed:
     #   ... serviceid ... service to export to
@@ -574,7 +574,7 @@ class ExportResult(BrowserView):
         # self.set_progress('PENDING', u'Result export pending')
 
         status = 'info'
-        message = u'Job submitted {0} - {1}'.format(self.context.title, 'PENDING')
+        message = u'Export request for "{}" submitted. Please check the service and/or your email to confirm your data\'s availability'.format(self.context.title)
 
         IStatusMessage(self.request).add(message, type=status)
         nexturl = self.request.get('HTTP-REFERER')
