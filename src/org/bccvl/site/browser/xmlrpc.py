@@ -574,7 +574,7 @@ class ExportResult(BrowserView):
         # self.set_progress('PENDING', u'Result export pending')
 
         status = 'info'
-        message = u'Export request for "{}" submitted. Please check the service and/or your email to confirm your data\'s availability'.format(self.context.title)
+        message = u'Export request for "{}" succesfully submitted! Please check the service and any associated email accounts to confirm the data\'s availability'.format(self.context.title)
 
         IStatusMessage(self.request).add(message, type=status)
         nexturl = self.request.get('HTTP-REFERER')
