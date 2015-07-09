@@ -895,6 +895,79 @@
           <element key="unit">mol CO2 per m^2</element>
           <element key="color">default</element>
       </element>
+        <element>
+            <element key="value">FPAR01</element>
+            <element key="title">MODIS-fPAR (Jan)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR02</element>
+            <element key="title">MODIS-fPAR (Feb)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR03</element>
+            <element key="title">MODIS-fPAR (Mar)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR04</element>
+            <element key="title">MODIS-fPAR (Apr)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR05</element>
+            <element key="title">MODIS-fPAR (May)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR06</element>
+            <element key="title">MODIS-fPAR (Jun)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR07</element>
+            <element key="title">MODIS-fPAR (Jul)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR08</element>
+            <element key="title">MODIS-fPAR (Aug)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR09</element>
+            <element key="title">MODIS-fPAR (Sep)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR10</element>
+            <element key="title">MODIS-fPAR (Oct)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR11</element>
+            <element key="title">MODIS-fPAR (Nov)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        <element>
+            <element key="value">FPAR12</element>
+            <element key="title">MODIS-fPAR (Dec)</element>
+            <element key="unit">fPAR</element>
+            <element key="color">default</element>
+        </element>
+        
     </value>
   </record>
 
