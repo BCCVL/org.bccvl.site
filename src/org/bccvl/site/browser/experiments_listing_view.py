@@ -1,11 +1,12 @@
 from Products.Five import BrowserView
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.CMFCore.utils import getToolByName
+from Products.ZCatalog.interfaces import ICatalogBrain
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.app.contentlisting.interfaces import IContentListing
-from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IJobTracker
 from org.bccvl.site.content.interfaces import IExperiment, ISDMExperiment
 from collections import defaultdict
 from zope.component import getUtility, queryUtility, getMultiAdapter
@@ -38,14 +39,29 @@ class ExperimentTools(BrowserView):
         rrpaths = map(lambda x: x.getPath(), portal_catalog.searchResults(experiment_reference=itemob.UID()))
         return map(lambda x: x.Title if x.getPath() in rrpaths else "(Private - owned by %s)" % x._unrestrictedGetObject().getOwner().getUserName(), ur)
 
-
-
     def can_modify(self, itemob=None):
         try:
             itemob = itemob or self.context
             return checkPermission('cmf.ModifyPortalContent', itemob)
         except Exception as e:
             import pdb; pdb.set_trace()
+
+    def get_state_css(self, itemob=None):
+        itemob = itemob or self.context
+        if ICatalogBrain.providedBy(itemob):
+            itemob = itemob.getObject()
+        css_map = {
+            None: 'success',
+            'QUEUED': 'info',
+            'RUNNING': 'info',
+            'COMPLETED': 'success',
+            'FAILED': 'error',
+            'REMOVED': 'removed'
+        }
+        # check job_state and return either success, error or block
+        job_state = IJobTracker(itemob).state
+        return css_map.get(job_state, 'info')
+
 
 @implementer(IFolderContentsView)
 class ExperimentsListingView(BrowserView):
@@ -112,7 +128,7 @@ class ExperimentsListingPopup(BrowserView):
         text = self.request.get('datasets.filter.text')
         if text:
             query['SearchableText'] = text
-            
+
         pc = getToolByName(self.context, 'portal_catalog')
         results = pc.searchResults(query)
         from Products.CMFPlone import Batch
@@ -132,13 +148,13 @@ class ExperimentsListingPopup(BrowserView):
         elif expbrain.portal_type == 'org.bccvl.content.speciestraitsexperiment':
             details = speciestraits_listing_details(expbrain)
         return details
-    
+
 
 # FIXME: the methods below, should be looked up via named adapter or similar.
 #        furthermore, in the experimentlisting view it might be good to use
 #        templates / or macros that are lookup up via (view, request, context)
 #        to support different list item rendering based on view and context (re-use on listing page and popup listing?)
-    
+
 def sdm_listing_details(expbrain):
     # TODO: this is ripe for optimising so it doesn't run every time
     # experiments are listed
@@ -162,7 +178,7 @@ def sdm_listing_details(expbrain):
             ),
         })
     return details
-    
+
 
 
 def projection_listing_details(expbrain):
@@ -233,7 +249,7 @@ def biodiverse_listing_details(expbrain):
         'years': ', '.join(sorted(years))
     })
     return details
-    
+
 
 def ensemble_listing_details(expbrain):
     # FIXME: implement this
@@ -259,4 +275,3 @@ def speciestraits_listing_details(expbrain):
         'environmental_layers': '',
     })
     return details
-    

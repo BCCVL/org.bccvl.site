@@ -515,8 +515,6 @@ class DataMover(BrowserView):
         }
         if common:
             md['species']['vernacularName'] = common
-        # reindex object to make sure everything is up to date
-        ds.reindexObject()
         IStatusMessage(self.request).add('New Dataset created',
                                          type='info')
 
@@ -524,6 +522,8 @@ class DataMover(BrowserView):
         # TODO: make this named adapter
         jt = IJobTracker(ds)
         status, message = jt.start_job()
+        # reindex object to make sure everything is up to date
+        ds.reindexObject()
         # Job submission state notifier
         IStatusMessage(self.request).add(message, type=status)
 
@@ -538,7 +538,7 @@ class DataMover(BrowserView):
 
 
 class ExportResult(BrowserView):
-    # TODO: should be post only? see plone.security for 
+    # TODO: should be post only? see plone.security for
 
     # parameters needed:
     #   ... serviceid ... service to export to
@@ -574,7 +574,7 @@ class ExportResult(BrowserView):
         # self.set_progress('PENDING', u'Result export pending')
 
         status = 'info'
-        message = u'Job submitted {0} - {1}'.format(self.context.title, 'PENDING')
+        message = u'Export request for "{}" succesfully submitted! Please check the service and any associated email accounts to confirm the data\'s availability'.format(self.context.title)
 
         IStatusMessage(self.request).add(message, type=status)
         nexturl = self.request.get('HTTP-REFERER')

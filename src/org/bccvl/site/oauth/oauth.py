@@ -68,6 +68,19 @@ class OAuthBaseView(BrowserView):
         # property_plugins = acl_users.plugins.listPlugins(IPropertiesPlugin)
         member.setProperties({self._property: json.dumps(token)})
 
+    def hasToken(self):
+        try:
+            return bool(self.getToken())
+        except Exception:
+            return False
+
+    def cleartoken(self):
+        # get token for current user
+        member = api.user.get_current()
+        member.setProperties({self._property: ""})
+        return_url = self.request.get('HTTP_REFERER')
+        self.request.response.redirect(return_url)
+
 
 class OAuth2View(OAuthBaseView):
 
@@ -335,7 +348,7 @@ class OAuth1View(OAuthBaseView):
             response = oauth.get('http://api.figshare.com/v1/my_data/articles', params=params)
             #data=json.dumps(body), headers=headers)
             #/articles
-            return True
+            return response.status_code == 200
         except Exception as e:
             LOG.info('OAuth validate failed: %s', e)
             return False
@@ -369,7 +382,7 @@ class OAuthTraverser(BrowserView):
             raise NotFound(self, name, self.request)
         else:
             # we have a serviceid ... name should now be a command
-            if name in ('authorize', 'callback', 'accesstoken', 'clienttoken'):
+            if name in ('authorize', 'callback', 'accesstoken', 'clienttoken', 'cleartoken'):
                 return getattr(self._view, name)
             raise NotFound(self, name, self.request)
 

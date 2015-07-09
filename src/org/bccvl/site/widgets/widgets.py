@@ -1,4 +1,5 @@
 from decimal import Decimal
+import logging
 from zope.component import getMultiAdapter, getUtility
 from zope.interface import implementer, implementer_only
 from zope.schema.interfaces import (ITitledTokenizedTerm,
@@ -28,6 +29,8 @@ from itertools import chain
 from collections import OrderedDict
 
 
+LOG = logging.getLogger(__name__)
+
 # Wrap js code into a document.ready wrapper and CDATA section
 JS_WRAPPER = u"""//<![CDATA[
     $(document).ready(function(){%(js)s});
@@ -39,7 +42,7 @@ JS_WRAPPER_ADAPTER = lambda req, widget: JS_WRAPPER
 @implementer_only(IFunctionsWidget)
 class FunctionsWidget(HTMLInputWidget, SequenceWidget):
     """
-    This is an updated standard CheckBoxWidget with proper handling of 
+    This is an updated standard CheckBoxWidget with proper handling of
     item list generation. It derives from ICheckBoxWidget as well to allow
     re-use of the standard check box widget templates.
     (Having this extra class allows to use special templates for functions field)
@@ -50,11 +53,11 @@ class FunctionsWidget(HTMLInputWidget, SequenceWidget):
 
     def isChecked(self, term):
         return term.token in self.value
-    
+
     def update(self):
         super(FunctionsWidget, self).update()
         addFieldClass(self)
-        
+
     def items(self):
         # TODO: check if we should cache the return list
         if self.terms is None:  # update() not yet called
@@ -160,8 +163,8 @@ class DatasetDictWidget(HTMLFormElement, Widget):
             brains = pc.searchResults(UID=self.value.keys())
             # TODO: should use vocab to turn into token
             return set(unicode(b['BCCResolution']) for b in brains)
-        return []    
-    
+        return []
+
     # TODO: move this into subclass, make this a base class with a NotImplementedError
     def subitems(self, dsbrain):
         # return a generator of selectable items within dataset
@@ -184,13 +187,19 @@ class DatasetDictWidget(HTMLFormElement, Widget):
         if self.value:
             for dsuuid in self.value.keys():
                 dsbrain = uuidToCatalogBrain(dsuuid)
-                yield {
-                    'id': dsuuid,
-                    'title': dsbrain.Title,
-                    'brain': dsbrain,
-                    'dlinfo': IDownloadInfo(dsbrain),
-                    'subitems': self.subitems(dsbrain)
-                }
+                if dsbrain:
+                    yield {
+                        'id': dsuuid,
+                        'title': dsbrain.Title,
+                        'brain': dsbrain,
+                        'dlinfo': IDownloadInfo(dsbrain),
+                        'subitems': self.subitems(dsbrain)
+                    }
+                else:
+                    # FIXME: inform user that dateset no longer exists
+                    #        make sure template works with made up info as well
+                    #        for now exclude data
+                    LOG.warn("Dataset not found: %s for experiment %s", dsuuid, self.context.absolute_url())
 
     def js(self):
         js = u"".join((

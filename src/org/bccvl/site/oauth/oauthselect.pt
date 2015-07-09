@@ -1,0 +1,13 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag=""
+      >
+  <div class="row" tal:repeat="item view/services">
+    <tal:block tal:condition="item/hasToken">
+      <!-- TODO: icon -->
+      <div class="cell position-1" tal:content="item/config/title">
+        Figshare
+      </div>
+    </tal:block>
+  </div>
+</html>
