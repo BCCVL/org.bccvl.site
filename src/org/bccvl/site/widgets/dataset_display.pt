@@ -10,7 +10,7 @@
        tal:define="items python: tuple(view.items())">
     <ul>
       <li tal:repeat="item items"
-          tal:content="item/Title">Species</li>
+          tal:content="item/Title|string:Not available">Species</li>
       <li tal:condition="not: items">No absence dataset selected</li>
     </ul>
   </div>
