@@ -873,20 +873,20 @@
       </element>
       <element>
           <element key="value">GPP1</element>
-          <element key="title">Maximum GPP for 2000-2007</element>
-          <element key="unit">mol CO2 per m^2 per year</element>
+          <element key="title">Maximum GPP</element>
+          <element key="unit">mol CO2 per m^2</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">GPP2</element>
-          <element key="title">Mean GPP for 2000-2007</element>
-          <element key="unit">mol CO2 per m^2 per year</element>
+          <element key="title">Mean GPP</element>
+          <element key="unit">mol CO2 per m^2</element>
           <element key="color">default</element>
       </element>
       <element>
           <element key="value">GPP3</element>
-          <element key="title">Minimum GPP for 2000-2007</element>
-          <element key="unit">mol CO2 per m^2 per year</element>
+          <element key="title">Minimum GPP</element>
+          <element key="unit">mol CO2 per m^2</element>
           <element key="color">default</element>
       </element>
       <element>
