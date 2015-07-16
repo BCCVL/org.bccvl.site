@@ -24,12 +24,6 @@
             <role name="Site Administrator"/>
             <role name="Editor"/>
         </permission>
-        <permission name="gu.repository.content: Add Repository Item" acquire="False">
-            <role name="Repository Administrator"/>
-            <role name="Repository Contributor"/>
-            <role name="Manager"/>
-            <role name="Owner"/>
-        </permission>
         <permission name="org.bccvl: View Statistics" acquire="True">
             <role name="BCCVL Report Viewer"/>
             <role name="Manager"/>
