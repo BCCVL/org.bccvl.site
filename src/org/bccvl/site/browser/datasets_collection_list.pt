@@ -18,6 +18,7 @@
   -->
   <div id="content">
     
+    <!--
     <ul id="datasets_tabs" class="formTabs" metal:define-macro="datasets_tabs">
       <li class="formTab">
         <a href="#"
@@ -37,7 +38,7 @@
            tal:attributes="href string:${context/absolute_url}/datasets_upload_view;
                            class selected">Upload Dataset</a>
       </li>
-    </ul>
+    </ul> -->
 
 
     <!-- search filters -->
@@ -56,20 +57,19 @@
 
       <tal:groups tal:repeat="group groups">
 
-      <table class="listing"
+      <section class="listing"
              summary="Collection listing"
              i18n:attributes="summary summary_content_listing;"
              tal:define="batch python:group.getObject().restrictedTraverse('@@folderListing')(portal_type='Folder');">
-        <thead>
-          <tr>
-            <th class="nosort"><tal:title i18n:translate="listingheader_title">Title</tal:title></th>
-            <th class="nosort"><tal:title i18n:translate="listingheader_descr">Description</tal:title></th>
-            <th class="nosort"><tal:title i18n:translate="">Explore Collection</tal:title></th>
-          </tr>
-        </thead>
-        <tbody
-            tal:define="context_url context/absolute_url">
+        
+        <div class="span12">
+          <h2 tal:content="group/Title">Collection Type Title</h2>
+          <hr/>
+        </div>
+
           <tal:repeat tal:repeat="item batch">
+            <div class="span4 bccvl-dataset-collection"
+                tal:define="context_url context/absolute_url">
             <tal:define tal:define="item_title_or_id item/Title|item/getId;
                                     item_url item/getURL|item/absolute_url;
                                     explore_url string:${context_url}/?datasets.filter.source%3Alist=${group/getId}-${item/getId};
@@ -77,26 +77,27 @@
                                     item_obj item/getObject;
                                     "
                         metal:define-macro="datasets_listitem">
-              <tr>
-                <td>
-                  <a href="#"
+                <div class="collection-info">
+                  <h3 href="#"
                      tal:attributes="href item_url;
                                      title item_description;"
-                     tal:content="item_title_or_id">Item Title</a>
-                </td>
-                <!-- Type -->
-                <td tal:content="item_description"
-                    i18n:translate="">description</td>
-                <!-- Download -->
-                <td>
-                  <a href="#"
-                     tal:attributes="href explore_url">Explore Collection</a>
-                </td>
-              </tr>
+                    tal:content="item_title_or_id">Item Title</h3>
+
+                  <p tal:condition="item_description"
+                     tal:content="item_description"
+                    i18n:translate="">description</p>
+
+                  <p tal:condition="not:item_description"
+                    i18n:translate=""><em>No description has been provided for this collection.</p>
+
+                  <a href="#" class="btn btn-primary btn-small" target="_blank"
+                     tal:attributes="href explore_url"><i class="fa fa-folder-open"></i>&nbsp; Explore Collection</a>
+                </div>
+
             </tal:define>
+            </div>
           </tal:repeat>
-        </tbody>
-      </table>
+        </section>
         </tal:groups>
     </div>
     </div>
