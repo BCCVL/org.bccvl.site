@@ -1,5 +1,5 @@
 {
     "_type": "Folder",
-    "title": "Gross Primary Product",
+    "title": "National Dynamic Land Cover",
     "_transitions": ["show_internally", "publish_internally"]
 }

@@ -1,5 +1,5 @@
 {
     "_type": "Folder",
-    "title": "Gross Primary Product",
+    "title": "Species data from ALA",
     "_transitions": ["show_internally", "publish_internally"]
 }

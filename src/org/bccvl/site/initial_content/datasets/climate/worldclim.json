@@ -1,5 +1,6 @@
 {
-  "_type": "Folder",
-  "title": "Worldclim",
-  "_transitions": ["show_internally", "publish_internally"]
+    "_type": "Folder",
+    "title": "Worldclim current and future climate data",
+    "description": "A set of global climate layers (climate grids) covering all global land areas except Antarctica. They are in the latitude / longitude coordinate reference system (not projected) and the datum is WGS84",
+    "_transitions": ["show_internally", "publish_internally"]
 }
