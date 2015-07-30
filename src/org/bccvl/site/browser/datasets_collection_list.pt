@@ -67,10 +67,12 @@
             <th class="nosort"><tal:title i18n:translate="">Explore Collection</tal:title></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody
+            tal:define="context_url context/absolute_url">
           <tal:repeat tal:repeat="item batch">
             <tal:define tal:define="item_title_or_id item/Title|item/getId;
                                     item_url item/getURL|item/absolute_url;
+                                    explore_url string:${context_url}/?datasets.filter.source%3Alist=${group/getId}-${item/getId};
                                     item_description item/Description;
                                     item_obj item/getObject;
                                     "
@@ -88,7 +90,7 @@
                 <!-- Download -->
                 <td>
                   <a href="#"
-                     tal:attributes="href item_url">Go to</a>
+                     tal:attributes="href explore_url">Explore Collection</a>
                 </td>
               </tr>
             </tal:define>
