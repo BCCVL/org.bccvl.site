@@ -2,6 +2,7 @@ from Products.Five import BrowserView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
+from plone import api
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata
 from org.bccvl.site.browser.interfaces import IDatasetTools
@@ -12,7 +13,10 @@ from zope.component import getMultiAdapter, getUtility
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 import Missing
+from org.bccvl.site import defaults
 from org.bccvl.site.utils import Period
+from org.bccvl.site.vocabularies import BCCVLSimpleVocabulary
+from itertools import chain
 
 
 def get_title_from_uuid(uuid):
@@ -209,11 +213,17 @@ class DatasetTools(BrowserView):
     def source_vocab(self):
         # TODO: this should be a lookup
         if self._source_vocab is None:
-            self._source_vocab = SimpleVocabulary((
-                SimpleTerm('user', 'user', u'My Datasets'),
-                SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
-                # SimpleTerm('ala', 'ala', u'Imported from ALA'),
-                SimpleTerm('shared', 'shared', 'Shared'),
+            portal = api.portal.get()
+            dsfolder = portal[defaults.DATASETS_FOLDER_ID]
+            self._source_vocab = BCCVLSimpleVocabulary(
+                chain((
+                    SimpleTerm('user', 'user', u'My Datasets'),
+                    SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
+                    # SimpleTerm('ala', 'ala', u'Imported from ALA'),
+                    SimpleTerm('shared', 'shared', 'Shared')),
+                      (SimpleTerm(item.getPhysicalPath(), '-'.join((group.getId(), item.getId())), item.Title())
+                       for group in dsfolder.values()
+                       for item in group.values())
             ))
         return self._source_vocab
 
@@ -319,17 +329,24 @@ class DatasetsListingTool(BrowserView):
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
+        source_vocab = self.dstools.source_vocab
         if source:
             for token in source:
+                term = source_vocab.getTermByToken(token)
                 if token == 'user':
                     query_parts.append(Eq('Creator', member.getId()))
                 elif token == 'admin':
                     query_parts.append(Eq('Creator', 'BCCVL'))
                 elif token == 'shared':
                     query_parts.append(Not(In('Creator', (member.getId(), 'BCCVL'))))
-                # FIXME: missing: shared, ala
+                else:
+                    # path query with '/'.join(term.value)
+                    query_parts.append(
+                        Generic('path', {'query': '/'.join(term.value),
+                                         'depth': -1}))
 
         # add path filter
+        # FIXME: only apply self.path if not already a path query set
         if self.path:
             query_parts.append(
                 Generic('path', {'query': self.path,
@@ -346,7 +363,7 @@ class DatasetsListingTool(BrowserView):
         member = portal_state.member()
 
         query = {}
-        
+
         query['job_state'] = ['QUEUED', 'RUNNING', 'COMPLETED', 'FAILED']
 
         text = self.request.get('datasets.filter.text')
@@ -391,8 +408,10 @@ class DatasetsListingTool(BrowserView):
 
         # FIXME: source filter is incomplete
         source = self.request.get('datasets.filter.source')
+        source_vocab = self.dstools.source_vocab
         if source:
             for token in source:
+                term = source_vocab.getTermByToken(token)
                 if token == 'user':
                     query['Creator'] = member.getId()
                 elif token == 'admin':
@@ -402,10 +421,17 @@ class DatasetsListingTool(BrowserView):
                     vals = filter(lambda x: x not in ('BCCVL', member.getId()),
                                   pc.uniqueValuesFor('Creator'))
                     query['Creator'] = vals
-                # FIXME: missing: ala
+                else:
+                    # path query with '/'.join(term.value)
+                    if not 'path' in query:
+                        query['path'] = {
+                            'query': [],
+                            'depth': -1
+                        }
+                    query['path']['query'].append('/'.join(term.value))
 
         # add path filter
-        if self.path:
+        if not 'path' in query and self.path:
             query['path'] = {
                 'query': self.path,
                 'depth': -1
