@@ -129,5 +129,15 @@ def upgrade_181_190_1(context, logger=None):
     pc.clearFindAndRebuild()
     logger.info("finished")
 
-# 1.9 upgrade steps:
-#   any other quickinstaller configs?
+
+def upgrade_190_200_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    # rebuild the catalog to make sure new indices are populated
+    # logger.info("rebuilding catalog")
+    # pc = getToolByName(context, 'portal_catalog')
+    # pc.clearFindAndRebuild()
+    logger.info("finished")
