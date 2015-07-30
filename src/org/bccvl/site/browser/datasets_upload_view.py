@@ -45,6 +45,11 @@ class BCCVLUploadForm(DefaultAddForm):
         #       the transmogrifier chain.
         #fti = getUtility(IDexterityFTI, name=self.portal_type)
         container = aq_inner(self.context)
+        try:
+            # traverse to subfolder if possible
+            container = container.restrictedTraverse('/'.join(self.subpath))
+        except Exception as e:
+            LOG.warn('Could not traverse to %s/%s', '/'.join(container.getPhysicalPath()), '/'.join(self.subpath))
         new_object = addContentToContainer(container, object)
         # set data genre:
         if self.datagenre:
@@ -123,6 +128,7 @@ class SpeciesAbsenceAddForm(BCCVLUploadForm):
         'file', 'title', 'description', 'scientificName', 'taxonID',
         'vernacularName', 'rightsstatement')
     datagenre = 'DataGenreSpeciesAbsence'
+    subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
 
 
 class SpeciesAbundanceAddForm(BCCVLUploadForm):
@@ -151,7 +157,7 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
         'file', 'title', 'description', 'scientificName', 'taxonID',
         'vernacularName', 'rightsstatement')
     datagenre = 'DataGenreSpeciesOccurrence'
-
+    subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
 
 class ClimateCurrentAddForm(BCCVLUploadForm):
 
@@ -170,6 +176,7 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
         'temporal', 'rightsstatement')
     datagenre = 'DataGenreCC'
     # datatype, gcm, emissionscenario
+    subpath = [defaults.DATASETS_CLIMATE_FOLDER_ID, 'user']
 
 
 class EnvironmentalAddForm(BCCVLUploadForm):
@@ -189,7 +196,7 @@ class EnvironmentalAddForm(BCCVLUploadForm):
         'temporal', 'rightsstatement')
     datagenre = 'DataGenreE'
     # datatype, gcm, emissionscenario
-
+    subpath = [defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, 'user']
 
 class ClimateFutureAddForm(BCCVLUploadForm):
 
@@ -208,6 +215,7 @@ class ClimateFutureAddForm(BCCVLUploadForm):
         'resolution', 'resolutiono', 'temporal', 'rightsstatement')
     datagenre = 'DataGenreFC'
     # datatype, gcm, emissionscenario
+    subpath = [defaults.DATASETS_CLIMATE_FOLDER_ID, 'user']
 
 
 class SpeciesTraitAddForm(BCCVLUploadForm):
@@ -220,6 +228,7 @@ class SpeciesTraitAddForm(BCCVLUploadForm):
     fields = Fields(IBlobDataset, IDublinCore, ITraitsDataset).select(
         'file', 'title', 'description', 'rightsstatement')
     datagenre = 'DataGenreTraits'
+    subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
 
 
 class DatasetsUploadView(BrowserView):

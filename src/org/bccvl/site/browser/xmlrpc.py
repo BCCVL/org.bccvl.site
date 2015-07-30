@@ -492,7 +492,7 @@ class DataMover(BrowserView):
         # TODO: check permisions?
         # 1. create new dataset with taxon, lsid and common name set
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]
+        dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ala']
 
         title = [taxon]
         if common:

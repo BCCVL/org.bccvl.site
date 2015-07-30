@@ -101,7 +101,7 @@ class DatasetsImportView(BrowserView):
                                    'portal_url').getPortalObject()
             # TODO: @@dv or getMultiAdapter would enusre we get the view
             view = portal.restrictedTraverse(
-                '/'.join((defaults.DATASETS_FOLDER_ID,
+                '/'.join((defaults.DATASETS_FOLDER_ID, 'ala',
                          'dv', 'pullOccurrenceFromALA')))
             # create dataset and start import job
             ret = view(lsid=self.params['lsid'],

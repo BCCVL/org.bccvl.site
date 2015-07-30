@@ -1,0 +1,5 @@
+{
+    "_type": "Folder",
+    "title": "User uploaded environmental data",
+    "_transitions": ["show_internally", "publish_internally"]
+}
