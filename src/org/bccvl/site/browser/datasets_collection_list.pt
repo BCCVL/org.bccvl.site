@@ -1,0 +1,104 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      tal:define="dataset_tools nocall:context/@@dataset_tools;"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+<metal:content-body fill-slot="body">
+  <!-- other view/request parameters:
+       limit_display ... batch_size
+       more_url
+       folderContents ... either passed in or queried from catalog
+       b_start
+  -->
+  <div id="content">
+    
+    <ul id="datasets_tabs" class="formTabs" metal:define-macro="datasets_tabs">
+      <li class="formTab">
+        <a href="#"
+           tal:define="selected python: 'selected' if view.__name__ == 'datasets_listing_view' else ''"
+           tal:attributes="href string:${context/absolute_url};
+                           class selected">My Datasets</a>
+      </li>
+      <li class="formTab">
+        <a href="#"
+           tal:define="selected python: 'selected' if view.__name__ == 'datasets_import_view' else ''"
+           tal:attributes="href string:${context/absolute_url}/datasets_import_view;
+                           class selected">Discover Dataset</a>
+      </li>
+      <li class="formTab">
+        <a href="#"
+           tal:define="selected python: 'selected' if view.__name__ == 'datasets_upload_view' else ''"
+           tal:attributes="href string:${context/absolute_url}/datasets_upload_view;
+                           class selected">Upload Dataset</a>
+      </li>
+    </ul>
+
+
+    <!-- search filters -->
+    <div class="row" id="datasets-collection-listing" metal:define-macro="datasets_collection-list"
+         tal:define="groups python:context.restrictedTraverse('@@folderListing')(portal_type='Folder');
+
+                     plone_view context/@@plone;
+                     pas_member context/@@pas_member;
+                     navigation_root_url context/@@plone_portal_state/navigation_root_url;
+                     normalizeString nocall: context/plone_utils/normalizeString;
+                     toLocalizedTime nocall: context/@@plone/toLocalizedTime;
+                     site_properties context/portal_properties/site_properties;
+                     isAnon context/@@plone_portal_state/anonymous;
+                     dataset_tools nocall:context/@@dataset_tools;"
+                     >
+
+      <tal:groups tal:repeat="group groups">
+
+      <table class="listing"
+             summary="Collection listing"
+             i18n:attributes="summary summary_content_listing;"
+             tal:define="batch python:group.getObject().restrictedTraverse('@@folderListing')(portal_type='Folder');">
+        <thead>
+          <tr>
+            <th class="nosort"><tal:title i18n:translate="listingheader_title">Title</tal:title></th>
+            <th class="nosort"><tal:title i18n:translate="listingheader_descr">Description</tal:title></th>
+            <th class="nosort"><tal:title i18n:translate="">Explore Collection</tal:title></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tal:repeat tal:repeat="item batch">
+            <tal:define tal:define="item_title_or_id item/Title|item/getId;
+                                    item_url item/getURL|item/absolute_url;
+                                    item_description item/Description;
+                                    item_obj item/getObject;
+                                    "
+                        metal:define-macro="datasets_listitem">
+              <tr>
+                <td>
+                  <a href="#"
+                     tal:attributes="href item_url;
+                                     title item_description;"
+                     tal:content="item_title_or_id">Item Title</a>
+                </td>
+                <!-- Type -->
+                <td tal:content="item_description"
+                    i18n:translate="">description</td>
+                <!-- Download -->
+                <td>
+                  <a href="#"
+                     tal:attributes="href item_url">Go to</a>
+                </td>
+              </tr>
+            </tal:define>
+          </tal:repeat>
+        </tbody>
+      </table>
+        </tal:groups>
+    </div>
+    </div>
+</metal:content-body>
+
+</body>
+</html>

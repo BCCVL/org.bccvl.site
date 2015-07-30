@@ -59,6 +59,13 @@
         permission="zope2.View"
         />
 
+    <browser:page
+        name="datasets_collection_list"
+        for="Products.CMFCore.interfaces.IFolderish"
+        template="datasets_collection_list.pt"
+        permission="zope2.View"
+        />
+
     <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
     <browser:page
         name="datasets_listing_view"
