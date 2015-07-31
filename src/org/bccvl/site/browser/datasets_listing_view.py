@@ -229,13 +229,39 @@ class DatasetTools(BrowserView):
 
     def source_list(self):
         selected = self.request.get('datasets.filter.source', ())
-        for genre in self.source_vocab:
+        portal = api.portal.get()
+        dsfolder = portal[defaults.DATASETS_FOLDER_ID]
+        # yield user groups first:
+        yield {
+            'label': 'Collection by Users',
+            'items': (
+                { 'selected': genre.token in selected,
+                  'disabled': False,
+                  'token': genre.token,
+                  'label': genre.title
+                } for genre in (SimpleTerm('user', 'user', u'My Datasets'),
+                                SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
+                                # SimpleTerm('ala', 'ala', u'Imported from ALA'),
+                                SimpleTerm('shared', 'shared', 'Shared')))
+        }
+        # yield collections
+        for group in dsfolder.values():
             yield {
-                'selected': genre.token in selected,
-                'disabled': False,
-                'token': genre.token,
-                'label': genre.title
+                'label': group.title,
+                'items': (
+                    { 'selected': '-'.join((group.getId(), item.getId())) in selected,
+                      'disabled': False,
+                      'token': '-'.join((group.getId(), item.getId())),
+                      'label': item.title,
+                    } for item in group.values())
             }
+        # for genre in self.source_vocab:
+        #     yield {
+        #         'selected': genre.token in selected,
+        #         'disabled': False,
+        #         'token': genre.token,
+        #         'label': genre.title
+        #     }
 
 
     def format_period(self, period):
