@@ -82,13 +82,16 @@
           <select id="datasets-filter-source"
                   name="datasets.filter.source:list"
                   multiple="multiple">
-            <option disabled="disabled">Select a Source</option>
-            <option value="optionvalue"
-                    tal:repeat="opt dataset_tools/source_list"
-                    tal:attributes="selected opt/selected;
-                                    disabled opt/disabled;
-                                    value opt/token;"
-                    tal:content="opt/label">Option label</option>
+            <option disabled="disabled">Select a Source</option>            
+            <optgroup tal:repeat="group dataset_tools/source_list"
+                      tal:attributes="label group/label">
+              <option value="optionvalue"
+                      tal:repeat="opn python:group['items']"
+                      tal:attributes="selected opt/selected;
+                                      disabled opt/disabled;
+                                      value opt/token;"
+                      tal:content="opt/label">Option label</option>
+            </optgroup>
           </select>
         </div>
       </div>
