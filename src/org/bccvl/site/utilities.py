@@ -309,13 +309,13 @@ class SDMJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
-            dsprov.add(DCTERMS['extent'], Literal('{} rows'.format(md['rows'])))
+            dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
+            dsprov.add(DCTERMS['extent'], Literal('{} rows'.format(md.get('rows', 'N/A'))))
             # ... species data, ... species id
 
             # link with activity
             activity.add(PROV['used'], dsprov)
-        
+
         for uuid, layers in result.job_params['environmental_datasets'].items():
             key = 'environmental_datasets'
             ds = uuidToObject(uuid)
@@ -336,7 +336,7 @@ class SDMJobTracker(MultiJobTracker):
 
             # link with activity
             activity.add(PROV['used'], dsprov)
-    
+
         provdata.data = graph.serialize(format="turtle")
 
     def start_job(self, request):
@@ -490,7 +490,7 @@ class ProjectionJobTracker(MultiJobTracker):
 
             # link with activity
             activity.add(PROV['used'], dsprov)
-        
+
         for uuid, layers in result.job_params['future_climate_datasets'].items():
 
             key = 'future_climate_datasets'
@@ -512,9 +512,9 @@ class ProjectionJobTracker(MultiJobTracker):
 
             # link with activity
             activity.add(PROV['used'], dsprov)
-    
+
         provdata.data = graph.serialize(format="turtle")
-    
+
     def start_job(self, request):
         if not self.is_active():
             # get utility to execute this experiment
@@ -647,10 +647,10 @@ class BiodiverseJobTracker(MultiJobTracker):
 
             # link with activity
             activity.add(PROV['used'], dsprov)
-            
+
         provdata.data = graph.serialize(format="turtle")
 
-    
+
     def start_job(self, request):
         # TODO: split biodiverse job across years, gcm, emsc
         if not self.is_active():
@@ -807,9 +807,9 @@ class EnsembleJobTracker(MultiJobTracker):
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
             # link with activity
             activity.add(PROV['used'], dsprov)
-            
+
         provdata.data = graph.serialize(format="turtle")
-    
+
     def start_job(self, request):
         if not self.is_active():
             # get utility to execute this experiment
@@ -933,9 +933,9 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
             # link with activity
             activity.add(PROV['used'], dsprov)
-            
+
         provdata.data = graph.serialize(format="turtle")
-    
+
     def start_job(self, request):
         if not self.is_active():
             # get utility to execute this experiment
@@ -1021,9 +1021,9 @@ class ALAJobTracker(JobTracker):
         activity.add(PROV['hasAssociationWith'], user)
         activity.add(PROV['hasAssociationWith'], software)
         # add job parameters to activity
-    
+
         provdata.data = graph.serialize(format="turtle")
-    
+
     def start_job(self):
         if self.is_active():
             return 'error', u'Current Job is still running'
