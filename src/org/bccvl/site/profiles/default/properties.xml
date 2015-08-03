@@ -2,5 +2,5 @@
 <site>
  <property name="title">BCCVL</property>
  <property name="email_from_address" type="string">no-reply@bccvl.org.au</property>
- <property name="email_from_name" type="string">BCCVL Portal</property>
+ <property name="email_from_name" type="string">BCCVL Team</property>
 </site>
