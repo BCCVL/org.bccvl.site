@@ -214,7 +214,7 @@ gcm_vocabulary = SimpleVocabulary([
     SimpleTerm("miroc5", "miroc5", "MIROC5"),
     SimpleTerm("mpi-esm-lr", "mpi-esm-lr", "Max Planck Institute for Meteorology Earth System Model (lores) (MPI-ESM-LR)"),
     SimpleTerm("mri-cgcm3", "mri-cgcm3", "Meteorological Research Institute Global Climate Model, version 3.0 (MRI-CGMC3)"),
-    SimpleTerm("noresm1-m", "noresm1-m", "Norwegian Earth System Model (NorESM1-M)"),    
+    SimpleTerm("noresm1-m", "noresm1-m", "Norwegian Earth System Model (NorESM1-M)"),
 ])
 
 

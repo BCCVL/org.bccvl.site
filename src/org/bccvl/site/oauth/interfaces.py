@@ -51,7 +51,7 @@ class IOAuth1Settings(Interface):
         title=u"Revoke url",
         required=False,
     )
-    
+
 
 class IOAuth2Settings(Interface):
 
@@ -101,4 +101,3 @@ class IOAuth2Settings(Interface):
         title=u"Revoke url",
         required=False,
     )
-
