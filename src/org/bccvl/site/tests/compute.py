@@ -5,6 +5,7 @@ from plone import api
 from org.bccvl.site.interfaces import IComputeMethod
 from org.bccvl.tasks.celery import app
 from org.bccvl.tasks.plone import import_result, import_cleanup, set_progress, after_commit_task
+from PIL import Image
 
 
 @app.task()
@@ -18,9 +19,8 @@ def testjob(params, context):
         # 2. create some result files
         for fname in ('model.RData',
                       'proj_test.tif'):
-            f = open(os.path.join(tmpdir, fname), 'w')
-            f.write(str(range(1, 10)))
-            f.close()
+            img = Image.new('F', (10, 10))
+            img.save(os.path.join(tmpdir, fname), 'TIFF')
         # 3. store results
         # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
         import_result(params, context)
@@ -143,7 +143,7 @@ def testbiodiverse(result, toolkit):
     # ...  check what happens if task fails (e.g. remove 'experiment' in context)
     after_commit_task(testjob, params, context)
 
-    
+
 @provider(IComputeMethod) # TODO: would expect result as first argument?
 def testensemble(result, toolkit):
     # submit test_job into queue
