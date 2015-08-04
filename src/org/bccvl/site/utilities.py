@@ -301,7 +301,8 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
             if IFile.providedBy(ds):
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+                if ds.file is not None:
+                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -326,7 +327,8 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
             if IFile.providedBy(ds):
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+                if ds.file is not None:
+                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # TODO: genre ...
             for layer in layers:
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
@@ -474,7 +476,8 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
-            dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ds.file is not None:
+                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -502,7 +505,8 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
             if IFile.providedBy(ds):
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+                if ds.file is not None:
+                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # TODO: genre, resolution, emsc, gcm, year(s) ...
             for layer in layers:
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
@@ -627,7 +631,8 @@ class BiodiverseJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
-            dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ds.file is not None:
+                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # threshold used:
             # FIXME: what's the label of manually entered value?
             dsprov.add(BCCVL['threshold_label'], Literal(value['threshold']['label']))
@@ -790,7 +795,8 @@ class EnsembleJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
-            dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ds.file is not None:
+                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -901,7 +907,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             param.add(BCCVL['name'], Literal(key))
             # We have only dataset references as parameters
             if key in ('data_table',):
-                param.add(BCCVL['value'], LOCAL[dsuuid])
+                param.add(BCCVL['value'], LOCAL[value])
             else:
                 param.add(BCCVL['value'], Literal(value))
         # iterate over all input datasets and add them as entities
@@ -917,7 +923,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
-            dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ds.file is not None:
+                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
