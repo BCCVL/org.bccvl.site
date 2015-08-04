@@ -190,7 +190,7 @@ class TestDatasetTools(unittest.TestCase):
     def test_genre_vocab(self):
         view = self.getview()
         data = view.genre_vocab
-        self.assertEqual(len(data), 28)
+        self.assertEqual(len(data), 29)
         item = next(iter(data))
         self.assertEqual(item.title, 'Species Occurrence')
         self.assertEqual(item.value, 'DataGenreSpeciesOccurrence')
@@ -262,7 +262,7 @@ class TestDatasetImport(unittest.TestCase):
         self.assertEqual(view.request.response.getHeader('Location'),
                          self.portal.datasets.absolute_url())
         # get new dataset and check state?
-        ds = self.portal.datasets.species['org-bccvl-content-dataset']
+        ds = self.portal.datasets.species.ala['org-bccvl-content-dataset']
         # check metadata
         from org.bccvl.site.interfaces import IBCCVLMetadata
         md = IBCCVLMetadata(ds)
@@ -334,7 +334,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(self.portal.REQUEST.response.status, 302)
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
                          'http://nohost/plone/datasets')
-        ds = self.portal.datasets['test.csv']
+        ds = self.portal.datasets.species.user['test.csv']
         self.assertEqual(ds.rightsstatement.raw, u'test rights')
         self.assertEqual(ds.file.data, 'species,lon,lat\nSpecies,1,2\nSpecies,2,3\n')
         from org.bccvl.site.interfaces import IBCCVLMetadata
@@ -375,7 +375,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(self.portal.REQUEST.response.status, 302)
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
                          'http://nohost/plone/datasets')
-        ds = self.portal.datasets['spc_obl_merc.tif']
+        ds = self.portal.datasets.climate.user['spc_obl_merc.tif']
         self.assertEqual(ds.rightsstatement.raw, u'test rights')
         self.assertEqual(ds.file.data, data)
         from org.bccvl.site.interfaces import IBCCVLMetadata
@@ -424,7 +424,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(self.portal.REQUEST.response.status, 302)
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
                          'http://nohost/plone/datasets')
-        ds = self.portal.datasets['spc_obl_merc.zip']
+        ds = self.portal.datasets.climate.user['spc_obl_merc.zip']
         self.assertEqual(ds.rightsstatement.raw, u'test rights')
         self.assertEqual(ds.file.data, data)
         from org.bccvl.site.interfaces import IBCCVLMetadata

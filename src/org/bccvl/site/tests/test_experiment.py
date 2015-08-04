@@ -119,8 +119,9 @@ class ExperimentSDMAddTest(unittest.TestCase):
         form.request.form.update({
             'form.buttons.create': 'Create',
             # select 1k dataset as well
-            'form.widgets.environmental_datasets.dataset.2': current_1k_uuid,
-            'form.widgets.environmental_datasets.layer.2': u'B01'
+            'form.widgets.environmental_datasets.item.2': current_1k_uuid,
+            'form.widgets.environmental_datasets.item.2.item': [u'B01'],
+            'form.widgets.environmental_datasets.count': '3',
         })
         form.update()
         # resolution should be set to the lowest of selected datasets
@@ -196,7 +197,7 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.assertEqual(result.job_params['resolution'], u'Resolution30m')
         self.assertEqual(result.job_params['emsc'], u'RCP3PD')
         self.assertEqual(result.job_params['gcm'], u'cccma-cgcm31')
-        self.assertEqual(result.job_params['year'], u'2015')        
+        self.assertEqual(result.job_params['year'], u'2015')
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
@@ -304,7 +305,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # and we should have a result as well
         self.assertGreaterEqual(len(result.keys()), 1)
         # TODO: check result metadata
-        
+
 
 class ExperimentEnsembleAddTest(unittest.TestCase):
 

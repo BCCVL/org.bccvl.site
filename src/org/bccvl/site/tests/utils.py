@@ -59,22 +59,22 @@ class SDMExperimentHelper(object):
             'form.widgets.IDublinCore.title': u"My Experiment",
             'form.widgets.IDublinCore.description': u'This is my experiment description',
             'form.widgets.functions': [self.algorithm.UID()],  # BIOCLIM
-            'form.widgets.species_occurrence_dataset': unicode(self.occur.UID()),  # ABT
-            'form.widgets.species_absence_dataset': unicode(self.absen.UID()),
-            'form.widgets.species_absence_points': [],
+            'form.widgets.species_occurrence_dataset': [unicode(self.occur.UID())],  # ABT
+            'form.widgets.species_absence_dataset': [unicode(self.absen.UID())],
+            'form.widgets.species_pseudo_absence_points': [],
             'form.widgets.resolution': ('Resolution2_5m', ),
             # FIXME: shouldn't be necessary to use unicode here,... widget converter should take care of it
-            'form.widgets.environmental_datasets.dataset.0': unicode(self.current.UID()),
-            'form.widgets.environmental_datasets.layer.0': u'B01',
-            'form.widgets.environmental_datasets.dataset.1': unicode(self.current.UID()),
-            'form.widgets.environmental_datasets.layer.1': u'B02',
-            'form.widgets.environmental_datasets.count': '3',
+            'form.widgets.environmental_datasets.item.0': unicode(self.current.UID()),
+            'form.widgets.environmental_datasets.item.0.item': [u'B01'],
+            'form.widgets.environmental_datasets.item.1': unicode(self.current.UID()),
+            'form.widgets.environmental_datasets.item.1.item': [u'B02'],
+            'form.widgets.environmental_datasets.count': '2',
         })
         self.request.form.update(data)
         form = getMultiAdapter((self.experiments, self.request),
                                name="newSpeciesDistribution")
         return form
-        
+
 
 class ProjectionExperimentHelper(object):
     """
@@ -117,7 +117,7 @@ class ProjectionExperimentHelper(object):
         form = getMultiAdapter((self.experiments, self.request),
                                name="newProjection")
         return form
-        
+
 
 class BiodiverseExperimentHelper(object):
     """
@@ -162,7 +162,7 @@ class BiodiverseExperimentHelper(object):
                                name="newBiodiverse")
         return form
 
-    
+
 class EnsembleExperimentHelper(object):
     """
     A helper class to configure and run a SDM experiment during testing.
@@ -203,7 +203,7 @@ class EnsembleExperimentHelper(object):
                                name="newEnsemble")
         return form
 
-    
+
 class SpeciesTraitsExperimentHelper(object):
     """
     A helper class to configure and run a SDM experiment during testing.
@@ -242,7 +242,7 @@ class SpeciesTraitsExperimentHelper(object):
             'form.widgets.IDublinCore.description': u'This is my experiment description',
             'form.widgets.algorithm': [self.algorithm.UID()],
             'form.widgets.formula': u'Z ~ X + Y',
-            'form.widgets.data_table': unicode(self.traitsds.UID())
+            'form.widgets.data_table': [unicode(self.traitsds.UID())]
         })
         self.request.form.update(data)
         form = getMultiAdapter((self.experiments, self.request),
