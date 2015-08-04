@@ -215,6 +215,18 @@ class TestDatasetImport(unittest.TestCase):
                                name='datasets_import_view')
         return view
 
+    def setUp(self):
+        # install fake Datamover
+        from .utils import MockDataMover
+        from org.bccvl.tasks import datamover
+        self._old_DataMover = datamover.DataMover
+        datamover.DataMover = MockDataMover
+
+    def tearDown(self):
+        # restore original DataMover
+        from org.bccvl.tasks import datamover
+        datamover.DataMover = self._old_DataMover
+
     # params:
     #    search (button)
     #    import (button)
@@ -281,9 +293,9 @@ class TestDatasetImport(unittest.TestCase):
         # we should have a bit more metadat and still the same as before import
         self.assertEqual(md['species'], testdata)
         self.assertEqual(md['genre'], 'DataGenreSpeciesOccurrence')
-        self.assertEqual(md['rows'], 23)
+        self.assertEqual(md['rows'], 5)
         self.assertEqual(md['headers'], ['species', 'lon', 'lat'])
-        self.assertEqual(md['bounds'], {'top': -5.166, 'right': 167.68167, 'left': 48.218334197998, 'bottom': -28.911835})
+        self.assertEqual(md['bounds'], {'top': -5.166, 'right': 167.68167, 'left': 114.166, 'bottom': -28.911835})
         # check that there is a file as well
         self.assertIsNotNone(ds.file)
         self.assertIsNotNone(ds.file.data)

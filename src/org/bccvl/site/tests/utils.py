@@ -1,12 +1,16 @@
 from itertools import chain
+import csv
+import json
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getMultiAdapter
-from zope.interface import alsoProvides, implementer
+from zope.interface import implementer
 from zope.publisher.browser import TestRequest as TestRequestBase
 from plone.app.z3cform.interfaces import IPloneFormLayer
-
+import os.path
+from urlparse import urlparse
 from org.bccvl.site import defaults
 from org.bccvl.site.content.interfaces import ISDMExperiment
+from org.bccvl.tasks.datamover import DataMover
 
 
 @implementer(IPloneFormLayer, IAttributeAnnotatable)
@@ -248,3 +252,68 @@ class SpeciesTraitsExperimentHelper(object):
         form = getMultiAdapter((self.experiments, self.request),
                                name="newSpeciesTraits")
         return form
+
+
+class MockDataMover(DataMover):
+
+    targetpath = None
+    ala_dataset = None
+    ala_metadata = None
+    ala_occurrence = None
+
+    def move(self, move_args):
+        params = move_args[0]
+        self.targetpath = urlparse(params[1]).path
+        # generate fake data
+        self.ala_dataset = {
+            'files': [
+                { 'url': os.path.join(self.targetpath, 'ala_occurrence.csv'),
+                  'dataset_type': 'occurrences',
+                  'size': 0
+                },
+                { 'url': os.path.join(self.targetpath, 'ala_metadata.json'),
+                  'dataset_type': 'attribution',
+                  'size': 0
+                }
+            ],
+            'provenance': {
+                'url': 'source_url',
+                'source': 'ALA',
+                'source_data': '01/01/2001'
+            },
+            'num_occurrences': 5,
+            'description': 'Observed occurrences for Black Banded Winged Pearl Shell (Pteria penguin), imported from ALA on 04/08/2015',
+            'title': 'Black Banded Winged Pearl Shell (Pteria penguin) occurrences'
+        }
+        self.ala_metadata = {
+            'taxonConcept': {
+                'nameString': 'Pteria penguin',
+                'guid': 'urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5',
+            },
+            'commonNames': [
+                {'nameString': 'Black Banded Winged Pearl Shell'},
+            ]
+        }
+        self.ala_occurrence = [
+            ['species', 'lon', 'lat'],
+            ['Pteria penguin', '145.453448', '-14.645126'],
+            ['Pteria penguin', '145.850', '-5.166'],
+            ['Pteria penguin', '167.68167', '-28.911835'],
+            ['Pteria penguin', '114.166', '-21.783'],
+            ['Pteria penguin', '147.283', '-18.633'],
+        ]
+        # return fake state
+        return [{'status': 'PONDING', 'id': 1}]
+
+    def wait(self, states, sleep=10):
+        # write fake data to files
+        with open(os.path.join(self.targetpath, 'ala_dataset.json'), 'w') as fp:
+            json.dump(self.ala_dataset, fp, indent=2)
+        with open(os.path.join(self.targetpath, 'ala_metadata.json'), 'w') as fp:
+            json.dump(self.ala_metadata, fp, indent=2)
+        with open(os.path.join(self.targetpath, 'ala_occurrence.csv'), 'wb') as fp:
+            csvwriter = csv.writer(fp)
+            for data in self.ala_occurrence:
+                csvwriter.writerow(data)
+        # return fake status
+        return [{'status': 'COMPLETED', 'id': 1}]
