@@ -156,13 +156,22 @@ class RegistryVocabularyFactory(object):
     def __init__(self, name):
         self.__name__ = name
 
+    def _term_generator(self, reg):
+        for record in reg[self.__name__]:
+            term = SimpleTerm(value=record['value'],
+                              token=record['value'],
+                              title=record['title'])
+            # attach additional attributes to term:
+            for key in record.keys():
+                if not hasattr(term, key):
+                    if not hasattr(term, 'data'):
+                        term.data = {}
+                    term.data[key] = record[key]
+            yield term
+
     def __call__(self, context):
         reg = getUtility(IRegistry)
-        terms = (SimpleTerm(value=term['value'],
-                            token=term['value'],
-                            title=term['title'])
-                 for term in reg[self.__name__])
-        return BCCVLSimpleVocabulary(terms)
+        return BCCVLSimpleVocabulary(self._term_generator(reg))
 
 
 layer_source = RegistryVocabularyFactory(

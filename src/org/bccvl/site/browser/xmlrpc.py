@@ -345,8 +345,11 @@ class DataSetManager(BrowserView):
             vocab = vocab(self.context)
         result = []
         for term in vocab:
-            result.append({'token': term.token,
-                           'title': term.title})
+            data = {'token': term.token,
+                    'title': term.title}
+            if hasattr(term, 'data'):
+                data.update(term.data)
+            result.append(data)
         return result
 
     @returnwrapper

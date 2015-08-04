@@ -136,6 +136,7 @@ def upgrade_190_200_1(context, logger=None):
     # Run GS steps
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'properties')
     # rebuild the catalog to make sure new indices are populated
     # logger.info("rebuilding catalog")

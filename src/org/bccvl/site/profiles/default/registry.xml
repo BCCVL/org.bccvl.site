@@ -153,820 +153,955 @@
       <element>
         <element key="value">B01</element>
         <element key="title">B01 - Annual Mean Temperature</element>
-        <element key="unit">degrees C * 10</element>
-        <element key="color">temperature</element>
+        <element key="unit">degrees C</element> <!-- &#2103; &#00B3;&#0043; &#00B3;C-->
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B02</element>
         <element key="title">B02 - Mean Diurnal Range (Mean of monthly (max temp - min temp))</element>
-        <element key="unit">degrees C * 10</element>
-        <element key="color">temperature</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B03</element>
         <element key="title">B03 - Isothermality (BIO2/BIO7) (* 100)</element>
         <element key="unit">%</element>
-        <element key="color">temperature</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B04</element>
         <element key="title">B04 - Temperature Seasonality (standard deviation *100)</element>
-        <element key="unit">standard deviation (degrees C * 10) * 100</element>
-        <element key="color">temperature</element>
+        <element key="unit">standard deviation * 100</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B05</element>
         <element key="title">B05 - Max Temperature of Warmest Month</element>
-        <element key="unit">degrees C * 10"</element>
-        <element key="color">default</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B06</element>
         <element key="title">B06 - Min Temperature of Coldest Month</element>
-        <element key="unit">degrees C * 10</element>
-        <element key="color">default</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B07</element>
         <element key="title">B07 - Temperature Annual Range (BIO5-BIO6)</element>
-        <element key="unit">degrees C * 10</element>
-        <element key="color">default</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B08</element>
         <element key="title">B08 - Mean Temperature of Wettest Quarter</element>
-        <element key="unit">degrees C * 10</element>
-        <element key="color">default</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B09</element>
         <element key="title">B09 - Mean Temperature of Driest Quarter</element>
-        <element key="unit">degrees C * 10</element>
-        <element key="color">default</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B10</element>
         <element key="title">B10 - Mean Temperature of Warmest Quarter</element>
-        <element key="unit">degrees C * 10</element>
-        <element key="color">default</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B11</element>
         <element key="title">B11 - Mean Temperature of Coldest Quarter</element>
-        <element key="unit">degrees C * 10</element>
-        <element key="color">default</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B12</element>
         <element key="title">B12 - Annual Precipitation</element>
         <element key="unit">mm</element>
-        <element key="color">default</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B13</element>
         <element key="title">B13 - Precipitation of Wettest Month</element>
         <element key="unit">mm</element>
-        <element key="color">default</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B14</element>
         <element key="title">B14 - Precipitation of Driest Month</element>
         <element key="unit">mm</element>
-        <element key="color">default</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B15</element>
         <element key="title">B15 - Precipitation Seasonality (Coefficient of Variation)</element>
         <element key="unit">dimensionless</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B16</element>
         <element key="title">B16 - Precipitation of Wettest Quarter</element>
         <element key="unit">mm</element>
-         <element key="color">default</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B17</element>
         <element key="title">B17 - Precipitation of Driest Quarter</element>
         <element key="unit">mm</element>
-        <element key="color">default</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B18</element>
         <element key="title">B18 - Precipitation of Warmest Quarter</element>
         <element key="unit">mm</element>
-        <element key="color">default</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">B19</element>
         <element key="title">B19 - Precipitation of Coldest Quarter</element>
         <element key="unit">mm</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">clay30</element>
         <element key="title">Clay content percentage 0-30 cm</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">substrate</element>
       </element>
       <element>
         <element key="value">bd30</element>
         <element key="title">Bulk density 0-30 cm</element>
         <element key="unit">Mg/m3</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">substrate</element>
       </element>
       <element>
         <element key="value">ph_0_30</element>
         <element key="title">pH (Calcium Chloride 1:5) 0-30cm</element>
         <element key="unit">pH</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">substrate</element>
       </element>
       <element>
         <element key="value">pawc_1m</element>
         <element key="title">Plant available water capacity 0-1 m</element>
         <element key="unit">mm</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">asc</element>
         <element key="title">Australian Soil Classification</element>
         <element key="unit">Soil class</element>
-        <element key="color">default</element>
+        <element key="legend">categories</element>
+        <element key="type">substrate</element>
       </element>
       <element>
         <element key="value">vastgridv2_1k</element>
         <element key="title">National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008</element>
         <element key="unit">VAST classification</element>
-        <element key="color">default</element>
+        <element key="legend">categories</element>
+        <element key="type">vegetation</element>        
       </element>
       <element>
         <element key="value">multi_res_ridge_top_flat</element>
         <element key="title">Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)</element>
         <element key="unit">dimensionless</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
       </element>
       <element>
         <element key="value">multi_res_valley_bottom_flat</element>
         <element key="title">Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)</element>
         <element key="unit">dimensionless</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
       </element>
       <element>
         <element key="value">mth_FWDis</element>
         <element key="title">Monthly Local Discharge (Runoff+Drainage)</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_mth_FWDis</element>
         <element key="title">Monthly Local Discharge (Runoff+Drainage) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_FWDis</element>
         <element key="title">Annual Local Discharge (Runoff+Drainage)</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWDis</element>
         <element key="title">Annual Local Discharge (Runoff+Drainage) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_FWE</element>
         <element key="title">Annual Total Evaporation (Soil+Vegetation)</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWE</element>
         <element key="title">Annual Total Evaporation (Soil+Vegetation) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_FWLch2</element>
         <element key="title">Annual Deep Drainage</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWLch2</element>
         <element key="title">Annual Deep Drainage (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_FWPT</element>
         <element key="title">Annual Potential Evaporation</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWPT</element>
         <element key="title">Annual Potential Evaporation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_FWRun</element>
         <element key="title">Annual Surface Runoff</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWRun</element>
         <element key="title">Annual Surface Runoff (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_FWSoil</element>
         <element key="title">Annual Soil Evaporation</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWSoil</element>
         <element key="title">Annual Soil Evaporation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_FWTra</element>
         <element key="title">Annual Total Transpiration</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWTra</element>
         <element key="title">Annual Total Transpiration (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_FWWater</element>
         <element key="title">Annual Open Water Evaporation ('pan' equiv)</element>
         <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWWater</element>
         <element key="title">Annual Open Water Evaporation ('pan' equiv) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_PhiE</element>
         <element key="title">Annual Daily Latent Heat Flux</element>
         <element key="unit">W/m^2</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">pcr_ann_PhiE</element>
         <element key="title">Annual Daily Latent Heat Flux (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">ann_PhiH</element>
         <element key="title">Annual Daily Sensible Heat Flux</element>
         <element key="unit">W/m^2</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">pcr_ann_PhiH</element>
         <element key="title">Annual Daily Sensible Heat Flux (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">ann_SolarMJ</element>
         <element key="title">Annual Incident solar radiation</element>
         <element key="unit">MJ/m^2/d</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">pcr_ann_SolarMJ</element>
         <element key="title">Annual Incident solar radiation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">ann_TempMax</element>
         <element key="title">Annual Daily maximum temperature</element>
         <element key="unit">degC</element>
-        <element key="color">default</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">pcr_ann_TempMax</element>
         <element key="title">Annual Daily maximum temperature (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">ann_TempMin</element>
         <element key="title">Daily minimum temperature</element>
         <element key="unit">degC</element>
-        <element key="color">default</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">pcr_ann_TempMin</element>
         <element key="title">Daily minimum temperature (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">ann_WRel1</element>
         <element key="title">Annual Relative Soil Moisture (Upper Layer)</element>
         <element key="unit">Fraction (0-1)</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel1</element>
         <element key="title">Annual Relative Soil Moisture (Upper Layer) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_WRel1End</element>
         <element key="title">Annual Relative Soil Moisture (Upper Layer) at end of aggregation period</element>
         <element key="unit">Fraction (0-1)</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel1End</element>
         <element key="title">Annual Relative Soil Moisture (Upper Layer) at end of aggregation period (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_WRel2</element>
         <element key="title">Annual Relative Soil Moisture (Lower Layer)</element>
         <element key="unit">Fraction (0-1)</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel2</element>
         <element key="title">Annual Relative Soil Moisture (Lower Layer) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_WRel2End</element>
         <element key="title">Annual Relative Soil Moisture (Lower Layer) at end of aggregation period</element>
         <element key="unit">Fraction (0-1)</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel2End</element>
         <element key="title">Annual Relative Soil Moisture (Lower Layer) at end of aggregation period (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
       </element>
       <element>
         <element key="value">ann_Precip</element>
         <element key="title">Annual Precipitation</element>
-        <element key="unit">mm/d</element>
-        <element key="color">default</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">pcr_ann_Precip</element>
         <element key="title">Annual Relative Precipitation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">DLCDv1_Class</element>
         <element key="title">Dynamic Land Cover Classification</element>
         <element key="unit">class</element>
-        <element key="color">default</element>
+        <element key="legend">categories</element>
+        <element key="type">landcover</element>
       </element>
       <element>
         <element key="value">trend_evi_max</element>
         <element key="title">Max Annual Enhanced Vegetation Index (EVI) trend</element>
         <element key="unit">dimensionless</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
       </element>
       <element>
         <element key="value">trend_evi_min</element>
         <element key="title">Min Annual Enhanced Vegetation Index (EVI) trend</element>
         <element key="unit">dimensionless</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
       </element>
       <element>
         <element key="value">trend_evi_mean</element>
         <element key="title">Mean Annual Enhanced Vegetation Index (EVI) trend</element>
         <element key="unit">dimensionless</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
       </element>
       <element>
         <element key="value">ai_yr</element>
         <element key="title">Global Aridity - Annual</element>
         <element key="unit">Aridity Index</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
         <element key="value">pet_he_yr</element>
         <element key="title">Global Potential Evapo-Transpiration (PET) - Annual</element>
         <element key="unit">mm/year</element>
-        <element key="color">default</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN1</element>
-          <element key="title">Average Monthly Minimum Temperature (Jan)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN1</element>
+        <element key="title">Average Monthly Minimum Temperature (Jan)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN2</element>
-          <element key="title">Average Monthly Minimum Temperature (Feb)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN2</element>
+        <element key="title">Average Monthly Minimum Temperature (Feb)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN3</element>
-          <element key="title">Average Monthly Minimum Temperature (Mar)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN3</element>
+        <element key="title">Average Monthly Minimum Temperature (Mar)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN4</element>
-          <element key="title">Average Monthly Minimum Temperature (Apr)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN4</element>
+        <element key="title">Average Monthly Minimum Temperature (Apr)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN5</element>
-          <element key="title">Average Monthly Minimum Temperature (May)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN5</element>
+        <element key="title">Average Monthly Minimum Temperature (May)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN6</element>
-          <element key="title">Average Monthly Minimum Temperature (Jun)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN6</element>
+        <element key="title">Average Monthly Minimum Temperature (Jun)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN7</element>
-          <element key="title">Average Monthly Minimum Temperature (Jul)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN7</element>
+        <element key="title">Average Monthly Minimum Temperature (Jul)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN8</element>
-          <element key="title">Average Monthly Minimum Temperature (Aug)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN8</element>
+        <element key="title">Average Monthly Minimum Temperature (Aug)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN9</element>
-          <element key="title">Average Monthly Minimum Temperature (Sep)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN9</element>
+        <element key="title">Average Monthly Minimum Temperature (Sep)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN10</element>
-          <element key="title">Average Monthly Minimum Temperature (Oct)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN10</element>
+        <element key="title">Average Monthly Minimum Temperature (Oct)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN11</element>
-          <element key="title">Average Monthly Minimum Temperature (Nov)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN11</element>
+        <element key="title">Average Monthly Minimum Temperature (Nov)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TN12</element>
-          <element key="title">Average Monthly Minimum Temperature (Dec)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TN12</element>
+        <element key="title">Average Monthly Minimum Temperature (Dec)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM1</element>
-          <element key="title">Average Monthly Mean Temperature (Jan)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM1</element>
+        <element key="title">Average Monthly Mean Temperature (Jan)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM2</element>
-          <element key="title">Average Monthly Mean Temperature (Feb)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM2</element>
+        <element key="title">Average Monthly Mean Temperature (Feb)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM3</element>
-          <element key="title">Average Monthly Mean Temperature (Mar)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM3</element>
+        <element key="title">Average Monthly Mean Temperature (Mar)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM4</element>
-          <element key="title">Average Monthly Mean Temperature (Apr)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM4</element>
+        <element key="title">Average Monthly Mean Temperature (Apr)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM5</element>
-          <element key="title">Average Monthly Mean Temperature (May)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM5</element>
+        <element key="title">Average Monthly Mean Temperature (May)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM6</element>
-          <element key="title">Average Monthly Mean Temperature (Jun)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM6</element>
+        <element key="title">Average Monthly Mean Temperature (Jun)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM7</element>
-          <element key="title">Average Monthly Mean Temperature (Jul)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM7</element>
+        <element key="title">Average Monthly Mean Temperature (Jul)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM8</element>
-          <element key="title">Average Monthly Mean Temperature (Aug)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM8</element>
+        <element key="title">Average Monthly Mean Temperature (Aug)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM9</element>
-          <element key="title">Average Monthly Mean Temperature (Sep)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM9</element>
+        <element key="title">Average Monthly Mean Temperature (Sep)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM10</element>
-          <element key="title">Average Monthly Mean Temperature (Oct)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM10</element>
+        <element key="title">Average Monthly Mean Temperature (Oct)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM11</element>
-          <element key="title">Average Monthly Mean Temperature (Nov)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM11</element>
+        <element key="title">Average Monthly Mean Temperature (Nov)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TM12</element>
-          <element key="title">Average Monthly Mean Temperature (Dec)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TM12</element>
+        <element key="title">Average Monthly Mean Temperature (Dec)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX1</element>
-          <element key="title">Average Monthly Maximum Temperature (Jan)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX1</element>
+        <element key="title">Average Monthly Maximum Temperature (Jan)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX2</element>
-          <element key="title">Average Monthly Maximum Temperature (Feb)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX2</element>
+        <element key="title">Average Monthly Maximum Temperature (Feb)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX3</element>
-          <element key="title">Average Monthly Maximum Temperature (Mar)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX3</element>
+        <element key="title">Average Monthly Maximum Temperature (Mar)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX4</element>
-          <element key="title">Average Monthly Maximum Temperature (Apr)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX4</element>
+        <element key="title">Average Monthly Maximum Temperature (Apr)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX5</element>
-          <element key="title">Average Monthly Maximum Temperature (May)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX5</element>
+        <element key="title">Average Monthly Maximum Temperature (May)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX6</element>
-          <element key="title">Average Monthly Maximum Temperature (Jun)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX6</element>
+        <element key="title">Average Monthly Maximum Temperature (Jun)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX7</element>
-          <element key="title">Average Monthly Maximum Temperature (Jul)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX7</element>
+        <element key="title">Average Monthly Maximum Temperature (Jul)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX8</element>
-          <element key="title">Average Monthly Maximum Temperature (Aug)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX8</element>
+        <element key="title">Average Monthly Maximum Temperature (Aug)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX9</element>
-          <element key="title">Average Monthly Maximum Temperature (Sep)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX9</element>
+        <element key="title">Average Monthly Maximum Temperature (Sep)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX10</element>
-          <element key="title">Average Monthly Maximum Temperature (Oct)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX10</element>
+        <element key="title">Average Monthly Maximum Temperature (Oct)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX11</element>
-          <element key="title">Average Monthly Maximum Temperature (Nov)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">TX11</element>
+        <element key="title">Average Monthly Maximum Temperature (Nov)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">TX12</element>
-          <element key="title">Average Monthly Maximum Temperature (Dec)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
-      </element>
-        
+        <element key="value">TX12</element>
+        <element key="title">Average Monthly Maximum Temperature (Dec)</element>
+        <element key="unit">degrees C</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+      </element>        
       <element>
-          <element key="value">PR1</element>
-          <element key="title">Average Monthly Precipitation (Jan)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
-      </element>
-      <element>
-          <element key="value">PR2</element>
-          <element key="title">Average Monthly Precipitation (Feb)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR1</element>
+        <element key="title">Average Monthly Precipitation (Jan)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR3</element>
-          <element key="title">Average Monthly Precipitation (Mar)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR2</element>
+        <element key="title">Average Monthly Precipitation (Feb)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR4</element>
-          <element key="title">Average Monthly Precipitation (Apr)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR3</element>
+        <element key="title">Average Monthly Precipitation (Mar)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR5</element>
-          <element key="title">Average Monthly Precipitation (May)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR4</element>
+        <element key="title">Average Monthly Precipitation (Apr)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR6</element>
-          <element key="title">Average Monthly Precipitation (Jun)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR5</element>
+        <element key="title">Average Monthly Precipitation (May)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR7</element>
-          <element key="title">Average Monthly Precipitation (Jul)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR6</element>
+        <element key="title">Average Monthly Precipitation (Jun)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR8</element>
-          <element key="title">Average Monthly Precipitation (Aug)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR7</element>
+        <element key="title">Average Monthly Precipitation (Jul)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR9</element>
-          <element key="title">Average Monthly Precipitation (Sep)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR8</element>
+        <element key="title">Average Monthly Precipitation (Aug)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR10</element>
-          <element key="title">Average Monthly Precipitation (Oct)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR9</element>
+        <element key="title">Average Monthly Precipitation (Sep)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR11</element>
-          <element key="title">Average Monthly Precipitation (Nov)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR10</element>
+        <element key="title">Average Monthly Precipitation (Oct)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">PR12</element>
-          <element key="title">Average Monthly Precipitation (Dec)</element>
-          <element key="unit">degrees C * 10</element>
-          <element key="color">default</element>
+        <element key="value">PR11</element>
+        <element key="title">Average Monthly Precipitation (Nov)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">Altitude</element>
-          <element key="title">Altitude (elevation above sea level) (m)</element>
-          <element key="unit">meter m</element>
-          <element key="color">default</element>
+        <element key="value">PR12</element>
+        <element key="title">Average Monthly Precipitation (Dec)</element>
+        <element key="unit">mm</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
       </element>
       <element>
-          <element key="value">GPP1</element>
-          <element key="title">Maximum GPP</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
+        <element key="value">Altitude</element>
+        <element key="title">Altitude (elevation above sea level) (m)</element>
+        <element key="unit">meter m</element>
+        <element key="legend">altitude</element>
+        <element key="type">topography</element>        
       </element>
       <element>
-          <element key="value">GPP2</element>
-          <element key="title">Mean GPP</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
+        <element key="value">GPP1</element>
+        <element key="title">Maximum GPP</element>
+        <element key="unit">mol CO2 per m^2</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
       </element>
       <element>
-          <element key="value">GPP3</element>
-          <element key="title">Minimum GPP</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
+        <element key="value">GPP2</element>
+        <element key="title">Mean GPP</element>
+        <element key="unit">mol CO2 per m^2</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
       </element>
       <element>
-          <element key="value">GPP4</element>
-          <element key="title">Annual mean GPP</element>
-          <element key="unit">mol CO2 per m^2</element>
-          <element key="color">default</element>
+        <element key="value">GPP3</element>
+        <element key="title">Minimum GPP</element>
+        <element key="unit">mol CO2 per m^2</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
       </element>
-        <element>
-            <element key="value">FPAR01</element>
-            <element key="title">MODIS-fPAR (Jan)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR02</element>
-            <element key="title">MODIS-fPAR (Feb)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR03</element>
-            <element key="title">MODIS-fPAR (Mar)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR04</element>
-            <element key="title">MODIS-fPAR (Apr)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR05</element>
-            <element key="title">MODIS-fPAR (May)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR06</element>
-            <element key="title">MODIS-fPAR (Jun)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR07</element>
-            <element key="title">MODIS-fPAR (Jul)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR08</element>
-            <element key="title">MODIS-fPAR (Aug)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR09</element>
-            <element key="title">MODIS-fPAR (Sep)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR10</element>
-            <element key="title">MODIS-fPAR (Oct)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR11</element>
-            <element key="title">MODIS-fPAR (Nov)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
-        <element>
-            <element key="value">FPAR12</element>
-            <element key="title">MODIS-fPAR (Dec)</element>
-            <element key="unit">fPAR</element>
-            <element key="color">default</element>
-        </element>
+      <element>
+        <element key="value">GPP4</element>
+        <element key="title">Annual mean GPP</element>
+        <element key="unit">mol CO2 per m^2</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR01</element>
+        <element key="title">MODIS-fPAR (Jan)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR02</element>
+        <element key="title">MODIS-fPAR (Feb)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR03</element>
+        <element key="title">MODIS-fPAR (Mar)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR04</element>
+        <element key="title">MODIS-fPAR (Apr)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR05</element>
+        <element key="title">MODIS-fPAR (May)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR06</element>
+        <element key="title">MODIS-fPAR (Jun)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR07</element>
+        <element key="title">MODIS-fPAR (Jul)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR08</element>
+        <element key="title">MODIS-fPAR (Aug)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR09</element>
+        <element key="title">MODIS-fPAR (Sep)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR10</element>
+        <element key="title">MODIS-fPAR (Oct)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR11</element>
+        <element key="title">MODIS-fPAR (Nov)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
+      <element>
+        <element key="value">FPAR12</element>
+        <element key="title">MODIS-fPAR (Dec)</element>
+        <element key="unit">fPAR</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+      </element>
         
     </value>
   </record>
