@@ -86,7 +86,7 @@
             <optgroup tal:repeat="group dataset_tools/source_list"
                       tal:attributes="label group/label">
               <option value="optionvalue"
-                      tal:repeat="opn python:group['items']"
+                      tal:repeat="opt python:group['items']"
                       tal:attributes="selected opt/selected;
                                       disabled opt/disabled;
                                       value opt/token;"
