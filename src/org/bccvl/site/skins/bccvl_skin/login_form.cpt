@@ -259,6 +259,8 @@
                 </p>
             </div>
 
+            <p>Need to request an account? <a href="http://www.bccvl.org.au/request-a-local-login-account" target="_blank">Click here.</a></p>
+            
             <div id="login-new-user"
                tal:condition="python:join_url and use_normal">
                 <strong i18n:translate="heading_new_user">
