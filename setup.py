@@ -49,7 +49,6 @@ setup(
         'collective.onlogin',
         'collective.z3cform.widgets',
         'collective.indexing',
-        'plone.app.folderui',
         #'collective.deletepermission', careful it interfers with delete buttons when not activated
         #'collective.z3cform.chosen',
         'borg.localrole',
@@ -80,6 +79,10 @@ setup(
         # 'pika == 0.5.2', -> rather us kombu
         # TODO: verify that we need this.
         #'plone.app.relationfield',
+        'eea.facetednavigation'
+        # TODO: deprecated, but needed here due to zcml autoinclude
+        'Products.AdvancedQuery',  # optional anyway but hard import atm
+        'plone.app.folderui',
     ],
     extras_require={
         'test': [
@@ -90,7 +93,6 @@ setup(
             'gu.z3cform.rdf',  # needed because there maf be some persistent utilihes registered SparqlInstanceVocabularyFactory
         ],
         'experimental': [
-            'eea.facetednavigation'
         ],
         'wsgi': [
             'Paste',
