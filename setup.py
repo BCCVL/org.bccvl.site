@@ -79,7 +79,7 @@ setup(
         # 'pika == 0.5.2', -> rather us kombu
         # TODO: verify that we need this.
         #'plone.app.relationfield',
-        'eea.facetednavigation'
+        'eea.facetednavigation',
         # TODO: deprecated, but needed here due to zcml autoinclude
         'Products.AdvancedQuery',  # optional anyway but hard import atm
         'plone.app.folderui',
