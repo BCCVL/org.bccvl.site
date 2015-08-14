@@ -140,15 +140,17 @@
           <table id="userlist" class="stats" border="1">
             <thead>
               <tr>
-                <th><h4>Login</h4></th><th><h4>Full name</h4></th><th><h4>Email</h4></th><th><h4>Last login</h4></th>
+                <th><h4>Login</h4></th><th><h4>Full name</h4></th><th><h4>Email</h4></th><th><h4>Last login</h4></th><th><h4>Experiments</h4></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody
+                tal:define="users_experiments view/users_experiments">
               <tr tal:repeat="member view/_users">
                 <td tal:content="python: member.getUserName()">Login name</td>
                 <td tal:content="python: member.getProperty('fullname')">User Name</td>
                 <td tal:content="python: member.getProperty('email')">user@email.com</td>
-                <td tal:content="python: toLocalizedTime(member.getProperty('last_login_time'))">last login</td>              
+                <td tal:content="python: toLocalizedTime(member.getProperty('last_login_time'))">last login</td>
+                <td tal:content="python: users_experiments.get(member.getId()) or 0"></td>
               </tr>
             </tbody>
           </table>
