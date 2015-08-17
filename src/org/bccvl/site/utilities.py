@@ -98,7 +98,7 @@ class JobTracker(object):
     #     - message ... short descr of activity
     #     - .... could be more here; e.g. percent complete, steps, etc..
 
-    _states = ('QUEUED', 'RUNNING', 'COMPLETED', 'FAILED', 'REMOVED')
+    _states = ('PENDING', 'QUEUED', 'RUNNING', 'COMPLETED', 'FAILED', 'REMOVED')
 
     def __init__(self, context):
         self.context = context
@@ -152,7 +152,7 @@ class JobTracker(object):
         # clear state annotation
         self._state = None
         # create new state annotation
-        self._setstate(state='QUEUED',
+        self._setstate(state='PENDING',
                        taskid=taskid,
                        name=name)
 
