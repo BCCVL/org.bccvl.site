@@ -308,3 +308,17 @@ genre_vocabulary = SimpleVocabulary([
 @provider(IVocabularyFactory)
 def genre_source(context):
     return genre_vocabulary
+
+
+job_state_vocabulary = SimpleVocabulary([
+    SimpleTerm('PENDING', 'PENDING', u'Pending'),
+    SimpleTerm('QUEUED', 'QUEUED', u'Queued'),
+    SimpleTerm('RUNNIG', 'RUNNING', u'Running'),
+    SimpleTerm('COMPLETED', 'COMPLETED', u'Completed'),
+    SimpleTerm('FAILED', 'FAILED', u'Failed'),
+    SimpleTerm('REMOVED', 'REMOVED', u'Removed')
+])
+
+@provider(IVocabularyFactory)
+def job_state_source(context):
+    return job_state_vocabulary

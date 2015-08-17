@@ -236,6 +236,11 @@
       name="genre_source"
       />
 
+  <utility
+      component=".vocabularies.job_state_source"
+      name="job_state_source"
+      />
+
   <transmogrifier:registerConfig
       name="exportknowledgebase"
       title="Export Knowledgebase pipeline configuration"
