@@ -14,17 +14,17 @@ from org.bccvl.site.utils import Period
 
 
 @indexer(IDataset)
-def dataset_BCCDataGenre(obj, *kw):
+def dataset_BCCDataGenre(obj, **kw):
     return IBCCVLMetadata(obj).get('genre')
 
 
 @indexer(IDataset)
-def dataset_BCCEmissionScenario(obj, *kw):
+def dataset_BCCEmissionScenario(obj, **kw):
     return IBCCVLMetadata(obj).get('emsc')
 
 
 @indexer(IDataset)
-def dataset_BCCGlobalClimateModel(obj, *kw):
+def dataset_BCCGlobalClimateModel(obj, **kw):
     return IBCCVLMetadata(obj).get('gcm')
 
 
@@ -36,6 +36,7 @@ def BCCDatasetResolution(obj, **kw):
 @indexer(IExperiment)
 def BCCExperimentResolution(obj, **kw):
     return IBCCVLMetadata(obj).get('resolution')
+
 
 @indexer(IDataset)
 def DatasetSearchableText(obj, **kw):
@@ -76,13 +77,6 @@ def DatasetSearchableText(obj, **kw):
         entries.append(u"current")
     return u" ".join(entries)
 
-# TODO: should be a DateRangeIndex (resolve partial dates to 1stday
-#       (start) and last day (end))
-# @indexer(IDataset)
-# def dataset_DCTemporal(object, *kw):
-#     graph = IGraph(object)
-#     return tuple(graph.objects(graph.identifier, DCES['temporal']))
-
 
 @indexer(IDataset)
 def dataset_environmental_layer(obj, **kw):
@@ -92,6 +86,7 @@ def dataset_environmental_layer(obj, **kw):
         return md['layers_used']
     # otherwise index list of layers provided by dataset
     return md.get('layers', None)
+
 
 @indexer(IExperiment)
 def experiment_reference_indexer(object, **kw):
@@ -104,6 +99,7 @@ def experiment_reference_indexer(object, **kw):
         return object.projection.keys()
     else:
         pass
+
 
 @implementer(IIndexer)
 class JobStateIndexer(object):
@@ -132,3 +128,15 @@ class JobStateIndexer(object):
                 else:
                     state = 'FAILED'
         return state
+
+
+@indexer(IDataset)
+def scientific_category(obj, **kw):
+    md = IBCCVLMetadata(obj)
+    vocab = getUtility(IVocabularyFactory, 'scientific_category_source')(obj)
+    path = set()
+    for cat in md.get('categories', ()):
+        path.update(vocab.getTermPath(cat))
+    if path:
+        return tuple(path)
+    return None

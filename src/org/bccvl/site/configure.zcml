@@ -138,6 +138,11 @@
       name="job_state"
       />
 
+  <adapter
+      factory=".indexers.scientific_category"
+      name="BCCCategory"
+      />
+
   <!-- TODO: index temporal coverage someday -->
   <!-- <adapter -->
   <!--     factory=".indexers.dataset_DCTemporal" -->

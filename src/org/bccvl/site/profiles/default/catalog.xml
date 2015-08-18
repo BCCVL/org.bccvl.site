@@ -22,9 +22,13 @@
         <indexed_attr value="experiment_reference"/>
     </index>
 
-    <index name="BCCSpeciesLayer" meta_type="KeywordIndex" remove="True"/>
+    <index name="BCCCategory" meta_type="KeywordIndex">
+      <indexed_attr value="BCCCategory"/>
+    </index>
 
+    <index name="BCCSpeciesLayer" meta_type="KeywordIndex" remove="True"/>
     <index name="DCTemporal" meta_type="DateRangeIndex" remove="True"/>
+    
     <column value="BCCResolution" />
     <column value="job_state" />
     <column value="BCCDataGenre" />
