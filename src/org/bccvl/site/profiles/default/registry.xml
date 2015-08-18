@@ -1,59 +1,4 @@
 <registry>
-  <!-- collective.onlogin settings -->
-  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_enabled" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_enabled">
-    <field type="plone.registry.field.Bool">
-      <default>True</default>
-      <description>First login redirect is of higher priority than redirect on every login. If disabled, then every login redirect will be executed even for first time login.</description>
-      <required>False</required>
-      <title>Enable redirect on first login</title>
-    </field>
-    <value>False</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_expr">
-    <field type="plone.registry.field.TextLine">
-      <default>string:${portal_url}/@@personal-information</default>
-      <description>TAL Expression evaluating to url for first time redirect.</description>
-      <required>False</required>
-      <title>First login redirect expression</title>
-    </field>
-    <value>string:${portal_url}/@@personal-information</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_ignore_came_from" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_ignore_came_from">
-    <field type="plone.registry.field.Bool">
-      <default>True</default>
-      <description>By default Plone redirects user to last visited page after login. Here you can disable this behavior and always redirect to above entered url.</description>
-      <required>False</required>
-      <title>Ignore came_from parameter on first login</title>
-    </field>
-    <value>False</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_enabled" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_enabled">
-    <field type="plone.registry.field.Bool">
-      <default>True</default>
-      <description>Login redirect is happening on every user login and does not happen on user first login in case First Login Redirect is enabled on this form above.</description>
-      <required>False</required>
-      <title>Enable redirect on login</title>
-    </field>
-    <value>True</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_expr">
-    <field type="plone.registry.field.TextLine">
-      <default>string:${portal_url}/dashboard</default>
-      <description>TAL Expression evaluating to url for redirect.</description>
-      <required>False</required>
-      <title>Login redirect expression</title>
-    </field>
-    <value>string:${portal_url}/dashboard</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_ignore_came_from" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_ignore_came_from">
-    <field type="plone.registry.field.Bool">
-      <default>False</default>
-      <description>By default Plone redirects user to last visited page after login. Here you can disable this behavior and always redirect to above entered url.</description>
-      <required>False</required>
-      <title>Ignore came_from parameter on login</title>
-    </field>
-    <value>True</value>
-  </record>
   <!-- plone.caching settings -->
   <record name="plone.caching.interfaces.ICacheSettings.enabled" interface="plone.caching.interfaces.ICacheSettings" field="enabled">
     <field type="plone.registry.field.Bool">
@@ -94,20 +39,6 @@
       <element>http://localhost:8101</element>
     </value>
   </record>
-  <!-- <record name="plone.cachepurging.interfaces.ICachePurgingSettings.domains" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="domains"> -->
-  <!--   <field type="plone.registry.field.Tuple"> -->
-  <!--     <default/> -->
-  <!--     <description>This option is only relevant if you are using virtual hosting and you have enabled the option to send PURGE requests with virtual hosting URLs above. If you your site is served on multiple domains e.g. http://example.org and http://www.example.org you may wish to purge both. If so, list all your domains here</description> -->
-  <!--     <missing_value/> -->
-  <!--     <required>False</required> -->
-  <!--     <title>Domains</title> -->
-  <!--     <value_type type="plone.registry.field.URI"/> -->
-  <!--   </field> -->
-  <!--   <value> -->
-  <!--     <element>http://compute.bccvl.org.au:80</element> -->
-  <!--     <element>https://compute.bccvl.org.au:443</element> -->
-  <!--   </value> -->
-  <!-- </record> -->
   <record name="plone.cachepurging.interfaces.ICachePurgingSettings.enabled" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="enabled">
     <field type="plone.registry.field.Bool">
       <default>True</default>
