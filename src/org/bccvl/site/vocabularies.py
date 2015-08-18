@@ -1,5 +1,5 @@
 from zope.schema.interfaces import IVocabularyFactory
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm, TreeVocabulary
 from zope.interface import implementer, provider
 from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
@@ -322,3 +322,29 @@ job_state_vocabulary = SimpleVocabulary([
 @provider(IVocabularyFactory)
 def job_state_source(context):
     return job_state_vocabulary
+
+
+scientific_category_vocabulary = TreeVocabulary.fromDict({
+    ('biological', 'biological', u'Biological'): {
+        ('occurrence', 'occurrence', u'Occurrence'): {},
+        ('absence', 'absence', u'Absence'): {},
+        ('abundance', 'abundance', u'Abundance'): {},
+    },
+    ('climate', 'climate', u'Climate'): {
+        ('current', 'current', u'Current'): {},
+        ('future', 'future', u'Future'): {},
+    },
+    ('environmental', 'environmental', u'Environmental'): {
+        ('topograhpy', 'topograhpy', u'Topograhpy'): {},
+        ('hydrology', 'hydrology', u'Hydrology'): {},
+        ('substrate', 'substrate', u'Substrate'): {},
+        ('vegetation', 'vegetation', u'Vegetation'): {},
+        ('landcover', 'landcover', u'Land Cover'): {},
+        ('landuse', 'landuse', u'Land Use'): {},
+    }
+})
+
+
+@provider(IVocabularyFactory)
+def scientific_category_source(context):
+    return scientific_category_vocabulary
