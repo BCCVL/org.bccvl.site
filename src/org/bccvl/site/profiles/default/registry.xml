@@ -71,7 +71,32 @@
       <element key="Folder">plone.content.folderView</element>
     </value>
   </record>
-
+  <record name="plone.app.caching.interfaces.IPloneCacheSettings.templateRulesetMapping" interface="plone.app.caching.interfaces.IPloneCacheSettings" field="templateRulesetMapping">
+    <field type="plone.registry.field.Dict">
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Maps skin layer page template names to ruleset names</description>
+      <key_type type="plone.registry.field.ASCIILine">
+        <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Page template name</title>
+      </key_type>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Page template/ruleset mapping</title>
+      <value_type type="plone.registry.field.DottedName">
+        <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Ruleset name</title>
+      </value_type>
+    </field>
+    <value>
+      <element key="accessibility-info">plone.content.itemView</element>
+      <element key="image_view_fullscreen">plone.content.itemView</element>
+      <element key="rss.xml">plone.content.feed</element>
+      <element key="image_view">plone.content.itemView</element>
+      <element key="atom.xml">plone.content.feed</element>
+      <element key="itunes.xml">plone.content.feed</element>
+      <element key="search_rss">plone.content.feed</element>
+      <element key="file_view">plone.content.itemView</element>
+      <element key="faceted_query">plone.content.folderView</element>
+      <element key="dm">plone.content.folderView</element>      
+      <element key="sitemap">plone.content.itemView</element>
+      <element key="RSS">plone.content.feed</element>
+    </value>
+  </record>  
   <record name="org.bccvl.layers">
     <field type="plone.registry.field.Tuple">
       <title>Raster layer types</title>
