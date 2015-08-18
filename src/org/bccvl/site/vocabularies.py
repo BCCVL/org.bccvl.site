@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm, TreeVocabulary
 from zope.interface import implementer, provider
@@ -324,25 +326,28 @@ def job_state_source(context):
     return job_state_vocabulary
 
 
-scientific_category_vocabulary = TreeVocabulary.fromDict({
-    ('biological', 'biological', u'Biological'): {
-        ('occurrence', 'occurrence', u'Occurrence'): {},
-        ('absence', 'absence', u'Absence'): {},
-        ('abundance', 'abundance', u'Abundance'): {},
-    },
-    ('climate', 'climate', u'Climate'): {
-        ('current', 'current', u'Current'): {},
-        ('future', 'future', u'Future'): {},
-    },
-    ('environmental', 'environmental', u'Environmental'): {
-        ('topograhpy', 'topograhpy', u'Topograhpy'): {},
-        ('hydrology', 'hydrology', u'Hydrology'): {},
-        ('substrate', 'substrate', u'Substrate'): {},
-        ('vegetation', 'vegetation', u'Vegetation'): {},
-        ('landcover', 'landcover', u'Land Cover'): {},
-        ('landuse', 'landuse', u'Land Use'): {},
-    }
-})
+scientific_category_vocabulary = TreeVocabulary(OrderedDict([
+    (SimpleTerm('biological', 'biological', u'Biological'), OrderedDict([
+        (SimpleTerm('occurrence', 'occurrence', u'Occurrence'), {}),
+        (SimpleTerm('absence', 'absence', u'Absence'), {}),
+        (SimpleTerm('abundance', 'abundance', u'Abundance'), {}),
+        ])
+    ),
+    (SimpleTerm('climate', 'climate', u'Climate'), OrderedDict([
+        (SimpleTerm('current', 'current', u'Current'), {}),
+        (SimpleTerm('future', 'future', u'Future'), {}),
+        ])
+    ),
+    (SimpleTerm('environmental', 'environmental', u'Environmental'), OrderedDict([
+        (SimpleTerm('topograhpy', 'topograhpy', u'Topography'), {}),
+        (SimpleTerm('hydrology', 'hydrology', u'Hydrology'), {}),
+        (SimpleTerm('substrate', 'substrate', u'Substrate'), {}),
+        (SimpleTerm('vegetation', 'vegetation', u'Vegetation'), {}),
+        (SimpleTerm('landcover', 'landcover', u'Land Cover'), {}),
+        (SimpleTerm('landuse', 'landuse', u'Land Use'), {}),
+        ])
+    )
+]))
 
 
 @provider(IVocabularyFactory)
