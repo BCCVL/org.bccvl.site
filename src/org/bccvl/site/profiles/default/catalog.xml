@@ -15,9 +15,6 @@
     <index name="BCCResolution" meta_type="FieldIndex" >
         <indexed_attr value="BCCResolution"/>
     </index>
-    <index name="DCTemporal" meta_type="DateRangeIndex">
-        <indexed_attr value="DCTemporal"/>
-    </index>
     <index name="job_state" meta_type="FieldIndex">
         <indexed_attr value="job_state"/>
     </index>
@@ -27,6 +24,7 @@
 
     <index name="BCCSpeciesLayer" meta_type="KeywordIndex" remove="True"/>
 
+    <index name="DCTemporal" meta_type="DateRangeIndex" remove="True"/>
     <column value="BCCResolution" />
     <column value="job_state" />
     <column value="BCCDataGenre" />
