@@ -1,7 +1,6 @@
 {
   "_type": "Folder",
   "title": "Datasets",
-  "_layout": "datasets_listing_view",
   "_transitions": ["show_internally", "publish_internally"],
   "_permissions": {
     "Add portal content": {"acquire": true, "roles": ["Manager", "Member"]},
