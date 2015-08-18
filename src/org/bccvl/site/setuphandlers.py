@@ -143,4 +143,21 @@ def upgrade_190_200_1(context, logger=None):
     logger.info("rebuilding catalog")
     pc = getToolByName(context, 'portal_catalog')
     pc.reindexIndex('BCCCategory', None)
+    # add category to existing species data
+    genre_map = {
+        'DataGenreSpeciesOccurrence': 'occurrence',
+        'DataGenreSpeciesAbsence': 'absence',
+        'DataGenreSpeciesAbundance': 'abundance',
+        'DataGenreCC': 'current',
+        'DataGenreFC': 'future',
+        'DataGenreE': 'environmental'
+    }
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    for brain in pc(BCCDataGenre=genre_map.keys()):
+        obj = brain.getObject()
+        md = IBCCVLMetadata(obj)
+        if not md.get('categories', None):
+            md['categories'] = [genre_map[brain.BCCDataGenre]]
+            obj.reindexObject()
+
     logger.info("finished")
