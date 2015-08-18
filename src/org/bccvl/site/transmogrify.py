@@ -162,8 +162,6 @@ class ContextSource(object):
         yield item
 
 
-
-
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class BCCVLMetadataUpdater(object):
@@ -214,12 +212,11 @@ class BCCVLMetadataUpdater(object):
             yield item
 
 
-# TODO: maybe turn this into a RDF updater section.
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class FileMetadataToBCCVL(object):
     """Convert metedata extracted from files (_filemetadata) and store it
-    in _bccvmd so that it can be applied to IBCCVLMetadata
+    in _bccvlmetadata so that it can be applied to IBCCVLMetadata
 
     Nothing will be stored on content here.
     """
