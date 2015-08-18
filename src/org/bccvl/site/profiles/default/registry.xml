@@ -211,7 +211,7 @@
         <element key="value">B19</element>
         <element key="title">B19 - Precipitation of Coldest Quarter</element>
         <element key="unit">mm</element>
-        <element key="legend">default</element>
+        <element key="legend">rainfall</element>
         <element key="type">climate</element>
       </element>
       <element>
@@ -1091,7 +1091,7 @@
 
   <record name="org.bccvl.crs">
     <field type="plone.registry.field.Tuple">
-      <title>Geodetic CRS  vocabulary</title>
+      <title>Geodetic CRS vocabulary</title>
       <value_type type="plone.registry.field.Dict">
         <key_type type="plone.registry.field.TextLine"/>
         <value_type type="plone.registry.field.TextLine"/>
