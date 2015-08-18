@@ -138,8 +138,9 @@ def upgrade_190_200_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'properties')
+    setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
     # rebuild the catalog to make sure new indices are populated
-    # logger.info("rebuilding catalog")
-    # pc = getToolByName(context, 'portal_catalog')
-    # pc.clearFindAndRebuild()
+    logger.info("rebuilding catalog")
+    pc = getToolByName(context, 'portal_catalog')
+    pc.reindexIndex('BCCCategory', None)
     logger.info("finished")
