@@ -339,7 +339,7 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
         ])
     ),
     (SimpleTerm('environmental', 'environmental', u'Environmental'), OrderedDict([
-        (SimpleTerm('topograhpy', 'topograhpy', u'Topography'), {}),
+        (SimpleTerm('topography', 'topography', u'Topography'), {}),
         (SimpleTerm('hydrology', 'hydrology', u'Hydrology'), {}),
         (SimpleTerm('substrate', 'substrate', u'Substrate'), {}),
         (SimpleTerm('vegetation', 'vegetation', u'Vegetation'), {}),
