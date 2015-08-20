@@ -6,8 +6,8 @@ from zope.interface import implementer, provider
 from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.utils import getToolByName
-
-
+from org.bccvl.site import defaults
+from plone.app.contenttypes.interfaces import IFolder
 # species occurrence datasets
 from zope.site.hooks import getSite
 from zope.interface import directlyProvides
@@ -353,3 +353,32 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
 @provider(IVocabularyFactory)
 def scientific_category_source(context):
     return scientific_category_vocabulary
+
+
+@provider(IVocabularyFactory)
+def data_collections_source(context):
+    portal_url = getToolByName(context, 'portal_url')
+    catalog = getToolByName(context, 'portal_catalog')
+    group_query = {
+        'object_provides': IFolder.__identifier__,
+        'path': {
+            'query': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
+            'depth': 1
+        }
+    }
+
+    def coll_query(brain):
+        return {
+            'object_provides': IFolder.__identifier__,
+            'path': {
+                'query': brain.getPath(),
+                'depth': 1
+            }
+        }
+
+    brains = (
+        item
+        for group in catalog.searchResults(**group_query)
+        for item in catalog.searchResults(**coll_query(group))
+    )
+    return BrainsVocabulary.fromBrains(brains, context)

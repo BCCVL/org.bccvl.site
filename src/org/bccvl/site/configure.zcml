@@ -251,6 +251,11 @@
       name="scientific_category_source"
       />
 
+  <utility
+      component=".vocabularies.data_collections_source"
+      name="data_collections_source"
+      />
+  
   <transmogrifier:registerConfig
       name="exportknowledgebase"
       title="Export Knowledgebase pipeline configuration"
