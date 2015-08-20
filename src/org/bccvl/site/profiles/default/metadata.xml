@@ -28,6 +28,7 @@
         <dependency>profile-plone.app.folderui:default</dependency>
         <dependency>profile-plone.app.caching:default</dependency>
         <dependency>profile-plone.app.caching:with-caching-proxy-splitviews</dependency>
+        <dependency>profile-eea.facetednavigation:default</dependency>
 
     </dependencies>
 </metadata>
