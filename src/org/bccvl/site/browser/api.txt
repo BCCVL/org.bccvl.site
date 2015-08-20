@@ -280,7 +280,7 @@ Vocabulary endpoint:
       'token': 'B18',
       'type': 'climate',
       'unit': 'mm'},
-     {'legend': 'default',
+     {'legend': 'rainfall',
       'title': 'B19 - Precipitation of Coldest Quarter',
       'token': 'B19',
       'type': 'climate',
