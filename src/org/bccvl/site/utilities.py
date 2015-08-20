@@ -205,7 +205,7 @@ class MultiJobTracker(JobTracker):
             else:
                 return u'COMPLETED'
         # is everything still in Nem or Queued?
-        queued = all((state in ('QUEUED', ) for state in states))
+        queued = all((state in ('PENDING', 'QUEUED') for state in states))
         if queued:
             return u'QUEUED'
         return u'RUNNING'
