@@ -17,5 +17,6 @@
     />
 
   <include package=".checkboxtree"/>
+  <include package=".pathselect"/>  
 
 </configure>

@@ -1,0 +1,23 @@
+<configure
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:faceted="http://namespaces.zope.org/faceted"
+  i18n_domain="eea">
+
+  <faceted:widget factory=".widget.Widget" />
+
+  <browser:resource
+    name="org.bccvl.site.faceted.pathselect.view.js"
+    file="./view.js"
+   />
+
+  <browser:resource
+    name="org.bccvl.site.faceted.pathselect.edit.js"
+    file="./edit.js"
+   />
+
+  <browser:resource
+    name="org.bccvl.site.faceted.pathselect.view.css"
+    file="./view.css"
+   />
+
+</configure>
