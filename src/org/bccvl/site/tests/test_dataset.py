@@ -282,7 +282,7 @@ class TestDatasetImport(unittest.TestCase):
         # check job state
         from org.bccvl.site.interfaces import IJobTracker
         jt =  IJobTracker(ds)
-        self.assertEqual(jt.state, 'QUEUED')
+        self.assertEqual(jt.state, 'PENDING')
         # commit transaction to start job
         # TODO: this test needs a running DataMover. (see below))
         # TODO: we should Mock org.bccvl.tasks.datamover.DataMover (generate files as requested?)
