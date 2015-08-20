@@ -17,6 +17,7 @@ overrides anything else in a stacked component registry scenario -->
 
     <include package="plone.app.caching"/>
     <include package="plone.app.folderui"/>
+    <include package="eea.facetednavigation"/>
     <include package="org.bccvl.site"/> <!-- this loads all
     dependencies as well, should get rid of it or use only in
     integration tests -->
