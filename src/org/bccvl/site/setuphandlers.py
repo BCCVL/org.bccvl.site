@@ -150,7 +150,8 @@ def upgrade_190_200_1(context, logger=None):
         'DataGenreSpeciesAbundance': 'abundance',
         'DataGenreCC': 'current',
         'DataGenreFC': 'future',
-        'DataGenreE': 'environmental'
+        'DataGenreE': 'environmental',
+        'DataGenreTraits': 'traits',
     }
     from org.bccvl.site.interfaces import IBCCVLMetadata
     for brain in pc(BCCDataGenre=genre_map.keys()):
