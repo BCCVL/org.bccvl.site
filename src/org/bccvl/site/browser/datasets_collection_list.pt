@@ -76,12 +76,13 @@
           <tal:repeat tal:repeat="item batch">
             <div class="span4 bccvl-dataset-collection"
                 tal:define="context_url context/absolute_url">
-            <tal:define tal:define="item_title_or_id item/Title|item/getId;
-                                    item_url item/getURL|item/absolute_url;
-                                    explore_url string:${context_url}/?datasets.filter.source%3Alist=${group/getId}-${item/getId};
-                                    item_description item/Description;
-                                    item_obj item/getObject;
-                                    "
+              <tal:define tal:define="item_id item/getId;
+                                      item_title_or_id item/Title|item_id;
+                                      item_url item/getURL|item/absolute_url;
+                                      explore_url python:view.get_browse_link(item.UID);
+                                      item_description item/Description;
+                                      item_obj item/getObject;
+                                      "
                         metal:define-macro="datasets_listitem">
                 <div class="collection-info">
                   <h3 href="#"

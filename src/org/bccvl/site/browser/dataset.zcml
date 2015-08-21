@@ -62,11 +62,13 @@
     <browser:page
         name="datasets_collection_list"
         for="Products.CMFCore.interfaces.IFolderish"
+        class=".datasets_collection_list.DatasetsCollectionListView"
         template="datasets_collection_list.pt"
         permission="zope2.View"
         />
 
     <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
+    <!-- TODO: menu attributes used in display menu, entry in portal_types available views is still necessary to menu item appear -->
     <browser:page
         name="datasets_listing_view"
         for="plone.app.contenttypes.interfaces.IFolder"
