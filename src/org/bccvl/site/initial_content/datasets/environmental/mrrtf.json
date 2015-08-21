@@ -1,5 +1,6 @@
 {
     "_type": "Folder",
     "title": "Multi-resolution Ridge Top Flatness",
+    "description": "A topographic index designed to identify high flat areas at a range of scales",
     "_transitions": ["show_internally", "publish_internally"]
 }

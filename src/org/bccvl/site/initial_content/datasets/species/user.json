@@ -1,5 +1,6 @@
 {
     "_type": "Folder",
     "title": "User uploaded species data",
+    "description": "Species data uploaded and shared by users",
     "_transitions": ["show_internally", "publish_internally"]
 }

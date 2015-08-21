@@ -1,5 +1,6 @@
 {
     "_type": "Folder",
     "title": "National Scale Vegetation Assets, States and Transitions",
+    "description": "A framework to classify vegetation according to its degree of anthropogenic modification from a natural state",
     "_transitions": ["show_internally", "publish_internally"]
 }

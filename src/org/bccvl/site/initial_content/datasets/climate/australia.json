@@ -1,5 +1,6 @@
 {
     "_type": "Folder",
     "title": "Australia current and future climate data",
+    "description": "Australia-wide bioclimatic variable spatial layers for 9 emissions scenarios using 18 Global Circulation Models for decadal timesteps from 2015 to 2085.",
     "_transitions": ["show_internally", "publish_internally"]
 }

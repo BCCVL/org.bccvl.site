@@ -1,5 +1,6 @@
 {
     "_type": "Folder",
     "title": "Australian Water availability project",
+    "description": "Data determines the past history and present state of soil moisture and all water fluxes contributing to changes in soil moisture (rainfall, transpiration, soil evaporation, surface runoff and deep drainage), across the entire Australian continent at a spatial resolution of 5 km.",
     "_transitions": ["show_internally", "publish_internally"]
 }

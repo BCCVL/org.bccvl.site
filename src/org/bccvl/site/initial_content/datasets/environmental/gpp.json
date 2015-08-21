@@ -1,5 +1,6 @@
 {
     "_type": "Folder",
     "title": "Gross Primary Product",
+    "description": "Derived from NASA MODIS satellite imagery, GPP is an annual rate of carbon uptake by photosynthesis.",
     "_transitions": ["show_internally", "publish_internally"]
 }

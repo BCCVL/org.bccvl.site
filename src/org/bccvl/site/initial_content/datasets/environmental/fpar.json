@@ -1,5 +1,6 @@
 {
-  "_type": "Folder",
-  "title": "Fraction of Photosynthetically Active Radiation (fPAR)",
-  "_transitions": ["show_internally", "publish_internally"]
+    "_type": "Folder",
+    "title": "Fraction of Photosynthetically Active Radiation (fPAR)",
+    "description": "Continental monthly time series MODIS-fPAR for April 2000 - April 2012 derived from NASA MODIS satellite imagery (MOD13Q1). fPAR is defined as the Fraction of photosynthetically active radiation (fPAR) intercepted by the sunlit vegetation canopy and is a measure of vegetation greenness",
+    "_transitions": ["show_internally", "publish_internally"]
 }

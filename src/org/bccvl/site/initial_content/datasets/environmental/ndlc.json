@@ -1,5 +1,6 @@
 {
     "_type": "Folder",
     "title": "National Dynamic Land Cover",
+    "description": "The Dynamic Land Cover Dataset of Australia is the first nationally consistent and thematically comprehensive land cover reference for Australia. It is the result of a collaboration between Geoscience Australia and the Australian Bureau of Agriculture and Resource Economics and Sciences, and provides a base-line for identifying and reporting on change and trends in vegetation cover and extent. The dataset comprises digital files of the land cover classification, three trend datasets showing the change in behaviour of land cover across Australia for the period 2000 to 2008 and a digital copy of the technical report.",
     "_transitions": ["show_internally", "publish_internally"]
 }
