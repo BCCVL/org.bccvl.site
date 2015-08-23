@@ -25,7 +25,7 @@
         class=".xmlrpc.DataSetManager"
         allowed_attributes="query metadata getRAT
                             getMetadata queryDataset getVocabulary
-                            getFutureClimateDatasets getSDMDatasets
+                            getSDMDatasets
                             getBiodiverseDatasets
                             getProjectionDatasets getThresholds"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
@@ -54,10 +54,6 @@
         <browser:page
             name="getVocabulary"
             attribute="getVocabulary"/>
-
-       <browser:page
-            name="getFutureClimateDatasets"
-            attribute="getFutureClimateDatasets"/>
 
        <browser:page
             name="getSDMDatasets"

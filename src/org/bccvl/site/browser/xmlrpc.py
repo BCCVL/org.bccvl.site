@@ -160,30 +160,6 @@ class DataSetManager(BrowserView):
                            'title': brain.Title})
         return result
 
-    # TODO: specific for one view (add projection)
-    @returnwrapper
-    def getFutureClimateDatasets(self):
-        # TODO: should move this to Projection Add Form and let form
-        # do the parameter parsing
-        # reads:
-        #   form.widgets.years  W3CDTF
-        #   form.widgets.emission_scenarios URIRefs
-        #   form.widgets.climate_models URIRefs
-        # 1. read request:
-        years = self.request.get('form.widgets.years')
-        emsc = self.request.get('form.widgets.emission_scenarios')
-        gcms = self.request.get('form.widgets.climate_models')
-        # 2. no search if we have no values
-        if not all((years, emsc, gcms)):
-            return 0
-        # 3. make sure we have lists
-        years = [years] if not isinstance(years, list) else years
-        emsc = [emsc] if not isinstance(emsc, list) else emsc
-        gcms = [gcms] if not isinstance(gcms, list) else gcms
-        # 4. search
-        res = dataset.find_projections(self.context, emsc, gcms, years, None)
-        return len(res)
-
     # TODO: this is rather experiment API
     @returnwrapper
     def getSDMDatasets(self):

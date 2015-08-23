@@ -38,29 +38,6 @@ def query(context=None, brains=False, **kw):
             yield getdsmetadata(brain)
 
 
-# TODO: turn this into some adapter lookup component-> maybe use
-# z3c.form validation adapter lookup?
-def find_projections(ctx, emission_scenarios, climate_models, years, resolution=None):
-        """Find Projection datasets for given criteria"""
-        pc = getToolByName(ctx, 'portal_catalog')
-        result = []
-        params = {
-            'BCCEmissionScenario': emission_scenarios,
-            'BCCGlobalClimateModel': climate_models,
-            'BCCDataGenre': 'DataGenreFC'
-        }
-        if resolution:
-            params['BCCResolution'] = resolution
-        brains = pc.searchResults(**params)
-        for brain in brains:
-            md = IBCCVLMetadata(brain.getObject())
-            year = md.get('temporal', None)
-            if year in years:
-                # TODO: yield?
-                result.append(brain)
-        return result
-
-
 def getdsmetadata(ds):
     # TODO: support brain, obj and uuid string (URI as well?)
     # extract info about files

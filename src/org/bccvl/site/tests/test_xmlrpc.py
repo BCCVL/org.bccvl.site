@@ -14,7 +14,6 @@ class DatasetManagerTest(unittest.TestCase):
 #     getRAT
 #     query
 #     queryDataset
-#     getFutureClimateDatasets
 #     getSDMDatasets
 #     getBiodiverseDatasets
 #     getProjectionDatasets
