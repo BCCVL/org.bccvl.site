@@ -1,17 +1,14 @@
 from datetime import datetime
-from decimal import Decimal
 from urlparse import urlsplit
 from itertools import chain
 import os.path
 import tempfile
-from org.bccvl.site.utils import Period
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData
-from org.bccvl.site.api import dataset
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
@@ -394,10 +391,11 @@ class ProjectionJobTracker(MultiJobTracker):
         # get more metadata about dataset
         dsmd = IBCCVLMetadata(dsbrain.getObject())
 
-        year = Period(dsmd['temporal']).start if dsmd['temporal'] else None
+        year = dsmd.get('year', None)
+        month = dsmd.get('month', None)
         # TODO: get proper labels for emsc, gcm
-        title = u'{} - project {}_{}_{} {}'.format(
-            self.context.title, dsmd['emsc'], dsmd['gcm'], year,
+        title = u'{} - project {}_{}_{} {} {}'.format(
+            self.context.title, dsmd['emsc'], dsmd['gcm'], year or '', month or '',
             datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
         result = createContentInContainer(
             self.context,
@@ -406,6 +404,7 @@ class ProjectionJobTracker(MultiJobTracker):
         result.job_params = {
             'species_distribution_models': sdmuuid,
             'year': year,
+            'month': month,
             'emsc': dsmd['emsc'],
             'gcm': dsmd['gcm'],
             'resolution': dsmd['resolution'],
@@ -416,7 +415,7 @@ class ProjectionJobTracker(MultiJobTracker):
     def _createProvenance(self, result):
         provdata = IProvenanceData(result)
         from rdflib import URIRef, Literal, Namespace, Graph
-        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.namespace import RDF, FOAF, DCTERMS, XSD
         from rdflib.resource import Resource
         PROV = Namespace(u"http://www.w3.org/ns/prov#")
         BCCVL = Namespace(u"http://ns.bccvl.org.au/")
@@ -675,18 +674,17 @@ class BiodiverseJobTracker(MultiJobTracker):
 
                 emsc = dsmd.get('emsc')
                 gcm = dsmd.get('gcm')
-                period = dsmd.get('temporal')
+                year = dsmd.get('year')
+                month = dsmd.get('month')
                 resolution = dsmd.get('resolution')
-                if not period:
+                if not year:
                     year = 'current'
-                else:
-                    year = Period(period).start if period else None
-                key = (emsc, gcm, year, resolution)
+                key = (emsc, gcm, year, month, resolution)
                 datasets.setdefault(key, []).append((projds, threshold))
 
             # create one job per dataset group
             for key, datasets in datasets.items():
-                (emsc, gcm, year, resolution) = key
+                (emsc, gcm, year, month, resolution) = key
 
                 # create result object:
                 if year == 'current':
