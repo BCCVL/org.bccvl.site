@@ -143,6 +143,16 @@
       name="BCCCategory"
       />
 
+  <adapter
+      factory=".indexers.year"
+      name="BCCYear"
+      />
+
+  <adapter
+      factory=".indexers.month"
+      name="BCCMonth"
+      />
+  
   <!-- TODO: index temporal coverage someday -->
   <!-- <adapter -->
   <!--     factory=".indexers.dataset_DCTemporal" -->

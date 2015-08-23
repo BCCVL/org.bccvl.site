@@ -10,7 +10,6 @@ from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
 from org.bccvl.site.content.interfaces import IProjectionExperiment, IEnsembleExperiment, IBiodiverseExperiment
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
-from org.bccvl.site.utils import Period
 
 
 @indexer(IDataset)
@@ -63,7 +62,8 @@ def DatasetSearchableText(obj, **kw):
         # year, gcm, emsc
         emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(obj)
         gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(obj)
-        year = Period(md.get('period','')).start
+        year = unicode(md.get('year', u''))
+        month = unicode(md.get('month', u''))
         if md['emsc'] in emsc_vocab:
             entries.append(
                 safe_unicode(emsc_vocab.getTerm(md['emsc']).title) or u""
@@ -72,7 +72,8 @@ def DatasetSearchableText(obj, **kw):
             entries.append(
                 safe_unicode(gcm_vocab.getTerm(md['gcm']).title) or u""
             )
-        entries.append(safe_unicode(year) or u"")
+        entries.append(year)
+        entries.append(month)
     elif md.get('genre') == "DataGenreCC":
         entries.append(u"current")
     return u" ".join(entries)
@@ -140,3 +141,18 @@ def scientific_category(obj, **kw):
     if path:
         return tuple(path)
     return None
+
+
+@indexer(IDataset)
+def year(obj, **kw):
+    # FIXME: this indexer is meant for future projection only ....
+    # - make sure we don't index any other datasets. i.e. environmental and current datasets, which may have a date attached to it, but it is meaningless for future projections
+    md = IBCCVLMetadata(obj)
+    return md.get('year', None)
+
+
+@indexer(IDataset)
+def month(obj, **kw):
+    # FIXME: see year indexer above
+    md = IBCCVLMetadata(obj)
+    return md.get('month', None)

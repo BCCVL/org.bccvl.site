@@ -5,7 +5,7 @@
     "bccvlmetadata": {
         "genre": "DataGenreFC",
         "resolution": "Resolution2_5m",
-        "temporal": "start=2015; end=2015; scheme=W3C-DTF;",
+        "year": 2015,
         "emsc": "RCP3PD",
         "gcm": "cccma-cgcm31",
         "layers": {
