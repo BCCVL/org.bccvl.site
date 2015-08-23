@@ -7,12 +7,10 @@ from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.app.contentlisting.interfaces import IContentListing
 from org.bccvl.site.interfaces import IBCCVLMetadata, IJobTracker
-from org.bccvl.site.content.interfaces import IExperiment, ISDMExperiment
+from org.bccvl.site.content.interfaces import IExperiment
 from collections import defaultdict
-from zope.component import getUtility, queryUtility, getMultiAdapter
-from zope.schema.interfaces import IVocabularyFactory
+from zope.component import queryUtility, getMultiAdapter
 from org.bccvl.site import defaults
-from org.bccvl.site.utils import Period
 from itertools import chain
 from org.bccvl.site.browser.interfaces import IExperimentTools
 from zope.security import checkPermission
@@ -223,6 +221,7 @@ def biodiverse_listing_details(expbrain):
     exp = expbrain.getObject()
     species = set()
     years = set()
+    months = set()
     emscs = set()
     gcms = set()
     for dsuuid in chain.from_iterable(map(lambda x: x.keys(), exp.projection.itervalues())):
@@ -231,9 +230,12 @@ def biodiverse_listing_details(expbrain):
         if dsobj:
             md = IBCCVLMetadata(dsobj)
             species.add(md.get('species', {}).get('scientificName', ''))
-            period = md.get('temporal')
-            if period:
-                years.add(Period(period).start)
+            year = md.get('year')
+            if year:
+                years.add(year)
+            month = md.get('month')
+            if month:
+                months.add(month)
             gcm = md.get('gcm')
             if gcm:
                 gcms.add(gcm)
@@ -246,7 +248,8 @@ def biodiverse_listing_details(expbrain):
         'species_occurrence': ', '.join(sorted(species)),
         'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
                                            ', '.join(sorted(gcms))),
-        'years': ', '.join(sorted(years))
+        'years': ', '.join(sorted(years)),
+        'months': ', '.join(sorted(months))
     })
     return details
 

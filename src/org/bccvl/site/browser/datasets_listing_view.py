@@ -11,10 +11,9 @@ from Products.CMFCore.utils import getToolByName
 from zope.security import checkPermission
 from zope.component import getMultiAdapter, getUtility
 from zope.schema.interfaces import IVocabularyFactory
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.schema.vocabulary import SimpleTerm
 import Missing
 from org.bccvl.site import defaults
-from org.bccvl.site.utils import Period
 from org.bccvl.site.vocabularies import BCCVLSimpleVocabulary
 from itertools import chain
 
@@ -262,14 +261,6 @@ class DatasetTools(BrowserView):
         #         'token': genre.token,
         #         'label': genre.title
         #     }
-
-
-    def format_period(self, period):
-        """
-        format period as displayable year.
-        """
-        return Period(period).start if period else ""
-
 
 
 from Products.AdvancedQuery import In, Eq, Not, Generic, And

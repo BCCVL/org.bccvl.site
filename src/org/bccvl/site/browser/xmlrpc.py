@@ -8,7 +8,7 @@ from zope import contenttype
 from zope.publisher.interfaces import NotFound
 #from functools import wraps
 from decorator import decorator
-from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
+from plone.app.uuid.utils import uuidToCatalogBrain
 from plone import api
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 from org.bccvl.site.content.interfaces import IProjectionExperiment
@@ -24,9 +24,8 @@ import json
 from Products.statusmessages.interfaces import IStatusMessage
 from org.bccvl.site.browser.ws import IDataMover, IALAService
 from plone.dexterity.utils import createContentInContainer
-from decimal import Decimal
 from org.bccvl.site.api import dataset
-from org.bccvl.site.utils import DecimalJSONEncoder, Period
+from org.bccvl.site.utils import DecimalJSONEncoder
 
 
 LOG = logging.getLogger(__name__)
@@ -255,8 +254,8 @@ class DataSetManager(BrowserView):
                 ds = dsbrain.getObject()
                 md = IBCCVLMetadata(ds)
                 # parse year
-                period = md.get('temporal')
-                year = Period(period).start if period else None
+                year = md.get('year', None)
+                month = md.get('month', None)
                 species = md.get('species', {}).get('scientificName')
                 dsinfo = {
                     # passible fields on brain:
@@ -267,6 +266,7 @@ class DataSetManager(BrowserView):
                     "uuid": dsbrain.UID,
                     "files": [ds.file.filename],  # filenames
                     "year": year,  # int or string?
+                    "month": month,
                     "gcm": md.get('gcm'),  # URI? title? both?-> ui can fetch vocab to get titles
                     "emsc": md.get('emsc'),
                     "species": species,
