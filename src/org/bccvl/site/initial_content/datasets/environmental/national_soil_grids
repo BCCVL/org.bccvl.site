@@ -1,6 +1,0 @@
-{
-  "_type": "Folder",
-  "title": "National Soil Grids Australia",
-  "description": "National soil data provided by the Australian Collaborative Land Evaluation Program ACLEP, endorsed through the National Committee on Soil and Terrain NCST (www.clw.csiro.au/aclep).",
-  "_transitions": ["show_internally", "publish_internally"]
-}
