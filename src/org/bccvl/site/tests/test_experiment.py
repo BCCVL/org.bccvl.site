@@ -197,7 +197,7 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.assertEqual(result.job_params['resolution'], u'Resolution30m')
         self.assertEqual(result.job_params['emsc'], u'RCP3PD')
         self.assertEqual(result.job_params['gcm'], u'cccma-cgcm31')
-        self.assertEqual(result.job_params['year'], u'2015')
+        self.assertEqual(result.job_params['year'], 2015)
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state

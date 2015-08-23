@@ -66,7 +66,7 @@ def setUpApiTests(doctest):
     md = IBCCVLMetadata(rds)
     md.update({
         'genre': 'DataGenreFP',
-        'temporal': u"start=2014;",
+        'year': 2014,
         'gcm': 'cccma-cgcm31',
         'emsc': 'RCP3PD',
         'species': {
