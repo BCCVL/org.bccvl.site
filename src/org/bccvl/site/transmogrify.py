@@ -78,6 +78,7 @@ class ALASource(object):
             'vernacularName': self.traverse_dict(json, 'commonNames/0/nameString'),
             'taxonID': self.traverse_dict(json, 'taxonConcept/guid')
         }
+        bccvlmd['categories'] = ['occurrence']
         # TODO: other interesting bits:
         #       images/0/thumbnail ... URL to thumbnail image
         # TODO: important thing ... date of export (import date in
