@@ -161,4 +161,23 @@ def upgrade_190_200_1(context, logger=None):
             md['categories'] = [genre_map[brain.BCCDataGenre]]
             obj.reindexObject()
 
+    # update temporal and year an all datasets
+    from org.bccvl.site.interfaces import IDataset
+    import re
+    for bran in pc(object_provides=IDataset.__identifier__):
+        obj = brain.getObject()
+        md = IBCCVLMetadata(obj)
+        # temporal may be an attribute or is in md
+        if 'temporal' in md:
+            if 'year' not in md:
+                # copy temporal start to year
+                sm = re.search(r'start=(.*?);', str)
+                if sm:
+                    md['year'] = int(sm.group(1))
+                    # delete temporal
+                    del md['temporal']
+                    obj.reindexObject()
+            if 'year' not in md:
+                LOG.info('MD not updated for:', brain.getPath)
+
     logger.info("finished")
