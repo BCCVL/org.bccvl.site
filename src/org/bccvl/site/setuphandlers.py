@@ -162,7 +162,7 @@ def upgrade_190_200_1(context, logger=None):
             obj.reindexObject()
 
     # update temporal and year an all datasets
-    from org.bccvl.site.interfaces import IDataset
+    from org.bccvl.site.content.interfaces import IDataset
     import re
     for bran in pc(object_provides=IDataset.__identifier__):
         obj = brain.getObject()
