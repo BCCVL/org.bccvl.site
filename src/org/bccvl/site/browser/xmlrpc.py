@@ -81,7 +81,6 @@ def returnwrapper(f, *args, **kw):
         view.request.response['CONTENT-TYPE'] = 'application/json'
     # FIXME: chaching headers should be more selective
     # prevent caching of ajax results... should be more selective here
-    view.request.response['Cache-Control'] = 'max-age=1'
     return ret
 
 
