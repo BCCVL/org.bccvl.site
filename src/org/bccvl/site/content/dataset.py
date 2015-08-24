@@ -73,11 +73,6 @@ class ILayerDataset(form.Schema):
         required=False,
         title=u'Resolution (other)')
 
-    # TODO: ISO Date String, DC:Period?
-    temporal = schema.TextLine(
-        required=False,
-        title=u'Temporal coverage')
-
     emsc = schema.Choice(
         required=False,
         title=u'Emission Scenario',

@@ -178,7 +178,7 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'temporal', 'rightsstatement')
+        'rightsstatement')
     datagenre = 'DataGenreCC'
     categories = ['current']
     # datatype, gcm, emissionscenario
@@ -199,7 +199,7 @@ class EnvironmentalAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'temporal', 'rightsstatement')
+        'rightsstatement')
     datagenre = 'DataGenreE'
     categories = ['environmental']
     # datatype, gcm, emissionscenario
@@ -219,7 +219,7 @@ class ClimateFutureAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'emsc', 'gcm',
-        'resolution', 'resolutiono', 'temporal', 'rightsstatement')
+        'resolution', 'resolutiono', 'rightsstatement')
     datagenre = 'DataGenreFC'
     categories = ['future']
     # datatype, gcm, emissionscenario

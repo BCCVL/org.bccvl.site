@@ -381,7 +381,6 @@ class TestDatasetUpload(unittest.TestCase):
             'climatecurrent.widgets.rightsstatement': u'test rights',
             'climatecurrent.widgets.rightsstatement.mimeType': u'text/html',
             'climatecurrent.widgets.resolution': u'Resolution5m',
-            'climatecurrent.widgets.temporal': u'2015',
         })
         _ = view()
         self.assertEqual(self.portal.REQUEST.response.status, 302)
@@ -394,7 +393,6 @@ class TestDatasetUpload(unittest.TestCase):
         md = IBCCVLMetadata(ds)
         self.assertEqual(md['genre'], 'DataGenreCC')
         self.assertEqual(md['resolution'], u'Resolution5m')
-        self.assertEqual(md['temporal'], u'2015')
         layermd = md['layers']['spc_obl_merc.tif']
         self.assertEqual(layermd['filename'], 'spc_obl_merc.tif')
         self.assertEqual(layermd['min'], 19.0)
@@ -430,7 +428,6 @@ class TestDatasetUpload(unittest.TestCase):
             'climatefuture.widgets.emsc': u'SRESB2',
             'climatefuture.widgets.gcm': u'cccma-cgcm31',
             'climatefuture.widgets.resolution': u'Resolution5m',
-            'climatefuture.widgets.temporal': u'2015',
         })
         _ = view()
         self.assertEqual(self.portal.REQUEST.response.status, 302)
@@ -443,7 +440,6 @@ class TestDatasetUpload(unittest.TestCase):
         md = IBCCVLMetadata(ds)
         self.assertEqual(md['genre'], 'DataGenreFC')
         self.assertEqual(md['resolution'], u'Resolution5m')
-        self.assertEqual(md['temporal'], u'2015')
         self.assertEqual(md['emsc'], u'SRESB2')
         self.assertEqual(md['gcm'], u'cccma-cgcm31')
         layermd = md['layers']['spc_obl_merc/data/spc_obl_merc_1.tif']

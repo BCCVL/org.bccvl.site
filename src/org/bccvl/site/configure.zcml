@@ -153,12 +153,6 @@
       name="BCCMonth"
       />
   
-  <!-- TODO: index temporal coverage someday -->
-  <!-- <adapter -->
-  <!--     factory=".indexers.dataset_DCTemporal" -->
-  <!--     name="DCTemporal" -->
-  <!-- /> -->
-
   <adapter
       for="Products.CMFCore.interfaces.IFolderish"
       factory=".utilities.JobTracker"
