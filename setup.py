@@ -32,25 +32,15 @@ setup(
         'Products.AutoUserMakerPASPlugin',
         'Products.ShibbolethPermissions',
         'Products.CMFPlacefulWorkflow',
-        'sc.social.like',
+        # We'll have to depend on gork, otherwise plone.directives.form won't work
+        'plone.app.dexterity [grok]',
         'gu.transmogrifier',
         'plone.api',
         'collective.js.jqueryui',
-        'collective.js.uix.multiselect',
-        'collective.geo.contentlocations',
-        'collective.geo.geographer',
-        'collective.geo.kml',
-        'collective.geo.mapwidget',
-        'collective.geo.openlayers',
-        'collective.geo.settings',
-        'collective.z3cform.mapwidget',
         'collective.googleanalytics',
-        'collective.quickupload',
         'collective.onlogin',
-        'collective.z3cform.widgets',
         'collective.indexing',
         #'collective.deletepermission', careful it interfers with delete buttons when not activated
-        #'collective.z3cform.chosen',
         'borg.localrole',
         'plone.app.contenttypes',
         'decorator',
@@ -64,25 +54,9 @@ setup(
         'org.bccvl.tasks',
         'requests-oauthlib',
         'rdflib',
-        #'python-openid', # enable openid
-        #'plone.app.openid',  # try to load configure stuff
-        #'atreal.richfile.qualifier',
-        #'atreal.richfile.image',
-        #'atreal.richfile.preview',
-        #'atreal.richfile.streaming',
-        #'atreal.richfile.metadata',
-        #'atreal.filestorage.common',
-        #'atreal.filestorage.blobfile',
-        #'atreal.filecart',
-        #'atreal.layouts', # MatrixView
-        # 'affinitic.zamqp',
-        # 'pika == 0.5.2', -> rather us kombu
-        # TODO: verify that we need this.
-        #'plone.app.relationfield',
         'eea.facetednavigation',
         # TODO: deprecated, but needed here due to zcml autoinclude
         'Products.AdvancedQuery',  # optional anyway but hard import atm
-        'plone.app.folderui',
     ],
     extras_require={
         'test': [
@@ -90,7 +64,6 @@ setup(
             'unittest2'
         ],
         'deprecated':  [
-            'gu.z3cform.rdf',  # needed because there maf be some persistent utilihes registered SparqlInstanceVocabularyFactory
         ],
         'experimental': [
         ],

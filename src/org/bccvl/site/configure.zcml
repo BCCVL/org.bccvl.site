@@ -49,11 +49,6 @@
 
   <cmf:registerDirectory name="bccvl_skin" />
 
-  <!-- make all dexterity based content geo-locatable with collective.geo.* -->
-  <class class="plone.dexterity.content.DexterityContent">
-    <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
-  </class>
-
   <!-- metadata adapter -->
   <adapter
       factory=".metadata.BCCVLMetadata"

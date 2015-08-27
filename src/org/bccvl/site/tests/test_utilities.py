@@ -12,7 +12,6 @@ class ComponentLookupTest(unittest.TestCase):
 
     layer = BCCVL_INTEGRATION_TESTING
 
-    # TODO: test this one in gu.plone.rdf
     def test_dummy(self):
         # FIXME add some tests here
         #        test get Utility and test interface conformance
