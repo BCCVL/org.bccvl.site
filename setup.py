@@ -64,6 +64,7 @@ setup(
             'unittest2'
         ],
         'deprecated':  [
+            'gu.z3cform.rdf',
         ],
         'experimental': [
         ],
