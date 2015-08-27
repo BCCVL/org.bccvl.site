@@ -93,6 +93,7 @@
       <element key="file_view">plone.content.itemView</element>
       <element key="faceted_query">plone.content.folderView</element>
       <element key="dm">plone.content.folderView</element>      
+      <element key="jm">plone.content.folderView</element>      
       <element key="sitemap">plone.content.itemView</element>
       <element key="RSS">plone.content.feed</element>
     </value>
