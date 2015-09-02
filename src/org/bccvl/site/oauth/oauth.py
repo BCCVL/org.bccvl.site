@@ -10,6 +10,7 @@ from zope.component import getUtility
 from zope.interface import implementer
 from zope.publisher.interfaces import NotFound, BadRequest, Unauthorized
 from zope.publisher.interfaces import IPublishTraverse
+from zope.schema.interfaces import IVocabularyFactory
 from zope.security import checkPermission
 from .interfaces import IOAuth1Settings, IOAuth2Settings
 
@@ -23,16 +24,47 @@ def check_authenticated(func):
         return func(*args, **kw)
     return check
 
+class IUserAnnotation(object):
+    # simulate future IUserAnnotation interface via user properties
+    # this should be a dict like interface
+    # which holds authorisation tokens for this user (context) and
+    # a specific oauth provider (provider id?)
+
+    def __init__(self, context):
+        # context ... a member object from plone portal_membership
+        self.context = context
+
+    def get(self, key, default=None):
+        # FIXME: default handling correct this way? Would I ever see a Attribute or Key Error here?
+        # key ... something that identifies the oauth provider settings
+        # FIXME: key manipulation should happen outside of this tool
+        property = '{0}_oauth_token'.format(key)
+        return self.context.getProperty(property, default)
+
+    def set(self, key, value):
+        # FIXME: key manipulation should happen outside of this tool
+        property = '{0}_oauth_token'.format(key)
+        # We have to define the property in portal_memberdata before we can use it
+        # CMF way
+        pmd = getToolByName(self.context, 'portal_memberdata')
+        if not pmd.hasProperty(property):
+            LOG.info('added new token property to member data tool')
+            pmd.manage_addProperty(id=property, value="", type="string")
+        # Would there be a PAS way as well?
+        # acl_users = getToolByName(self.context, 'acl_users')
+        # property_plugins = acl_users.plugins.listPlugins(IPropertiesPlugin)
+        self.context.setProperties({property: value})
+
+
+
 class OAuthBaseView(BrowserView):
 
     _skey = "{0}_oauth_token"
     _session = None
-    _property = "{0}_oauth_token"
     config = None
 
     def __init__(self, context, request, config):
         super(OAuthBaseView, self).__init__(context, request)
-        self._property = self._property.format(config.id)
         self._skey = self._skey.format(config.id)
         self.config = config
 
@@ -47,7 +79,7 @@ class OAuthBaseView(BrowserView):
     def getToken(self):
         # get token for current user
         member = api.user.get_current()
-        token = member.getProperty(self._property, "")
+        token = IUserAnnotation(member).get(self.config.id, "")
         #LOG.info('Found stored token: %s', token)
         if token:
             token = json.loads(token)
@@ -57,16 +89,7 @@ class OAuthBaseView(BrowserView):
         # permanently store token for user.
         # creates new memberdata property if necesarry
         member = api.user.get_current()
-        # CMF WAY? ... prepare property sheet... need to do this only once?
-        pmd = getToolByName(self.context, 'portal_memberdata')
-        if not pmd.hasProperty(self._property):
-            LOG.info('added new token property to member data tool')
-            pmd.manage_addProperty(id=self._property, value="", type="string")
-
-        # Would there be a PAS way as well?
-        # acl_users = getToolByName(self.context, 'acl_users')
-        # property_plugins = acl_users.plugins.listPlugins(IPropertiesPlugin)
-        member.setProperties({self._property: json.dumps(token)})
+        IUserAnnotation(member).set(self.config.id, json.dumps(token))
 
     def hasToken(self):
         try:
@@ -76,12 +99,15 @@ class OAuthBaseView(BrowserView):
 
     def cleartoken(self):
         # get token for current user
+        if self.session.has_key(self._skey):
+            del self.session[self._skey]
         member = api.user.get_current()
-        member.setProperties({self._property: ""})
+        IUserAnnotation(member).set(self.config.id, "")
         return_url = self.request.get('HTTP_REFERER')
         self.request.response.redirect(return_url)
 
 
+# FIXME: still has a lot of google specific code in it
 class OAuth2View(OAuthBaseView):
 
     def oauth_session(self, token=None, state=None):
@@ -164,9 +190,9 @@ class OAuth2View(OAuthBaseView):
             # we are admin ... check if user is set
             username = self.request.form.get('user')
             member = api.user.get(username=username)
-            access_token = member.getProperty(self._property, "")
+            access_token = IUserAnnotation(member).get(self.config.id, "")
             if access_token:
-                access_token = json.loads(token)
+                access_token = json.loads(access_token)
         else:
             access_token = self.getToken()
         # return full access token for current user
@@ -233,6 +259,7 @@ class OAuth2View(OAuthBaseView):
         return result.text
 
 
+# FIXME: still has a lot of figshare specific code in it
 class OAuth1View(OAuthBaseView):
 
     def oauth_session(self, token=None, state=None):
@@ -272,8 +299,8 @@ class OAuth1View(OAuthBaseView):
 
     def is_callback(self):
         return ('oauth_verifier' in self.request.form
-                and 'oauth_token' in self.request.form
-                and self.config.oauth_url in self.request.environ['HTTP_REFERER'])
+                and 'oauth_token' in self.request.form)
+        #        and self.config.oauth_url in self.request.environ['HTTP_REFERER'])
 
     @check_authenticated
     def callback(self):
@@ -309,7 +336,7 @@ class OAuth1View(OAuthBaseView):
             # we are admin ... check if user is set
             username = self.request.form.get('user')
             member = api.user.get(username=username)
-            access_token = member.getProperty(self._property, "")
+            access_token = IUserAnnotation(member).get(self.config.id, "")
             if access_token:
                 access_token = json.loads(access_token)
         else:
@@ -332,6 +359,7 @@ class OAuth1View(OAuthBaseView):
             'client_secret': self.config.client_secret,
         })
 
+    # FIXME: figshare specific
     # Figshare API
     def validate(self):
         # TODO: OAuth2Session has attribute .authorized ... it only checks for presence of various tokens, but should be a good indicator of successfull authorisation
@@ -365,20 +393,22 @@ class OAuthTraverser(BrowserView):
     def publishTraverse(self, context, name):
         # no serviceid yet ? .... name should be it
         if not self._serviceid:
+            providers = getUtility(IVocabularyFactory, 'org.bccvl.site.oauth.providers')(self.context)
             registry = getUtility(IRegistry)
-            coll = registry.collectionOfInterface(IOAuth1Settings)
-            for cid, config in coll.items():
-                if cid == name:
+            for term in providers:
+                coll = registry.collectionOfInterface(term.value)
+                if name in coll:
+                    config = coll[name]
                     self._serviceid = name
-                    self._view = OAuth1View(self.context, self.request, config)
+                    if IOAuth1Settings.providedBy(config):
+                        self._view = OAuth1View(self.context, self.request, config)
+                    elif IOAuth2Settings.providedBy(config):
+                        self._view = OAuth2View(self.context, self.request, config)
+                    else:
+                        # give other providers a chance
+                        continue
                     return self
-            coll = registry.collectionOfInterface(IOAuth2Settings)
-            for cid, config in coll.items():
-                if cid == name:
-                    self._serviceid = name
-                    self._view = OAuth2View(self.context, self.request, config)
-                    return self
-            # raise NotFound
+            # raise NotFound (we didn't return earlier)
             raise NotFound(self, name, self.request)
         else:
             # we have a serviceid ... name should now be a command
