@@ -88,7 +88,6 @@ class CreateNewForm(form.AddForm):
         collif = data.get('provider')  # the value here is already the vocab value (not the token)
         coll = registry.collectionOfInterface(collif)
         if coll is not None:
-            import ipdb; ipdb.set_trace()
             normalizer = getUtility(IIDNormalizer)
             # is new id an str object or unicode?
             newid = normalizer.normalize(data.get('name'))
@@ -158,7 +157,6 @@ class OAuthControlPanelForm(RegistryEditForm):
         groups = []
         for term in vocab:
             coll = registry.collectionOfInterface(term.value, check=False)
-            import ipdb; ipdb.set_trace()
             # how to check if coll is empty? -> if yes skip
             for rid, record in coll.items():
                 subform = OAuthBaseGroup(record, self.request, self)
