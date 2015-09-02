@@ -180,4 +180,15 @@ def upgrade_190_200_1(context, logger=None):
             if 'year' not in md:
                 LOG.info('MD not updated for:', brain.getPath)
 
+    # clean up any local utilities from gu.z3cform.rdf
+    count = 0
+    from zope.component import getSiteManager
+    sm = getSiteManager()
+    from zope.schema.interfaces import IVocabularyFactory
+    from gu.z3cform.rdf.interfaces import IFresnelVocabularyFactory
+    for vocab in [x for x in sm.getAllUtilitiesRegisteredFor(IVocabularyFactory) if IFresnelVocabularyFactory.providedBy(x)]:
+        sm.utilities.unsubscribe((), IVocabularyFactory, vocab)
+        count += 1
+    logger.info('Unregistered %d local vocabularies', count)
+
     logger.info("finished")
