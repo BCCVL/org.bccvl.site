@@ -191,4 +191,28 @@ def upgrade_190_200_1(context, logger=None):
         count += 1
     logger.info('Unregistered %d local vocabularies', count)
 
+    # migrate OAuth configuration registry to use new interfaces
+    from zope.component import getUtility
+    from zope.schema import getFieldNames
+    from plone.registry.interfaces import IRegistry
+    from .oauth.interfaces import IOAuth1Settings
+    from .oauth.figshare import IFigshare
+    registry = getUtility(IRegistry)
+    # there is only Figshare there atm.
+    coll = registry.collectionOfInterface(IOAuth1Settings)
+    newcoll = registry.collectionOfInterface(IFigshare)
+    for cid, rec in coll.items():
+        # add new
+
+        newrec = newcoll.add(cid)
+        newfields = getFieldNames(IFigshare)
+        # copy all attributes over
+        for field in getFieldNames(IOAuth1Settings):
+            if field in newfields:
+                setattr(newrec, field, getattr(rec, field))
+    # remove all old settings
+    coll.clear()
+    logger.info("Migrated OAuth1 settings to Figshare settings")
+
+
     logger.info("finished")
