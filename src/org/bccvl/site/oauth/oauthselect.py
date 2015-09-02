@@ -2,6 +2,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 from .interfaces import IOAuth1Settings, IOAuth2Settings
 from .oauth import OAuth1View, OAuth2View
 
@@ -12,16 +13,18 @@ class OAuthSelectModal(BrowserView):
 
     def services(self):
         registry = getUtility(IRegistry)
-        coll = registry.collectionOfInterface(IOAuth1Settings)
-        for provider, config in coll.items():
-            view = OAuth1View(self.context, self.request, config)
-            if view.hasToken():
-                yield view
-        coll = registry.collectionOfInterface(IOAuth2Settings)
-        for provider, config in coll.items():
-            view = OAuth2View(self.context, self.request, config)
-            if view.hasToken():
-                yield view
+        providers = getUtility(IVocabularyFactory, 'org.bccvl.site.oauth.providers')(self.context)
+        for term in providers:
+            coll = registry.collectionOfInterface(term.value)
+            for pid, config in coll.items():
+                if IOAuth1Settings.providedBy(config):
+                    view = OAuth1View(self.context, self.request, config)
+                elif IOAuth2Settings.providedBy(config):
+                    view = OAuth2View(self.context, self.request, config)
+                else:
+                    continue
+                if view.hasToken():
+                    yield view
 
     def __call__(self):
         return self.template()
