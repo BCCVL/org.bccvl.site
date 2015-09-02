@@ -11,8 +11,7 @@ from zope.component import getUtility, getMultiAdapter
 from zope.interface import implementer
 from zope.location import locate
 from zope.schema import Choice, TextLine
-
-from .interfaces import IOAuth1Settings, IOAuth2Settings
+from zope.schema.interfaces import IVocabularyFactory
 
 
 @implementer(IGroup)
@@ -31,10 +30,13 @@ class OAuthBaseGroup(form.EditForm):
         # This form can be multiple times on the page,
         # so we have to make sure that the fields get
         # a unique prefix
-        self.fields = field.Fields(self.schema,
-                                   prefix=str(self.context.id))
+        prefix = str(self.context.id)
+        fields = field.Fields(self.schema, prefix=prefix)
+        # TODO: Do we need to have id visible?
+        #       id may be used to associate user id's with oauth credentials
+        self.fields = fields.omit('id', prefix=prefix)
         # Need a button profix to separate our own action
-        self.buttons.prefix = str(self.context.id)
+        self.buttons.prefix = prefix
         super(OAuthBaseGroup, self).update()
 
     def updateWidgets(self, prefix=None):
@@ -63,24 +65,6 @@ class OAuthBaseGroup(form.EditForm):
         self.request.response.redirect(self.request.getURL(), 303)
 
 
-class OAuth1EditForm(OAuthBaseGroup):
-    # a gorup form to handle OAuth1 configurations
-
-    # id, label, __name__, description
-    label = u"OAuth 1 - Figshare"
-
-    schema = IOAuth1Settings
-
-
-class OAuth2EditForm(OAuthBaseGroup):
-    # a group form to handle OAuth1 configurations
-
-    # id, label, __name__, description
-    label = u"OAuth 2 - Google"
-
-    schema = IOAuth2Settings
-
-
 class CreateNewForm(form.AddForm):
     # A subform used to add new OAuth provider configurations
     # It is a basic AddForm that ignores the context
@@ -89,7 +73,7 @@ class CreateNewForm(form.AddForm):
         Choice(
             __name__='provider',
             title=u'Provider',
-            values=('OAuth 2', 'OAuth 1')),
+            vocabulary='org.bccvl.site.oauth.providers'),
         TextLine(
             __name__='name',
             required=False,
@@ -101,16 +85,16 @@ class CreateNewForm(form.AddForm):
         registry = getUtility(IRegistry)
         coll = None
         rec = None
-        if data.get('provider') == 'OAuth 1':
-            coll = registry.collectionOfInterface(IOAuth1Settings)
-        elif data.get('provider') == 'OAuth 2':
-            coll = registry.collectionOfInterface(IOAuth2Settings)
+        collif = data.get('provider')  # the value here is already the vocab value (not the token)
+        coll = registry.collectionOfInterface(collif)
         if coll is not None:
+            import ipdb; ipdb.set_trace()
             normalizer = getUtility(IIDNormalizer)
             # is new id an str object or unicode?
             newid = normalizer.normalize(data.get('name'))
+            # FIXME: check if id already exists
             rec = coll.add(newid)
-            rec.id = newid
+            rec.id = newid  # used as form prefix in edit subforms
             rec.title = data.get('name')
         return rec
 
@@ -170,21 +154,18 @@ class OAuthControlPanelForm(RegistryEditForm):
         #    we can also add GroupFactory here, because update
         #    will take care of it
         registry = getUtility(IRegistry)
-        coll = registry.collectionOfInterface(IOAuth1Settings, check=False)
+        vocab = getUtility(IVocabularyFactory, 'org.bccvl.site.oauth.providers')(self.context)
         groups = []
-        for rid, record in coll.items():
-            # TODO: prefix of record id?
-            subform = OAuth1EditForm(record, self.request, self)
-            subform.label = record.title or record.id or rid
-            locate(subform, self, record.id or rid)
-            groups.append(subform)
-        coll = registry.collectionOfInterface(IOAuth2Settings, check=False)
-        for rid, record in coll.items():
-            # TODO: prefix of record id?
-            subform = OAuth2EditForm(record, self.request, self)
-            subform.label = record.title or record.id or rid
-            locate(subform, self, record.id or rid)
-            groups.append(subform)
+        for term in vocab:
+            coll = registry.collectionOfInterface(term.value, check=False)
+            import ipdb; ipdb.set_trace()
+            # how to check if coll is empty? -> if yes skip
+            for rid, record in coll.items():
+                subform = OAuthBaseGroup(record, self.request, self)
+                subform.schema = term.value
+                subform.label = record.title or term.title or record.id or rid
+                locate(subform, self, record.id or rid)
+                groups.append(subform)
         self.groups += tuple(groups)
 
     def update(self):
