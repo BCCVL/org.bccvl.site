@@ -97,7 +97,7 @@
                   <p tal:condition="not:item_description"
                     i18n:translate=""><em>No description has been provided for this collection.</p>
 
-                  <a href="#" class="btn btn-primary btn-small" target="_blank"
+                  <a href="#" class="btn btn-primary btn-small"
                      tal:attributes="href explore_url"><i class="fa fa-folder-open"></i>&nbsp; Explore Collection</a>
                 </div>
 
