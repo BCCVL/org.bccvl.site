@@ -65,6 +65,7 @@ class Widget(BaseWidget):
     view_js = '++resource++org.bccvl.site.faceted.pathselect.view.js'
     edit_js = '++resource++org.bccvl.site.faceted.pathselect.edit.js'
     view_css = '++resource++org.bccvl.site.faceted.pathselect.view.css'
+    edit_css = '++resource++org.bccvl.site.faceted.pathselect.edit.css'
 
     index = ViewPageTemplateFile('widget.pt')
     edit_schema = BaseWidget.edit_schema.copy() + EditSchema

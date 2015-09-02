@@ -20,4 +20,9 @@
     file="./view.css"
    />
 
+  <browser:resource
+    name="org.bccvl.site.faceted.pathselect.edit.css"
+    file="./edit.css"
+   />
+  
 </configure>
