@@ -538,9 +538,12 @@ class ExportResult(BrowserView):
 
         zipurl = self.context.absolute_url() + '/resultdownload'
 
-        from org.bccvl.tasks.result_export import result_export
+        from org.bccvl.tasks.datamover import export_result
         from org.bccvl.tasks.plone import after_commit_task
-        export_task = result_export(
+        # FIXME: Do mapping from serviceid to service type? based on interface
+        #        background task will need serviceid and type, but it may resolve
+        #        servicetype via API with serviceid
+        export_task = export_result.si(
             zipurl,
             serviceid, {'context': context_path,
                         'user': {
