@@ -97,7 +97,7 @@
               </thead>
               <tbody>
                 <tr tal:repeat="oauth view/services">
-                  <td tal:content="oauth/config/id"></td>
+                  <td tal:content="oauth/config/title"></td>
                   <td tal:content="oauth/validate"></td>
                   <td>
                     <a href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/authorize">Authorise</a>
