@@ -130,134 +130,172 @@
         <element key="value">B01</element>
         <element key="title">B01 - Annual Mean Temperature</element>
         <element key="unit">degrees C</element> <!-- &#2103; &#00B3;&#0043; &#00B3;C-->
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">The annual mean temperature approximates the total energy inputs for an ecosystem.</element>
       </element>
       <element>
         <element key="value">B02</element>
         <element key="title">B02 - Mean Diurnal Range (Mean of monthly (max temp - min temp))</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index can help provide information pertaining to the relevance of temperature fluctuation for different species.</element>
       </element>
       <element>
         <element key="value">B03</element>
         <element key="title">B03 - Isothermality (BIO2/BIO7) (* 100)</element>
         <element key="unit">%</element>
-        <element key="legend">temperature</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="tooltip">Isothermality quantifies how large the day-to-night temperatures oscillate relative to the summer- to-winter (annual) oscillations. An isothermal value of 100 indicates the diurnal temperature range is equiva- lent to the annual temperature range, while anything less than 100 indicates a smaller level of temperature variability within an average month relative to the year. A species distribution may be influenced by larger or smaller temperature fluctuations within a month relative to the year and this predictor is useful for ascertaining such information.</element>
       </element>
       <element>
         <element key="value">B04</element>
         <element key="title">B04 - Temperature Seasonality (standard deviation *100)</element>
-        <element key="unit">standard deviation * 100</element>
-        <element key="legend">temperature</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="tooltip">Temperature seasonality is a measure of temperature change over the course of the year. The larger the percentage, the greater the variability of temperature.</element>
       </element>
       <element>
         <element key="value">B05</element>
         <element key="title">B05 - Max Temperature of Warmest Month</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by warm temperature anomalies throughout the year.</element>
       </element>
       <element>
         <element key="value">B06</element>
         <element key="title">B06 - Min Temperature of Coldest Month</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by cold temperature anomalies throughout the year.</element>
       </element>
       <element>
         <element key="value">B07</element>
         <element key="title">B07 - Temperature Annual Range (BIO5-BIO6)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by ranges of extreme temperature conditions.</element>
       </element>
       <element>
         <element key="value">B08</element>
         <element key="title">B08 - Mean Temperature of Wettest Quarter</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides mean temperatures during the wettest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B09</element>
         <element key="title">B09 - Mean Temperature of Driest Quarter</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides mean temperatures during the driest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B10</element>
         <element key="title">B10 - Mean Temperature of Warmest Quarter</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides mean temperatures during the warmest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B11</element>
         <element key="title">B11 - Mean Temperature of Coldest Quarter</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides mean temperatures during the coldest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B12</element>
         <element key="title">B12 - Annual Precipitation</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">Annual total precipitation approximates the total water inputs and is therefore useful when ascertaining the importance of water availability to a species distribution.</element>
       </element>
       <element>
         <element key="value">B13</element>
         <element key="title">B13 - Precipitation of Wettest Month</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">The wettest month is useful if extreme precipitation conditions during the year influence a species potential range.</element>
       </element>
       <element>
         <element key="value">B14</element>
         <element key="title">B14 - Precipitation of Driest Month</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">The driest month is useful if extreme precipitation conditions during the year influence a species potential range.</element>
       </element>
       <element>
         <element key="value">B15</element>
         <element key="title">B15 - Precipitation Seasonality (Coefficient of Variation)</element>
-        <element key="unit">dimensionless</element>
-        <element key="legend">default</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="tooltip">Since species distributions can be strongly influenced by variability in precipitation, this index provides a percentage of precipitation variability where larger percentages represent greater variability of precipitation.</element>
       </element>
       <element>
         <element key="value">B16</element>
         <element key="title">B16 - Precipitation of Wettest Quarter</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides total precipitation during the wettest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B17</element>
         <element key="title">B17 - Precipitation of Driest Quarter</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides total precipitation during the driest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B18</element>
         <element key="title">B18 - Precipitation of Warmest Quarter</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides total precipitation during the warmest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B19</element>
         <element key="title">B19 - Precipitation of Coldest Quarter</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides total precipitation during the coldest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">clay30</element>
