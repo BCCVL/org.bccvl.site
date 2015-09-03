@@ -124,26 +124,30 @@ class StatisticsView(BrowserView):
         
     def experiment_average_runtimes(self):
         runtime = {}
-        count = {}
         for x in self._experiments:
             exp = x._unrestrictedGetObject()
+            success = not hasattr(x, 'job_state') or x.job_state in (None, 'COMPLETED')
             if not hasattr(exp, 'runtime'):
                 continue
-            if runtime.has_key(x.Type):
-                runtime[x.Type] += exp.runtime
-                count[x.Type] += 1
+            if not runtime.has_key(x.Type):
+                runtime[x.Type] = {'runtime': exp.runtime, 'failed': 0, 'success': 0, 'count': 0}
+    
+            runtime[x.Type]['runtime'] += exp.runtime
+            runtime[x.Type]['count'] += 1            
+            if success:
+                runtime[x.Type]['success'] += 1
             else:
-                runtime[x.Type] = exp.runtime
-                count[x.Type] = 1
-        for tp in runtime.keys():
-            runtime[tp] /= count[tp]
-            runtime[tp] = "%.1f seconds" %(runtime[tp])
+                runtime[x.Type]['failed'] += 1
+               
+            
+        for i in runtime.keys():
+            runtime[i]['runtime'] /= runtime[i]['count']
+            runtime[i]['runtime'] = "%.1f" %(runtime[i]['runtime'])
         return runtime                 
 
     def algorithm_average_runtimes(self):
-        runtime_sum = {}
-        count = {}
-        runtime_mean = {}
+        stats = {}
+ 
         for x in self._experiments:                
             #if x.Type not in ['org.bccvl.content.sdmexperiment', 'org.bccvl.content.speciestraitsexperiment']:
             if x.Type not in ['SDM Experiment', 'Species Traits Modelling']:
@@ -151,28 +155,35 @@ class StatisticsView(BrowserView):
             # Get the runtime each algorithm for each experiement type from the result file
             # An algorithm is mutually exclusive for SDM or Species Traits experiement.
             exp = x._unrestrictedGetObject()
-            for r in exp.values():                
+            for v in exp.values():
+                brain = uuidToCatalogBrain(v.UID())
+                success = brain.job_state in (None, 'COMPLETED')
+                                
                 import json
-                algid = r.job_params.get('function') or r.job_params.get('algorithm')
+                algid = v.job_params.get('function') or v.job_params.get('algorithm')
                 # Initialise statistic variables for each algorithm
-                if algid:
-                    runtime_sum[algid] = 0.0
-                    count[algid] = 0
-                    runtime_mean[algid] = 0.0
-                else:
-                    continue                    
-                if not r.has_key('pstats.json'):
+                if not algid:
                     continue
-                js = json.loads(r['pstats.json'].file.data)
+                
+                if not stats.has_key(algid):
+                    stats[algid] = {'runtime' : 0.0, 'count' : 0, 'mean' : 0.0, 'success' : 0, 'failed' : 0}
+                
+                if not v.has_key('pstats.json'):
+                    continue
+                    
+                js = json.loads(v['pstats.json'].file.data)
                 runtime = js['rusage'].get('ru_utime', -1.0) + js['rusage'].get('ru_stime', -1.0)
                 if runtime >= 0.0:
-                    runtime_sum[algid] += runtime
-                    count[algid] += 1
-                    runtime_mean[algid] = runtime_sum[algid]/count[algid]
-                    
-        for i in runtime_mean.keys():
-            runtime_mean[i] = "%.1f seconds" %(runtime_mean[i])
-        return runtime_mean
+                    stats[algid]['runtime'] += runtime
+                    stats[algid]['count'] += 1
+                    stats[algid]['mean'] = stats[algid]['runtime']/stats[algid]['count']
+                    if success:
+                        stats[algid]['success'] += 1
+                    else:
+                        stats[algid]['failed'] += 1
+        for i in stats.keys():
+            stats[i]['mean'] = "%.1f" %(stats[i]['mean'])
+        return stats
 
     def algorithm_types(self):
         def func_ids():

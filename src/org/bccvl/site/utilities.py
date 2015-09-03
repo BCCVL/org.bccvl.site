@@ -8,7 +8,7 @@ from org.bccvl.site.utils import Period
 from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
-    ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
+    IExperiment, ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
 from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData
 from org.bccvl.site.api import dataset
@@ -117,6 +117,11 @@ class JobTracker(object):
             annots = IAnnotations(self.context)
             self._state = annots['org.bccvl.state'] = PersistentDict()
         self._state.update(kw)
+        
+        # Update experiment's state as well
+        exp = self.context.__parent__
+        if IExperiment.providedBy(exp):
+            exp.reindexObject()            
 
     def _comparestate(self, state1, state2):
         """
