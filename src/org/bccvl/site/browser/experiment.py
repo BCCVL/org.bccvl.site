@@ -272,7 +272,7 @@ class SDMAdd(ParamGroupMixin, Add):
 
     def is_toolkit_selected(self, tid, data):
         return tid in data
-    
+
     def create(self, data):
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
         # we'll have to override it to find a place to apply our algo_group data'
@@ -358,7 +358,7 @@ class ProjectionAdd(Add):
             raise ActionExecutionError(Invalid('No future climate dataset selected.'))
         models = data.get('species_distribution_models', {})
         if not tuple(chain.from_iterable(x for x in models.values())):
-            raise ActionExecutionError(Invalid('No source dataset selected.'))   
+            raise ActionExecutionError(Invalid('No source dataset selected.'))
 
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
@@ -381,7 +381,7 @@ class BiodiverseAdd(Add):
         # ...
         datasets = data.get('projection', {})
         if not tuple(chain.from_iterable(x for x in datasets.values())):
-            raise ActionExecutionError(Invalid('No projection dataset selected.'))   
+            raise ActionExecutionError(Invalid('No projection dataset selected.'))
 
 
 class EnsembleAdd(Add):
@@ -455,7 +455,7 @@ class SpeciesTraitsAdd(ParamGroupMixin, Add):
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
         return tid == data
-    
+
     def create(self, data):
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
         # we'll have to override it to find a place to apply our algo_group data'
@@ -473,4 +473,3 @@ class SpeciesTraitsAdd(ParamGroupMixin, Add):
     def validateAction(self, data):
         # TODO: check data ...
         pass
-
