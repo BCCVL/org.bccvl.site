@@ -305,6 +305,7 @@
         <element key="legend">percentage</element>
         <element key="type">substrate</element>
         <element key="tooltip">Clay is a useful proxy for defining the nutritional and biological capacity of soil.</element>
+      </element>
       <element>
         <element key="value">bd30</element>
         <element key="title">Bulk density 0-30 cm</element>
@@ -762,7 +763,7 @@
         <element key="unit">Aridity Index</element>
         <element key="legend">default</element>
         <element key="type">climate</element>
-        <element key="tooltip">The Aridity Index can be used to quantify precipitation availability over atmospheric water demand. Generally, an AI value of <0.03 = hyper arid where a value of >0.65 = humid.</element>
+        <element key="tooltip">The Aridity Index can be used to quantify precipitation availability over atmospheric water demand. Generally, an AI value of &lt;0.03 = hyper arid where a value of >0.65 = humid.</element>
       </element>
       <element>
         <element key="value">pet_he_yr</element>
