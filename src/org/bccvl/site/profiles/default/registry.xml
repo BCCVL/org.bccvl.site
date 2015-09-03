@@ -349,7 +349,7 @@
         <element key="unit">VAST classification</element>
         <element key="legend">categories</element>
         <element key="type">vegetation</element>
-        <element key="tooltip">This index classifys vegetation according to its degree of anthropogenic modification from a natural state. Class 1 sets the benchmark where classes 2 - 6 represent largely unchanged through to total removal of vegetation.
+        <element key="tooltip">This index classifys vegetation according to its degree of anthropogenic modification from a natural state. Class 1 sets the benchmark where classes 2 - 6 represent largely unchanged through to total removal of vegetation.</element>
       </element>
       <element>
         <element key="value">multi_res_ridge_top_flat</element>
@@ -367,7 +367,7 @@
         <element key="unitfull">Multi-resolution valley bottom flatness index</element>
         <element key="legend">default</element>
         <element key="type">topography</element>
-        <element key="tooltip">This layer is a topographic index designed to identify areas of deposited material. Zero values indicate erosional terrain with values 1 and larger indicating progressively larger areas of deposition.
+        <element key="tooltip">This layer is a topographic index designed to identify areas of deposited material. Zero values indicate erosional terrain with values 1 and larger indicating progressively larger areas of deposition.</element>
       </element>
       <element>
         <element key="value">mth_FWDis</element>
@@ -1358,7 +1358,6 @@
         <element key="type">vegetation</element>
         <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
-
     </value>
   </record>
 
