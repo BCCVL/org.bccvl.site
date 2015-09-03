@@ -40,7 +40,7 @@ class IBCCVLMetadata(Interface):
     """
     # FIXME: add IDict or IMapping as base interface?
 
-    
+
 class IProvenanceData(Interface):
     """
     Interface to access Provenance specific metadata.
