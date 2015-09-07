@@ -21,6 +21,7 @@ from org.bccvl.site.content.dataset import IDataset
 from org.bccvl.site import defaults
 import logging
 from zope.component import getUtility, queryUtility
+from zope.schema import getFields
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
 import json
@@ -603,8 +604,8 @@ class DemoSDM(BrowserView):
             envlist.append({
                 'uuid': dsuuid,
                 'filename': dlinfo['filename'],
-                'downloadurl': dlinfo['downloadurl'],
-                'internalurl': dlinfo['internalurl'],
+                'downloadurl': dlinfo['url'],
+                'internalurl': dlinfo['alturl'][0],
                 'layer': layer,
                 'type': dsmd['layers'][layer]['datatype'],
                 'zippath': dsmd['layers'][layer]['filename']
@@ -627,7 +628,7 @@ class DemoSDM(BrowserView):
         # get toolkit schema
         from plone.supermodel import loadString
         schema = loadString(func.schema).schema
-        for name, field in schema.getFields().items():
+        for name, field in getFields(schema).items():
             if field.default is not None:
                 job_params[name] = field.default
         # add other default parameters
