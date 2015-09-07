@@ -167,4 +167,11 @@
           />
     </browser:pages>
 
+    <browser:page
+        name="demosdm"
+        class=".xmlrpc.DemoSDM"
+        for="Products.CMFCore.interfaces.IFolderish"
+        permission="org.bccvl.AddExperiment"
+        />
+
 </configure>
