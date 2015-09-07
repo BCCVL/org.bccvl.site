@@ -575,6 +575,7 @@ class ExportResult(BrowserView):
 
 class DemoSDM(BrowserView):
 
+    @returnwrapper
     def __call__(self, *args, **kw):
         # get parameters
         lsid = self.request.form.get('lsid', None)
