@@ -645,7 +645,7 @@ class DemoSDM(BrowserView):
         jobid = datetime.now().isoformat()
         result = {
             'results_dir': 'swift://nectar/{}/'.format(jobid),
-            'outputs': {}
+            'outputs': json.loads(func.output)
         }
         # worker hints:
         worker = {
