@@ -358,7 +358,12 @@ class ProjectionAdd(Add):
             raise ActionExecutionError(Invalid('No future climate dataset selected.'))
         models = data.get('species_distribution_models', {})
         if not tuple(chain.from_iterable(x for x in models.values())):
-            raise ActionExecutionError(Invalid('No source dataset selected.'))
+            # FIXME: collecting all errors is better than raising an exception for each single error
+            # TODO: see http://stackoverflow.com/questions/13040487/how-to-raise-a-widgetactionexecutionerror-for-multiple-fields-with-z3cform
+            raise WidgetActionExecutionError(
+                'species_distribution_models',
+                Invalid('No source dataset selected.')
+            )
 
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
