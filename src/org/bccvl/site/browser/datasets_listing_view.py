@@ -1,9 +1,9 @@
 from Products.Five import BrowserView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
-from plone.app.uuid.utils import uuidToObject
+from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone import api
-from org.bccvl.site.content.interfaces import IDataset
+from org.bccvl.site.content.interfaces import IDataset, ISDMExperiment, IProjectionExperiment
 from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata, IJobTracker
 from org.bccvl.site.browser.interfaces import IDatasetTools
 from org.bccvl.site.api.dataset import getdsmetadata
@@ -261,6 +261,57 @@ class DatasetTools(BrowserView):
         #         'token': genre.token,
         #         'label': genre.title
         #     }
+
+    def experiment_inputs(self, context=None):
+        # return visualisable input datasets for experiment
+        # - used in overlay and compare pages
+        if context is None:
+            context = self.context
+        pc = getToolByName(self.context, 'portal_catalog')
+        if ISDMExperiment.providedBy(context):
+            # for sdm we return selected occurrence and absence dataset
+            # TODO: once available include pesudo absences from result
+            for dsuuid in (context.species_occurrence_dataset,
+                           context.species_absence_dataset):
+                brain = uuidToCatalogBrain(dsuuid)
+                if brain:
+                    yield brain
+        elif IProjectionExperiment.providedBy(context):
+            # one experiment - multiple models
+            for sdmuuid, models in context.species_distribution_models.items():
+                sdm = uuidToObject(sdmuuid)
+                if not sdm:
+                    continue
+                # yield occurrence / absence points
+                for x in self.experiment_inputs(sdm):
+                    yield x
+                for model in models:
+                    # yield current projections for each model
+                    model_brain = uuidToCatalogBrain(model)
+                    if not model_brain:
+                        continue
+                    res_path = model_brain.getPath().rsplit('/', 1)
+                    for projection in pc.searchResults(path=res_path,
+                                                       BCCDataGenre='DataGenreCP'):
+                        yield projection
+
+    def experiment_results(self, context=None):
+        # return visualisable results for experiment
+        # - used in overlay and compare
+        if context is None:
+            context = self.context
+        pc = getToolByName(self.context, 'portal_catalog')
+        genres = ('DataGenreFP', 'DataGenreCP', 'DataGenreBinaryImage',
+                  'DataGenreENDW_CWE', 'DataGenreENDW_WE',
+                  'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
+                  'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
+                  'DataGenreREDUNDANCY_ALL', 'DataGenreRAREW_CWE',
+                  'DataGenreRAREW_RICHNESS', 'DataGenreRAREW_WE',
+                  'DataGenreEnsembleResult')
+        # context should be a result folder
+        for brain in pc.searchResults(path='/'.join(context.getPhysicalPath()),
+                                      BCCDataGenre=genres):
+            yield brain
 
 
 from Products.AdvancedQuery import In, Eq, Not, Generic, And
