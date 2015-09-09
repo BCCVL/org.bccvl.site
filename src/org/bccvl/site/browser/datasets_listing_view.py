@@ -4,7 +4,7 @@ from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject
 from plone import api
 from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata
+from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata, IJobTracker
 from org.bccvl.site.browser.interfaces import IDatasetTools
 from org.bccvl.site.api.dataset import getdsmetadata
 from Products.CMFCore.utils import getToolByName
