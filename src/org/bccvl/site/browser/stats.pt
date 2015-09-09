@@ -95,11 +95,19 @@
             <tr class="blank_row"/>
             
             <tr class="stats_header">
-              <td colspan="2"><h4>Experiments</h4></td>
+              <td><h4>Experiments</h4></td>
+              <td>Count</td>
+              <td>Completed</td>
+              <td>Failed</td>
+              <td>Runtime (seconds)</td>  
             </tr>
-            <tr tal:repeat="exp_type view/experiment_types">
+            <tr tal:repeat="exp_type view/experiment_types"
+                tal:define="exp_run view/experiment_average_runtimes">
               <td tal:content="python: exp_type[0]"/>
               <td tal:content="python: exp_type[1]" style="text-align:right;"/>
+              <td tal:content="python: exp_run[exp_type[0]]['success']" style="text-align:right;"/>
+              <td tal:content="python: exp_run[exp_type[0]]['failed']" style="text-align:right;"/>
+              <td tal:content="python: exp_run[exp_type[0]]['runtime']" style="text-align:right;"/>
             </tr>
             <tr>
               <td>&nbsp;</td>
@@ -120,11 +128,19 @@
             <tr class="blank_row"/>
             
             <tr class="stats_header">
-              <td colspan="2"><h4>Algorithms</h4></td>
+              <td><h4>Algorithms</h4></td>
+              <td>Count</td>
+              <td>Completed</td>
+              <td>Failed</td>
+              <td>Runtime (seconds)</td>              
             </tr>
-            <tr tal:repeat="algo_type view/algorithm_types">
-              <td tal:content="python: algo_type[0]"/>
+            <tr tal:repeat="algo_type view/algorithm_types"
+                tal:define="algo_run view/algorithm_average_runtimes">
+              <td tal:content="python: view.get_func_obj(funcid=algo_type[0]).Title"/>
               <td tal:content="python: algo_type[1]" style="text-align:right;"/>
+              <td tal:content="python: algo_run[algo_type[0]]['success']" style="text-align:right;"></td>
+              <td tal:content="python: algo_run[algo_type[0]]['failed']" style="text-align:right;"></td>
+              <td tal:content="python: algo_run[algo_type[0]]['mean']" style="text-align:right;"></td>
             </tr>
           </table>
         </div>
