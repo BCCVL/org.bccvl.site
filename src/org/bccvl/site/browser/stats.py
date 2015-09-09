@@ -121,34 +121,35 @@ class StatisticsView(BrowserView):
     def experiment_types(self):
         experiments = Counter(x.Type for x in self._experiments)
         return experiments.most_common()
-        
+
     def experiment_average_runtimes(self):
         runtime = {}
         for x in self._experiments:
             exp = x._unrestrictedGetObject()
             success = not hasattr(x, 'job_state') or x.job_state in (None, 'COMPLETED')
-            if not hasattr(exp, 'runtime'):
-                continue
             if not runtime.has_key(x.Type):
-                runtime[x.Type] = {'runtime': exp.runtime, 'failed': 0, 'success': 0, 'count': 0}
-    
-            runtime[x.Type]['runtime'] += exp.runtime
-            runtime[x.Type]['count'] += 1            
+                runtime[x.Type] = {'runtime': 0, 'failed': 0, 'success': 0, 'count': 0}
+
+            if hasattr(exp, 'runtime'):
+                runtime[x.Type]['runtime'] += exp.runtime
+                runtime[x.Type]['count'] += 1
             if success:
                 runtime[x.Type]['success'] += 1
             else:
                 runtime[x.Type]['failed'] += 1
-               
-            
+
         for i in runtime.keys():
-            runtime[i]['runtime'] /= runtime[i]['count']
-            runtime[i]['runtime'] = "%.1f" %(runtime[i]['runtime'])
-        return runtime                 
+            if runtime[i]['count']:
+                runtime[i]['runtime'] /= runtime[i]['count']
+                runtime[i]['runtime'] = "%.1f" %(runtime[i]['runtime'])
+            else:
+                runtime[i]['runtime'] = "n/a"
+        return runtime
 
     def algorithm_average_runtimes(self):
         stats = {}
- 
-        for x in self._experiments:                
+
+        for x in self._experiments:
             #if x.Type not in ['org.bccvl.content.sdmexperiment', 'org.bccvl.content.speciestraitsexperiment']:
             if x.Type not in ['SDM Experiment', 'Species Traits Modelling']:
                 continue
@@ -158,19 +159,19 @@ class StatisticsView(BrowserView):
             for v in exp.values():
                 brain = uuidToCatalogBrain(v.UID())
                 success = brain.job_state in (None, 'COMPLETED')
-                                
+
                 import json
                 algid = v.job_params.get('function') or v.job_params.get('algorithm')
                 # Initialise statistic variables for each algorithm
                 if not algid:
                     continue
-                
+
                 if not stats.has_key(algid):
                     stats[algid] = {'runtime' : 0.0, 'count' : 0, 'mean' : 0.0, 'success' : 0, 'failed' : 0}
-                
+
                 if not v.has_key('pstats.json'):
                     continue
-                    
+
                 js = json.loads(v['pstats.json'].file.data)
                 runtime = js['rusage'].get('ru_utime', -1.0) + js['rusage'].get('ru_stime', -1.0)
                 if runtime >= 0.0:
@@ -194,7 +195,7 @@ class StatisticsView(BrowserView):
                         yield funcid
                 if hasattr(exp, 'algorithm'):
                     yield exp.algorithm
-        
+
         algorithm_types = Counter(self.get_func_obj(x).getId for x in func_ids())
         return algorithm_types.most_common()
 
