@@ -361,26 +361,14 @@ def scientific_category_source(context):
 def data_collections_source(context):
     portal_url = getToolByName(context, 'portal_url')
     catalog = getToolByName(context, 'portal_catalog')
-    group_query = {
-        'object_provides': IFolder.__identifier__,
-        'path': {
-            'query': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
-            'depth': 1
-        }
+    vocab = getUtility(IVocabularyFactory, 'scientific_category_source')(context)
+    coll_query = {
+        'portal_type': 'org.bccvl.content.collection',
+        'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
     }
-
-    def coll_query(brain):
-        return {
-            'object_provides': IFolder.__identifier__,
-            'path': {
-                'query': brain.getPath(),
-                'depth': 1
-            }
-        }
-
-    brains = (
-        item
-        for group in catalog.searchResults(**group_query)
-        for item in catalog.searchResults(**coll_query(group))
-    )
-    return BrainsVocabulary.fromBrains(brains, context)
+    def generate_collections():
+        for term in vocab:
+            coll_query['BCCCategory'] = term.value
+            for brain in catalog.searchResults(**coll_query):
+                yield brain
+    return BrainsVocabulary.fromBrains(generate_collections(), context)
