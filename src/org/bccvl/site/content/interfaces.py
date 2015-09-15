@@ -20,11 +20,7 @@ from org.bccvl.site.widgets.widgets import ExperimentResultProjectionFieldWidget
 class IDataset(model.Schema):
     """Interface all datasets inherit from"""
 
-    rightsstatement = RichTextField(
-        title=u'Rights Statement',
-        description=u"",
-        required=False,
-    )
+    # TODO: need behavior to add metadata details?
 
 
 class IBlobDataset(IDataset):

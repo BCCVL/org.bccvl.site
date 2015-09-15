@@ -177,6 +177,8 @@ def upgrade_190_200_1(context, logger=None):
     for bran in pc(object_provides=IDataset.__identifier__):
         obj = brain.getObject()
         md = IBCCVLMetadata(obj)
+        if hasattr(obj, 'rightsstatement'):
+            del obj.rightsstatement
         # temporal may be an attribute or is in md
         if 'temporal' in md:
             if 'year' not in md:

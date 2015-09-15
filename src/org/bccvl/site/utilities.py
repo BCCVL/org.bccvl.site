@@ -301,7 +301,7 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if IFile.providedBy(ds):
                 if ds.file is not None:
                     dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
@@ -327,7 +327,7 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if IFile.providedBy(ds):
                 if ds.file is not None:
                     dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
@@ -479,7 +479,7 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ds.file is not None:
                 dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
@@ -507,7 +507,7 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if IFile.providedBy(ds):
                 if ds.file is not None:
                     dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
@@ -634,7 +634,7 @@ class BiodiverseJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ds.file is not None:
                 dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # threshold used:
@@ -797,7 +797,7 @@ class EnsembleJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ds.file is not None:
                 dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
@@ -925,7 +925,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ds.file is not None:
                 dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
