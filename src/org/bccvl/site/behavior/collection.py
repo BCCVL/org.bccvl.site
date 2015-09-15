@@ -7,7 +7,7 @@ from plone.app.textfield import RichText as RichTextField
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
 from zope.interface import provider
-from zope.schema import List
+from zope.schema import List, Choice
 
 
 @provider(IFormFieldProvider)
@@ -30,4 +30,20 @@ class ICollection(model.Schema):
         title=u'Full description:',
         description=u'Text describing access to the external landing page',
         required=False,
+    )
+
+    model.fieldset(
+        'categorization',
+        label='Categorization',
+        fields=('categories',)
+    )
+
+    categories = List(
+        title=u'Scientific Categories',
+        description=u'',
+        unique=True,
+        required=False,
+        value_type=Choice(
+            vocabulary='scientific_category_source'
+        )
     )
