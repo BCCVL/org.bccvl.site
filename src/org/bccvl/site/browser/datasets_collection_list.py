@@ -4,11 +4,14 @@ from Products.Five import BrowserView
 
 from eea.facetednavigation.interfaces import ICriteria
 from plone.app.uuid.utils import uuidToCatalogBrain
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 
 class DatasetsCollectionListView(BrowserView):
 
     def __init__(self, context, request):
+        # TODO: update this to new workings of collection facet (now that we have a custom portal_type)
         super(DatasetsCollectionListView, self).__init__(context, request)
         self.datasets_url = self.context.absolute_url()
         self.criteria = ICriteria(self.context, {})
@@ -25,6 +28,10 @@ class DatasetsCollectionListView(BrowserView):
                     default = default.replace('(reverse)', '', 1)
                     self.defaults['reversed'] = True
                 self.defaults[criterion.getId()] = default
+
+    def categories(self):
+        for term in getUtility(IVocabularyFactory, 'scientific_category_source')(self.context):
+            yield term
 
     def get_browse_link(self, uuid):
         # return link into datasets facetedview to filter given collection
