@@ -1,8 +1,9 @@
 from zope.interface import Interface
-from plone.directives import form
-from plone.namedfile.field import NamedBlobFile
 from plone.app.textfield import RichText as RichTextField
-from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text, Set
+from plone.autoform import directives
+from plone.namedfile.field import NamedBlobFile
+from plone.supermodel import model
+from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text, Set, URI
 from z3c.form.browser.radio import RadioFieldWidget
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
@@ -14,10 +15,9 @@ from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultFieldWidget
 from org.bccvl.site.widgets.widgets import FutureDatasetsFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultProjectionFieldWidget
-from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
 
-class IDataset(form.Schema):
+class IDataset(model.Schema):
     """Interface all datasets inherit from"""
 
     rightsstatement = RichTextField(
@@ -30,7 +30,7 @@ class IDataset(form.Schema):
 class IBlobDataset(IDataset):
 
     # TODO: a primary field should not be required. possible bug in plone core
-    form.primary('file')
+    model.primary('file')
     file = NamedBlobFile(
         title=_(u"File"),
         description=_(u"Data content"),
@@ -55,7 +55,7 @@ class IExperiment(Interface):
 
 class ISDMExperiment(IExperiment):
 
-    form.widget('functions', FunctionsFieldWidget)
+    directives.widget('functions', FunctionsFieldWidget)
     functions = List(
         title=u'Algorithm',
         value_type=Choice(vocabulary='sdm_functions_source'),
@@ -63,7 +63,7 @@ class ISDMExperiment(IExperiment):
         required=True,
     )
 
-    form.widget('species_occurrence_dataset',
+    directives.widget('species_occurrence_dataset',
                 DatasetFieldWidget,
                 genre=['DataGenreSpeciesOccurrence'],
                 errmsg=u"Please select at least 1 occurrence dataset.",
@@ -74,7 +74,7 @@ class ISDMExperiment(IExperiment):
         required=True,
     )
 
-    form.widget('species_absence_dataset',
+    directives.widget('species_absence_dataset',
                 DatasetFieldWidget,
                 genre=['DataGenreSpeciesAbsence'],
                 errmsg=u"Please select at least 1 emmission scenario.",
@@ -98,7 +98,7 @@ class ISDMExperiment(IExperiment):
         default=10000,
         required=False)
 
-    form.widget('environmental_datasets',
+    directives.widget('environmental_datasets',
                 DatasetDictFieldWidget,
                 multiple='multiple',
                 genre=['DataGenreCC', 'DataGenreE'],
@@ -115,7 +115,7 @@ class ISDMExperiment(IExperiment):
 class IProjectionExperiment(IExperiment):
 
     # TODO: ignore context here? don't really need to store this?
-    form.widget('species_distribution_models',
+    directives.widget('species_distribution_models',
                 ExperimentSDMFieldWidget,
                 experiment_type=[ISDMExperiment.__identifier__],
                 errmsg=u"Please select at least 1 Species Distribution Model")
@@ -127,7 +127,7 @@ class IProjectionExperiment(IExperiment):
         required=True,
     )
 
-    form.widget('future_climate_datasets',
+    directives.widget('future_climate_datasets',
                 FutureDatasetsFieldWidget,
                 genre=['DataGenreFC'],
                 errmsg=u"Please select at least 1 future climate dataset.",
@@ -149,7 +149,7 @@ class IBiodiverseExperiment(IExperiment):
     # - Opt4 ... make different interfaces .... optimised for different interests
 
     # Key is the dataset uuid and value a threstold to apply
-    form.widget('projection',
+    directives.widget('projection',
                 ExperimentResultProjectionFieldWidget,
                 experiment_type=[ISDMExperiment.__identifier__,
                                  IProjectionExperiment.__identifier__],
@@ -179,7 +179,7 @@ class IBiodiverseExperiment(IExperiment):
 
 class ISpeciesTraitsExperiment(IExperiment):
 
-    form.widget(algorithm=RadioFieldWidget)
+    directives.widget(algorithm=RadioFieldWidget)
     algorithm = Choice(
         title=u'Algorithm',
         vocabulary='traits_functions_source',
@@ -194,7 +194,7 @@ class ISpeciesTraitsExperiment(IExperiment):
         default=None,
     )
 
-    form.widget('data_table',
+    directives.widget('data_table',
         DatasetFieldWidget,
         genre=['DataGenreTraits'],
         errmsg=u"Please select 1 species traits dataset.",
@@ -224,7 +224,7 @@ class IEnsembleExperiment(IExperiment):
         required=True
     )
 
-    form.widget('datasets',
+    directives.widget('datasets',
                 ExperimentResultFieldWidget,
                 errmsg=u"Please select at least 1 Experiment Result")
     datasets = Dict(

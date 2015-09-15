@@ -1,11 +1,11 @@
-from plone.directives import form
+from plone.supermodel import model
 from zope.schema import TextLine,  Choice, Text, DottedName
 from plone.dexterity.content import Item
 from zope.interface import implementer
 from org.bccvl.site import MessageFactory as _
 
 
-class IFunction(form.Schema):
+class IFunction(model.Schema):
 
     method = TextLine(
         title=_(u'Method'),
