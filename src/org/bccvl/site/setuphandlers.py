@@ -134,13 +134,21 @@ def upgrade_190_200_1(context, logger=None):
     if logger is None:
         logger = LOG
     # Run GS steps
+    portal = api.portal.get()
     setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'properties')
     setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
     setup.runImportStepFromProfile(PROFILE_ID, 'propertiestool')
     setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    # set portal_type of all collections to 'org.bccvl.content.collection'
+    for tlf in portal.datasets.values():
+        for coll in tlf.values():
+            if coll.portal_type == 'Folder':
+                coll.portal_type = 'org.bccvl.content.collection'
+
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     # rebuild the catalog to make sure new indices are populated
     logger.info("rebuilding catalog")
     pc = getToolByName(context, 'portal_catalog')
