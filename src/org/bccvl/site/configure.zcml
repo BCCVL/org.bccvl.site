@@ -46,6 +46,7 @@
   <include package=".portlets"/>
   <include package=".oauth"/>
   <include package=".faceted"/>
+  <include package=".behavior"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
 
