@@ -140,6 +140,11 @@
       />
 
   <adapter
+      factory=".indexers.scientific_category_collection"
+      name="BCCCategory"
+      />
+
+  <adapter
       factory=".indexers.year"
       name="BCCYear"
       />
