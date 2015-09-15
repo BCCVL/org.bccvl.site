@@ -124,14 +124,6 @@
         ruleset="plone.content.itemView"
         />
 
-    <browser:page
-        for="..content.interfaces.IDataset"
-        name="details"
-        class=".dataset.DatasetDetailsView"
-        template="dataset_details.pt"
-        permission="zope2.View"
-        />
-
     <!-- <browser:page -->
     <!--     name="view" -->
     <!--     for="..interfaces.IExperiment" -->

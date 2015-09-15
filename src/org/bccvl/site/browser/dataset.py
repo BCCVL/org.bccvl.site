@@ -9,23 +9,13 @@ from zope.lifecycleevent import modified
 from org.bccvl.site.interfaces import IBCCVLMetadata
 #from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Five.browser import BrowserView
-
-
-class DatasetDetailsView(BrowserView):
-
-    def metadata(self):
-        return {}
-
-
-
 from Products.statusmessages.interfaces import IStatusMessage
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from org.bccvl.site.interfaces import IJobTracker
 
 class DatasetRemoveView(form.Form):
-    """ 
+    """
     The remove view marks a dataset as 'removed' and deletes the associated blob. It is distinct from the built in delete
     view in that the dataset object is not actually deleted.
     """
