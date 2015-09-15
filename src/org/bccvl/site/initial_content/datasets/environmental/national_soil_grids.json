@@ -1,6 +1,9 @@
 {
     "_type": "Folder",
     "title": "National Soil Grids Australia",
-    "description": "National soil data provided by the Australian Collaborative Land Evaluation Program ACLEP, endorsed through the National Committee on Soil and Terrain NCST (www.clw.csiro.au/aclep).",
+    "description": "This data collection is underpinned by a collation of the best available nationally consistent soils data and information. Five soil variables have been produced as gridded/raster surfaces (250m) across continental Australia.",
+    "rights": "CC-BY Attribution 3.0",
+    "external_description": "See <a href=\"http://www.asris.csiro.au/themes/NationalGrids.html\">http://www.asris.csiro.au/themes/NationalGrids.html</a>",
+    "attribution": ["National soil data provided by the Australian Collaborative Land Evaluation Program ACLEP, endorsed through the National Committee on Soil and Terrain NCST (www.clw.csiro.au/aclep)."],
     "_transitions": ["show_internally", "publish_internally"]
 }

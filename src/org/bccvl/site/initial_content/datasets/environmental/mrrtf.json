@@ -2,5 +2,9 @@
     "_type": "Folder",
     "title": "Multi-resolution Ridge Top Flatness",
     "description": "A topographic index designed to identify high flat areas at a range of scales",
+    "attribution": [
+        "For Ridge Top Flatness: John Gallant; Trevor Dowling; Jenet Austin (2013): Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution). v1. CSIRO. Data Collection. 10.4225/08/512EEA6332EEB"],
+    "rights": "CC-BY Attribution 3.0",
+    "external_description": "See <a href=\"http://dx.doi.org/10.4225/08/512EEA6332EEB\">http://dx.doi.org/10.4225/08/512EEA6332EEB</a>",
     "_transitions": ["show_internally", "publish_internally"]
 }

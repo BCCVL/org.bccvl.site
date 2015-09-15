@@ -2,5 +2,10 @@
     "_type": "Folder",
     "title": "Multi-resolution Valley Bottom Flatness",
     "description": "A topographic index designed to identify areas of deposited material at a range of scales based on the observations that valley bottoms are low and flat relative to their surroundings and that large valley bottoms are flatter than smaller ones. Zero values indicate erosional terrain with values 1 and larger indicating progressively larger areas of deposition.",
+    "attribution": [
+        "John Gallant; Trevor Dowling; Jenet Austin (2012): Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution). v2. CSIRO. Data Collection. 10.4225/08/512EF27AC3888"
+    ],
+    "rights": "CC-BY Attribution 3.0",
+    "external_description": "See <a href=\"http://dx.doi.org/10.4225/08/512EF27AC3888\">http://dx.doi.org/10.4225/08/512EF27AC3888</a>",
     "_transitions": ["show_internally", "publish_internally"]
 }

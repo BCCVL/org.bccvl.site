@@ -1,6 +1,10 @@
 {
     "_type": "Folder",
     "title": "Species data from ALA",
-    "description": "User imported datasets from Atlas Living Australia. ALA collects information about all the known species in Australia aggregated from a wide range of data providers including museums, herbaria, community groups, government departments, individuals and universities.",
+    "description": "ALA collects information about all the known species in Australia aggregated from a wide range of data providers including museums, herbaria, community groups, government departments, individuals and universities.",
+    "attribution": [
+        "Refer to <a href=\"http://www.ala.org.au/about-the-atlas/terms-of-use/citing-the-atlas/\">http://www.ala.org.au/about-the-atlas/terms-of-use/citing-the-atlas/</a>"
+    ],
+    "external_description": "See <a href=\"http://www.ala.org.au\">http://www.ala.org.au</a>",
     "_transitions": ["show_internally", "publish_internally"]
 }

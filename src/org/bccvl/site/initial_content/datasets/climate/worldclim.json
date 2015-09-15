@@ -1,6 +1,9 @@
 {
     "_type": "Folder",
     "title": "Worldclim current and future climate data",
-    "description": "A set of global climate layers (climate grids) covering all global land areas except Antarctica. They are in the latitude / longitude coordinate reference system (not projected) and the datum is WGS84",
+    "description": "The Worldclim Collections consists of a set of global climate layers (climate grids) covering all global land areas except Antarctica. They are in the latitude / longitude coordinate reference system (not projected) and the datum is WGS84. The data layers were generated through interpolation of average monthly climate data from weather stations.",
+    "rights": "CC-BY Attribution 3.0",
+    "attribution": ["Hijmans, R.J., S.E. Cameron, J.L. Parra, P.G. Jones and A. Jarvis, 2005. <a href=\"http://www.worldclim.org/worldclim_IJC.pdf\">Very high resolution interpolated climate surfaces for global land areas</a>. International Journal of Climatology 25: 1965-1978."],
+    "external_description": "See <a href=\"http://www.worldclim.org/methods\">http://www.worldclim.org/methods</a>",
     "_transitions": ["show_internally", "publish_internally"]
 }
