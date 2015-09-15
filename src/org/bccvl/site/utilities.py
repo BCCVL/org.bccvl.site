@@ -3,7 +3,7 @@ from urlparse import urlsplit
 from itertools import chain
 import os.path
 import tempfile
-from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     IExperiment, ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
@@ -114,11 +114,11 @@ class JobTracker(object):
             annots = IAnnotations(self.context)
             self._state = annots['org.bccvl.state'] = PersistentDict()
         self._state.update(kw)
-        
+
         # Update experiment's state as well
         exp = self.context.__parent__
         if IExperiment.providedBy(exp):
-            exp.reindexObject()            
+            exp.reindexObject()
 
     def _comparestate(self, state1, state2):
         """

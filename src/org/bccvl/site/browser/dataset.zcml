@@ -28,7 +28,7 @@
             Pages, PagesPage -->
     <!-- TODO: check if Public permission is correct here -->
     <browser:page
-        for="..content.dataset.IDataset"
+        for="..content.interfaces.IDataset"
         name="remove"
         class=".dataset.DatasetRemoveView"
         permission="cmf.ModifyPortalContent"
@@ -104,7 +104,7 @@
     />
 
     <browser:page
-        for="..content.dataset.IDataset"
+        for="..content.interfaces.IDataset"
         name="editfilemetadata"
         class=".dataset.CrudFileMetadataForm"
         permission="cmf.ModifyPortalContent"
@@ -116,7 +116,7 @@
         />
 
     <browser:page
-        for="..content.dataset.IDataset"
+        for="..content.interfaces.IDataset"
         name="details"
         class=".dataset.DatasetDetailsView"
         template="dataset_details.pt"
