@@ -34,7 +34,16 @@
         permission="cmf.ModifyPortalContent"
         />
 
-
+    <browser:page
+        name="collection_listing"
+        for="..behavior.collection.ICollection"
+        class="plone.dexterity.browser.view.DefaultView"
+        layer="plone.app.contenttypes.interfaces.IPloneAppContenttypesLayer"
+        template="collection_listing.pt"
+        permission="zope2.View"
+        menu="plone_displayviews"
+        title="Collection Standard view"
+        />
     
     <browser:page
         name="dataset_tools"
