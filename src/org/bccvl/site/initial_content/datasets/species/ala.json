@@ -1,10 +1,11 @@
 {
-    "_type": "Folder",
+    "_type": "org.bccvl.content.collection",
     "title": "Species data from ALA",
     "description": "ALA collects information about all the known species in Australia aggregated from a wide range of data providers including museums, herbaria, community groups, government departments, individuals and universities.",
     "attribution": [
         "Refer to <a href=\"http://www.ala.org.au/about-the-atlas/terms-of-use/citing-the-atlas/\">http://www.ala.org.au/about-the-atlas/terms-of-use/citing-the-atlas/</a>"
     ],
     "external_description": "See <a href=\"http://www.ala.org.au\">http://www.ala.org.au</a>",
+    "categories": ["biological"],
     "_transitions": ["show_internally", "publish_internally"]
 }
