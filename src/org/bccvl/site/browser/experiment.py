@@ -313,10 +313,10 @@ class SDMAdd(ParamGroupMixin, Add):
                 raise ActionExecutionError(RequiredMissing('No absence points selected.'))
         else:
             numabspoints = data.get('species_number_pseudo_absence_points')
-            if not numabspoints:
+            if numabspoints is None:
                 raise ActionExecutionError(RequiredMissing('No absence points selected'))
-            elif numabspoints <= 0:
-                raise ActionExecutionError(Invalid('Number of absence points must be greater than 0.'))
+            elif numabspoints < 0:
+                raise ActionExecutionError(Invalid('Number of absence points cannot be negative.'))
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal

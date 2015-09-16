@@ -175,7 +175,7 @@ class DatasetDictWidget(HTMLFormElement, Widget):
             subitem = {
                 'id': layer,
                 'title': layer_vocab.getTerm(layer).title,
-                'selected': layer in selectedlayers,
+                'selected': selectedlayers is () or layer in selectedlayers,
             }
             yield subitem
 
