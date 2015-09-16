@@ -2,5 +2,5 @@
 <site>
  <property name="title">BCCVL</property>
  <property name="email_from_address" type="string">bccvl@griffith.edu.au</property>
- <property name="email_from_name" type="string">Biodiversity & Climate Change Virtual Lab</property>
+ <property name="email_from_name" type="string">Biodiversity &amp; Climate Change Virtual Lab</property>
 </site>
