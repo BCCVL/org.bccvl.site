@@ -8,12 +8,14 @@ from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata, IJobTracker
 from org.bccvl.site.browser.interfaces import IDatasetTools
 from org.bccvl.site.api.dataset import getdsmetadata
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.interfaces import ISiteRoot
 from zope.security import checkPermission
 from zope.component import getMultiAdapter, getUtility
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 import Missing
 from org.bccvl.site import defaults
+from org.bccvl.site.behavior.collection import ICollection
 from org.bccvl.site.vocabularies import BCCVLSimpleVocabulary
 from itertools import chain
 
@@ -312,6 +314,59 @@ class DatasetTools(BrowserView):
         for brain in pc.searchResults(path='/'.join(context.getPhysicalPath()),
                                       BCCDataGenre=genres):
             yield brain
+
+    def details(self, context=None):
+        # fetch details about dataset, if attributes are unpopulated
+        # get data from associated collection
+        if context is None:
+            context = self.context
+        coll = context
+        while not (ISiteRoot.providedBy(coll) or ICollection.providedBy(coll)):
+            coll = coll.__parent__
+        # we have either hit siteroot or found a collection
+        ret = {
+            'title': context.title,
+            'description': context.description or coll.description,
+            'attribution': context.attribution or getattr(coll, 'attribution'),
+            'rights': context.rights or coll.rights,
+            'external_description': context.external_description or getattr(coll, 'external_description'),
+        }
+        md = IBCCVLMetadata(context)
+        if 'layers' in md:
+            layers = []
+            for layer in md.get('layers', ()):
+                try:
+                    layers.append(self.layer_vocab.getTerm(layer))
+                except:
+                    layers.append(SimpleTerm(layer, layer, layer))
+            if layers:
+                ret['layers'] = layers
+        return ret
+
+    def collection_layers(self, context=None):
+        # return a list of layers for the whole collection
+        if context is None:
+            context = self.context
+        pc = api.portal.get_tool('portal_catalog')
+        query = {
+            'path': {
+                'query': '/'.join(context.getPhysicalPath()),
+                'depth': -1
+            },
+            'portal_type': ('org.bccvl.content.dataset',
+                            'org.bccvl.content.remotedataset')
+        }
+        # search for datasets
+        brains = pc.searchResults(**query)
+        index = pc._catalog.getIndex('BCCEnviroLayer')
+        # get all layers for all datasets
+        layers = set((l for brain in brains for l in (index.getEntryForObject(brain.getRID()) or ())))
+        layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(context)
+        for layer in sorted(layers):
+            try:
+                yield layer_vocab.getTerm(layer)
+            except:
+                yield SimpleTerm(layer, layer, layer)
 
 
 from Products.AdvancedQuery import In, Eq, Not, Generic, And

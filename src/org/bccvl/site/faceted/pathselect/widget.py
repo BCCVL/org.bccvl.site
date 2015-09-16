@@ -75,6 +75,8 @@ class Widget(CountableWidget):
     index = ViewPageTemplateFile('widget.pt')
     edit_schema = CountableWidget.edit_schema.copy() + EditSchema
 
+    # TODO: we could add index and field 'part_of' to associate datasets with collections (similar to related_items? maybe eea.relations would be an option?)
+
     def query(self, form):
         """ Get value from form and return a catalog dict query
         """
