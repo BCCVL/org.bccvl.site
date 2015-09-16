@@ -1,13 +1,10 @@
-from decimal import Decimal
 import logging
-from zope.component import getMultiAdapter, getUtility
+from zope.component import getMultiAdapter
 from zope.interface import implementer, implementer_only
-from zope.schema.interfaces import (ITitledTokenizedTerm,
-                                    IVocabularyFactory)
+from zope.schema.interfaces import ITitledTokenizedTerm
 from z3c.form import util
 from z3c.form.interfaces import (IFieldWidget, NO_VALUE)
 from z3c.form.widget import FieldWidget, Widget, SequenceWidget
-from z3c.form.browser.checkbox import CheckBoxWidget
 from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
                                      addFieldClass)
 from zope.i18n import translate
@@ -20,7 +17,6 @@ from .interfaces import (IDatasetWidget,
                          IExperimentResultProjectionWidget,
                          IJSWrapper)
 from plone.app.uuid.utils import uuidToCatalogBrain
-from plone.z3cform.interfaces import IDeferSecurityCheck
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
 from org.bccvl.site.api import dataset
