@@ -129,9 +129,9 @@ sdm_functions_source = CatalogVocabularyFactory(
         'object_provides': 'org.bccvl.site.content.function.IFunction',
         # FIXME: find another way to separate SDM and traits "functions"
         'id': ['ann', 'bioclim', 'brt', 'circles', 'cta', 'convhull',
-               'fda', 'gam', 'gbm', 'glm', 'geoDist',
+               'fda', 'gam', 'gbm', 'glm', 'geoDist', 'geoIDW',
                'maxent', 'mars', 'rf', 'sre', 'voronoiHull'],
-        # 'mahal', 'geoIDW', 'domain'
+        # 'mahal', 'domain'
         'sort_on': 'sortable_title',
     },
 )
