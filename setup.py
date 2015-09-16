@@ -27,13 +27,13 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',  # distribute
+        'Plone',
         'five.pt',
         'org.bccvl.theme',
         'Products.AutoUserMakerPASPlugin',
         'Products.ShibbolethPermissions',
         'Products.CMFPlacefulWorkflow',
-        # We'll have to depend on gork, otherwise plone.directives.form won't work
-        'plone.app.dexterity [grok]',
+        'plone.app.dexterity',
         'gu.transmogrifier',
         'plone.api',
         'collective.js.jqueryui',
