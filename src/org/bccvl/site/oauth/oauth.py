@@ -117,7 +117,8 @@ class OAuth2View(OAuthBaseView):
 
         #scope = ["profile", "email"]
         scope = ['https://www.googleapis.com/auth/userinfo.email',
-                 'https://www.googleapis.com/auth/userinfo.profile']
+                 'https://www.googleapis.com/auth/userinfo.profile',
+                 'https://www.googleapis.com/auth/drive']
 
         redirect_url = self.config.redirect_url
         if not redirect_url:
