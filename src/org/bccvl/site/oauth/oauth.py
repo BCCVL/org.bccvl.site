@@ -140,7 +140,7 @@ class OAuth2View(OAuthBaseView):
                     access_type=access_type, approval_prompt=approval_prompt)
         else:
             authorization_url, state = oauth.authorization_url(
-                    self.config.authorization_url)          
+                    self.config.authorization_url)
         # state ... roundtripped by oauth, can be used to verify response
         return_url = self.request.get('HTTP_REFERER')
         self.session[self._skey] = (state, return_url)
@@ -151,9 +151,8 @@ class OAuth2View(OAuthBaseView):
     def is_callback(self):
         return True
         # check if request is a authorize "callback"
-        # return (self.config.authorization_url in self.request.get('HTTP_REFERER')
-        #         and 'code' in self.request.form
-        #         and 'state' in self.request.form)
+        return ('code' in self.request.form
+                and 'state' in self.request.form)
 
     @check_authenticated
     def callback(self, state=None, return_url=None):
@@ -168,7 +167,7 @@ class OAuth2View(OAuthBaseView):
 
         # TODO: there should be a better way to get the full request url
         authorization_response = self.request.getURL() + '?' + self.request['QUERY_STRING']
-       
+
         # the request must have some auth_response somewhere?
         # NOTE: since oauthlib 0.7.2 which correctly compares scope
         #       we need export OAUTHLIB_RELAX_TOKEN_SCOPE=1 or catch the Warning
