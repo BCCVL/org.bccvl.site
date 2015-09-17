@@ -115,11 +115,6 @@ class OAuth2View(OAuthBaseView):
         if not token:
             token = {}
 
-        #scope = ["profile", "email"]
-        scope = ['https://www.googleapis.com/auth/userinfo.email',
-                 'https://www.googleapis.com/auth/userinfo.profile',
-                 'https://www.googleapis.com/auth/drive']
-
         redirect_url = self.config.redirect_url
         if not redirect_url:
             redirect_url = urljoin(self.request.getURL(), 'callback')
@@ -130,7 +125,7 @@ class OAuth2View(OAuthBaseView):
                                                    'client_secret': self.config.client_secret},
                               auto_refresh_url=self.config.refresh_url,
                               token_updater=self.setToken,
-                              scope=scope)
+                              scope=self.config.scope)
         return oauth
 
     @check_authenticated

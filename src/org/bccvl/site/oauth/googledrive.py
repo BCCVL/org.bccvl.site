@@ -1,8 +1,15 @@
 from .interfaces import IOAuth2Settings
-from zope.schema import URI
+from zope.schema import URI, List, TextLine
 
 
 class IGoogleDrive(IOAuth2Settings):
+
+    scope = List(
+        title=u"Scope",
+        required=False,
+        default=[u'https://www.googleapis.com/auth/drive'],
+        value_type=TextLine()
+    )
 
     authorization_url = URI(
         title=u"Authorization url",
