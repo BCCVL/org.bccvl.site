@@ -69,7 +69,8 @@ class FunctionsWidget(HTMLInputWidget, SequenceWidget):
                 label = util.toUnicode(term.value)
             items.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
                    'label':label, 'checked': checked,
-                   'subject': term.brain.Subject})
+                   'subject': term.brain.Subject,
+                   'description': term.brain.Description})
         return items
 
 
