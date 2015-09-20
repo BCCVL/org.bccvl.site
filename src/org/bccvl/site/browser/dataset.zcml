@@ -31,6 +31,7 @@
         for="..content.interfaces.IDataset"
         name="remove"
         class=".dataset.DatasetRemoveView"
+        template = "dataset_remove.pt"
         permission="cmf.ModifyPortalContent"
         />
 
