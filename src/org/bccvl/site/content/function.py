@@ -7,11 +7,6 @@ from org.bccvl.site import MessageFactory as _
 
 class IFunction(model.Schema):
 
-    method = TextLine(
-        title=_(u'Method'),
-        description=_(u"Full dotted name of a python function implementing this algorithm"),
-        required=True)
-
     interpreter = Choice(
         title=_(u"Programming language"),
         description=_(u"The language the code is written in."),
@@ -25,10 +20,11 @@ class IFunction(model.Schema):
         required=True,
         )
 
-    interface = DottedName(
-        title=_(u'Interface'),
-        description=_(u"full package name to interface"),
-        required=True
+    experiment_type = Choice(
+        title=_(u"Experiment Type"),
+        description =_(u"The experiment type this toolkit can be used for."),
+        required=False,
+        vocabulary='experiment_type'
         )
 
     schema = Text(

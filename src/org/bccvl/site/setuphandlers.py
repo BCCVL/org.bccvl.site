@@ -4,6 +4,7 @@ from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from plone import api
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
+from org.bccvl.site import defaults
 import logging
 
 
@@ -226,5 +227,16 @@ def upgrade_190_200_1(context, logger=None):
     coll.clear()
     logger.info("Migrated OAuth1 settings to Figshare settings")
 
+    for toolkit in portal[defaults.TOOLKITS_FOLDER_ID].values():
+        if hasattr(toolkit, 'interface'):
+            del toolkit.interface
+        if hasattr(toolkit, 'method'):
+            del toolkit.method
+        toolkit.reindexObject()
+
+    # possible way to update interface used in registry collections:
+    # 1. get collectionOfInterface(I...) ... get's Collections proxy
+    # 2. use proxy.add(key)  ... (add internally re-registers the given interface)
+    #    - do this for all entries in collections proxy
 
     logger.info("finished")
