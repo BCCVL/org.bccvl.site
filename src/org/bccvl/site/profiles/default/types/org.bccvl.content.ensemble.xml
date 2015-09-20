@@ -4,9 +4,9 @@
    i18n:domain="org.bccvl" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Basic metadata -->
-  <property name="title" i18n:translate="">Ensemble</property>
+  <property name="title" i18n:translate="">Ensemble Analysis</property>
   <property name="description"
-    i18n:translate="">Ensemble</property>
+    i18n:translate="">Ensemble Analysis</property>
   <property name="icon_expr">string:${portal_url}/++resource++experiment.png</property>
   <property name="add_view_expr">string:${folder_url}/newEnsemble</property>
   <property name="global_allow">True</property>
