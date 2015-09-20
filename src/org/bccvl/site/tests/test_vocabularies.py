@@ -159,7 +159,7 @@ class SdmFunctionsSourceTest(unittest.TestCase):
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
         # TODO: this test depends on whatever is setup in org.bccvl.compute:content
-        self.assertEqual(len(source), 19)
+        self.assertEqual(len(source), 17)
 
 
 class TraitsFunctionsSourceTest(unittest.TestCase):
