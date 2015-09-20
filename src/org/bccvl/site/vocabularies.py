@@ -153,6 +153,21 @@ traits_functions_source = CatalogVocabularyFactory(
 )
 
 
+experiment_type_vocabulary = SimpleVocabulary([
+    SimpleTerm("org.bccvl.content.sdmexperiment", "org.bccvl.content.sdmexperiment", u"Species Distribution Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.projectionexperiment", "org.bccvl.content.projectionexperiment", u"Climate Change Experiment"),
+    SimpleTerm("org.bccvl.content.biodiverseexperiment", "org.bccvl.content.biodiverseexperiment", u"Biodiverse Experiment"),
+    SimpleTerm("org.bccvl.content.speciestraitsexperiment", "org.bccvl.content.speciestraitsexperiment", u"Species Trait Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.ensemble", "org.bccvl.content.ensemble", u"Ensemble Analysis"),
+])
+
+
+@provider(IVocabularyFactory)
+def experiment_type_source(context):
+    return experiment_type_vocabulary
+
+
+
 @implementer(IVocabularyFactory)
 class RegistryVocabularyFactory(object):
 

@@ -24,7 +24,7 @@ class IFunction(model.Schema):
         title=_(u"Experiment Type"),
         description =_(u"The experiment type this toolkit can be used for."),
         required=False,
-        vocabulary='experiment_type'
+        vocabulary='experiment_type_source'
         )
 
     schema = Text(

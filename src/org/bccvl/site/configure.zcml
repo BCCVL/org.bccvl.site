@@ -207,6 +207,11 @@
       />
 
   <utility
+      component=".vocabularies.experiment_type_source"
+      name="experiment_type_source"
+      />
+
+  <utility
       component=".vocabularies.layer_source"
       name="layer_source"
       />
