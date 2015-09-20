@@ -56,7 +56,7 @@
       <property name="visible">True</property>
     </object>
     <object name="knowledgebase" meta_type="CMF Action" i18n:domain="plone">
-      <property name="title" i18n:translate="">Knowledgebase</property>
+      <property name="title" i18n:translate="">Knowledge Base</property>
       <property name="description" i18n:translate=""></property>
       <property name="url_expr">string:${portal/knowledgebase/absolute_url}</property>
       <property name="link_target"></property>
