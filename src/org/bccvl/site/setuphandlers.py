@@ -143,6 +143,7 @@ def upgrade_190_200_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
     setup.runImportStepFromProfile(PROFILE_ID, 'propertiestool')
     setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
     # set portal_type of all collections to 'org.bccvl.content.collection'
     for tlf in portal.datasets.values():
         for coll in tlf.values():
