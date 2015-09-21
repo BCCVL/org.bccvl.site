@@ -7,6 +7,13 @@ from org.bccvl.site import MessageFactory as _
 
 class IFunction(model.Schema):
 
+    experiment_type = Choice(
+        title=_(u"Experiment Type"),
+        description =_(u"The experiment type this toolkit can be used for."),
+        required=False,
+        vocabulary='experiment_type_source'
+        )
+
     interpreter = Choice(
         title=_(u"Programming language"),
         description=_(u"The language the code is written in."),
@@ -18,13 +25,6 @@ class IFunction(model.Schema):
         title=_(u"Script"),
         description=_(u"The code being executed"),
         required=True,
-        )
-
-    experiment_type = Choice(
-        title=_(u"Experiment Type"),
-        description =_(u"The experiment type this toolkit can be used for."),
-        required=False,
-        vocabulary='experiment_type_source'
         )
 
     schema = Text(
