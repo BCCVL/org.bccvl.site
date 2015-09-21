@@ -1,4 +1,5 @@
 from plone.supermodel import model
+from plone.autoform import directives
 from zope.schema import TextLine,  Choice, Text, DottedName
 from plone.dexterity.content import Item
 from zope.interface import implementer
@@ -21,18 +22,24 @@ class IFunction(model.Schema):
         required=True,
         )
 
+    directives.widget('script',
+                      rows=40)
     script = Text(
         title=_(u"Script"),
         description=_(u"The code being executed"),
         required=True,
         )
 
+    directives.widget('schema',
+                      rows=40)
     schema = Text(
         title=_(u"Schema"),
         description=_(u"A dexterity schema describing the input parameters for the algorithm"),
         required=True
         )
 
+    directives.widget('output',
+                      rows=40)
     output = Text(
         title=_(u"Output mapping"),
         description=_(u"defines how to import experiment outputs"),
