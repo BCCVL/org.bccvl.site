@@ -291,6 +291,17 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
     experiment_type = None
     genre = ['DataGenreSDMModel']
     multiple = None
+    _algo_dict = None
+
+    @property
+    def algo_dict(self):
+        if self._algo_dict is None:
+            pc = getToolByName(self.context, 'portal_catalog')
+            brains = pc.searchResults(portal_type='org.bccvl.content.function')
+            self._algo_dict = dict(
+                (brain.getId, brain) for brain in brains
+            )
+        return self._algo_dict
 
     def item(self):
         # return dict with keys for experiment
@@ -310,11 +321,19 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             brains = pc.searchResults(path=expbrain.getPath(),
                                       BCCDataGenre=self.genre)
             # TODO: maybe as generator?
-            item['models'] = [{'item': brain,
-                               'uuid': brain.UID,
-                               'title': brain.Title,
-                               'selected': brain.UID in self.value[experiment_uuid]}
-                               for brain in brains]
+            item['models'] = []
+            for brain in brains:
+                # get algorithm term
+                algoid = getattr(brain.getObject(), 'job_params', {}).get('function')
+                algobrain = self.algo_dict.get(algoid, None)
+                item['models'].append(
+                    {'item': brain,
+                     'uuid': brain.UID,
+                     'title': brain.Title,
+                     'selected': brain.UID in self.value[experiment_uuid],
+                     'algorithm': algobrain
+                    }
+                )
         return item
 
     def js(self):
