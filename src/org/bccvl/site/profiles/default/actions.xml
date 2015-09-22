@@ -19,7 +19,7 @@
     </object>
     <object name="datasets_sub" meta_type="CMF Action Category">
       <object name="collections" meta_type="CMF Action" i18n:domain="plone">
-        <property name="title" i18n:translate="">Collections</property>
+        <property name="title" i18n:translate="">Browse Collections</property>
         <property name="description" i18n:translate=""></property>
         <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_collection_list</property>
         <property name="link_target"></property>
@@ -31,7 +31,7 @@
         <property name="visible">True</property>
       </object>
       <object name="browse" meta_type="CMF Action" i18n:domain="plone">
-        <property name="title" i18n:translate="">Browse</property>
+        <property name="title" i18n:translate="">Search Datasets</property>
         <property name="description" i18n:translate=""></property>
         <property name="url_expr">string:${portal/datasets/absolute_url}</property>
         <property name="link_target"></property>
