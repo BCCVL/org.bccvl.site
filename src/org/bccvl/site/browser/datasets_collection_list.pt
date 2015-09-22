@@ -18,34 +18,7 @@
   -->
   <div id="content">
     
-    
-    <ul id="datasets-nav" class="nav nav-tabs" metal:define-macro="datasets_tabs">
-      <li class="tab-datasetslisting"
-            tal:define="selected python: 'active' if view.__name__ == 'datasets_listing_view' else '';"
-            tal:attributes="class string:tab-datasetslisting ${selected}">
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}"><span>Datasets</span></a>
-        </li>
-        <li class="tab-datasetsimport"
-            tal:define="selected python: 'active' if view.__name__ == 'datasets_import_view' else '';"
-            tal:attributes="class string:tab-datasetsimport ${selected}">
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}/datasets_import_view"><span>Discover Dataset</span></a>
-        </li>
-        <li class="tab-datasetsupload"
-            tal:define="selected python: 'active' if view.__name__ == 'datasets_upload_view' else '';"
-            tal:attributes="class string:tab-datasetsupload ${selected}">
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}/datasets_upload_view"><span>Upload Dataset</span></a>
-        </li>
-         <li class="tab-datasetsupload"
-            tal:define="selected python: 'active' if view.__name__ == 'datasets_collection_list' else '';"
-            tal:attributes="class string:tab-datasetsupload ${selected}">
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}/datasets_collection_list"><span>Dataset Collections</span></a>
-        </li>
-    </ul>
-
+    <tal:tabs metal:use-macro="context/datasets_listing_view/datasets_tabs"></tal:tabs>
 
     <!-- search filters -->
     <div class="row" id="datasets-collection-listing" metal:define-macro="datasets_collection-list"
@@ -102,7 +75,7 @@
                      role="button" data-toggle="InfoModal"
                      tal:attributes="href string:${item_url}/modal_view">
                     <i class="fa fa-info" title="More information for this dataset."></i>&nbsp;
-                  More Inforomation</a>                  
+                  More Information</a>                  
                 </div>
 
             </tal:define>
