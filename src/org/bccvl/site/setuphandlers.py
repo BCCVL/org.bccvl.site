@@ -185,7 +185,7 @@ def upgrade_190_200_1(context, logger=None):
         if 'temporal' in md:
             if 'year' not in md:
                 # copy temporal start to year
-                sm = re.search(r'start=(.*?);', str)
+                sm = re.search(r'start=(.*?);', md['temporal'])
                 if sm:
                     md['year'] = int(sm.group(1))
                     # delete temporal
