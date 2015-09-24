@@ -9,6 +9,7 @@ from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
 from org.bccvl.site.content.interfaces import IProjectionExperiment, IEnsembleExperiment, IBiodiverseExperiment
+from org.bccvl.site.behavior.collection import ICollection
 from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
 
 
@@ -141,6 +142,11 @@ def scientific_category(obj, **kw):
     if path:
         return tuple(path)
     return None
+
+
+@indexer(ICollection)
+def scientific_category_collection(obj, **kw):
+    return obj.categories or None
 
 
 @indexer(IDataset)

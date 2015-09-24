@@ -46,6 +46,7 @@
   <include package=".portlets"/>
   <include package=".oauth"/>
   <include package=".faceted"/>
+  <include package=".behavior"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
 
@@ -139,6 +140,11 @@
       />
 
   <adapter
+      factory=".indexers.scientific_category_collection"
+      name="BCCCategory"
+      />
+
+  <adapter
       factory=".indexers.year"
       name="BCCYear"
       />
@@ -198,6 +204,11 @@
   <utility
       component=".vocabularies.traits_functions_source"
       name="traits_functions_source"
+      />
+
+  <utility
+      component=".vocabularies.experiment_type_source"
+      name="experiment_type_source"
       />
 
   <utility

@@ -1,5 +1,5 @@
 from zope.interface import Interface
-from zope.schema import ASCIILine, TextLine, URI, Bool
+from zope.schema import ASCIILine, TextLine, URI, Bool, List
 
 
 class IOAuth1Settings(Interface):
@@ -72,6 +72,12 @@ class IOAuth2Settings(Interface):
     enabled = Bool(
         title=u"Enabled",
         default=False,
+    )
+
+    scope = List(
+        title=u"Scope",
+        required=False,
+        value_type=TextLine()
     )
 
     client_id = TextLine(

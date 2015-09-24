@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.8.6.dev'
+version = '1.9.1.dev'
 
 setup(
     name='org.bccvl.site',
@@ -27,13 +27,13 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',  # distribute
+        'Plone',
         'five.pt',
         'org.bccvl.theme',
         'Products.AutoUserMakerPASPlugin',
         'Products.ShibbolethPermissions',
         'Products.CMFPlacefulWorkflow',
-        # We'll have to depend on gork, otherwise plone.directives.form won't work
-        'plone.app.dexterity [grok]',
+        'plone.app.dexterity',
         'gu.transmogrifier',
         'plone.api',
         'collective.js.jqueryui',

@@ -32,7 +32,7 @@ class MetsView(BrowserView):
         mets = {
             'created': now.isoformat(),
             'title': self.context.title,
-            'description': self.context.description, # use experiment description?
+            'description': self.context.__parent__.description, # use experiment description?
             'creators': self.context.creators, # current users full name,
             'contributors': self.context.contributors,
             'subjects': self.context.subject, # should collect subjects?
@@ -47,7 +47,7 @@ class MetsView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         brains = pc.searchResults(path='/'.join(self.context.getPhysicalPath()),
                                   object_provides=IBlobDataset.__identifier__)
-        
+
         for brain in brains:
             content = brain.getObject()
             # ob.file should be a NamedFile ... need to get fs name for that
@@ -58,7 +58,7 @@ class MetsView(BrowserView):
                 'mimetype': content.file.contentType,
             }
 
-            
+
 class ProvView(BrowserView):
 
     def __call__(self):

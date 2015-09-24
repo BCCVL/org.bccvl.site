@@ -4,6 +4,7 @@ from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from plone import api
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
+from org.bccvl.site import defaults
 import logging
 
 
@@ -134,11 +135,22 @@ def upgrade_190_200_1(context, logger=None):
     if logger is None:
         logger = LOG
     # Run GS steps
+    portal = api.portal.get()
     setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'properties')
     setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
+    setup.runImportStepFromProfile(PROFILE_ID, 'propertiestool')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
+    # set portal_type of all collections to 'org.bccvl.content.collection'
+    for tlf in portal.datasets.values():
+        for coll in tlf.values():
+            if coll.portal_type == 'Folder':
+                coll.portal_type = 'org.bccvl.content.collection'
+
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     # rebuild the catalog to make sure new indices are populated
     logger.info("rebuilding catalog")
     pc = getToolByName(context, 'portal_catalog')
@@ -167,11 +179,13 @@ def upgrade_190_200_1(context, logger=None):
     for bran in pc(object_provides=IDataset.__identifier__):
         obj = brain.getObject()
         md = IBCCVLMetadata(obj)
+        if hasattr(obj, 'rightsstatement'):
+            del obj.rightsstatement
         # temporal may be an attribute or is in md
         if 'temporal' in md:
             if 'year' not in md:
                 # copy temporal start to year
-                sm = re.search(r'start=(.*?);', str)
+                sm = re.search(r'start=(.*?);', md['temporal'])
                 if sm:
                     md['year'] = int(sm.group(1))
                     # delete temporal
@@ -214,5 +228,16 @@ def upgrade_190_200_1(context, logger=None):
     coll.clear()
     logger.info("Migrated OAuth1 settings to Figshare settings")
 
+    for toolkit in portal[defaults.TOOLKITS_FOLDER_ID].values():
+        if hasattr(toolkit, 'interface'):
+            del toolkit.interface
+        if hasattr(toolkit, 'method'):
+            del toolkit.method
+        toolkit.reindexObject()
+
+    # possible way to update interface used in registry collections:
+    # 1. get collectionOfInterface(I...) ... get's Collections proxy
+    # 2. use proxy.add(key)  ... (add internally re-registers the given interface)
+    #    - do this for all entries in collections proxy
 
     logger.info("finished")

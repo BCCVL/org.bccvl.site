@@ -336,8 +336,7 @@ class TestDatasetUpload(unittest.TestCase):
             'speciesoccurrence.widgets.title': u'test species title',
             'speciesoccurrence.widgets.legalcheckbox': [u'selected'],
             'speciesoccurrence.widgets.legalcheckbox-empty-marker': u'1',
-            'speciesoccurrence.widgets.rightsstatement': u'test rights',
-            'speciesoccurrence.widgets.rightsstatement.mimeType': u'text/html',
+            'speciesoccurrence.widgets.rights': u'test rights',
             'speciesoccurrence.widgets.scientificName': u'test species',
             'speciesoccurrence.widgets.taxonID': u'test taxonid',
             'speciesoccurrence.widgets.vernacularName': u'test it'
@@ -347,7 +346,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
                          'http://nohost/plone/datasets')
         ds = self.portal.datasets.species.user['test.csv']
-        self.assertEqual(ds.rightsstatement.raw, u'test rights')
+        self.assertEqual(ds.rights, u'test rights')
         self.assertEqual(ds.file.data, 'species,lon,lat\nSpecies,1,2\nSpecies,2,3\n')
         from org.bccvl.site.interfaces import IBCCVLMetadata
         md = IBCCVLMetadata(ds)
@@ -378,8 +377,7 @@ class TestDatasetUpload(unittest.TestCase):
             'climatecurrent.widgets.title': u'test single layer title',
             'climatecurrent.widgets.legalcheckbox': [u'selected'],
             'climatecurrent.widgets.legalcheckbox-empty-marker': u'1',
-            'climatecurrent.widgets.rightsstatement': u'test rights',
-            'climatecurrent.widgets.rightsstatement.mimeType': u'text/html',
+            'climatecurrent.widgets.rights': u'test rights',
             'climatecurrent.widgets.resolution': u'Resolution5m',
         })
         _ = view()
@@ -387,7 +385,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
                          'http://nohost/plone/datasets')
         ds = self.portal.datasets.climate.user['spc_obl_merc.tif']
-        self.assertEqual(ds.rightsstatement.raw, u'test rights')
+        self.assertEqual(ds.rights, u'test rights')
         self.assertEqual(ds.file.data, data)
         from org.bccvl.site.interfaces import IBCCVLMetadata
         md = IBCCVLMetadata(ds)
@@ -423,8 +421,7 @@ class TestDatasetUpload(unittest.TestCase):
             'climatefuture.widgets.title': u'test smulti layer title',
             'climatefuture.widgets.legalcheckbox': [u'selected'],
             'climatefuture.widgets.legalcheckbox-empty-marker': u'1',
-            'climatefuture.widgets.rightsstatement': u'test rights',
-            'climatefuture.widgets.rightsstatement.mimeType': u'text/html',
+            'climatefuture.widgets.rights': u'test rights',
             'climatefuture.widgets.emsc': u'SRESB2',
             'climatefuture.widgets.gcm': u'cccma-cgcm31',
             'climatefuture.widgets.resolution': u'Resolution5m',
@@ -434,7 +431,7 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
                          'http://nohost/plone/datasets')
         ds = self.portal.datasets.climate.user['spc_obl_merc.zip']
-        self.assertEqual(ds.rightsstatement.raw, u'test rights')
+        self.assertEqual(ds.rights, u'test rights')
         self.assertEqual(ds.file.data, data)
         from org.bccvl.site.interfaces import IBCCVLMetadata
         md = IBCCVLMetadata(ds)

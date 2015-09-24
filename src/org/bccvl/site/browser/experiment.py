@@ -16,7 +16,7 @@ from plone.supermodel import loadString
 from z3c.form.interfaces import DISPLAY_MODE
 from z3c.form.error import MultipleErrors
 from zope.component import getMultiAdapter
-from plone.app.uuid.utils import uuidToCatalogBrain
+from plone.app.uuid.utils import uuidToCatalogBrain, uuidToObject
 from decimal import Decimal
 from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
@@ -313,10 +313,10 @@ class SDMAdd(ParamGroupMixin, Add):
                 raise ActionExecutionError(RequiredMissing('No absence points selected.'))
         else:
             numabspoints = data.get('species_number_pseudo_absence_points')
-            if not numabspoints:
+            if numabspoints is None:
                 raise ActionExecutionError(RequiredMissing('No absence points selected'))
-            elif numabspoints <= 0:
-                raise ActionExecutionError(Invalid('Number of absence points must be greater than 0.'))
+            elif numabspoints < 0:
+                raise ActionExecutionError(Invalid('Number of absence points cannot be negative.'))
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
@@ -358,7 +358,12 @@ class ProjectionAdd(Add):
             raise ActionExecutionError(Invalid('No future climate dataset selected.'))
         models = data.get('species_distribution_models', {})
         if not tuple(chain.from_iterable(x for x in models.values())):
-            raise ActionExecutionError(Invalid('No source dataset selected.'))
+            # FIXME: collecting all errors is better than raising an exception for each single error
+            # TODO: see http://stackoverflow.com/questions/13040487/how-to-raise-a-widgetactionexecutionerror-for-multiple-fields-with-z3cform
+            raise WidgetActionExecutionError(
+                'species_distribution_models',
+                Invalid('No source dataset selected.')
+            )
 
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
@@ -381,7 +386,27 @@ class BiodiverseAdd(Add):
         # ...
         datasets = data.get('projection', {})
         if not tuple(chain.from_iterable(x for x in datasets.values())):
-            raise ActionExecutionError(Invalid('No projection dataset selected.'))
+            raise WidgetActionExecutionError(
+                'projection',
+                Invalid('No projection dataset selected.')
+            )
+        # check if threshold values are in range
+        for dataset in (x for x in datasets.values()):
+            # key: {label, value}
+            dsuuid = dataset.keys()[0]
+            ds = uuidToObject(dsuuid)
+            value = dataset[dsuuid]['value']
+            md = IBCCVLMetadata(ds)
+            # ds should be a projection output which has only one layer
+            # FIXME: error message is not clear enough and
+            #        use widget.errors instead of exception
+            #        also it will only verify if dateset has min/max values in metadata
+            layermd = md['layers'].values()[0]
+            if 'min' in layermd and 'max' in layermd:
+                if value <= layermd['min'] or value >= layermd['max']:
+                    raise WidgetActionExecutionError(
+                        'projection',
+                        Invalid('Selected threshold is out of range'))
 
 
 class EnsembleAdd(Add):

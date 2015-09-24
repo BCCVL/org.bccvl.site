@@ -8,6 +8,9 @@
     <type type_id="Folder">
       <bound-workflow workflow_id="intranet_workflow"/>
     </type>
+    <type type_id="org.bccvl.content.collection">
+      <bound-workflow workflow_id="intranet_workflow"/>
+    </type>
     <type type_id="News Item">
       <bound-workflow workflow_id="intranet_workflow"/>
     </type>

@@ -1,6 +1,7 @@
 {
-    "_type": "Folder",
+    "_type": "org.bccvl.content.collection",
     "title": "User uploaded environmental data",
     "description": "Environmental data uploaded and shared by users",
+    "categories": ["environmental"],
     "_transitions": ["show_internally", "publish_internally"]
 }

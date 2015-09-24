@@ -5,7 +5,9 @@ from Products.ZCatalog.interfaces import ICatalogBrain
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
+from plone.app.contenttypes.browser.folder import FolderView
 from plone.app.contentlisting.interfaces import IContentListing
+from plone.app.contentlisting.interfaces import IContentListingObject
 from org.bccvl.site.interfaces import IBCCVLMetadata, IJobTracker
 from org.bccvl.site.content.interfaces import IExperiment
 from collections import defaultdict
@@ -46,7 +48,7 @@ class ExperimentTools(BrowserView):
 
     def get_state_css(self, itemob=None):
         itemob = itemob or self.context
-        if ICatalogBrain.providedBy(itemob):
+        if ICatalogBrain.providedBy(itemob) or IContentListingObject.providedBy(itemob):
             itemob = itemob.getObject()
         css_map = {
             None: 'success',
@@ -62,7 +64,14 @@ class ExperimentTools(BrowserView):
 
 
 @implementer(IFolderContentsView)
-class ExperimentsListingView(BrowserView):
+class ExperimentsListingView(FolderView):
+
+    def __init__(self, context, request):
+        # update limit_display if it is not already set
+        limit_display = getattr(request, 'limit_display', None)
+        if limit_display is None:
+            request.limit_display = 100
+        super(ExperimentsListingView, self).__init__(context, request)
 
     def new_experiment_actions(self):
         experimenttypes = ('org.bccvl.content.sdmexperiment',
@@ -75,19 +84,18 @@ class ExperimentsListingView(BrowserView):
         actions = ftool.addable_types(experimenttypes)
         return dict((action['id'], action) for action in actions)
 
-    def contentFilter(self):
-        # alternative would be to use @@plone_portal_state
-        # TODO: maybe we can simply parse the request here to change
-        #       sort_order, or do batching?
-        site_path = queryUtility(IPloneSiteRoot).getPhysicalPath()
-        return {
+    def results(self, **kwargs):
+        # set our search filters in kwargs and pass on to super class
+        kwargs.update({
             'path': {
-                'query': '/'.join(site_path + (defaults.EXPERIMENTS_FOLDER_ID, ))
+                'query': '/'.join((self.portal_state.navigation_root_path(),
+                                   defaults.EXPERIMENTS_FOLDER_ID))
             },
             'object_provides': IExperiment.__identifier__,
             'sort_on': 'created',
             'sort_order': 'descending',
-        }
+        })
+        return super(ExperimentsListingView, self).results(**kwargs)
 
     def experiment_details(self, expbrain):
         details = {}

@@ -1,9 +1,10 @@
-from plone.directives import form
+from plone.autoform import directives
+from plone.supermodel import model
 from plone.dexterity.content import Item
 from zope import schema
 from zope.interface import implementer
 from plone.app.contenttypes.interfaces import IFile
-from org.bccvl.site.content.interfaces import IDataset, IBlobDataset
+from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site import MessageFactory as _
 
 
@@ -19,7 +20,7 @@ class Dataset(Item):
         return self.conent_type()
 
 
-class ISpeciesDataset(form.Schema):
+class ISpeciesDataset(model.Schema):
     """
     a schema to drive the forms for species data sets
     """
@@ -49,7 +50,7 @@ class ISpeciesDataset(form.Schema):
     )
 
 
-class ILayerDataset(form.Schema):
+class ILayerDataset(model.Schema):
 
     # more fields;
     #-> projection, spatial units, spatial coverage,
@@ -84,9 +85,9 @@ class ILayerDataset(form.Schema):
         vocabulary=u'gcm_source')
 
 
-class ITraitsDataset(form.Schema):
+class ITraitsDataset(model.Schema):
 
-    form.mode(genre='hidden')
+    directives.mode(genre='hidden')
     genre = schema.Choice(
         title=_(u'Data Genre'),
         default='DataGenreTraits',

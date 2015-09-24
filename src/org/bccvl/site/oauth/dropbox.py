@@ -1,34 +1,27 @@
 from .interfaces import IOAuth2Settings
-from zope.schema import URI, List, TextLine
+from zope.schema import URI
 
 
-class IGoogleDrive(IOAuth2Settings):
-
-    scope = List(
-        title=u"Scope",
-        required=False,
-        default=[u'https://www.googleapis.com/auth/drive'],
-        value_type=TextLine()
-    )
+class IDropbox(IOAuth2Settings):
 
     authorization_url = URI(
         title=u"Authorization url",
         description=u"Url to start user authorization",
-        default="https://accounts.google.com/o/oauth2/auth",
+        default="https://www.dropbox.com/1/oauth2/authorize",
         required=False,
     )
 
     token_url = URI(
         title=u"Token url",
         description=u"Url to token service",
-        default="https://accounts.google.com/o/oauth2/token",
+        default="https://api.dropbox.com/1/oauth2/token",
         required=False,
     )
 
     refresh_url = URI(
         title=u"Refresh url",
         description=u"Url to token refresh service",
-        default="https://accounts.google.com/o/oauth2/token",
+        default="https://api.dropbox.com/1/oauth2/token",
         required=False,
     )
 
@@ -42,7 +35,7 @@ class IGoogleDrive(IOAuth2Settings):
         title=u"Revoke url",
         description=u"Url to revoke authorization",
         # Google OAuth2 would also have programmatic web endpoint to revoke access
-        default="https://security.google.com/settings/security/permissions",
+        default="https://api.dropboxapi.com/1/disable_access_token",
         required=False,
     )
 
@@ -50,4 +43,4 @@ class IGoogleDrive(IOAuth2Settings):
 # TODO: registration should be done via zcml?
 from .vocabulary import oauth_providers
 
-oauth_providers.add_provider(IGoogleDrive, u'Google Drive')
+oauth_providers.add_provider(IDropbox, u'Dropbox')

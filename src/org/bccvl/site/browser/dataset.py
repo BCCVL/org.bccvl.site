@@ -9,29 +9,19 @@ from zope.lifecycleevent import modified
 from org.bccvl.site.interfaces import IBCCVLMetadata
 #from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Five.browser import BrowserView
-
-
-class DatasetDetailsView(BrowserView):
-
-    def metadata(self):
-        return {}
-
-
-
 from Products.statusmessages.interfaces import IStatusMessage
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from org.bccvl.site.interfaces import IJobTracker
 
 class DatasetRemoveView(form.Form):
-    """ 
+    """
     The remove view marks a dataset as 'removed' and deletes the associated blob. It is distinct from the built in delete
     view in that the dataset object is not actually deleted.
     """
 
+    label= u"Do you really want to remove this item?"
     fields = field.Fields()
-    template = ViewPageTemplateFile('dataset_remove.pt')
     enableCSRFProtection = True
 
     @button.buttonAndHandler(u'Remove')
@@ -46,11 +36,16 @@ class DatasetRemoveView(form.Form):
         self.context.reindexObject()
         #####
         IStatusMessage(self.request).add(u'{0[title]} has been removed.'.format({u'title': title}))
-        self.request.response.redirect(aq_parent(parent).absolute_url())
+        self.request.response.redirect(parent.absolute_url())
 
     @button.buttonAndHandler(u'Cancel')
     def handle_cancel(self, action):
         self.request.response.redirect(self.context.absolute_url())
+
+    def render(self):
+        if self.index:
+            return self.index()
+        return super(DatasetRemoveView, self).render()
 
 
 # FIXME: Turn this whole form into something re-usable

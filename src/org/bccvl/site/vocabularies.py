@@ -128,9 +128,10 @@ sdm_functions_source = CatalogVocabularyFactory(
         # },
         'object_provides': 'org.bccvl.site.content.function.IFunction',
         # FIXME: find another way to separate SDM and traits "functions"
-        'id': ['ann', 'bioclim', 'brt', 'circles', 'cta', 'convhull', 'domain',
-               'fda', 'gam', 'gbm', 'glm', 'geoDist', 'geoIDW', 'mahal',
+        'id': ['ann', 'bioclim', 'brt', 'circles', 'cta', 'convhull',
+               'fda', 'gam', 'gbm', 'glm', 'geoDist', 'geoIDW',
                'maxent', 'mars', 'rf', 'sre', 'voronoiHull'],
+        # 'mahal', 'domain'
         'sort_on': 'sortable_title',
     },
 )
@@ -150,6 +151,21 @@ traits_functions_source = CatalogVocabularyFactory(
         'sort_on': 'sortable_title',
     },
 )
+
+
+experiment_type_vocabulary = SimpleVocabulary([
+    SimpleTerm("org.bccvl.content.sdmexperiment", "org.bccvl.content.sdmexperiment", u"Species Distribution Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.projectionexperiment", "org.bccvl.content.projectionexperiment", u"Climate Change Experiment"),
+    SimpleTerm("org.bccvl.content.biodiverseexperiment", "org.bccvl.content.biodiverseexperiment", u"Biodiverse Experiment"),
+    SimpleTerm("org.bccvl.content.speciestraitsexperiment", "org.bccvl.content.speciestraitsexperiment", u"Species Trait Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.ensemble", "org.bccvl.content.ensemble", u"Ensemble Analysis"),
+])
+
+
+@provider(IVocabularyFactory)
+def experiment_type_source(context):
+    return experiment_type_vocabulary
+
 
 
 @implementer(IVocabularyFactory)
@@ -360,26 +376,14 @@ def scientific_category_source(context):
 def data_collections_source(context):
     portal_url = getToolByName(context, 'portal_url')
     catalog = getToolByName(context, 'portal_catalog')
-    group_query = {
-        'object_provides': IFolder.__identifier__,
-        'path': {
-            'query': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
-            'depth': 1
-        }
+    vocab = getUtility(IVocabularyFactory, 'scientific_category_source')(context)
+    coll_query = {
+        'portal_type': 'org.bccvl.content.collection',
+        'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
     }
-
-    def coll_query(brain):
-        return {
-            'object_provides': IFolder.__identifier__,
-            'path': {
-                'query': brain.getPath(),
-                'depth': 1
-            }
-        }
-
-    brains = (
-        item
-        for group in catalog.searchResults(**group_query)
-        for item in catalog.searchResults(**coll_query(group))
-    )
-    return BrainsVocabulary.fromBrains(brains, context)
+    def generate_collections():
+        for term in vocab:
+            coll_query['BCCCategory'] = term.value
+            for brain in catalog.searchResults(**coll_query):
+                yield brain
+    return BrainsVocabulary.fromBrains(generate_collections(), context)

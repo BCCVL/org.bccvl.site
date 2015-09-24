@@ -249,9 +249,17 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
             })
         # update form with updated request
         sdmform.update()
-        transaction.commit()
         # We should have only one SDM
         sdmexp = self.experiments.values()[0]
+        transaction.commit()
+        # setup som threshold values our projection
+        sdmproj = sdmexp.values()[0]['proj_test.tif']
+        md = IBCCVLMetadata(sdmproj)
+        # there is only one layer
+        layermd = md['layers'].values()[0]
+        layermd['min'] = 0.0
+        layermd['max'] = 1.0
+        transaction.commit()
         self.form = BiodiverseExperimentHelper(self.portal, sdmexp)
 
     def test_add_experiment_missing_input(self):
@@ -282,7 +290,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # TODO: update asserts
         self.assertEqual(exp.projection,
                          {unicode(self.form.sdmexp.UID()):
-                          {unicode(self.form.sdmproj.UID()): {'value': Decimal('0.0'), 'label': '0.0'}}})
+                          {unicode(self.form.sdmproj.UID()): {'value': Decimal('0.5'), 'label': '0.5'}}})
         # FIXME: submitting with an empty model list doesn't cause form to fail
         self.assertEqual(exp.cluster_size, 5000)
 
@@ -293,7 +301,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         self.assertEqual(result.job_params['cluster_size'], 5000)
         self.assertEqual(result.job_params['projections'], [{
             "dataset": self.form.sdmproj.UID(),
-            "threshold": {'label': '0.0', 'value': Decimal('0.0')}}])
+            "threshold": {'label': '0.5', 'value': Decimal('0.5')}}])
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state

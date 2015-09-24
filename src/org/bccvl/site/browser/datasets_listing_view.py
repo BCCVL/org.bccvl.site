@@ -1,19 +1,21 @@
 from Products.Five import BrowserView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implementer
-from plone.app.uuid.utils import uuidToObject
+from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone import api
-from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata
+from org.bccvl.site.content.interfaces import IDataset, ISDMExperiment, IProjectionExperiment
+from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata, IJobTracker
 from org.bccvl.site.browser.interfaces import IDatasetTools
 from org.bccvl.site.api.dataset import getdsmetadata
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.interfaces import ISiteRoot
 from zope.security import checkPermission
 from zope.component import getMultiAdapter, getUtility
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 import Missing
 from org.bccvl.site import defaults
+from org.bccvl.site.behavior.collection import ICollection
 from org.bccvl.site.vocabularies import BCCVLSimpleVocabulary
 from itertools import chain
 
@@ -261,6 +263,110 @@ class DatasetTools(BrowserView):
         #         'token': genre.token,
         #         'label': genre.title
         #     }
+
+    def experiment_inputs(self, context=None):
+        # return visualisable input datasets for experiment
+        # - used in overlay and compare pages
+        if context is None:
+            context = self.context
+        pc = getToolByName(self.context, 'portal_catalog')
+        if ISDMExperiment.providedBy(context):
+            # for sdm we return selected occurrence and absence dataset
+            # TODO: once available include pesudo absences from result
+            for dsuuid in (context.species_occurrence_dataset,
+                           context.species_absence_dataset):
+                brain = uuidToCatalogBrain(dsuuid)
+                if brain:
+                    yield brain
+        elif IProjectionExperiment.providedBy(context):
+            # one experiment - multiple models
+            for sdmuuid, models in context.species_distribution_models.items():
+                sdm = uuidToObject(sdmuuid)
+                if not sdm:
+                    continue
+                # yield occurrence / absence points
+                for x in self.experiment_inputs(sdm):
+                    yield x
+                for model in models:
+                    # yield current projections for each model
+                    model_brain = uuidToCatalogBrain(model)
+                    if not model_brain:
+                        continue
+                    res_path = model_brain.getPath().rsplit('/', 1)
+                    for projection in pc.searchResults(path=res_path,
+                                                       BCCDataGenre='DataGenreCP'):
+                        yield projection
+
+    def experiment_results(self, context=None):
+        # return visualisable results for experiment
+        # - used in overlay and compare
+        if context is None:
+            context = self.context
+        pc = getToolByName(self.context, 'portal_catalog')
+        genres = ('DataGenreFP', 'DataGenreCP', 'DataGenreBinaryImage',
+                  'DataGenreENDW_CWE', 'DataGenreENDW_WE',
+                  'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
+                  'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
+                  'DataGenreREDUNDANCY_ALL', 'DataGenreRAREW_CWE',
+                  'DataGenreRAREW_RICHNESS', 'DataGenreRAREW_WE',
+                  'DataGenreEnsembleResult')
+        # context should be a result folder
+        for brain in pc.searchResults(path='/'.join(context.getPhysicalPath()),
+                                      BCCDataGenre=genres):
+            yield brain
+
+    def details(self, context=None):
+        # fetch details about dataset, if attributes are unpopulated
+        # get data from associated collection
+        if context is None:
+            context = self.context
+        coll = context
+        while not (ISiteRoot.providedBy(coll) or ICollection.providedBy(coll)):
+            coll = coll.__parent__
+        # we have either hit siteroot or found a collection
+        ret = {
+            'title': context.title,
+            'description': context.description or coll.description,
+            'attribution': context.attribution or getattr(coll, 'attribution'),
+            'rights': context.rights or coll.rights,
+            'external_description': context.external_description or getattr(coll, 'external_description'),
+        }
+        md = IBCCVLMetadata(context)
+        if 'layers' in md:
+            layers = []
+            for layer in md.get('layers', ()):
+                try:
+                    layers.append(self.layer_vocab.getTerm(layer))
+                except:
+                    layers.append(SimpleTerm(layer, layer, layer))
+            if layers:
+                ret['layers'] = layers
+        return ret
+
+    def collection_layers(self, context=None):
+        # return a list of layers for the whole collection
+        if context is None:
+            context = self.context
+        pc = api.portal.get_tool('portal_catalog')
+        query = {
+            'path': {
+                'query': '/'.join(context.getPhysicalPath()),
+                'depth': -1
+            },
+            'portal_type': ('org.bccvl.content.dataset',
+                            'org.bccvl.content.remotedataset')
+        }
+        # search for datasets
+        brains = pc.searchResults(**query)
+        index = pc._catalog.getIndex('BCCEnviroLayer')
+        # get all layers for all datasets
+        layers = set((l for brain in brains for l in (index.getEntryForObject(brain.getRID()) or ())))
+        layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(context)
+        for layer in sorted(layers):
+            try:
+                yield layer_vocab.getTerm(layer)
+            except:
+                yield SimpleTerm(layer, layer, layer)
 
 
 from Products.AdvancedQuery import In, Eq, Not, Generic, And

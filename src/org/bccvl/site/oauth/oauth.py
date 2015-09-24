@@ -13,7 +13,7 @@ from zope.publisher.interfaces import IPublishTraverse
 from zope.schema.interfaces import IVocabularyFactory
 from zope.security import checkPermission
 from .interfaces import IOAuth1Settings, IOAuth2Settings
-
+from .googledrive import IGoogleDrive
 
 LOG = logging.getLogger(__name__)
 
@@ -115,10 +115,6 @@ class OAuth2View(OAuthBaseView):
         if not token:
             token = {}
 
-        #scope = ["profile", "email"]
-        scope = ['https://www.googleapis.com/auth/userinfo.email',
-                 'https://www.googleapis.com/auth/userinfo.profile']
-
         redirect_url = self.config.redirect_url
         if not redirect_url:
             redirect_url = urljoin(self.request.getURL(), 'callback')
@@ -129,18 +125,22 @@ class OAuth2View(OAuthBaseView):
                                                    'client_secret': self.config.client_secret},
                               auto_refresh_url=self.config.refresh_url,
                               token_updater=self.setToken,
-                              scope=scope)
+                              scope=self.config.scope)
         return oauth
 
     @check_authenticated
     def authorize(self, access_type='offline', approval_prompt='force'):
         # redirect to external service authorisation page
         oauth = self.oauth_session()
-        authorization_url, state = oauth.authorization_url(
-            self.config.authorization_url,
-            # access_type and approval_prompt are Google specific extra
-            # parameters.
-            access_type=access_type, approval_prompt=approval_prompt)
+        if IGoogleDrive.providedBy(self.config):
+            authorization_url, state = oauth.authorization_url(
+                    self.config.authorization_url,
+                    # access_type and approval_prompt are Google specific extra
+                    # parameters.
+                    access_type=access_type, approval_prompt=approval_prompt)
+        else:
+            authorization_url, state = oauth.authorization_url(
+                    self.config.authorization_url)
         # state ... roundtripped by oauth, can be used to verify response
         return_url = self.request.get('HTTP_REFERER')
         self.session[self._skey] = (state, return_url)
@@ -149,9 +149,9 @@ class OAuth2View(OAuthBaseView):
         # TODO: what about failures here? return success/failure
 
     def is_callback(self):
+        return True
         # check if request is a authorize "callback"
-        return (self.config.authorization_url in self.request.get('HTTP_REFERER')
-                and 'code' in self.request.form
+        return ('code' in self.request.form
                 and 'state' in self.request.form)
 
     @check_authenticated
@@ -161,10 +161,13 @@ class OAuth2View(OAuthBaseView):
             raise NotFound(self.context, 'callback', self.request)
         # get current state to verify callback
         state, return_url = self.session.get(self._skey)
+
         # verify oauth callback
         oauth = self.oauth_session(state=state)
+
         # TODO: there should be a better way to get the full request url
         authorization_response = self.request.getURL() + '?' + self.request['QUERY_STRING']
+
         # the request must have some auth_response somewhere?
         # NOTE: since oauthlib 0.7.2 which correctly compares scope
         #       we need export OAUTHLIB_RELAX_TOKEN_SCOPE=1 or catch the Warning

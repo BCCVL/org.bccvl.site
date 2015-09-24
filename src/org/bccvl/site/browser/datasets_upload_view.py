@@ -128,7 +128,7 @@ class SpeciesAbsenceAddForm(BCCVLUploadForm):
         u" 'lon' and 'lat'.</p>")
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rightsstatement')
+        'vernacularName', 'rights')
     datagenre = 'DataGenreSpeciesAbsence'
     categories = ['absence']
     subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
@@ -144,7 +144,7 @@ class SpeciesAbundanceAddForm(BCCVLUploadForm):
         u" 'lon' and 'lat'.</p>")
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rightsstatement')
+        'vernacularName', 'rights')
     datagenre = 'DataGenreSpeciesAbundance'
     categories = ['abundance']
 
@@ -159,7 +159,7 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
         u" 'lon' and 'lat'.</p>")
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
-        'vernacularName', 'rightsstatement')
+        'vernacularName', 'rights')
     datagenre = 'DataGenreSpeciesOccurrence'
     categories = ['occurrence']
     subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
@@ -178,7 +178,7 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'rightsstatement')
+        'rights')
     datagenre = 'DataGenreCC'
     categories = ['current']
     # datatype, gcm, emissionscenario
@@ -199,7 +199,7 @@ class EnvironmentalAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
-        'rightsstatement')
+        'rights')
     datagenre = 'DataGenreE'
     categories = ['environmental']
     # datatype, gcm, emissionscenario
@@ -219,7 +219,7 @@ class ClimateFutureAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'emsc', 'gcm',
-        'resolution', 'resolutiono', 'rightsstatement')
+        'resolution', 'resolutiono', 'rights')
     datagenre = 'DataGenreFC'
     categories = ['future']
     # datatype, gcm, emissionscenario
@@ -234,7 +234,7 @@ class SpeciesTraitAddForm(BCCVLUploadForm):
         u"<p>Upload CSV file to use for species traits modelling.</p>"
 
     fields = Fields(IBlobDataset, IDublinCore, ITraitsDataset).select(
-        'file', 'title', 'description', 'rightsstatement')
+        'file', 'title', 'description', 'rights')
     datagenre = 'DataGenreTraits'
     categories = ['traits']
     subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']

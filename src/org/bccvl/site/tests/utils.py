@@ -1,3 +1,4 @@
+from decimal import Decimal
 from itertools import chain
 import csv
 import json
@@ -158,7 +159,7 @@ class BiodiverseExperimentHelper(object):
             'form.widgets.projection.experiment.0': unicode(self.sdmexp.UID()),
             'form.widgets.projection.dataset.0.count': 1,
             'form.widgets.projection.dataset.0.0.uuid': unicode(self.sdmproj.UID()),
-            'form.widgets.projection.dataset.0.0.threshold': '0.0',
+            'form.widgets.projection.dataset.0.0.threshold': u'0.5',
             'form.widgets.cluster_size': '5000',
         })
         self.request.form.update(data)

@@ -493,7 +493,7 @@ class ProvenanceImporter(object):
             entity.add(DCTERMS['creator'], Literal(obj.Creator()))
             entity.add(DCTERMS['title'], Literal(obj.title))
             entity.add(DCTERMS['description'], Literal(obj.description))
-            entity.add(DCTERMS['rights'], Literal(obj.rights))  # obj.rightsstatement
+            entity.add(DCTERMS['rights'], Literal(obj.rights))
             entity.add(DCTERMS['format'], Literal(obj.file.contentType))
             # TODO: add metadata about file?
             #    genre, layers, emsc, gcm, year

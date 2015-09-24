@@ -1,16 +1,19 @@
-from plone.directives import form
+from plone.supermodel import model
+from plone.autoform import directives
 from zope.schema import TextLine,  Choice, Text, DottedName
 from plone.dexterity.content import Item
 from zope.interface import implementer
 from org.bccvl.site import MessageFactory as _
 
 
-class IFunction(form.Schema):
+class IFunction(model.Schema):
 
-    method = TextLine(
-        title=_(u'Method'),
-        description=_(u"Full dotted name of a python function implementing this algorithm"),
-        required=True)
+    experiment_type = Choice(
+        title=_(u"Experiment Type"),
+        description =_(u"The experiment type this toolkit can be used for."),
+        required=False,
+        vocabulary='experiment_type_source'
+        )
 
     interpreter = Choice(
         title=_(u"Programming language"),
@@ -19,24 +22,24 @@ class IFunction(form.Schema):
         required=True,
         )
 
+    directives.widget('script',
+                      rows=40)
     script = Text(
         title=_(u"Script"),
         description=_(u"The code being executed"),
         required=True,
         )
 
-    interface = DottedName(
-        title=_(u'Interface'),
-        description=_(u"full package name to interface"),
-        required=True
-        )
-
+    directives.widget('schema',
+                      rows=40)
     schema = Text(
         title=_(u"Schema"),
         description=_(u"A dexterity schema describing the input parameters for the algorithm"),
         required=True
         )
 
+    directives.widget('output',
+                      rows=40)
     output = Text(
         title=_(u"Output mapping"),
         description=_(u"defines how to import experiment outputs"),

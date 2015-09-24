@@ -17,7 +17,7 @@ from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata, IDownloadInfo
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
-from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site import defaults
 import logging
 from zope.component import getUtility, queryUtility
@@ -542,19 +542,22 @@ class ExportResult(BrowserView):
 
         zipurl = self.context.absolute_url() + '/resultdownload'
 
-        from org.bccvl.tasks.datamover import export_result
+        from org.bccvl.tasks.celery import app
         from org.bccvl.tasks.plone import after_commit_task
         # FIXME: Do mapping from serviceid to service type? based on interface
         #        background task will need serviceid and type, but it may resolve
         #        servicetype via API with serviceid
-        export_task = export_result.si(
-            zipurl,
-            serviceid, {'context': context_path,
-                        'user': {
-                            'id': member.getUserName(),
-                            'email': member.getProperty('email'),
-                            'fullname': member.getProperty('fullname')
-                            }})
+        export_task = app.signature(
+            "org.bccvl.tasks.export_services.export_result",
+            args=(zipurl,
+                  serviceid, {'context': context_path,
+                              'user': {
+                                  'id': member.getUserName(),
+                                  'email': member.getProperty('email'),
+                                  'fullname': member.getProperty('fullname')
+                              }}),
+            options={'immutable': True});
+
         # queue job submission
         after_commit_task(export_task)
 
