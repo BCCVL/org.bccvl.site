@@ -310,6 +310,12 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
         if self.value:
             experiment_uuid = self.value.keys()[0]
             expbrain = uuidToCatalogBrain(experiment_uuid)
+            if expbrain is None:
+                return {
+                    'title': u'Not Available',
+                    'uuid': experiment_uuid,
+                    'models': []
+                }
             item['title'] = expbrain.Title
             item['uuid'] = expbrain.UID
             exp = expbrain.getObject()
