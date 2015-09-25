@@ -581,6 +581,12 @@ class DemoSDM(BrowserView):
 
     @returnwrapper
     def __call__(self, *args, **kw):
+        # Swift params
+        # FIXME: these values should come from some configuration
+        swift_tenant_id = '0bc40c2c2ff94a0b9404e6f960ae5677'
+        swift_host = 'swift.rc.nectar.org.au:8888'
+        swift_container = 'demosdm'
+
         # get parameters
         lsid = self.request.form.get('lsid', None)
         if not lsid:
@@ -619,9 +625,7 @@ class DemoSDM(BrowserView):
             'function': func.getId(),
             'species_occurrence_dataset': {
                 'uuid': lsid,
-                'species': {
-                    'lsid': lsid,
-                },
+                'species': u'demoSDM',
                 'internalurl': 'ala://ala?lsid={}'.format(lsid),
                 'downloadurl': 'ala://ala?lsid={}'.format(lsid),
             },
@@ -638,7 +642,7 @@ class DemoSDM(BrowserView):
         job_params.update({
             'rescale_all_models': False,
             'selected_models': 'all',
-            'modeling-id': 'bccvl',
+            'modeling_id': 'bccvl',
         })
         # generate script to run
         script = u'\n'.join([
@@ -648,7 +652,7 @@ class DemoSDM(BrowserView):
         # where to store results
         jobid = datetime.now().isoformat()
         result = {
-            'results_dir': 'swift://nectar/{}/'.format(jobid),
+            'results_dir': 'swift://nectar/{}/{}/'.format(swift_container, jobid),
             'outputs': json.loads(func.output)
         }
         # worker hints:
@@ -670,14 +674,11 @@ class DemoSDM(BrowserView):
             'result': result,
         }
         # all set to go build task chain now
-        from org.bccvl.tasks.demo import demo_task
+        from org.bccvl.tasks.compute import demo_task
         from org.bccvl.tasks.plone import after_commit_task
         after_commit_task(demo_task, jobdesc)
         # let's hope everything works, return result
-        # FIXME: these values should come from some configuration
-        swift_tenant_id = '0bc40c2c2ff94a0b9404e6f960ae5677'
-        swift_host = 'swift.rc.nectar.org.au:8888'
-        swift_container = 'demosdm'
+
         return {
             'state': 'https://{}/v1/AUTH_{}/{}/{}/state.json'.format(swift_host, swift_tenant_id, swift_container, jobid),
             'result': 'https://{}/v1/AUTH_{}/{}/{}/projection.tif'.format(swift_host, swift_tenant_id, swift_container, jobid),
