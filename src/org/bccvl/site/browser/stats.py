@@ -1,4 +1,5 @@
 from collections import Counter
+import json
 from operator import itemgetter
 from datetime import datetime, timedelta
 from Products.CMFCore.utils import getToolByName
@@ -6,6 +7,7 @@ from Products.Five.browser import BrowserView
 from plone import api
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.app.contenttypes.interfaces import IFolder
+from org.bccvl.site.interfaces import IJobTracker
 from ..content.interfaces import (
     IExperiment,
     IDataset,
@@ -126,7 +128,8 @@ class StatisticsView(BrowserView):
         runtime = {}
         for x in self._experiments:
             exp = x._unrestrictedGetObject()
-            success = not hasattr(x, 'job_state') or x.job_state in (None, 'COMPLETED')
+            jt = IJobTracker(exp)
+            success = jt.state in (None, 'COMPLETED')
             if not runtime.has_key(x.Type):
                 runtime[x.Type] = {'runtime': 0, 'failed': 0, 'success': 0, 'count': 0}
 
@@ -157,10 +160,9 @@ class StatisticsView(BrowserView):
             # An algorithm is mutually exclusive for SDM or Species Traits experiement.
             exp = x._unrestrictedGetObject()
             for v in exp.values():
-                brain = uuidToCatalogBrain(v.UID())
-                success = brain.job_state in (None, 'COMPLETED')
+                jt = IJobTracker(v)
+                success = jt.state in (None, 'COMPLETED')
 
-                import json
                 algid = v.job_params.get('function') or v.job_params.get('algorithm')
                 # Initialise statistic variables for each algorithm
                 if not algid:
