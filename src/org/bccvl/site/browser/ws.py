@@ -67,4 +67,4 @@ class ALAService(object):
                ('dir', dir),
                ('callback', callback)) if p[1]]
         # TODO: maybe do some error catching here?
-        return urlopen(self.baseurl + 'search.json?' + urlencode(qs))
+        return urlopen(self.baseurl + 'search.json?' + urlencode(qs, True))
