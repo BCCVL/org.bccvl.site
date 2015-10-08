@@ -92,7 +92,6 @@
                   login_url python:test(came_from,
                                         login_url + url_quote('?came_from=' + unicode(came_from)),
                                         login_url);">
-          <image src="aaf_410x100.png" width="250" alt="Log in with AAF credentials" style="margin-bottom:1em;"></image>
           <a i18n:translate="description_log_in_here"
              tal:attributes="href login_url"  class="aaf-logo-link btn btn-success">
             Login with AAF <i class="icon-share-alt icon-white"></i>
