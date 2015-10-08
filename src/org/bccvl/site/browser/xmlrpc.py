@@ -650,7 +650,7 @@ class DemoSDM(BrowserView):
             resource_string('org.bccvl.compute', 'rscripts/eval.R'),
             func.script])
         # where to store results
-        jobid = lsid
+        jobid = datetime.now().isoformat()
         result = {
             'results_dir': 'swift://nectar/{}/{}/'.format(swift_container, jobid),
             'outputs': json.loads(func.output)
