@@ -403,7 +403,8 @@ class BiodiverseAdd(Add):
             #        also it will only verify if dateset has min/max values in metadata
             layermd = md['layers'].values()[0]
             if 'min' in layermd and 'max' in layermd:
-                if value <= layermd['min'] or value >= layermd['max']:
+                # FIXME: at least layermd['min'] may be a string '0', when comparing to decimal from threshold selector, this comparison fails and raises the widget validation error
+                if value <= float(layermd['min']) or value >= float(layermd['max']):
                     raise WidgetActionExecutionError(
                         'projection',
                         Invalid('Selected threshold is out of range'))
