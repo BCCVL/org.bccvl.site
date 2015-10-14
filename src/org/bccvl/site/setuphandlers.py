@@ -2,7 +2,9 @@ from Products.CMFCore.utils import getToolByName
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from plone import api
+from plone.uuid.interfaces import IUUID
 from zope.annotation.interfaces import IAnnotations
+from zope.component import getUtility
 from zope.interface import alsoProvides
 from org.bccvl.site import defaults
 import logging
@@ -55,6 +57,7 @@ def setupVarious(context, logger=None):
         qi.installProduct('AutoUserMakerPASPlugin')
 
     # install local login pas plugin
+    # FIXME: needs to go onto zope root, or needs special admin user in plone site
     acl = portal.acl_users
     if not 'localscript' in acl:
         factory = acl.manage_addProduct['PluggableAuthService']
@@ -97,6 +100,10 @@ def setupVarious(context, logger=None):
             gtool.editGroup(**group)
         else:
             gtool.addGroup(**group)
+
+    # FIXME: some stuff is missing,... initial setup of site is not correct
+    from org.bccvl.site.job.catalog import setup_job_catalog
+    setup_job_catalog(portal)
 
 
 def upgrade_180_181_1(context, logger=None):
@@ -206,7 +213,6 @@ def upgrade_190_200_1(context, logger=None):
     logger.info('Unregistered %d local vocabularies', count)
 
     # migrate OAuth configuration registry to use new interfaces
-    from zope.component import getUtility
     from zope.schema import getFieldNames
     from plone.registry.interfaces import IRegistry
     from .oauth.interfaces import IOAuth1Settings
@@ -241,3 +247,77 @@ def upgrade_190_200_1(context, logger=None):
     #    - do this for all entries in collections proxy
 
     logger.info("finished")
+
+
+def upgrade_200_210_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'toolset')
+
+    from org.bccvl.site.job.catalog import setup_job_catalog
+    setup_job_catalog(portal)
+
+    pc = api.portal.get_tool('portal_catalog')
+    from org.bccvl.site.job.interfaces import IJobUtility
+    jobtool = getUtility(IJobUtility)
+    # search all datasets and create job object with infos from dataset
+    # -> delete job info on dataset
+    DS_TYPES = ['org.bccvl.content.dataset',
+                'org.bccvl.content.remotedataset']
+    for brain in pc.searchResults(portal_type=DS_TYPES):
+        job = jobtool.find_job_by_uuid(brain.UID)
+        if job:
+            # already processed ... skip
+            continue
+        ds = brain.getObject()
+        annots = IAnnotations(ds)
+        old_job = annots.get('org.bccvl.state', None)
+        if not old_job:
+            # no job state here ... skip it
+            continue
+        job = jobtool.new_job()
+        job.message = old_job['progress']['message']
+        job.progress = old_job['progress']['state']
+        job.state = old_job['state']
+        job.title = old_job['name']
+        job.taskid = old_job['taskid']
+        job.userid = ds.getOwner().getId()
+        job.content = IUUID(ds)
+        jobtool.reindex_job(job)
+        del annots['org.bccvl.state']
+
+    # search all experiments and create job object with infos from experiment
+    # -> delete job info on experiment
+    EXP_TYPES = ['org.bccvl.content.sdmexperiment',
+                 'org.bccvl.content.projectionexperiment',
+                 'org.bccvl.content.biodiverseexperiment',
+                 'org.bccvl.content.ensemble',
+                 'org.bccvl.content.speciestraitsexperiment'
+    ]
+    for brain in pc.searchResults(portal_type=EXP_TYPES):
+        # go through all results
+        for result in brain.getObject().values():
+            job = jobtool.find_job_by_uuid(IUUID(result))
+            if job:
+                # already processed ... skip
+                continue
+            annots = IAnnotations(result)
+            old_job = annots.get('org.bccvl.state', None)
+            if not old_job:
+                # no job state here ... skip it
+                continue
+            job = jobtool.new_job()
+            job.message = old_job['progress']['message']
+            job.progress = old_job['progress']['state']
+            job.state = old_job['state']
+            job.title = old_job['name']
+            job.taskid = old_job['taskid']
+            job.userid = result.getOwner().getId()
+            job.content = IUUID(result)
+            jobtool.reindex_job(job)
+            del annots['org.bccvl.state']
+
+    raise Exception()

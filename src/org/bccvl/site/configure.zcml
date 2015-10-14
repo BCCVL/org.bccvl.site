@@ -47,6 +47,7 @@
   <include package=".oauth"/>
   <include package=".faceted"/>
   <include package=".behavior"/>
+  <include package=".job"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
 
@@ -116,7 +117,7 @@
   <adapter
       for=".content.interfaces.IExperiment
            Products.ZCatalog.interfaces.IZCatalog"
-      factory=".indexers.JobStateIndexer"
+      factory=".indexers.ExperimentJobStateIndexer"
       name="job_state"
       />
 
@@ -154,11 +155,6 @@
       name="BCCMonth"
       />
   
-  <adapter
-      for="Products.CMFCore.interfaces.IFolderish"
-      factory=".utilities.JobTracker"
-      />
-
   <adapter factory=".utilities.SDMJobTracker"/>
 
   <adapter factory=".utilities.ProjectionJobTracker"/>

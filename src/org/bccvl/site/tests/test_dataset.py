@@ -280,8 +280,8 @@ class TestDatasetImport(unittest.TestCase):
         md = IBCCVLMetadata(ds)
         self.assertEqual(md['species'], testdata)
         # check job state
-        from org.bccvl.site.interfaces import IJobTracker
-        jt =  IJobTracker(ds)
+        from org.bccvl.site.job.interfaces import IJobTracker
+        jt = IJobTracker(ds)
         self.assertEqual(jt.state, 'PENDING')
         # commit transaction to start job
         # TODO: this test needs a running DataMover. (see below))

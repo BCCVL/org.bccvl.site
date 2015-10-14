@@ -1,21 +1,11 @@
 import unittest2 as unittest
-from urlparse import urljoin
 from decimal import Decimal
-import re
-import time
 import transaction
 
-from zope.component import createObject
-from zope.component import queryUtility
-
-from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import SITE_OWNER_PASSWORD
-
 from org.bccvl.site import defaults
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
-from org.bccvl.site.testing import (BCCVL_INTEGRATION_TESTING,
-                                    BCCVL_FUNCTIONAL_TESTING)
-from org.bccvl.site.tests.utils import TestRequest
+from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IExperimentJobTracker
+from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from org.bccvl.site.tests.utils import SDMExperimentHelper
 from org.bccvl.site.tests.utils import ProjectionExperimentHelper
 from org.bccvl.site.tests.utils import BiodiverseExperimentHelper
@@ -77,7 +67,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job sholud finish
         transaction.commit()
@@ -96,7 +86,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # update form with updated request
         form.update()
         # start experiment
-        jt = IJobTracker(self.experiments['my-experiment'])
+        jt = IExperimentJobTracker(self.experiments['my-experiment'])
         self.assertEqual(jt.state, u'QUEUED')
         #error
         state = jt.start_job(form.request)
@@ -201,7 +191,7 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job should finish
         transaction.commit()
@@ -305,7 +295,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job should finish
         transaction.commit()
@@ -375,7 +365,7 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job should finish
         transaction.commit()
@@ -436,7 +426,7 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job should finish
         transaction.commit()

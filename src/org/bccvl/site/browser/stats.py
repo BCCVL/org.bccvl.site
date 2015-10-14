@@ -7,7 +7,8 @@ from Products.Five.browser import BrowserView
 from plone import api
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.app.contenttypes.interfaces import IFolder
-from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.site.interfaces import IExperimentJobTracker
 from ..content.interfaces import (
     IExperiment,
     IDataset,
@@ -128,7 +129,7 @@ class StatisticsView(BrowserView):
         runtime = {}
         for x in self._experiments:
             exp = x._unrestrictedGetObject()
-            jt = IJobTracker(exp)
+            jt = IExperimentJobTracker(exp)
             success = jt.state in (None, 'COMPLETED')
             if not runtime.has_key(x.Type):
                 runtime[x.Type] = {'runtime': 0, 'failed': 0, 'success': 0, 'count': 0}

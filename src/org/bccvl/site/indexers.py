@@ -10,7 +10,8 @@ from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
 from org.bccvl.site.content.interfaces import IProjectionExperiment, IEnsembleExperiment, IBiodiverseExperiment
 from org.bccvl.site.behavior.collection import ICollection
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker
+from org.bccvl.site.job.interfaces import IJobTracker
 
 
 @indexer(IDataset)
@@ -130,6 +131,21 @@ class JobStateIndexer(object):
                 else:
                     state = 'FAILED'
         return state
+
+
+@implementer(IIndexer)
+class ExperimentJobStateIndexer(object):
+
+    def __init__(self, context, catalog):
+        self.context = context
+        self.catalog = catalog
+
+    def __call__(self, **kw):
+        jt = IExperimentJobTracker(self.context)
+        # TODO: if state is empty check if there is a downloadable file
+        #       Yes: COMPLETED
+        #       No: FAILED
+        return jt.state
 
 
 @indexer(IDataset)

@@ -3,7 +3,8 @@ from z3c.form import button
 from z3c.form.form import extends, applyChanges
 from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
 from zope.schema.interfaces import RequiredMissing
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IExperimentJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit, view
@@ -150,7 +151,7 @@ class View(edit.DefaultEditForm):
     label = ''
 
     def job_state(self):
-        return IJobTracker(self.context).state
+        return IExperimentJobTracker(self.context).state
 
     # condition=lambda form: form.showApply)
     @button.buttonAndHandler(u'Start Job')
@@ -161,7 +162,7 @@ class View(edit.DefaultEditForm):
             self.status = self.formErrorsMessage
             return
 
-        msgtype, msg = IJobTracker(self.context).start_job(self.request)
+        msgtype, msg = IExperimentJobTracker(self.context).start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
         self.request.response.redirect(self.context.absolute_url())
@@ -232,7 +233,7 @@ class Add(add.DefaultAddForm):
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"),
                                                       "info")
         # auto start job here
-        jt = IJobTracker(obj)
+        jt = IExperimentJobTracker(obj)
         msgtype, msg = jt.start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)

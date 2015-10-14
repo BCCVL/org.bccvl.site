@@ -12,19 +12,10 @@ class IDownloadInfo(Interface):
     alturl   ... a tuple of alternative urls
     """
 
-
-class IJobTracker(Interface):
-
-    def start_job(request):
-        """
-        start this job
-        """
-
-    def get_job():
-        """
-        return the job instance
-        """
-
+class IExperimentJobTracker(Interface):
+    """
+    helper to work with experiment jobs
+    """
 
 class IComputeMethod(Interface):
 

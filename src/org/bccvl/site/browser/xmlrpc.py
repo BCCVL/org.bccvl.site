@@ -10,7 +10,8 @@ from zope.publisher.interfaces import NotFound
 from decorator import decorator
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone import api
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker
+from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
@@ -501,7 +502,7 @@ class DataMover(BrowserView):
 
         # 2. create and push alaimport job for dataset
         # TODO: make this named adapter
-        jt = IJobTracker(ds)
+        jt = IExperimentJobTracker(ds)
         status, message = jt.start_job()
         # reindex object to make sure everything is up to date
         ds.reindexObject()
