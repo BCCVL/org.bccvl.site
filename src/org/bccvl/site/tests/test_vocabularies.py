@@ -1,4 +1,4 @@
-import unittest2 as unittest
+import unittest
 from zope.schema.interfaces import IVocabularyFactory, IVocabulary
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from plone.uuid.interfaces import IUUID

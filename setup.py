@@ -61,10 +61,8 @@ setup(
     extras_require={
         'test': [
             'plone.app.testing',
-            'unittest2'
         ],
         'deprecated':  [
-            'gu.z3cform.rdf',
         ],
         'experimental': [
         ],

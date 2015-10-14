@@ -1,4 +1,4 @@
-import unittest2 as unittest
+import unittest
 import doctest
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from org.bccvl.site.interfaces import IBCCVLMetadata
