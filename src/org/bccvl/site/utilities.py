@@ -990,3 +990,10 @@ class ALAJobTracker(MultiJobTracker):
         jt.set_progress('PENDING', u'ALA import pending')
 
         return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+
+    @property
+    def state(self):
+        jt = IJobTracker(self.context, None)
+        if jt is None:
+            return None
+        return jt.state
