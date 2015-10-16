@@ -389,7 +389,7 @@ class JobManagerAPI(BrowserView):
 
     @returnwrapper
     def getJobStates(self):
-        return IJobTracker(self.context).states
+        return IExperimentJobTracker(self.context).states
 
 
 from ZPublisher.Iterators import IStreamIterator

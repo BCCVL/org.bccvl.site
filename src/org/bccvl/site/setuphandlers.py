@@ -279,6 +279,7 @@ def upgrade_200_210_1(context, logger=None):
             # no job state here ... skip it
             continue
         job = jobtool.new_job()
+        job.created = ds.created()
         job.message = old_job['progress']['message']
         job.progress = old_job['progress']['state']
         job.state = old_job['state']
@@ -310,6 +311,7 @@ def upgrade_200_210_1(context, logger=None):
                 # no job state here ... skip it
                 continue
             job = jobtool.new_job()
+            job.created = result.created()
             job.message = old_job['progress']['message']
             job.progress = old_job['progress']['state']
             job.state = old_job['state']
@@ -319,5 +321,3 @@ def upgrade_200_210_1(context, logger=None):
             job.content = IUUID(result)
             jobtool.reindex_job(job)
             del annots['org.bccvl.state']
-
-    raise Exception()

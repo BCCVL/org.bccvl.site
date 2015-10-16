@@ -59,6 +59,7 @@ class JobCatalog(Catalog):
         self._v_result_class = mybrains
 
 
+# TODO: maybe use Zope's ZCatalog as base and not Plone's CatalogTool ?
 @implementer(IJobCatalog)
 class JobCatalogTool(CatalogTool):
     """
@@ -75,11 +76,10 @@ class JobCatalogTool(CatalogTool):
         {'id':'title', 'type': 'string', 'mode':'w'},
     )
 
-    jobs = OOBTree()
-
     def __init__(self):
         super(JobCatalogTool, self).__init__()
         self._catalog = JobCatalog()
+        self.jobs = OOBTree()
 
     security.declareProtected(ManagePortal, 'clearFindAndRebuild')
     def clearFindAndRebuild(self):
@@ -88,20 +88,16 @@ class JobCatalogTool(CatalogTool):
         with an indexObject method), and reindexes them.
         This may take a long time.
         """
-
-        def indexObject(obj, path):
-            self.reindexObject(obj)
-
         self.manage_catalogClear()
 
-        portal = api.portal.get()
-        import ipdb; ipdb.set_trace()
-        # FIXME: change root to traverse from, ... make sure that our simple objects are found
-        portal.ZopeFindAndApply(portal,
-                                #""" put your meta_type here """,
-                                obj_metatypes=(),
-                                search_sub=True, apply_func=indexObject)
+        for job in self.jobs.values():
+            self.reindexObject(job, uid=job.id)
 
+    # FIXME: either Job objects need to be locatable (SimpleItems)
+    #        or we should override a few more methods here (and potentially in Catalog class as well), because currently indexed objects don't have a path or url (they are not Acquisition providers, and are therefore not accessible via traverse?)
+    #        - self.catalog_object
+    #        - self.resolve_url
+    #        - self.resolve_path
 
 InitializeClass(JobCatalogTool)
 
@@ -120,11 +116,10 @@ def setup_job_catalog(portal):
 
     cat = api.portal.get_tool('job_catalog')  # do interface lookup?
     #cat.addIndex('name', 'type', 'attribute/method')
-    addIndex(cat, 'id', 'FieldIndex')
-    addIndex(cat, 'user', 'FieldIndex')
+    addIndex(cat, 'userid', 'FieldIndex')
     addIndex(cat, 'state', 'FieldIndex')
     addIndex(cat, 'content', 'FieldIndex')
-
+    addIndex(cat, 'created', 'DateIndex')
 
     #cat.addColumn('name')
     addColumn(cat, 'id')

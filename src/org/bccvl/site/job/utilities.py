@@ -1,8 +1,8 @@
 import uuid
+from DateTime import DateTime
 from plone import api
 from plone.uuid.interfaces import IUUID
 from zope.component import getUtility
-from zope.location.location import located
 from zope.interface import implementer
 from org.bccvl.site.job.interfaces import IJobUtility, IJobTracker
 from org.bccvl.site.job.job import Job
@@ -20,9 +20,11 @@ class JobUtility(object):
         job = Job()
         job.id = str(uuid.uuid1())
         job.state = 'PENDING'
+        job.created = DateTime()
+        job.userid = api.user.get_current().getId()
         cat = self._catalog()
         cat.jobs[job.id] = job
-        return located(job, cat, job.id)
+        return job
 
     def reindex_job(self, job):
         self._catalog().reindexObject(job, uid=job.id)
@@ -31,7 +33,12 @@ class JobUtility(object):
         return self._catalog().jobs[id]
 
     def find_job_by_uuid(self, uuid):
-        brains = self._catalog().searchResults(content=uuid)
+        """
+        return latest job for content object
+        """
+        brains = self._catalog().searchResults(content=uuid,
+                                               sort_on='created',
+                                               sort_order='reverse')
         if not brains:
             return None
         return brains[0].getObject()
@@ -121,10 +128,12 @@ class JobTracker(object):
             job.message = message
             self.job_tool.reindex_job(job)
 
-    def new_job(self, id, name):
+    def new_job(self, taskid, title):
         # FIXME: this is duplicate API ... should probably go away
         job = self.job_tool.new_job()
         job.content = IUUID(self.context)
+        job.taskid = taskid
+        job.title = title
         self.job_tool.reindex_job(job)
         return job
 

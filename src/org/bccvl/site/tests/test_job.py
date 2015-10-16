@@ -25,7 +25,7 @@ class JobSetupTest(unittest.TestCase):
         self.assertEqual(jc.meta_type, 'JobCatalog')
         # TODO: test indices and columns
 
-        self.assertEqual(set(jc.indexes()), set(['id', 'user', 'state', 'content']))
+        self.assertEqual(set(jc.indexes()), set(['userid', 'state', 'content', 'created']))
         self.assertEqual(set(jc.schema()), set(['id', 'state', 'content']))
 
 
