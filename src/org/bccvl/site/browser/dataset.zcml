@@ -28,13 +28,23 @@
             Pages, PagesPage -->
     <!-- TODO: check if Public permission is correct here -->
     <browser:page
-        for="..content.dataset.IDataset"
+        for="..content.interfaces.IDataset"
         name="remove"
         class=".dataset.DatasetRemoveView"
+        template = "dataset_remove.pt"
         permission="cmf.ModifyPortalContent"
         />
 
-
+    <browser:page
+        name="collection_listing"
+        for="..behavior.collection.ICollection"
+        class="plone.dexterity.browser.view.DefaultView"
+        layer="plone.app.contenttypes.interfaces.IPloneAppContenttypesLayer"
+        template="collection_listing.pt"
+        permission="zope2.View"
+        menu="plone_displayviews"
+        title="Collection Standard view"
+        />
     
     <browser:page
         name="dataset_tools"
@@ -62,11 +72,13 @@
     <browser:page
         name="datasets_collection_list"
         for="Products.CMFCore.interfaces.IFolderish"
+        class=".datasets_collection_list.DatasetsCollectionListView"
         template="datasets_collection_list.pt"
         permission="zope2.View"
         />
 
     <!-- using menu and title is a shortcut for a separate browser:menuItem tag -->
+    <!-- TODO: menu attributes used in display menu, entry in portal_types available views is still necessary to menu item appear -->
     <browser:page
         name="datasets_listing_view"
         for="plone.app.contenttypes.interfaces.IFolder"
@@ -102,7 +114,7 @@
     />
 
     <browser:page
-        for="..content.dataset.IDataset"
+        for="..content.interfaces.IDataset"
         name="editfilemetadata"
         class=".dataset.CrudFileMetadataForm"
         permission="cmf.ModifyPortalContent"
@@ -111,14 +123,6 @@
     <cache:ruleset
         for=".dataset.CrudFileMetadataForm"
         ruleset="plone.content.itemView"
-        />
-
-    <browser:page
-        for="..content.dataset.IDataset"
-        name="details"
-        class=".dataset.DatasetDetailsView"
-        template="dataset_details.pt"
-        permission="zope2.View"
         />
 
     <!-- <browser:page -->

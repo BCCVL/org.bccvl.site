@@ -1,5 +1,5 @@
 from zope.interface import Interface
-from zope.schema import ASCIILine, TextLine, URI, Bool
+from zope.schema import ASCIILine, TextLine, URI, Bool, List
 
 
 class IOAuth1Settings(Interface):
@@ -10,6 +10,7 @@ class IOAuth1Settings(Interface):
 
     title = TextLine(
         title=u"Name",
+        description=u"Used for display",
     )
 
     enabled = Bool(
@@ -19,36 +20,40 @@ class IOAuth1Settings(Interface):
 
     client_key = TextLine(
         title=u"Client key",
+        description=u"Key associated with this application",
         required=False,
     )
     client_secret = TextLine(
         title=u"Client secret",
+        description=u"Secret associated with this application",
         required=False,
     )
-    oauth_url = URI(
-        title=u"OAuth url",
-        required=False,
-    )
+
     authorization_url = URI(
         title=u"Authorization url",
+        description=u"Url to start user authorization",
         required=False,
     )
     request_url = URI(
         title=u"Request url",
+        description=u"Url to request token",
         required=False,
     )
     access_url = URI(
-        title=u"Acces url",
+        title=u"Access url",
+        description=u"Url to get access token",
         required=False,
     )
 
     redirect_url = URI(
         title=u"Redirect url",
+        description=u"Url to redirect to after successful authorization",
         required=False,
     )
 
     revoke_url = URI(
         title=u"Revoke url",
+        description=u"Url to revoke authorization",
         required=False,
     )
 
@@ -61,6 +66,7 @@ class IOAuth2Settings(Interface):
 
     title = TextLine(
         title=u"Name",
+        description=u"Used for display",
     )
 
     enabled = Bool(
@@ -68,36 +74,49 @@ class IOAuth2Settings(Interface):
         default=False,
     )
 
+    scope = List(
+        title=u"Scope",
+        required=False,
+        value_type=TextLine()
+    )
+
     client_id = TextLine(
         title=u"Client id",
+        description=u"ID associated with this application",
         required=False,
     )
 
     client_secret = TextLine(
         title=u"Client secret",
+        description=u"Secret associated with this application",
         required=False,
     )
 
     authorization_url = URI(
         title=u"Authorization url",
+        description=u"Url to start user authorization",
         required=False,
     )
 
     token_url = URI(
         title=u"Token url",
+        description=u"Url to token service",
         required=False,
     )
     refresh_url = URI(
         title=u"Refresh url",
+        description=u"Url to token refresh service",
         required=False,
     )
 
     redirect_url = URI(
         title=u"Redirect url",
+        description=u"Url to redirect to after successful authorization",
         required=False,
     )
 
     revoke_url = URI(
         title=u"Revoke url",
+        description=u"Url to revoke authorization",
         required=False,
     )

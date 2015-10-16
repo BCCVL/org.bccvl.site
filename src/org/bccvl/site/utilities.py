@@ -1,17 +1,16 @@
 from datetime import datetime
-from decimal import Decimal
 from urlparse import urlsplit
 from itertools import chain
 import os.path
 import tempfile
-from org.bccvl.site.utils import Period
-from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     IExperiment, ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
-from org.bccvl.site.interfaces import IJobTracker, IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData
-from org.bccvl.site.api import dataset
+from org.bccvl.site.interfaces import IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData
+from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.site.interfaces import IExperimentJobTracker
 from org.bccvl.tasks.ala_import import ala_import
 from org.bccvl.tasks.plone import after_commit_task
 from persistent.dict import PersistentDict
@@ -83,101 +82,13 @@ def CatalogBrainDownloadInfo(brain):
     # brain has at least getURL, getRemoteUrl
 
 
-@implementer(IJobTracker)
-class JobTracker(object):
-    # TODO: maybe split state and progress....
-    #       state ... used as internal state tracking
-    #       progress ... used to track steps a task walks through
-    #                    maybe even percentage?
-    # job_info:
-    #   - taskid ... unique id of task
-    #   - name ... task name
-    #   - state ... QUEUED, RUNNING, COMPLETED, FAILED
-    #   - progress ... a dict with task specific progress
-    #     - state ... short note of activity
-    #     - message ... short descr of activity
-    #     - .... could be more here; e.g. percent complete, steps, etc..
-
-    _states = ('QUEUED', 'RUNNING', 'COMPLETED', 'FAILED', 'REMOVED')
+@implementer(IExperimentJobTracker)
+class MultiJobTracker(object):
+    # used for content objects that don't track jobs directly, but may have
+    # multiple child objects with separate jobs
 
     def __init__(self, context):
         self.context = context
-        annots = IAnnotations(self.context)
-        self._state = annots.get('org.bccvl.state', None)
-
-    def _getstate(self, key):
-        # if we don't have annotations none have been written yet
-        if self._state:
-            return self._state[key]
-        return None
-
-    def _setstate(self, **kw):
-        # We want to write annotations so make sure there is something to write to
-        if not self._state:
-            annots = IAnnotations(self.context)
-            self._state = annots['org.bccvl.state'] = PersistentDict()
-        self._state.update(kw)
-        
-        # Update experiment's state as well
-        exp = self.context.__parent__
-        if IExperiment.providedBy(exp):
-            exp.reindexObject()            
-
-    def _comparestate(self, state1, state2):
-        """
-        -1 if state1 < state2
-        0  if state1 == state2
-        1  if state1 > state2
-        """
-        if any(map(lambda x: x is None, [state1, state2])):
-            if all(map(lambda x: x is None, [state1, state2])):
-                return 0
-            return -1 if state1 is None else 1
-
-        # TODO: may raise ValueError if state not in list
-        idx1 = self._states.index(state1)
-        idx2 = self._states.index(state2)
-        return cmp(idx1, idx2)
-
-    @property
-    def state(self):
-        return self._getstate('state')
-
-    @state.setter
-    def state(self, state):
-        # make sure we can only move forward in state
-        if self._comparestate(self.state, state):
-            self._setstate(state=state)
-
-    def is_active(self):
-        return (self.state not in
-                (None, 'COMPLETED', 'FAILED', 'REMOVED'))
-
-    def new_job(self, taskid, name):
-        # clear state annotation
-        self._state = None
-        # create new state annotation
-        self._setstate(state='QUEUED',
-                       taskid=taskid,
-                       name=name)
-
-    def set_progress(self, state, message, **kw):
-        self._setstate(progress=dict(
-            state=state,
-            message=message,
-            **kw
-        ))
-
-    def start_job(self, request):
-        raise NotImplementedError()
-
-    def progress(self):
-        return self._getstate('progress')
-
-
-class MultiJobTracker(JobTracker):
-    # used for content objects that don't track jobs directly, but may have
-    # multiple child objects with separate jobs
 
     @property
     def state(self):
@@ -210,7 +121,7 @@ class MultiJobTracker(JobTracker):
             else:
                 return u'COMPLETED'
         # is everything still in Nem or Queued?
-        queued = all((state in ('QUEUED', ) for state in states))
+        queued = all((state in ('PENDING', 'QUEUED') for state in states))
         if queued:
             return u'QUEUED'
         return u'RUNNING'
@@ -226,6 +137,10 @@ class MultiJobTracker(JobTracker):
             if state:
                 states.append((item.getId(), state))
         return states
+
+    def is_active(self):
+        return (self.state not in
+                (None, 'COMPLETED', 'FAILED', 'REMOVED'))
 
 
 # TODO: should this be named adapter as well in case there are multiple
@@ -304,7 +219,7 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if IFile.providedBy(ds):
                 if ds.file is not None:
                     dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
@@ -330,7 +245,7 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if IFile.providedBy(ds):
                 if ds.file is not None:
                     dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
@@ -399,10 +314,11 @@ class ProjectionJobTracker(MultiJobTracker):
         # get more metadata about dataset
         dsmd = IBCCVLMetadata(dsbrain.getObject())
 
-        year = Period(dsmd['temporal']).start if dsmd['temporal'] else None
+        year = dsmd.get('year', None)
+        month = dsmd.get('month', None)
         # TODO: get proper labels for emsc, gcm
-        title = u'{} - project {}_{}_{} {}'.format(
-            self.context.title, dsmd['emsc'], dsmd['gcm'], year,
+        title = u'{} - project {}_{}_{} {} {}'.format(
+            self.context.title, dsmd['emsc'], dsmd['gcm'], year or '', month or '',
             datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
         result = createContentInContainer(
             self.context,
@@ -411,6 +327,7 @@ class ProjectionJobTracker(MultiJobTracker):
         result.job_params = {
             'species_distribution_models': sdmuuid,
             'year': year,
+            'month': month,
             'emsc': dsmd['emsc'],
             'gcm': dsmd['gcm'],
             'resolution': dsmd['resolution'],
@@ -421,7 +338,7 @@ class ProjectionJobTracker(MultiJobTracker):
     def _createProvenance(self, result):
         provdata = IProvenanceData(result)
         from rdflib import URIRef, Literal, Namespace, Graph
-        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.namespace import RDF, FOAF, DCTERMS, XSD
         from rdflib.resource import Resource
         PROV = Namespace(u"http://www.w3.org/ns/prov#")
         BCCVL = Namespace(u"http://ns.bccvl.org.au/")
@@ -480,7 +397,7 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ds.file is not None:
                 dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
@@ -508,7 +425,7 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if IFile.providedBy(ds):
                 if ds.file is not None:
                     dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
@@ -635,7 +552,7 @@ class BiodiverseJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ds.file is not None:
                 dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # threshold used:
@@ -680,18 +597,17 @@ class BiodiverseJobTracker(MultiJobTracker):
 
                 emsc = dsmd.get('emsc')
                 gcm = dsmd.get('gcm')
-                period = dsmd.get('temporal')
+                year = dsmd.get('year')
+                month = dsmd.get('month')
                 resolution = dsmd.get('resolution')
-                if not period:
+                if not year:
                     year = 'current'
-                else:
-                    year = Period(period).start if period else None
-                key = (emsc, gcm, year, resolution)
+                key = (emsc, gcm, year, month, resolution)
                 datasets.setdefault(key, []).append((projds, threshold))
 
             # create one job per dataset group
             for key, datasets in datasets.items():
-                (emsc, gcm, year, resolution) = key
+                (emsc, gcm, year, month, resolution) = key
 
                 # create result object:
                 if year == 'current':
@@ -799,7 +715,7 @@ class EnsembleJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ds.file is not None:
                 dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
@@ -927,7 +843,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))  # ds.rightsstatement
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ds.file is not None:
                 dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
             # location / source
@@ -993,7 +909,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
 # TODO: named adapter
 @adapter(IDataset)
-class ALAJobTracker(JobTracker):
+class ALAJobTracker(MultiJobTracker):
 
     def _createProvenance(self, result):
         provdata = IProvenanceData(result)
@@ -1069,7 +985,15 @@ class ALAJobTracker(JobTracker):
         # FIXME: we don't have a backend task id here as it will be started
         #        after commit, when we shouldn't write anything to the db
         #        maybe add another callback to set task_id?
-        self.new_job('TODO: generate id', 'generate taskname: ala_import')
-        self.set_progress('PENDING', u'ALA import pending')
+        jt = IJobTracker(self.context)
+        jt.new_job('TODO: generate id', 'generate taskname: ala_import')
+        jt.set_progress('PENDING', u'ALA import pending')
 
         return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+
+    @property
+    def state(self):
+        jt = IJobTracker(self.context, None)
+        if jt is None:
+            return None
+        return jt.state

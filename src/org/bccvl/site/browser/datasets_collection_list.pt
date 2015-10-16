@@ -18,38 +18,11 @@
   -->
   <div id="content">
     
-    
-    <ul id="datasets-nav" class="nav nav-tabs" metal:define-macro="datasets_tabs">
-      <li class="tab-datasetslisting"
-            tal:define="selected python: 'active' if view.__name__ == 'datasets_listing_view' else '';"
-            tal:attributes="class string:tab-datasetslisting ${selected}">
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}"><span>Datasets</span></a>
-        </li>
-        <li class="tab-datasetsimport"
-            tal:define="selected python: 'active' if view.__name__ == 'datasets_import_view' else '';"
-            tal:attributes="class string:tab-datasetsimport ${selected}">
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}/datasets_import_view"><span>Discover Dataset</span></a>
-        </li>
-        <li class="tab-datasetsupload"
-            tal:define="selected python: 'active' if view.__name__ == 'datasets_upload_view' else '';"
-            tal:attributes="class string:tab-datasetsupload ${selected}">
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}/datasets_upload_view"><span>Upload Dataset</span></a>
-        </li>
-         <li class="tab-datasetsupload"
-            tal:define="selected python: 'active' if view.__name__ == 'datasets_collection_list' else '';"
-            tal:attributes="class string:tab-datasetsupload ${selected}">
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}/datasets_collection_list"><span>Dataset Collections</span></a>
-        </li>
-    </ul>
-
+    <tal:tabs metal:use-macro="context/datasets_listing_view/datasets_tabs"></tal:tabs>
 
     <!-- search filters -->
     <div class="row" id="datasets-collection-listing" metal:define-macro="datasets_collection-list"
-         tal:define="groups python:context.restrictedTraverse('@@folderListing')(portal_type='Folder');
+         tal:define="groups view/categories;
 
                      plone_view context/@@plone;
                      pas_member context/@@pas_member;
@@ -66,38 +39,49 @@
       <section class="listing"
              summary="Collection listing"
              i18n:attributes="summary summary_content_listing;"
-             tal:define="batch python:group.getObject().restrictedTraverse('@@folderListing')(portal_type='Folder');">
+             tal:define="batch python:context.portal_catalog.searchResults(portal_type='org.bccvl.content.collection', BCCCategory=group.value);">
         
         <div class="span12">
-          <h2 tal:content="group/Title">Collection Type Title</h2>
+          <h2 tal:content="group/title">Collection Type Title</h2>
           <hr/>
         </div>
 
           <tal:repeat tal:repeat="item batch">
             <div class="span4 bccvl-dataset-collection"
                 tal:define="context_url context/absolute_url">
-            <tal:define tal:define="item_title_or_id item/Title|item/getId;
-                                    item_url item/getURL|item/absolute_url;
-                                    explore_url string:${context_url}/?datasets.filter.source%3Alist=${group/getId}-${item/getId};
-                                    item_description item/Description;
-                                    item_obj item/getObject;
-                                    "
+              <tal:define tal:define="item_id item/getId;
+                                      item_title_or_id item/Title|item_id;
+                                      item_url item/getURL|item/absolute_url;
+                                      explore_url python:view.get_browse_link(item.UID);
+                                      item_description item/Description;
+                                      "
                         metal:define-macro="datasets_listitem">
                 <div class="collection-info">
-                  <h3 href="#"
-                     tal:attributes="href item_url;
-                                     title item_description;"
-                    tal:content="item_title_or_id">Item Title</h3>
+                  <h3>
+                    <a href="#"
+                       tal:attributes="href explore_url;
+                                       title item_description;">
+                       <tal:r tal:replace="item_title_or_id">Item Title</tal:r></a>
+                       &nbsp;
+                       <a class="btn btn-info btn-small" href="#"
+                         role="button" data-toggle="InfoModal" title="More information for this dataset."
+                         tal:attributes="href string:${item_url}/modal_view">
+                           <i class="fa fa-info-circle"></i>
+                       </a>
+                  </h3>
 
                   <p tal:condition="item_description"
                      tal:content="item_description"
                     i18n:translate="">description</p>
 
                   <p tal:condition="not:item_description"
-                    i18n:translate=""><em>No description has been provided for this collection.</p>
+                    i18n:translate=""><em>No description has been provided for this collection.</em></p>
 
-                  <a href="#" class="btn btn-primary btn-small" target="_blank"
-                     tal:attributes="href explore_url"><i class="fa fa-folder-open"></i>&nbsp; Explore Collection</a>
+                  <a href="#"
+                       tal:attributes="href explore_url;
+                                       title item_description;">
+                    <i class="fa fa-chevron-right-cricle" title="Browse datasets in this collection."></i>&nbsp;
+                  Search Collection</a>                  
                 </div>
 
             </tal:define>

@@ -1,5 +1,12 @@
 {
-    "_type": "Folder",
+    "_type": "org.bccvl.content.collection",
     "title": "Global PET and Aridity",
+    "description": "High-resolution global raster climate data related to evapo-transpiration processes and rainfall deficit for potential vegetative growth. The Global-PET and Global-Aridity are both modeled using the data available from WorldClim Global Climate Data (http://WorldClim.org).",
+    "attribution": [
+        "Zomer RJ, Trabucco A, Bossio DA, van Straaten O, Verchot LV, 2008. Climate Change Mitigation: A Spatial Analysis of Global Land Suitability for Clean Development Mechanism Afforestation and Reforestation. Agric. Ecosystems and Envir. 126: 67-80.",
+        "Zomer RJ, Bossio DA, Trabucco A, Yuanjie L, Gupta DC & Singh VP, 2007. Trees and Water: Smallholder Agroforestry on Irrigated Lands in Northern India. Colombo, Sri Lanka: International Water Management Institute. pp 45. (IWMI Research Report 122)."
+    ],
+    "external_description": "See <a href=\"http://www.cgiar-csi.org/data/global-aridity-and-pet-database\">http://www.cgiar-csi.org/data/global-aridity-and-pet-database</a>",
+    "categories": ["environmental"],
     "_transitions": ["show_internally", "publish_internally"]
 }

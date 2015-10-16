@@ -9,7 +9,8 @@ from org.bccvl.site.content.dataset_base import DatasetFieldMixin
 #class DatasetDisplayView(DatasetFieldMixin, DefaultView):
 class DatasetDisplayView(DatasetFieldMixin, DisplayForm):
 
-    # TODO: could use @additionalSchemata again now that rightsstatement is custom field
+    # TODO: merge this somehow with modal_view in theme?
+    # TODO: look into using additionalSchemata to include behaviors?
 
     @property
     def fields(self):

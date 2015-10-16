@@ -1,59 +1,4 @@
 <registry>
-  <!-- collective.onlogin settings -->
-  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_enabled" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_enabled">
-    <field type="plone.registry.field.Bool">
-      <default>True</default>
-      <description>First login redirect is of higher priority than redirect on every login. If disabled, then every login redirect will be executed even for first time login.</description>
-      <required>False</required>
-      <title>Enable redirect on first login</title>
-    </field>
-    <value>False</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_expr">
-    <field type="plone.registry.field.TextLine">
-      <default>string:${portal_url}/@@personal-information</default>
-      <description>TAL Expression evaluating to url for first time redirect.</description>
-      <required>False</required>
-      <title>First login redirect expression</title>
-    </field>
-    <value>string:${portal_url}/@@personal-information</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.first_login_redirect_ignore_came_from" interface="collective.onlogin.interfaces.IOnloginSettings" field="first_login_redirect_ignore_came_from">
-    <field type="plone.registry.field.Bool">
-      <default>True</default>
-      <description>By default Plone redirects user to last visited page after login. Here you can disable this behavior and always redirect to above entered url.</description>
-      <required>False</required>
-      <title>Ignore came_from parameter on first login</title>
-    </field>
-    <value>False</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_enabled" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_enabled">
-    <field type="plone.registry.field.Bool">
-      <default>True</default>
-      <description>Login redirect is happening on every user login and does not happen on user first login in case First Login Redirect is enabled on this form above.</description>
-      <required>False</required>
-      <title>Enable redirect on login</title>
-    </field>
-    <value>True</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_expr" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_expr">
-    <field type="plone.registry.field.TextLine">
-      <default>string:${portal_url}/dashboard</default>
-      <description>TAL Expression evaluating to url for redirect.</description>
-      <required>False</required>
-      <title>Login redirect expression</title>
-    </field>
-    <value>string:${portal_url}/dashboard</value>
-  </record>
-  <record name="collective.onlogin.interfaces.IOnloginSettings.login_redirect_ignore_came_from" interface="collective.onlogin.interfaces.IOnloginSettings" field="login_redirect_ignore_came_from">
-    <field type="plone.registry.field.Bool">
-      <default>False</default>
-      <description>By default Plone redirects user to last visited page after login. Here you can disable this behavior and always redirect to above entered url.</description>
-      <required>False</required>
-      <title>Ignore came_from parameter on login</title>
-    </field>
-    <value>True</value>
-  </record>
   <!-- plone.caching settings -->
   <record name="plone.caching.interfaces.ICacheSettings.enabled" interface="plone.caching.interfaces.ICacheSettings" field="enabled">
     <field type="plone.registry.field.Bool">
@@ -94,20 +39,6 @@
       <element>http://localhost:8101</element>
     </value>
   </record>
-  <!-- <record name="plone.cachepurging.interfaces.ICachePurgingSettings.domains" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="domains"> -->
-  <!--   <field type="plone.registry.field.Tuple"> -->
-  <!--     <default/> -->
-  <!--     <description>This option is only relevant if you are using virtual hosting and you have enabled the option to send PURGE requests with virtual hosting URLs above. If you your site is served on multiple domains e.g. http://example.org and http://www.example.org you may wish to purge both. If so, list all your domains here</description> -->
-  <!--     <missing_value/> -->
-  <!--     <required>False</required> -->
-  <!--     <title>Domains</title> -->
-  <!--     <value_type type="plone.registry.field.URI"/> -->
-  <!--   </field> -->
-  <!--   <value> -->
-  <!--     <element>http://compute.bccvl.org.au:80</element> -->
-  <!--     <element>https://compute.bccvl.org.au:443</element> -->
-  <!--   </value> -->
-  <!-- </record> -->
   <record name="plone.cachepurging.interfaces.ICachePurgingSettings.enabled" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="enabled">
     <field type="plone.registry.field.Bool">
       <default>True</default>
@@ -140,6 +71,51 @@
       <element key="Folder">plone.content.folderView</element>
     </value>
   </record>
+  <record name="plone.app.caching.interfaces.IPloneCacheSettings.templateRulesetMapping" interface="plone.app.caching.interfaces.IPloneCacheSettings" field="templateRulesetMapping">
+    <field type="plone.registry.field.Dict">
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Maps skin layer page template names to ruleset names</description>
+      <key_type type="plone.registry.field.ASCIILine">
+        <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Page template name</title>
+      </key_type>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Page template/ruleset mapping</title>
+      <value_type type="plone.registry.field.DottedName">
+        <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Ruleset name</title>
+      </value_type>
+    </field>
+    <value>
+      <element key="accessibility-info">plone.content.itemView</element>
+      <element key="image_view_fullscreen">plone.content.itemView</element>
+      <element key="rss.xml">plone.content.feed</element>
+      <element key="image_view">plone.content.itemView</element>
+      <element key="atom.xml">plone.content.feed</element>
+      <element key="itunes.xml">plone.content.feed</element>
+      <element key="search_rss">plone.content.feed</element>
+      <element key="file_view">plone.content.itemView</element>
+      <element key="faceted_query">plone.content.folderView</element>
+      <element key="dm">plone.content.folderView</element>
+      <element key="jm">plone.content.folderView</element>
+      <element key="sitemap">plone.content.itemView</element>
+      <element key="RSS">plone.content.feed</element>
+    </value>
+  </record>
+  <!-- jQuery UI settings -->
+  <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_tooltip" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_tooltip">
+    <field type="plone.registry.field.Bool">
+      <default>False</default>
+      <required>False</required>
+      <title>Tooltip</title>
+    </field>
+    <value>True</value>
+  </record>
+  <!-- eea.facetednavigation settings -->
+  <record name="eea.facetednavigation.interfaces.IEEASettings.disable_diazo_rules_ajax" interface="eea.facetednavigation.interfaces.IEEASettings" field="disable_diazo_rules_ajax">
+    <field type="plone.registry.field.Bool">
+      <default>False</default>
+      <required>False</required>
+      <title>Disable diazo rules on ajax requests</title>
+    </field>
+    <value>True</value>
+  </record>
 
   <record name="org.bccvl.layers">
     <field type="plone.registry.field.Tuple">
@@ -154,386 +130,502 @@
         <element key="value">B01</element>
         <element key="title">B01 - Annual Mean Temperature</element>
         <element key="unit">degrees C</element> <!-- &#2103; &#00B3;&#0043; &#00B3;C-->
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">The annual mean temperature approximates the total energy inputs for an ecosystem.</element>
       </element>
       <element>
         <element key="value">B02</element>
         <element key="title">B02 - Mean Diurnal Range (Mean of monthly (max temp - min temp))</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index can help provide information pertaining to the relevance of temperature fluctuation for different species.</element>
       </element>
       <element>
         <element key="value">B03</element>
         <element key="title">B03 - Isothermality (BIO2/BIO7) (* 100)</element>
         <element key="unit">%</element>
-        <element key="legend">temperature</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="tooltip">Isothermality quantifies how large the day-to-night temperatures oscillate relative to the summer- to-winter (annual) oscillations. An isothermal value of 100 indicates the diurnal temperature range is equiva- lent to the annual temperature range, while anything less than 100 indicates a smaller level of temperature variability within an average month relative to the year. A species distribution may be influenced by larger or smaller temperature fluctuations within a month relative to the year and this predictor is useful for ascertaining such information.</element>
       </element>
       <element>
         <element key="value">B04</element>
         <element key="title">B04 - Temperature Seasonality (standard deviation *100)</element>
-        <element key="unit">standard deviation * 100</element>
-        <element key="legend">temperature</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">standard_deviation</element>
         <element key="type">climate</element>
+        <element key="tooltip">Temperature seasonality is a measure of temperature change over the course of the year. The larger the value, the greater the variability of temperature.</element>
       </element>
       <element>
         <element key="value">B05</element>
         <element key="title">B05 - Max Temperature of Warmest Month</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by warm temperature anomalies throughout the year.</element>
       </element>
       <element>
         <element key="value">B06</element>
         <element key="title">B06 - Min Temperature of Coldest Month</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by cold temperature anomalies throughout the year.</element>
       </element>
       <element>
         <element key="value">B07</element>
         <element key="title">B07 - Temperature Annual Range (BIO5-BIO6)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by ranges of extreme temperature conditions.</element>
       </element>
       <element>
         <element key="value">B08</element>
         <element key="title">B08 - Mean Temperature of Wettest Quarter</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides mean temperatures during the wettest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B09</element>
         <element key="title">B09 - Mean Temperature of Driest Quarter</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides mean temperatures during the driest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B10</element>
         <element key="title">B10 - Mean Temperature of Warmest Quarter</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides mean temperatures during the warmest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B11</element>
         <element key="title">B11 - Mean Temperature of Coldest Quarter</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides mean temperatures during the coldest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B12</element>
         <element key="title">B12 - Annual Precipitation</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">Annual total precipitation approximates the total water inputs and is therefore useful when ascertaining the importance of water availability to a species distribution.</element>
       </element>
       <element>
         <element key="value">B13</element>
         <element key="title">B13 - Precipitation of Wettest Month</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">The wettest month is useful if extreme precipitation conditions during the year influence a species potential range.</element>
       </element>
       <element>
         <element key="value">B14</element>
         <element key="title">B14 - Precipitation of Driest Month</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">The driest month is useful if extreme precipitation conditions during the year influence a species potential range.</element>
       </element>
       <element>
         <element key="value">B15</element>
         <element key="title">B15 - Precipitation Seasonality (Coefficient of Variation)</element>
-        <element key="unit">dimensionless</element>
-        <element key="legend">default</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="tooltip">Since species distributions can be strongly influenced by variability in precipitation, this index provides a percentage of precipitation variability where larger percentages represent greater variability of precipitation.</element>
       </element>
       <element>
         <element key="value">B16</element>
         <element key="title">B16 - Precipitation of Wettest Quarter</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides total precipitation during the wettest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B17</element>
         <element key="title">B17 - Precipitation of Driest Quarter</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides total precipitation during the driest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B18</element>
         <element key="title">B18 - Precipitation of Warmest Quarter</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides total precipitation during the warmest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">B19</element>
         <element key="title">B19 - Precipitation of Coldest Quarter</element>
         <element key="unit">mm</element>
-        <element key="legend">default</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This index provides total precipitation during the coldest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
       <element>
         <element key="value">clay30</element>
         <element key="title">Clay content percentage 0-30 cm</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">substrate</element>
+        <element key="tooltip">Clay is a useful proxy for defining the nutritional and biological capacity of soil.</element>
       </element>
       <element>
         <element key="value">bd30</element>
         <element key="title">Bulk density 0-30 cm</element>
         <element key="unit">Mg/m3</element>
+        <element key="unitfull">megagram per cubic metre</element>
         <element key="legend">default</element>
         <element key="type">substrate</element>
+        <element key="tooltip">The soil bulk density, also known as dry bulk density, is the weight of dry soil divided by total soil volume. This is a useful indication of a soils physical condition.</element>
       </element>
       <element>
         <element key="value">ph_0_30</element>
         <element key="title">pH (Calcium Chloride 1:5) 0-30cm</element>
         <element key="unit">pH</element>
-        <element key="legend">default</element>
+        <element key="unitfull">soil acidity</element>
+        <element key="legend">pH</element>
         <element key="type">substrate</element>
+        <element key="tooltip">Soil pH is a measure of the concentration of hydrogen ions in the soil solution. The lower the pH of soil, the greater the acidity. pH is measured on a logarithmic scale from 1 to 14, with 7 being neutral.</element>
       </element>
       <element>
         <element key="value">pawc_1m</element>
         <element key="title">Plant available water capacity 0-1 m</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This index provides the maximum amount of plant available water a soil can provide. This is an indicator of a soil's ability to retain water and make it sufficiently available for plant use.</element>
       </element>
       <element>
         <element key="value">asc</element>
         <element key="title">Australian Soil Classification</element>
         <element key="unit">Soil class</element>
+        <element key="unitfull">soil class as per the ASC orders</element>
         <element key="legend">categories</element>
         <element key="type">substrate</element>
+        <element key="tooltip">This is a 'best of' dataset of dominant soil order according to the Australian Soil Classification. Soil Order code list: 01. AN Anthroposol, 02. CA Calcarosol, 03. CH Chromosol, 04. DE Dermosol, 05. FE Ferrosol, 06. HY Hydrosol, 07. KA Kandosol, 08. KU Kurosol, 09. OR Organosol, 10. PO Podosol, 11. RU Rudosol, 12. SO Sodosol, 13. TE Tenosol, 14 .VE Vertosol.</element>
       </element>
       <element>
         <element key="value">vastgridv2_1k</element>
         <element key="title">National Scale Vegetation Assets, States and Transitions (VAST Version 2) - 2008</element>
         <element key="unit">VAST classification</element>
         <element key="legend">categories</element>
-        <element key="type">vegetation</element>        
+        <element key="type">vegetation</element>
+        <element key="tooltip">This index classifys vegetation according to its degree of anthropogenic modification from a natural state. Class 1 sets the benchmark where classes 2 - 6 represent largely unchanged through to total removal of vegetation.</element>
       </element>
       <element>
         <element key="value">multi_res_ridge_top_flat</element>
-        <element key="title">Multi-resolution Ridge Top Flatness (MrRTF, 3\" resolution)</element>
-        <element key="unit">dimensionless</element>
+        <element key="title">Multi-resolution Ridge Top Flatness</element>
+        <element key="unit">MrRTF index</element>
+        <element key="unitfull">Multi-resolution ridge top flatness index</element>
         <element key="legend">default</element>
         <element key="type">topography</element>
+        <element key="tooltip">This layer is a topographic index designed to identify high flat areas at a range of scales. Zero values indicate areas that are steep or low, with values 1 and larger indicating progressively larger areas of high flat land.</element>
       </element>
       <element>
         <element key="value">multi_res_valley_bottom_flat</element>
-        <element key="title">Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution)</element>
-        <element key="unit">dimensionless</element>
+        <element key="title">Multi-resolution Valley Bottom Flatness</element>
+        <element key="unit">MrVBF index</element>
+        <element key="unitfull">Multi-resolution valley bottom flatness index</element>
         <element key="legend">default</element>
         <element key="type">topography</element>
+        <element key="tooltip">This layer is a topographic index designed to identify areas of deposited material. Zero values indicate erosional terrain with values 1 and larger indicating progressively larger areas of deposition.</element>
       </element>
       <element>
         <element key="value">mth_FWDis</element>
-        <element key="title">Monthly Local Discharge (Runoff+Drainage)</element>
+        <element key="title">Monthly Local Discharge (Runoff+Drainage) (average)</element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_mth_FWDis</element>
         <element key="title">Monthly Local Discharge (Runoff+Drainage) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_FWDis</element>
-        <element key="title">Annual Local Discharge (Runoff+Drainage)</element>
+        <element key="title">Annual Local Discharge (Runoff+Drainage) (average)</element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWDis</element>
         <element key="title">Annual Local Discharge (Runoff+Drainage) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_FWE</element>
-        <element key="title">Annual Total Evaporation (Soil+Vegetation)</element>
+        <element key="title">Annual Total Evaporation (Soil+Vegetation) (average)</element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWE</element>
         <element key="title">Annual Total Evaporation (Soil+Vegetation) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_FWLch2</element>
-        <element key="title">Annual Deep Drainage</element>
+        <element key="title">Annual Deep Drainage (average)</element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWLch2</element>
         <element key="title">Annual Deep Drainage (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_FWPT</element>
-        <element key="title">Annual Potential Evaporation</element>
+        <element key="title">Annual Potential Evaporation (average)</element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWPT</element>
         <element key="title">Annual Potential Evaporation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_FWRun</element>
-        <element key="title">Annual Surface Runoff</element>
+        <element key="title">Annual Surface Runoff (average)</element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWRun</element>
         <element key="title">Annual Surface Runoff (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_FWSoil</element>
-        <element key="title">Annual Soil Evaporation</element>
+        <element key="title">Annual Soil Evaporation (average)</element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWSoil</element>
         <element key="title">Annual Soil Evaporation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_FWTra</element>
-        <element key="title">Annual Total Transpiration</element>
+        <element key="title">Annual Total Transpiration (average)</element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWTra</element>
         <element key="title">Annual Total Transpiration (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_FWWater</element>
-        <element key="title">Annual Open Water Evaporation ('pan' equiv)</element>
+        <element key="title">Annual Open Water Evaporation (average) </element>
         <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">Note: Equivalent to pan evaporation. This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_FWWater</element>
-        <element key="title">Annual Open Water Evaporation ('pan' equiv) (Percentile Rank Data)</element>
+        <element key="title">Annual Open Water Evaporation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="tooltip">Note: Equivalent to pan evaporation. This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_PhiE</element>
-        <element key="title">Annual Daily Latent Heat Flux</element>
+        <element key="title">Annual Daily Latent Heat Flux (average)</element>
         <element key="unit">W/m^2</element>
+        <element key="unitfull">watt per square metre</element>
         <element key="legend">default</element>
         <element key="type">climate</element>
+        <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_PhiE</element>
         <element key="title">Annual Daily Latent Heat Flux (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_PhiH</element>
-        <element key="title">Annual Daily Sensible Heat Flux</element>
+        <element key="title">Annual Daily Sensible Heat Flux (average)</element>
         <element key="unit">W/m^2</element>
+        <element key="unitfull">watts per square metre</element>
         <element key="legend">default</element>
         <element key="type">climate</element>
+        <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_PhiH</element>
         <element key="title">Annual Daily Sensible Heat Flux (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_SolarMJ</element>
-        <element key="title">Annual Incident solar radiation</element>
+        <element key="title">Annual Incident solar radiation (average)</element>
         <element key="unit">MJ/m^2/d</element>
+        <element key="unitfull">megajoule per square metre per day</element>
         <element key="legend">default</element>
         <element key="type">climate</element>
+        <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_SolarMJ</element>
         <element key="title">Annual Incident solar radiation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="type">hydrology</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_TempMax</element>
-        <element key="title">Annual Daily maximum temperature</element>
-        <element key="unit">degC</element>
+        <element key="title">Annual Daily maximum temperature (average)</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_TempMax</element>
         <element key="title">Annual Daily maximum temperature (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_TempMin</element>
-        <element key="title">Daily minimum temperature</element>
-        <element key="unit">degC</element>
+        <element key="title">Daily minimum temperature (average)</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_TempMin</element>
         <element key="title">Daily minimum temperature (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_WRel1</element>
@@ -541,13 +633,18 @@
         <element key="unit">Fraction (0-1)</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel1</element>
         <element key="title">Annual Relative Soil Moisture (Upper Layer) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_WRel1End</element>
@@ -555,13 +652,18 @@
         <element key="unit">Fraction (0-1)</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel1End</element>
         <element key="title">Annual Relative Soil Moisture (Upper Layer) at end of aggregation period (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_WRel2</element>
@@ -569,13 +671,18 @@
         <element key="unit">Fraction (0-1)</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel2</element>
         <element key="title">Annual Relative Soil Moisture (Lower Layer) (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_WRel2End</element>
@@ -583,526 +690,675 @@
         <element key="unit">Fraction (0-1)</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_WRel2End</element>
         <element key="title">Annual Relative Soil Moisture (Lower Layer) at end of aggregation period (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">hydrology</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">ann_Precip</element>
-        <element key="title">Annual Precipitation</element>
-        <element key="unit">mm</element>
+        <element key="title">Annual Precipitation (average)</element>
+        <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">pcr_ann_Precip</element>
         <element key="title">Annual Relative Precipitation (Percentile Rank Data)</element>
         <element key="unit">%</element>
-        <element key="legend">default</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer is part of a dataset that determines the state of soil moisture and all water fluxes contributing to changes in soil moisure (rainfall, transpiration, soil evaporation, surface runoff and deep drainage).</element>
       </element>
       <element>
         <element key="value">DLCDv1_Class</element>
         <element key="title">Dynamic Land Cover Classification</element>
         <element key="unit">class</element>
+        <element key="unitfull">land cover catagory</element>
         <element key="legend">categories</element>
         <element key="type">landcover</element>
+        <element key="tooltip">This layer provides a thematically comprehensive land cover reference for Australia. This information is an important addition to assessing habitat suitability with regards to species distributions.</element>
       </element>
       <element>
         <element key="value">trend_evi_max</element>
-        <element key="title">Max Annual Enhanced Vegetation Index (EVI) trend</element>
-        <element key="unit">dimensionless</element>
+        <element key="title">Annual maximum Enhanced Vegetation Index (EVI) trend</element>
+        <element key="unit">EVI</element>
+        <element key="unitfull">enhanced vegetation index</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">The annual maximum EVI value is related to the maximum leaf area (including both canopy cover and ground cover) observed at any point during a year.</element>
       </element>
       <element>
         <element key="value">trend_evi_min</element>
-        <element key="title">Min Annual Enhanced Vegetation Index (EVI) trend</element>
-        <element key="unit">dimensionless</element>
+        <element key="title">Annual minimum Enhanced Vegetation Index (EVI) trend</element>
+        <element key="unit">EVI</element>
+        <element key="unitfull">enhanced vegetation index</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">The annual minimum EVI relates to the minimum observed levels of photosynthetic activity for that location in the landscape throughout the year.</element>
       </element>
       <element>
         <element key="value">trend_evi_mean</element>
-        <element key="title">Mean Annual Enhanced Vegetation Index (EVI) trend</element>
-        <element key="unit">dimensionless</element>
+        <element key="title">Annual mean Enhanced Vegetation Index (EVI) trend</element>
+        <element key="unit">EVI</element>
+        <element key="unitfull">enhanced vegetation index</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">For areas that support vegetation (i.e. not salt lakes and open water bodies) the trend in the mean provides an estimate of how total photosynthetic activity is changing from year to year.</element>
       </element>
       <element>
         <element key="value">ai_yr</element>
-        <element key="title">Global Aridity - Annual</element>
+        <element key="title">Annual Global Aridity</element>
         <element key="unit">Aridity Index</element>
         <element key="legend">default</element>
         <element key="type">climate</element>
+        <element key="tooltip">The Aridity Index can be used to quantify precipitation availability over atmospheric water demand. Generally, an AI value of &lt;0.03 = hyper arid where a value of >0.65 = humid.</element>
       </element>
       <element>
         <element key="value">pet_he_yr</element>
-        <element key="title">Global Potential Evapo-Transpiration (PET) - Annual</element>
+        <element key="title">Annual Global Potential Evapo-Transpiration (PET)</element>
         <element key="unit">mm/year</element>
+        <element key="unitfull">millimetres per year</element>
         <element key="legend">default</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer is a measure of the ability of the atmosphere to remove water through Evapo-Transpiration (ET) processes.</element>
       </element>
       <element>
         <element key="value">TN1</element>
         <element key="title">Average Monthly Minimum Temperature (Jan)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN2</element>
         <element key="title">Average Monthly Minimum Temperature (Feb)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN3</element>
         <element key="title">Average Monthly Minimum Temperature (Mar)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN4</element>
         <element key="title">Average Monthly Minimum Temperature (Apr)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN5</element>
         <element key="title">Average Monthly Minimum Temperature (May)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN6</element>
         <element key="title">Average Monthly Minimum Temperature (Jun)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN7</element>
         <element key="title">Average Monthly Minimum Temperature (Jul)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN8</element>
         <element key="title">Average Monthly Minimum Temperature (Aug)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN9</element>
         <element key="title">Average Monthly Minimum Temperature (Sep)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN10</element>
         <element key="title">Average Monthly Minimum Temperature (Oct)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN11</element>
         <element key="title">Average Monthly Minimum Temperature (Nov)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TN12</element>
         <element key="title">Average Monthly Minimum Temperature (Dec)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme minimum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM1</element>
         <element key="title">Average Monthly Mean Temperature (Jan)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM2</element>
         <element key="title">Average Monthly Mean Temperature (Feb)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM3</element>
         <element key="title">Average Monthly Mean Temperature (Mar)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM4</element>
         <element key="title">Average Monthly Mean Temperature (Apr)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM5</element>
         <element key="title">Average Monthly Mean Temperature (May)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM6</element>
         <element key="title">Average Monthly Mean Temperature (Jun)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM7</element>
         <element key="title">Average Monthly Mean Temperature (Jul)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM8</element>
         <element key="title">Average Monthly Mean Temperature (Aug)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM9</element>
         <element key="title">Average Monthly Mean Temperature (Sep)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM10</element>
         <element key="title">Average Monthly Mean Temperature (Oct)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM11</element>
         <element key="title">Average Monthly Mean Temperature (Nov)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TM12</element>
         <element key="title">Average Monthly Mean Temperature (Dec)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by mean temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX1</element>
         <element key="title">Average Monthly Maximum Temperature (Jan)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX2</element>
         <element key="title">Average Monthly Maximum Temperature (Feb)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX3</element>
         <element key="title">Average Monthly Maximum Temperature (Mar)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX4</element>
         <element key="title">Average Monthly Maximum Temperature (Apr)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX5</element>
         <element key="title">Average Monthly Maximum Temperature (May)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX6</element>
         <element key="title">Average Monthly Maximum Temperature (Jun)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX7</element>
         <element key="title">Average Monthly Maximum Temperature (Jul)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX8</element>
         <element key="title">Average Monthly Maximum Temperature (Aug)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX9</element>
         <element key="title">Average Monthly Maximum Temperature (Sep)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX10</element>
         <element key="title">Average Monthly Maximum Temperature (Oct)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX11</element>
         <element key="title">Average Monthly Maximum Temperature (Nov)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">TX12</element>
         <element key="title">Average Monthly Maximum Temperature (Dec)</element>
         <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
-      </element>        
+        <element key="tooltip">This information is useful when examining whether species distributions are affected by extreme maximum temperature anomalies throughout particular months in the year. Good information for modelling migratory species distributions.</element>
+      </element>
       <element>
         <element key="value">PR1</element>
         <element key="title">Average Monthly Precipitation (Jan)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR2</element>
         <element key="title">Average Monthly Precipitation (Feb)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR3</element>
         <element key="title">Average Monthly Precipitation (Mar)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR4</element>
         <element key="title">Average Monthly Precipitation (Apr)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR5</element>
         <element key="title">Average Monthly Precipitation (May)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR6</element>
         <element key="title">Average Monthly Precipitation (Jun)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR7</element>
         <element key="title">Average Monthly Precipitation (Jul)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR8</element>
         <element key="title">Average Monthly Precipitation (Aug)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR9</element>
         <element key="title">Average Monthly Precipitation (Sep)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR10</element>
         <element key="title">Average Monthly Precipitation (Oct)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR11</element>
         <element key="title">Average Monthly Precipitation (Nov)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">PR12</element>
         <element key="title">Average Monthly Precipitation (Dec)</element>
         <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">rainfall</element>
         <element key="type">climate</element>
+        <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
       <element>
         <element key="value">Altitude</element>
-        <element key="title">Altitude (elevation above sea level) (m)</element>
-        <element key="unit">meter m</element>
+        <element key="title">Altitude (elevation above sea level)</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metre</element>
         <element key="legend">altitude</element>
-        <element key="type">topography</element>        
+        <element key="type">topography</element>
+        <element key="tooltip">This dataset describes the altitude, as elevation (metres) above sea level. This layer can be a helpful inclusion when modelling species distributions that may be limited by elevation or subsequent climatic conditions at these elevations.</element>
       </element>
       <element>
         <element key="value">GPP1</element>
-        <element key="title">Maximum GPP</element>
+        <element key="title">Maximum Gross Primary Productivity (GPP)</element>
         <element key="unit">mol CO2 per m^2</element>
+        <element key="unitfull">mole of carbon dioxide per square metre</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">GPP is the amount of carbon fixed during photosynthesis by all producers in an ecosystem.</element>
       </element>
       <element>
         <element key="value">GPP2</element>
-        <element key="title">Mean GPP</element>
+        <element key="title">Mean Gross Primary Productivity (GPP)</element>
         <element key="unit">mol CO2 per m^2</element>
+        <element key="unitfull">mole of carbon dioxide per square metre</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">GPP is the amount of carbon fixed during photosynthesis by all producers in an ecosystem.</element>
       </element>
       <element>
         <element key="value">GPP3</element>
-        <element key="title">Minimum GPP</element>
+        <element key="title">Minimum Gross Primary Productivity (GPP)</element>
         <element key="unit">mol CO2 per m^2</element>
+        <element key="unitfull">mole of carbon dioxide per square metre</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">GPP is the amount of carbon fixed during photosynthesis by all producers in an ecosystem.</element>
       </element>
       <element>
         <element key="value">GPP4</element>
-        <element key="title">Annual mean GPP</element>
+        <element key="title">Annual mean Gross Primary Productivity (GPP)</element>
         <element key="unit">mol CO2 per m^2</element>
+        <element key="unitfull">mole of carbon dioxide per square metre</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">GPP is the amount of carbon fixed during photosynthesis by all producers in an ecosystem.</element>
       </element>
       <element>
         <element key="value">FPAR01</element>
-        <element key="title">MODIS-fPAR (Jan)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Jan)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR02</element>
-        <element key="title">MODIS-fPAR (Feb)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Feb)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR03</element>
-        <element key="title">MODIS-fPAR (Mar)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Mar)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR04</element>
-        <element key="title">MODIS-fPAR (Apr)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Apr)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR05</element>
-        <element key="title">MODIS-fPAR (May)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (May)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR06</element>
-        <element key="title">MODIS-fPAR (Jun)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Jun)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR07</element>
-        <element key="title">MODIS-fPAR (Jul)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Jul)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR08</element>
-        <element key="title">MODIS-fPAR (Aug)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Aug)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR09</element>
-        <element key="title">MODIS-fPAR (Sep)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Sept)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR10</element>
-        <element key="title">MODIS-fPAR (Oct)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Oct)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR11</element>
-        <element key="title">MODIS-fPAR (Nov)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Nov)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
         <element key="value">FPAR12</element>
-        <element key="title">MODIS-fPAR (Dec)</element>
-        <element key="unit">fPAR</element>
-        <element key="legend">default</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Dec)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
         <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
-        
     </value>
   </record>
 
@@ -1160,7 +1416,7 @@
 
   <record name="org.bccvl.crs">
     <field type="plone.registry.field.Tuple">
-      <title>Geodetic CRS  vocabulary</title>
+      <title>Geodetic CRS vocabulary</title>
       <value_type type="plone.registry.field.Dict">
         <key_type type="plone.registry.field.TextLine"/>
         <value_type type="plone.registry.field.TextLine"/>

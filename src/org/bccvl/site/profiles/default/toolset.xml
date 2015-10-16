@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<tool-setup>
+ <required tool_id="job_catalog" class="org.bccvl.site.job.catalog.JobCatalogTool"/>
+</tool-setup>

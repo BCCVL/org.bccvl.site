@@ -1,5 +1,14 @@
 {
-    "_type": "Folder",
+    "_type": "org.bccvl.content.collection",
     "title": "Australian Water availability project",
+    "description": "Data determines the past history and present state of soil moisture and all water fluxes contributing to changes in soil moisture (rainfall, transpiration, soil evaporation, surface runoff and deep drainage), across the entire Australian continent at a spatial resolution of 5 km.",
+    "rights": "CC-BY Share Alike Attribution 3.0",
+    "attribution": [
+        "When referring to this dataset in publications, please cite both:",
+        "Raupach MR, PR Briggs, V Haverd, EA King, M Paget, CM Trudinger (2009), Australian Water Availability Project (AWAP): CSIRO Marine and Atmospheric Research Component: Final Report for Phase 3. CAWCR Technical Report No. 013. 67 pp.",
+        "Raupach MR, PR Briggs, V Haverd, EA King, M Paget, CM Trudinger (2012), Australian Water Availability Project. CSIRO Marine and Atmospheric Research, Canberra, Australia. <http://www.csiro.au/awap>. Date of access."
+    ],
+    "external_description": "See <a href=\"http://www.csiro.au/awap\">http://www.csiro.au/awap</a> and for full quality and source information see <a href=\"http://www.csiro.au/awap/doc/AWAP_readme_v9.txt\">http://www.csiro.au/awap/doc/AWAP_readme_v9.txt</a>",
+    "categories": ["environmental"],
     "_transitions": ["show_internally", "publish_internally"]
 }

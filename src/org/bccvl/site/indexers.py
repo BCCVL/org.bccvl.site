@@ -9,22 +9,23 @@ from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IRemoteDataset
 from org.bccvl.site.content.interfaces import IProjectionExperiment, IEnsembleExperiment, IBiodiverseExperiment
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
-from org.bccvl.site.utils import Period
+from org.bccvl.site.behavior.collection import ICollection
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker
+from org.bccvl.site.job.interfaces import IJobTracker
 
 
 @indexer(IDataset)
-def dataset_BCCDataGenre(obj, *kw):
+def dataset_BCCDataGenre(obj, **kw):
     return IBCCVLMetadata(obj).get('genre')
 
 
 @indexer(IDataset)
-def dataset_BCCEmissionScenario(obj, *kw):
+def dataset_BCCEmissionScenario(obj, **kw):
     return IBCCVLMetadata(obj).get('emsc')
 
 
 @indexer(IDataset)
-def dataset_BCCGlobalClimateModel(obj, *kw):
+def dataset_BCCGlobalClimateModel(obj, **kw):
     return IBCCVLMetadata(obj).get('gcm')
 
 
@@ -36,6 +37,7 @@ def BCCDatasetResolution(obj, **kw):
 @indexer(IExperiment)
 def BCCExperimentResolution(obj, **kw):
     return IBCCVLMetadata(obj).get('resolution')
+
 
 @indexer(IDataset)
 def DatasetSearchableText(obj, **kw):
@@ -62,7 +64,8 @@ def DatasetSearchableText(obj, **kw):
         # year, gcm, emsc
         emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(obj)
         gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(obj)
-        year = Period(md.get('period','')).start
+        year = unicode(md.get('year', u''))
+        month = unicode(md.get('month', u''))
         if md['emsc'] in emsc_vocab:
             entries.append(
                 safe_unicode(emsc_vocab.getTerm(md['emsc']).title) or u""
@@ -71,17 +74,11 @@ def DatasetSearchableText(obj, **kw):
             entries.append(
                 safe_unicode(gcm_vocab.getTerm(md['gcm']).title) or u""
             )
-        entries.append(safe_unicode(year) or u"")
+        entries.append(year)
+        entries.append(month)
     elif md.get('genre') == "DataGenreCC":
         entries.append(u"current")
     return u" ".join(entries)
-
-# TODO: should be a DateRangeIndex (resolve partial dates to 1stday
-#       (start) and last day (end))
-# @indexer(IDataset)
-# def dataset_DCTemporal(object, *kw):
-#     graph = IGraph(object)
-#     return tuple(graph.objects(graph.identifier, DCES['temporal']))
 
 
 @indexer(IDataset)
@@ -92,6 +89,7 @@ def dataset_environmental_layer(obj, **kw):
         return md['layers_used']
     # otherwise index list of layers provided by dataset
     return md.get('layers', None)
+
 
 @indexer(IExperiment)
 def experiment_reference_indexer(object, **kw):
@@ -104,6 +102,7 @@ def experiment_reference_indexer(object, **kw):
         return object.projection.keys()
     else:
         pass
+
 
 @implementer(IIndexer)
 class JobStateIndexer(object):
@@ -132,3 +131,50 @@ class JobStateIndexer(object):
                 else:
                     state = 'FAILED'
         return state
+
+
+@implementer(IIndexer)
+class ExperimentJobStateIndexer(object):
+
+    def __init__(self, context, catalog):
+        self.context = context
+        self.catalog = catalog
+
+    def __call__(self, **kw):
+        jt = IExperimentJobTracker(self.context)
+        # TODO: if state is empty check if there is a downloadable file
+        #       Yes: COMPLETED
+        #       No: FAILED
+        return jt.state
+
+
+@indexer(IDataset)
+def scientific_category(obj, **kw):
+    md = IBCCVLMetadata(obj)
+    vocab = getUtility(IVocabularyFactory, 'scientific_category_source')(obj)
+    path = set()
+    for cat in md.get('categories', ()):
+        path.update(vocab.getTermPath(cat))
+    if path:
+        return tuple(path)
+    return None
+
+
+@indexer(ICollection)
+def scientific_category_collection(obj, **kw):
+    return obj.categories or None
+
+
+@indexer(IDataset)
+def year(obj, **kw):
+    # FIXME: this indexer is meant for future projection only ....
+    # - make sure we don't index any other datasets. i.e. environmental and current datasets, which may have a date attached to it, but it is meaningless for future projections
+    md = IBCCVLMetadata(obj)
+    return md.get('year', None)
+
+
+@indexer(IDataset)
+def month(obj, **kw):
+    # FIXME: see year indexer above
+    md = IBCCVLMetadata(obj)
+    return md.get('month', None)

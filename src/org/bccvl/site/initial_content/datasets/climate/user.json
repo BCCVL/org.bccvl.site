@@ -1,5 +1,7 @@
 {
-    "_type": "Folder",
+    "_type": "org.bccvl.content.collection",
     "title": "User uploaded climate data",
+    "description": "Climate data uploaded and shared by users",
+    "categories": ["climate"],
     "_transitions": ["show_internally", "publish_internally"]
 }

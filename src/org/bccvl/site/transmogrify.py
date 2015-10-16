@@ -91,6 +91,7 @@ class ALASource(object):
             'kingdom': self.traverse_dict(json, 'classification/kingdom'),
             'kingdomGuid': self.traverse_dict(json, 'classification/kingdomGuid')
         }
+        bccvlmd['categories'] = ['occurrence']
         # TODO: other interesting bits:
         #       images/0/thumbnail ... URL to thumbnail image
         # TODO: important thing ... date of export (import date in
@@ -175,8 +176,6 @@ class ContextSource(object):
         yield item
 
 
-
-
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class BCCVLMetadataUpdater(object):
@@ -227,12 +226,11 @@ class BCCVLMetadataUpdater(object):
             yield item
 
 
-# TODO: maybe turn this into a RDF updater section.
 @provider(ISectionBlueprint)
 @implementer(ISection)
 class FileMetadataToBCCVL(object):
     """Convert metedata extracted from files (_filemetadata) and store it
-    in _bccvmd so that it can be applied to IBCCVLMetadata
+    in _bccvlmetadata so that it can be applied to IBCCVLMetadata
 
     Nothing will be stored on content here.
     """
@@ -508,7 +506,7 @@ class ProvenanceImporter(object):
             entity.add(DCTERMS['creator'], Literal(obj.Creator()))
             entity.add(DCTERMS['title'], Literal(obj.title))
             entity.add(DCTERMS['description'], Literal(obj.description))
-            entity.add(DCTERMS['rights'], Literal(obj.rights))  # obj.rightsstatement
+            entity.add(DCTERMS['rights'], Literal(obj.rights))
             entity.add(DCTERMS['format'], Literal(obj.file.contentType))
             # TODO: add metadata about file?
             #    genre, layers, emsc, gcm, year

@@ -1,11 +1,13 @@
+from collections import OrderedDict
+
 from zope.schema.interfaces import IVocabularyFactory
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm, TreeVocabulary
 from zope.interface import implementer, provider
 from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.utils import getToolByName
-
-
+from org.bccvl.site import defaults
+from plone.app.contenttypes.interfaces import IFolder
 # species occurrence datasets
 from zope.site.hooks import getSite
 from zope.interface import directlyProvides
@@ -126,9 +128,10 @@ sdm_functions_source = CatalogVocabularyFactory(
         # },
         'object_provides': 'org.bccvl.site.content.function.IFunction',
         # FIXME: find another way to separate SDM and traits "functions"
-        'id': ['ann', 'bioclim', 'brt', 'circles', 'cta', 'convhull', 'domain',
-               'fda', 'gam', 'gbm', 'glm', 'geoDist', 'geoIDW', 'mahal',
+        'id': ['ann', 'bioclim', 'brt', 'circles', 'cta', 'convhull',
+               'fda', 'gam', 'gbm', 'glm', 'geoDist', 'geoIDW',
                'maxent', 'mars', 'rf', 'sre', 'voronoiHull'],
+        # 'mahal', 'domain'
         'sort_on': 'sortable_title',
     },
 )
@@ -148,6 +151,21 @@ traits_functions_source = CatalogVocabularyFactory(
         'sort_on': 'sortable_title',
     },
 )
+
+
+experiment_type_vocabulary = SimpleVocabulary([
+    SimpleTerm("org.bccvl.content.sdmexperiment", "org.bccvl.content.sdmexperiment", u"Species Distribution Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.projectionexperiment", "org.bccvl.content.projectionexperiment", u"Climate Change Experiment"),
+    SimpleTerm("org.bccvl.content.biodiverseexperiment", "org.bccvl.content.biodiverseexperiment", u"Biodiverse Experiment"),
+    SimpleTerm("org.bccvl.content.speciestraitsexperiment", "org.bccvl.content.speciestraitsexperiment", u"Species Trait Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.ensemble", "org.bccvl.content.ensemble", u"Ensemble Analysis"),
+])
+
+
+@provider(IVocabularyFactory)
+def experiment_type_source(context):
+    return experiment_type_vocabulary
+
 
 
 @implementer(IVocabularyFactory)
@@ -308,3 +326,64 @@ genre_vocabulary = SimpleVocabulary([
 @provider(IVocabularyFactory)
 def genre_source(context):
     return genre_vocabulary
+
+
+job_state_vocabulary = SimpleVocabulary([
+    SimpleTerm('PENDING', 'PENDING', u'Pending'),
+    SimpleTerm('QUEUED', 'QUEUED', u'Queued'),
+    SimpleTerm('RUNNING', 'RUNNING', u'Running'),
+    SimpleTerm('COMPLETED', 'COMPLETED', u'Completed'),
+    SimpleTerm('FAILED', 'FAILED', u'Failed'),
+    SimpleTerm('REMOVED', 'REMOVED', u'Removed')
+])
+
+@provider(IVocabularyFactory)
+def job_state_source(context):
+    return job_state_vocabulary
+
+
+scientific_category_vocabulary = TreeVocabulary(OrderedDict([
+    (SimpleTerm('biological', 'biological', u'Biological'), OrderedDict([
+        (SimpleTerm('occurrence', 'occurrence', u'Occurrence'), {}),
+        (SimpleTerm('absence', 'absence', u'Absence'), {}),
+        (SimpleTerm('abundance', 'abundance', u'Abundance'), {}),
+        (SimpleTerm('traits', 'traits', u'Traits'), {}),
+        ])
+    ),
+    (SimpleTerm('climate', 'climate', u'Climate'), OrderedDict([
+        (SimpleTerm('current', 'current', u'Current'), {}),
+        (SimpleTerm('future', 'future', u'Future'), {}),
+        ])
+    ),
+    (SimpleTerm('environmental', 'environmental', u'Environmental'), OrderedDict([
+        (SimpleTerm('topography', 'topography', u'Topography'), {}),
+        (SimpleTerm('hydrology', 'hydrology', u'Hydrology'), {}),
+        (SimpleTerm('substrate', 'substrate', u'Substrate'), {}),
+        (SimpleTerm('vegetation', 'vegetation', u'Vegetation'), {}),
+        (SimpleTerm('landcover', 'landcover', u'Land Cover'), {}),
+        (SimpleTerm('landuse', 'landuse', u'Land Use'), {}),
+        ])
+    )
+]))
+
+
+@provider(IVocabularyFactory)
+def scientific_category_source(context):
+    return scientific_category_vocabulary
+
+
+@provider(IVocabularyFactory)
+def data_collections_source(context):
+    portal_url = getToolByName(context, 'portal_url')
+    catalog = getToolByName(context, 'portal_catalog')
+    vocab = getUtility(IVocabularyFactory, 'scientific_category_source')(context)
+    coll_query = {
+        'portal_type': 'org.bccvl.content.collection',
+        'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
+    }
+    def generate_collections():
+        for term in vocab:
+            coll_query['BCCCategory'] = term.value
+            for brain in catalog.searchResults(**coll_query):
+                yield brain
+    return BrainsVocabulary.fromBrains(generate_collections(), context)

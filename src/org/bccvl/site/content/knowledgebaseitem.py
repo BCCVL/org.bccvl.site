@@ -1,12 +1,11 @@
-from plone.directives import form
 from plone.app.textfield import RichText
+from plone.supermodel import model
 from zope import schema
 from plone.dexterity.content import Item
-from org.bccvl.site import vocabularies
 from zope.interface import implementer
 
 
-class IKnowledgebaseItem(form.Schema):
+class IKnowledgebaseItem(model.Schema):
     """Knowledge base item"""
 
     type = schema.Choice(

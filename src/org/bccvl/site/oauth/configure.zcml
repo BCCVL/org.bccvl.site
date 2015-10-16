@@ -10,6 +10,11 @@
     i18n_domain="org.bccvl.site"
     >
 
+  <utility
+      component=".vocabulary.oauth_providers"
+      name="org.bccvl.site.oauth.providers"
+      />
+
   <browser:resource
       name="fingerprint.png"
       file="fingerprint.png"

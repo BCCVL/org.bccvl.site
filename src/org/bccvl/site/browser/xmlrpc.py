@@ -8,13 +8,14 @@ from zope import contenttype
 from zope.publisher.interfaces import NotFound
 #from functools import wraps
 from decorator import decorator
-from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
+from plone.app.uuid.utils import uuidToCatalogBrain
 from plone import api
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker
+from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
-from org.bccvl.site.content.dataset import IDataset
+from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site import defaults
 import logging
 from zope.component import getUtility, queryUtility
@@ -24,9 +25,8 @@ import json
 from Products.statusmessages.interfaces import IStatusMessage
 from org.bccvl.site.browser.ws import IDataMover, IALAService
 from plone.dexterity.utils import createContentInContainer
-from decimal import Decimal
 from org.bccvl.site.api import dataset
-from org.bccvl.site.utils import DecimalJSONEncoder, Period
+from org.bccvl.site.utils import DecimalJSONEncoder
 
 
 LOG = logging.getLogger(__name__)
@@ -82,7 +82,6 @@ def returnwrapper(f, *args, **kw):
         view.request.response['CONTENT-TYPE'] = 'application/json'
     # FIXME: chaching headers should be more selective
     # prevent caching of ajax results... should be more selective here
-    view.request.response['Cache-Control'] = 'max-age=1'
     return ret
 
 
@@ -159,30 +158,6 @@ class DataSetManager(BrowserView):
             result.append({'uuid': brain.UID,
                            'title': brain.Title})
         return result
-
-    # TODO: specific for one view (add projection)
-    @returnwrapper
-    def getFutureClimateDatasets(self):
-        # TODO: should move this to Projection Add Form and let form
-        # do the parameter parsing
-        # reads:
-        #   form.widgets.years  W3CDTF
-        #   form.widgets.emission_scenarios URIRefs
-        #   form.widgets.climate_models URIRefs
-        # 1. read request:
-        years = self.request.get('form.widgets.years')
-        emsc = self.request.get('form.widgets.emission_scenarios')
-        gcms = self.request.get('form.widgets.climate_models')
-        # 2. no search if we have no values
-        if not all((years, emsc, gcms)):
-            return 0
-        # 3. make sure we have lists
-        years = [years] if not isinstance(years, list) else years
-        emsc = [emsc] if not isinstance(emsc, list) else emsc
-        gcms = [gcms] if not isinstance(gcms, list) else gcms
-        # 4. search
-        res = dataset.find_projections(self.context, emsc, gcms, years, None)
-        return len(res)
 
     # TODO: this is rather experiment API
     @returnwrapper
@@ -279,8 +254,8 @@ class DataSetManager(BrowserView):
                 ds = dsbrain.getObject()
                 md = IBCCVLMetadata(ds)
                 # parse year
-                period = md.get('temporal')
-                year = Period(period).start if period else None
+                year = md.get('year', None)
+                month = md.get('month', None)
                 species = md.get('species', {}).get('scientificName')
                 dsinfo = {
                     # passible fields on brain:
@@ -291,6 +266,7 @@ class DataSetManager(BrowserView):
                     "uuid": dsbrain.UID,
                     "files": [ds.file.filename],  # filenames
                     "year": year,  # int or string?
+                    "month": month,
                     "gcm": md.get('gcm'),  # URI? title? both?-> ui can fetch vocab to get titles
                     "emsc": md.get('emsc'),
                     "species": species,
@@ -413,7 +389,7 @@ class JobManagerAPI(BrowserView):
 
     @returnwrapper
     def getJobStates(self):
-        return IJobTracker(self.context).states
+        return IExperimentJobTracker(self.context).states
 
 
 from ZPublisher.Iterators import IStreamIterator
@@ -526,7 +502,7 @@ class DataMover(BrowserView):
 
         # 2. create and push alaimport job for dataset
         # TODO: make this named adapter
-        jt = IJobTracker(ds)
+        jt = IExperimentJobTracker(ds)
         status, message = jt.start_job()
         # reindex object to make sure everything is up to date
         ds.reindexObject()
@@ -563,16 +539,22 @@ class ExportResult(BrowserView):
 
         zipurl = self.context.absolute_url() + '/resultdownload'
 
-        from org.bccvl.tasks.result_export import result_export
+        from org.bccvl.tasks.celery import app
         from org.bccvl.tasks.plone import after_commit_task
-        export_task = result_export(
-            zipurl,
-            serviceid, {'context': context_path,
-                        'user': {
-                            'id': member.getUserName(),
-                            'email': member.getProperty('email'),
-                            'fullname': member.getProperty('fullname')
-                            }})
+        # FIXME: Do mapping from serviceid to service type? based on interface
+        #        background task will need serviceid and type, but it may resolve
+        #        servicetype via API with serviceid
+        export_task = app.signature(
+            "org.bccvl.tasks.export_services.export_result",
+            args=(zipurl,
+                  serviceid, {'context': context_path,
+                              'user': {
+                                  'id': member.getUserName(),
+                                  'email': member.getProperty('email'),
+                                  'fullname': member.getProperty('fullname')
+                              }}),
+            options={'immutable': True});
+
         # queue job submission
         after_commit_task(export_task)
 

@@ -7,9 +7,8 @@
       i18n:domain="plone">
   <body>
   
-    <metal:content-core fill-slot="content-core"
-			tal:define="contentFilter view/contentFilter">
-      <metal:content-core use-macro="context/folder_listing/content-core">
+    <metal:content-core fill-slot="content-core">
+      <metal:content-core use-macro="context/@@listing_view/content-core">
 	<!-- TODO: make this view a bit more useful and render additional info from
 	           view/experiment_details(item)
 	-->

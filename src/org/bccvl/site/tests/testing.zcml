@@ -5,27 +5,16 @@
     xmlns:transmogrifier="http://namespaces.plone.org/transmogrifier"
     i18n_domain="org.bccvl">
 
-    <!-- mapwidget interferes with add form registration
-         there is a very generic view registration for
-collective.geo.mapwidget.browser.widgets.MapWidgets which
-overrides anything else in a stacked component registry scenario -->
-    <exclude package="collective.geo.mapwidget"/>
-    <!-- also exclude mapwidget dependencies -->
-    <exclude package="collective.geo.contentlocations"/>
-    <exclude package="collective.z3cform.mapwidget"/>
-    <exclude package="collective.geo.kml"/>
-
     <include package="plone.app.caching"/>
-    <include package="plone.app.folderui"/>
+    <include package="eea.facetednavigation"/>
     <include package="org.bccvl.site"/> <!-- this loads all
     dependencies as well, should get rid of it or use only in
     integration tests -->
     <include package="gu.transmogrifier"/>
-    <!-- FIXME: get rid of deprecated package -->
-    <include package="gu.repository.content"/>
 
     <includeOverrides package="org.bccvl.site" file="overrides.zcml"/>
 
+    <!-- register some mock functions -->
     <utility
         component=".compute.testsdm"
         name="org.bccvl.site.content.interfaces.ISDMExperiment"/>
@@ -46,12 +35,4 @@ overrides anything else in a stacked component registry scenario -->
         component=".compute.testtraits"
         name="org.bccvl.site.content.interfaces.ISpeciesTraitsExperiment"/>
     
-    <genericsetup:registerProfile
-        name="testing"
-        title="BCCVL Site Testing Profile"
-        directory="profile"
-        description="Setup BCCVL Site."
-        provides="Products.GenericSetup.interfaces.EXTENSION"
-    />
-
 </configure>

@@ -45,13 +45,11 @@
   <include package=".widgets"/>
   <include package=".portlets"/>
   <include package=".oauth"/>
+  <include package=".faceted"/>
+  <include package=".behavior"/>
+  <include package=".job"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
-
-  <!-- make all dexterity based content geo-locatable with collective.geo.* -->
-  <class class="plone.dexterity.content.DexterityContent">
-    <implements interface="collective.geo.geographer.interfaces.IGeoreferenceable"/>
-  </class>
 
   <!-- metadata adapter -->
   <adapter
@@ -119,7 +117,7 @@
   <adapter
       for=".content.interfaces.IExperiment
            Products.ZCatalog.interfaces.IZCatalog"
-      factory=".indexers.JobStateIndexer"
+      factory=".indexers.ExperimentJobStateIndexer"
       name="job_state"
       />
 
@@ -137,17 +135,26 @@
       name="job_state"
       />
 
-  <!-- TODO: index temporal coverage someday -->
-  <!-- <adapter -->
-  <!--     factory=".indexers.dataset_DCTemporal" -->
-  <!--     name="DCTemporal" -->
-  <!-- /> -->
-
   <adapter
-      for="Products.CMFCore.interfaces.IFolderish"
-      factory=".utilities.JobTracker"
+      factory=".indexers.scientific_category"
+      name="BCCCategory"
       />
 
+  <adapter
+      factory=".indexers.scientific_category_collection"
+      name="BCCCategory"
+      />
+
+  <adapter
+      factory=".indexers.year"
+      name="BCCYear"
+      />
+
+  <adapter
+      factory=".indexers.month"
+      name="BCCMonth"
+      />
+  
   <adapter factory=".utilities.SDMJobTracker"/>
 
   <adapter factory=".utilities.ProjectionJobTracker"/>
@@ -196,6 +203,11 @@
       />
 
   <utility
+      component=".vocabularies.experiment_type_source"
+      name="experiment_type_source"
+      />
+
+  <utility
       component=".vocabularies.layer_source"
       name="layer_source"
       />
@@ -235,6 +247,21 @@
       name="genre_source"
       />
 
+  <utility
+      component=".vocabularies.job_state_source"
+      name="job_state_source"
+      />
+
+  <utility
+      component=".vocabularies.scientific_category_source"
+      name="scientific_category_source"
+      />
+
+  <utility
+      component=".vocabularies.data_collections_source"
+      name="data_collections_source"
+      />
+  
   <transmogrifier:registerConfig
       name="exportknowledgebase"
       title="Export Knowledgebase pipeline configuration"

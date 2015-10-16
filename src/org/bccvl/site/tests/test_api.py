@@ -1,4 +1,4 @@
-import unittest2 as unittest
+import unittest
 import doctest
 from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from org.bccvl.site.interfaces import IBCCVLMetadata
@@ -66,7 +66,7 @@ def setUpApiTests(doctest):
     md = IBCCVLMetadata(rds)
     md.update({
         'genre': 'DataGenreFP',
-        'temporal': u"start=2014;",
+        'year': 2014,
         'gcm': 'cccma-cgcm31',
         'emsc': 'RCP3PD',
         'species': {

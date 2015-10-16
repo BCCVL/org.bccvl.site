@@ -1,0 +1,52 @@
+.faceted-checkboxtree-item-disabled {
+  color: gray;
+}
+
+.faceted-zero-count-hidden .faceted-checkboxtree-item-disabled {
+  display: none ! important;
+}
+
+.widget-fieldset {
+}
+
+.widget-fieldset ul {
+  margin: 0px;
+  list-style: none ! important;
+}
+
+.widget-fieldset ul li input {
+  clear: both;
+  float: left;
+}
+
+.widget-fieldset ul li label {
+  font-weight: normal;
+  padding-left: 0.5em;
+}
+
+.faceted-checkboxtree-more {
+  text-align: right;
+}
+
+.faceted-checkboxtree-less {
+  text-align: right;
+}
+
+/* faceted operator start */
+.faceted-operator {
+  text-align: right;
+  margin-top: -20px;
+}
+
+.faceted-operator label {
+  font-weight: normal;
+}
+
+.faceted-operator a,
+.faceted-operator a:visited,
+.faceted-operator a:hover {
+  color: #95B229;
+  border: none;
+  text-decoration: none;
+}
+/* faceted operator end */

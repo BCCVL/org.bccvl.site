@@ -4,7 +4,7 @@
    i18n:domain="org.bccvl" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Basic metadata -->
-  <property name="title" i18n:translate="">SDM Experiment</property>
+  <property name="title" i18n:translate="">Species Distribution Modelling Experiment</property>
   <property name="description"
     i18n:translate="">Species Distribution Model Experiment</property>
   <property name="icon_expr">string:${portal_url}/++resource++experiment.png</property>-->
@@ -25,7 +25,6 @@
  <property name="behaviors">
      <element value="plone.app.dexterity.behaviors.metadata.IDublinCore" />
      <element value="plone.app.content.interfaces.INameFromTitle" />
-     <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
  </property>
 
   <!-- View information -->

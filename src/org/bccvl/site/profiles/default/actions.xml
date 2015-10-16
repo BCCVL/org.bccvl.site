@@ -5,18 +5,67 @@
     <object name="index_html" meta_type="CMF Action" i18n:domain="plone">
       <property name="visible">False</property>
     </object>
-
-    <object name="knowledgebase" meta_type="CMF Action" i18n:domain="plone">
-      <property name="title" i18n:translate="">Knowledgebase</property>
+    <object name="datasets" meta_type="CMF Action" i18n:domain="plone">
+      <property name="title" i18n:translate="">Datasets</property>
       <property name="description" i18n:translate=""></property>
-      <property name="url_expr">string:${portal/knowledgebase/absolute_url}?include_subfolders</property>
+      <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_collection_list</property>
+      <property name="link_target"></property>
+      <property name="icon_expr"></property>
+      <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'datasets')</property>
+      <property name="permissions">
+        <element value="View"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+    <object name="datasets_sub" meta_type="CMF Action Category">
+      <object name="collections" meta_type="CMF Action" i18n:domain="plone">
+        <property name="title" i18n:translate="">Browse Collections</property>
+        <property name="description" i18n:translate=""></property>
+        <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_collection_list</property>
+        <property name="link_target"></property>
+        <property name="icon_expr"></property>
+        <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'datasets')</property>
+        <property name="permissions">
+          <element value="View"/>
+        </property>
+        <property name="visible">True</property>
+      </object>
+      <object name="browse" meta_type="CMF Action" i18n:domain="plone">
+        <property name="title" i18n:translate="">Search Datasets</property>
+        <property name="description" i18n:translate=""></property>
+        <property name="url_expr">string:${portal/datasets/absolute_url}</property>
+        <property name="link_target"></property>
+        <property name="icon_expr"></property>
+        <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'datasets')</property>
+        <property name="permissions">
+          <element value="View"/>
+        </property>
+        <property name="visible">True</property>
+      </object>
+    </object>
+    <object name="experiments" meta_type="CMF Action" i18n:domain="plone">
+      <property name="title" i18n:translate="">Experiments</property>
+      <property name="description" i18n:translate=""></property>
+      <property name="url_expr">string:${portal/experiments/absolute_url}</property>
+      <property name="link_target"></property>
+      <property name="icon_expr"></property>
+      <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'experiments')</property>
+      <property name="permissions">
+        <element value="View"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+    <object name="knowledgebase" meta_type="CMF Action" i18n:domain="plone">
+      <property name="title" i18n:translate="">Knowledge Base</property>
+      <property name="description" i18n:translate=""></property>
+      <property name="url_expr">string:${portal/knowledgebase/absolute_url}</property>
       <property name="link_target"></property>
       <property name="icon_expr"></property>
       <property name="available_expr"></property>
       <property name="permissions">
         <element value="View"/>
       </property>
-      <property name="visible">False</property>
+      <property name="visible">True</property>
     </object>
   </object>
   <object name="user" meta_type="CMF Action Category">

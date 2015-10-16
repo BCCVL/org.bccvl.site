@@ -2,6 +2,7 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:define="dstools context/@@dataset_tools"
       tal:omit-tag="">
   <div id="" class=""
        tal:define="item view/item"
@@ -24,8 +25,10 @@
       <li>
         <span tal:replace="item/title">Experiment Title</span>
         <ul>
-          <li tal:repeat="model python: (model for model in item['models'] if model['selected'])"
-              tal:content="model/title">Model Title</li>
+          <li tal:repeat="model python: (model for model in item['models'] if model['selected'])">
+            <tal:r tal:replace="model/title">Model Title</tal:r><br/>
+            <tal:r tal:replace="model/algorithm/Title|nothing">Algo Title</tal:r>
+          </li>
         </ul>
       </li>
     </ul>

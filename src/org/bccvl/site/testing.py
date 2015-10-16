@@ -80,15 +80,14 @@ class BCCVLLayer(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         # load ZCML and use z2.installProduct here
         self.loadZCML('testing.zcml', package=org.bccvl.site.tests)
-        z2.installProduct(app, 'plone.app.folderui')
         z2.installProduct(app, 'Products.DateRecurringIndex')
 
     def setUpPloneSite(self, portal):
         # base test fixture sets default chain to nothing
         pwf = portal['portal_workflow']
         pwf.setDefaultChain('simple_publication_workflow')
-        # use testing profile, to avoid trubles with collective.geo.mapwidget
-        self.applyProfile(portal, 'org.bccvl.site.tests:testing')
+        # apply configuration profile
+        self.applyProfile(portal, 'org.bccvl.site:default')
         # FIXME: for testing we access the site via localhost,
         #        so we can't use the localscript extraction plugin
         from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
@@ -106,7 +105,6 @@ class BCCVLLayer(PloneSandboxLayer):
 
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'Products.DateRecurringIndex')
-        z2.uninstallProduct(app, 'plone.app.folderui')
 
     def addTestContent(self, portal):
         transmogrifier = Transmogrifier(portal)

@@ -3,7 +3,8 @@ from z3c.form import button
 from z3c.form.form import extends, applyChanges
 from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
 from zope.schema.interfaces import RequiredMissing
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IExperimentJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit, view
@@ -16,7 +17,7 @@ from plone.supermodel import loadString
 from z3c.form.interfaces import DISPLAY_MODE
 from z3c.form.error import MultipleErrors
 from zope.component import getMultiAdapter
-from plone.app.uuid.utils import uuidToCatalogBrain
+from plone.app.uuid.utils import uuidToCatalogBrain, uuidToObject
 from decimal import Decimal
 from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
@@ -150,7 +151,7 @@ class View(edit.DefaultEditForm):
     label = ''
 
     def job_state(self):
-        return IJobTracker(self.context).state
+        return IExperimentJobTracker(self.context).state
 
     # condition=lambda form: form.showApply)
     @button.buttonAndHandler(u'Start Job')
@@ -161,7 +162,7 @@ class View(edit.DefaultEditForm):
             self.status = self.formErrorsMessage
             return
 
-        msgtype, msg = IJobTracker(self.context).start_job(self.request)
+        msgtype, msg = IExperimentJobTracker(self.context).start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
         self.request.response.redirect(self.context.absolute_url())
@@ -232,7 +233,7 @@ class Add(add.DefaultAddForm):
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"),
                                                       "info")
         # auto start job here
-        jt = IJobTracker(obj)
+        jt = IExperimentJobTracker(obj)
         msgtype, msg = jt.start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
@@ -272,7 +273,7 @@ class SDMAdd(ParamGroupMixin, Add):
 
     def is_toolkit_selected(self, tid, data):
         return tid in data
-    
+
     def create(self, data):
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
         # we'll have to override it to find a place to apply our algo_group data'
@@ -358,7 +359,12 @@ class ProjectionAdd(Add):
             raise ActionExecutionError(Invalid('No future climate dataset selected.'))
         models = data.get('species_distribution_models', {})
         if not tuple(chain.from_iterable(x for x in models.values())):
-            raise ActionExecutionError(Invalid('No source dataset selected.'))   
+            # FIXME: collecting all errors is better than raising an exception for each single error
+            # TODO: see http://stackoverflow.com/questions/13040487/how-to-raise-a-widgetactionexecutionerror-for-multiple-fields-with-z3cform
+            raise WidgetActionExecutionError(
+                'species_distribution_models',
+                Invalid('No source dataset selected.')
+            )
 
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
@@ -381,7 +387,28 @@ class BiodiverseAdd(Add):
         # ...
         datasets = data.get('projection', {})
         if not tuple(chain.from_iterable(x for x in datasets.values())):
-            raise ActionExecutionError(Invalid('No projection dataset selected.'))   
+            raise WidgetActionExecutionError(
+                'projection',
+                Invalid('No projection dataset selected.')
+            )
+        # check if threshold values are in range
+        for dataset in (x for x in datasets.values()):
+            # key: {label, value}
+            dsuuid = dataset.keys()[0]
+            ds = uuidToObject(dsuuid)
+            value = dataset[dsuuid]['value']
+            md = IBCCVLMetadata(ds)
+            # ds should be a projection output which has only one layer
+            # FIXME: error message is not clear enough and
+            #        use widget.errors instead of exception
+            #        also it will only verify if dateset has min/max values in metadata
+            layermd = md['layers'].values()[0]
+            if 'min' in layermd and 'max' in layermd:
+                # FIXME: at least layermd['min'] may be a string '0', when comparing to decimal from threshold selector, this comparison fails and raises the widget validation error
+                if value <= float(layermd['min']) or value >= float(layermd['max']):
+                    raise WidgetActionExecutionError(
+                        'projection',
+                        Invalid('Selected threshold is out of range'))
 
 
 class EnsembleAdd(Add):
@@ -455,7 +482,7 @@ class SpeciesTraitsAdd(ParamGroupMixin, Add):
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
         return tid == data
-    
+
     def create(self, data):
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
         # we'll have to override it to find a place to apply our algo_group data'
@@ -473,4 +500,3 @@ class SpeciesTraitsAdd(ParamGroupMixin, Add):
     def validateAction(self, data):
         # TODO: check data ...
         pass
-

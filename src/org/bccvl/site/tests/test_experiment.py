@@ -1,21 +1,11 @@
-import unittest2 as unittest
-from urlparse import urljoin
+import unittest
 from decimal import Decimal
-import re
-import time
 import transaction
 
-from zope.component import createObject
-from zope.component import queryUtility
-
-from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import SITE_OWNER_PASSWORD
-
 from org.bccvl.site import defaults
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
-from org.bccvl.site.testing import (BCCVL_INTEGRATION_TESTING,
-                                    BCCVL_FUNCTIONAL_TESTING)
-from org.bccvl.site.tests.utils import TestRequest
+from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IExperimentJobTracker
+from org.bccvl.site.testing import BCCVL_FUNCTIONAL_TESTING
 from org.bccvl.site.tests.utils import SDMExperimentHelper
 from org.bccvl.site.tests.utils import ProjectionExperimentHelper
 from org.bccvl.site.tests.utils import BiodiverseExperimentHelper
@@ -77,7 +67,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job sholud finish
         transaction.commit()
@@ -96,7 +86,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # update form with updated request
         form.update()
         # start experiment
-        jt = IJobTracker(self.experiments['my-experiment'])
+        jt = IExperimentJobTracker(self.experiments['my-experiment'])
         self.assertEqual(jt.state, u'QUEUED')
         #error
         state = jt.start_job(form.request)
@@ -197,11 +187,11 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.assertEqual(result.job_params['resolution'], u'Resolution30m')
         self.assertEqual(result.job_params['emsc'], u'RCP3PD')
         self.assertEqual(result.job_params['gcm'], u'cccma-cgcm31')
-        self.assertEqual(result.job_params['year'], u'2015')
+        self.assertEqual(result.job_params['year'], 2015)
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job should finish
         transaction.commit()
@@ -249,9 +239,17 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
             })
         # update form with updated request
         sdmform.update()
-        transaction.commit()
         # We should have only one SDM
         sdmexp = self.experiments.values()[0]
+        transaction.commit()
+        # setup som threshold values our projection
+        sdmproj = sdmexp.values()[0]['proj_test.tif']
+        md = IBCCVLMetadata(sdmproj)
+        # there is only one layer
+        layermd = md['layers'].values()[0]
+        layermd['min'] = 0.0
+        layermd['max'] = 1.0
+        transaction.commit()
         self.form = BiodiverseExperimentHelper(self.portal, sdmexp)
 
     def test_add_experiment_missing_input(self):
@@ -282,7 +280,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # TODO: update asserts
         self.assertEqual(exp.projection,
                          {unicode(self.form.sdmexp.UID()):
-                          {unicode(self.form.sdmproj.UID()): {'value': Decimal('0.0'), 'label': '0.0'}}})
+                          {unicode(self.form.sdmproj.UID()): {'value': Decimal('0.5'), 'label': '0.5'}}})
         # FIXME: submitting with an empty model list doesn't cause form to fail
         self.assertEqual(exp.cluster_size, 5000)
 
@@ -293,11 +291,11 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         self.assertEqual(result.job_params['cluster_size'], 5000)
         self.assertEqual(result.job_params['projections'], [{
             "dataset": self.form.sdmproj.UID(),
-            "threshold": {'label': '0.0', 'value': Decimal('0.0')}}])
+            "threshold": {'label': '0.5', 'value': Decimal('0.5')}}])
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job should finish
         transaction.commit()
@@ -367,7 +365,7 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job should finish
         transaction.commit()
@@ -428,7 +426,7 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
-        jt = IJobTracker(exp)
+        jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
         # after transaction commit the job should finish
         transaction.commit()

@@ -2,8 +2,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from plone import api
+from plone.uuid.interfaces import IUUID
 from zope.annotation.interfaces import IAnnotations
+from zope.component import getUtility
 from zope.interface import alsoProvides
+from org.bccvl.site import defaults
 import logging
 
 
@@ -54,6 +57,7 @@ def setupVarious(context, logger=None):
         qi.installProduct('AutoUserMakerPASPlugin')
 
     # install local login pas plugin
+    # FIXME: needs to go onto zope root, or needs special admin user in plone site
     acl = portal.acl_users
     if not 'localscript' in acl:
         factory = acl.manage_addProduct['PluggableAuthService']
@@ -97,6 +101,10 @@ def setupVarious(context, logger=None):
         else:
             gtool.addGroup(**group)
 
+    # FIXME: some stuff is missing,... initial setup of site is not correct
+    from org.bccvl.site.job.catalog import setup_job_catalog
+    setup_job_catalog(portal)
+
 
 def upgrade_180_181_1(context, logger=None):
     # context is either the portal (called from setupVarious) or portal_setup when run via genericsetup
@@ -134,12 +142,182 @@ def upgrade_190_200_1(context, logger=None):
     if logger is None:
         logger = LOG
     # Run GS steps
+    portal = api.portal.get()
     setup = getToolByName(context, 'portal_setup')
-    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'properties')
+    setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
+    setup.runImportStepFromProfile(PROFILE_ID, 'propertiestool')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
+    # set portal_type of all collections to 'org.bccvl.content.collection'
+    for tlf in portal.datasets.values():
+        for coll in tlf.values():
+            if coll.portal_type == 'Folder':
+                coll.portal_type = 'org.bccvl.content.collection'
+
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     # rebuild the catalog to make sure new indices are populated
-    # logger.info("rebuilding catalog")
-    # pc = getToolByName(context, 'portal_catalog')
-    # pc.clearFindAndRebuild()
+    logger.info("rebuilding catalog")
+    pc = getToolByName(context, 'portal_catalog')
+    pc.reindexIndex('BCCCategory', None)
+    # add category to existing species data
+    genre_map = {
+        'DataGenreSpeciesOccurrence': 'occurrence',
+        'DataGenreSpeciesAbsence': 'absence',
+        'DataGenreSpeciesAbundance': 'abundance',
+        'DataGenreCC': 'current',
+        'DataGenreFC': 'future',
+        'DataGenreE': 'environmental',
+        'DataGenreTraits': 'traits',
+    }
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    for brain in pc(BCCDataGenre=genre_map.keys()):
+        obj = brain.getObject()
+        md = IBCCVLMetadata(obj)
+        if not md.get('categories', None):
+            md['categories'] = [genre_map[brain.BCCDataGenre]]
+            obj.reindexObject()
+
+    # update temporal and year an all datasets
+    from org.bccvl.site.content.interfaces import IDataset
+    import re
+    for bran in pc(object_provides=IDataset.__identifier__):
+        obj = brain.getObject()
+        md = IBCCVLMetadata(obj)
+        if hasattr(obj, 'rightsstatement'):
+            del obj.rightsstatement
+        # temporal may be an attribute or is in md
+        if 'temporal' in md:
+            if 'year' not in md:
+                # copy temporal start to year
+                sm = re.search(r'start=(.*?);', md['temporal'])
+                if sm:
+                    md['year'] = int(sm.group(1))
+                    # delete temporal
+                    del md['temporal']
+                    obj.reindexObject()
+            if 'year' not in md:
+                LOG.info('MD not updated for:', brain.getPath)
+
+    # clean up any local utilities from gu.z3cform.rdf
+    count = 0
+    from zope.component import getSiteManager
+    sm = getSiteManager()
+    from zope.schema.interfaces import IVocabularyFactory
+    from gu.z3cform.rdf.interfaces import IFresnelVocabularyFactory
+    for vocab in [x for x in sm.getAllUtilitiesRegisteredFor(IVocabularyFactory) if IFresnelVocabularyFactory.providedBy(x)]:
+        sm.utilities.unsubscribe((), IVocabularyFactory, vocab)
+        count += 1
+    logger.info('Unregistered %d local vocabularies', count)
+
+    # migrate OAuth configuration registry to use new interfaces
+    from zope.schema import getFieldNames
+    from plone.registry.interfaces import IRegistry
+    from .oauth.interfaces import IOAuth1Settings
+    from .oauth.figshare import IFigshare
+    registry = getUtility(IRegistry)
+    # there is only Figshare there atm.
+    coll = registry.collectionOfInterface(IOAuth1Settings)
+    newcoll = registry.collectionOfInterface(IFigshare)
+    for cid, rec in coll.items():
+        # add new
+
+        newrec = newcoll.add(cid)
+        newfields = getFieldNames(IFigshare)
+        # copy all attributes over
+        for field in getFieldNames(IOAuth1Settings):
+            if field in newfields:
+                setattr(newrec, field, getattr(rec, field))
+    # remove all old settings
+    coll.clear()
+    logger.info("Migrated OAuth1 settings to Figshare settings")
+
+    for toolkit in portal[defaults.TOOLKITS_FOLDER_ID].values():
+        if hasattr(toolkit, 'interface'):
+            del toolkit.interface
+        if hasattr(toolkit, 'method'):
+            del toolkit.method
+        toolkit.reindexObject()
+
+    # possible way to update interface used in registry collections:
+    # 1. get collectionOfInterface(I...) ... get's Collections proxy
+    # 2. use proxy.add(key)  ... (add internally re-registers the given interface)
+    #    - do this for all entries in collections proxy
+
     logger.info("finished")
+
+
+def upgrade_200_210_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'toolset')
+
+    from org.bccvl.site.job.catalog import setup_job_catalog
+    setup_job_catalog(portal)
+
+    pc = api.portal.get_tool('portal_catalog')
+    from org.bccvl.site.job.interfaces import IJobUtility
+    jobtool = getUtility(IJobUtility)
+    # search all datasets and create job object with infos from dataset
+    # -> delete job info on dataset
+    DS_TYPES = ['org.bccvl.content.dataset',
+                'org.bccvl.content.remotedataset']
+    for brain in pc.searchResults(portal_type=DS_TYPES):
+        job = jobtool.find_job_by_uuid(brain.UID)
+        if job:
+            # already processed ... skip
+            continue
+        ds = brain.getObject()
+        annots = IAnnotations(ds)
+        old_job = annots.get('org.bccvl.state', None)
+        if not old_job:
+            # no job state here ... skip it
+            continue
+        job = jobtool.new_job()
+        job.created = ds.created()
+        job.message = old_job['progress']['message']
+        job.progress = old_job['progress']['state']
+        job.state = old_job['state']
+        job.title = old_job['name']
+        job.taskid = old_job['taskid']
+        job.userid = ds.getOwner().getId()
+        job.content = IUUID(ds)
+        jobtool.reindex_job(job)
+        del annots['org.bccvl.state']
+
+    # search all experiments and create job object with infos from experiment
+    # -> delete job info on experiment
+    EXP_TYPES = ['org.bccvl.content.sdmexperiment',
+                 'org.bccvl.content.projectionexperiment',
+                 'org.bccvl.content.biodiverseexperiment',
+                 'org.bccvl.content.ensemble',
+                 'org.bccvl.content.speciestraitsexperiment'
+    ]
+    for brain in pc.searchResults(portal_type=EXP_TYPES):
+        # go through all results
+        for result in brain.getObject().values():
+            job = jobtool.find_job_by_uuid(IUUID(result))
+            if job:
+                # already processed ... skip
+                continue
+            annots = IAnnotations(result)
+            old_job = annots.get('org.bccvl.state', None)
+            if not old_job:
+                # no job state here ... skip it
+                continue
+            job = jobtool.new_job()
+            job.created = result.created()
+            job.message = old_job['progress']['message']
+            job.progress = old_job['progress']['state']
+            job.state = old_job['state']
+            job.title = old_job['name']
+            job.taskid = old_job['taskid']
+            job.userid = result.getOwner().getId()
+            job.content = IUUID(result)
+            jobtool.reindex_job(job)
+            del annots['org.bccvl.state']

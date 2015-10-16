@@ -1,4 +1,4 @@
-import unittest2 as unittest
+import unittest
 from zope.component import getMultiAdapter
 from plone.app.testing import TEST_USER_ID, setRoles
 from org.bccvl.site import defaults
@@ -14,7 +14,6 @@ class DatasetManagerTest(unittest.TestCase):
 #     getRAT
 #     query
 #     queryDataset
-#     getFutureClimateDatasets
 #     getSDMDatasets
 #     getBiodiverseDatasets
 #     getProjectionDatasets

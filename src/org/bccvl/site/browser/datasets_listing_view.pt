@@ -18,22 +18,29 @@
   -->
   <div id="content">
     
-    <ul id="datasets_tabs" class="formTabs" metal:define-macro="datasets_tabs">
+    <ul id="datasets_tabs" class="formTabs" metal:define-macro="datasets_tabs"
+        tal:define="current_view view/__name__">
       <li class="formTab">
         <a href="#"
-           tal:define="selected python: 'selected' if view.__name__ == 'datasets_listing_view' else ''"
+           tal:define="selected python: 'selected' if current_view == context.getLayout() else ''"
            tal:attributes="href string:${context/absolute_url};
-                           class selected">My Datasets</a>
+                           class selected">Search Datasets</a>
       </li>
       <li class="formTab">
         <a href="#"
-           tal:define="selected python: 'selected' if view.__name__ == 'datasets_import_view' else ''"
+           tal:define="selected python: 'selected' if current_view == 'datasets_collection_list' else ''"
+           tal:attributes="href string:${context/absolute_url}/datasets_collection_list;
+                           class selected">Browse Collections</a>
+      </li>      
+      <li class="formTab">
+        <a href="#"
+           tal:define="selected python: 'selected' if current_view == 'datasets_import_view' else ''"
            tal:attributes="href string:${context/absolute_url}/datasets_import_view;
-                           class selected">Discover Dataset</a>
+                           class selected">Import Species Dataset</a>
       </li>
       <li class="formTab">
         <a href="#"
-           tal:define="selected python: 'selected' if view.__name__ == 'datasets_upload_view' else ''"
+           tal:define="selected python: 'selected' if current_view == 'datasets_upload_view' else ''"
            tal:attributes="href string:${context/absolute_url}/datasets_upload_view;
                            class selected">Upload Dataset</a>
       </li>

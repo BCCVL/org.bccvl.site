@@ -1,5 +1,7 @@
 {
-    "_type": "Folder",
+    "_type": "org.bccvl.content.collection",
     "title": "User uploaded species data",
+    "description": "Species data uploaded and shared by users",
+    "categories": ["biological"],
     "_transitions": ["show_internally", "publish_internally"]
 }
