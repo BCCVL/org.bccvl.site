@@ -290,6 +290,18 @@ programming_language_vocab = SimpleVocabulary([
 def programming_language_vocab_factory(context):
     return programming_language_vocab
 
+algorithm_category_vocab = SimpleVocabulary([
+    SimpleTerm("profile", "profile", u'Profile Models'),
+    SimpleTerm("machineLearning", "machineLearning", u'Machine Learning Models'),
+    SimpleTerm("statistical", "statistical", u'Statistical Models'),
+    SimpleTerm("geographic", "geographic", u'Geographic Models'),
+])
+
+
+# TODO: maybe a tree vocabulary would be nice here?
+@provider(IVocabularyFactory)
+def algorithm_category_vocab_factory(context):
+    return algorithm_category_vocab
 
 genre_vocabulary = SimpleVocabulary([
     SimpleTerm("DataGenreSpeciesOccurrence", "DataGenreSpeciesOccurrence", "Species Occurrence"),

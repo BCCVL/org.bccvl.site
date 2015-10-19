@@ -243,6 +243,11 @@
       />
 
   <utility
+      component=".vocabularies.algorithm_category_vocab_factory"
+      name="org.bccvl.site.algorithm_category_vocab"
+      />
+
+  <utility
       component=".vocabularies.genre_source"
       name="genre_source"
       />

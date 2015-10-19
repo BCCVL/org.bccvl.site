@@ -46,6 +46,13 @@ class IFunction(model.Schema):
         required=True
         )
 
+    algorithm_category = Choice(
+        title=_(u"Algorithm Category"),
+        description=_(u"The category an algorithm belongs to"),
+        vocabulary="org.bccvl.site.algorithm_category_vocab",
+        required=True,
+        )
+
 # TODO: add validators:
 #    e.g. restrict the set of available methods; maybe setuptools
 #    entry points from a vocabulary
