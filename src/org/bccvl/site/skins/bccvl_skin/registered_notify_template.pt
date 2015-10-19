@@ -25,7 +25,7 @@ Precedence: bulk
 <p i18n:domain="passwordresettool"
    i18n:translate="mailtemplate_registered_user_body"
    tal:omit-tag="">
-  We've just added your name to our door list and your free to stroll through the pearly gates into the world of Biodiversity and Climate Change modelling!
+  We've just added your name to our door list and you're free to stroll through the pearly gates into the world of Biodiversity and Climate Change modelling!
 </p>
 
 <p i18n:domain="passwordresettool"
