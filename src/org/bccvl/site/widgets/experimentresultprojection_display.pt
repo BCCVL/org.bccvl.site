@@ -23,12 +23,12 @@
       <tal:block tal:repeat="item view/items">
         <li>
           <span tal:replace="item/title">Experiment Title</span>
-          <tal:block tal:repeat="dataset item/datasets">
-            <tal:block tal:condition="dataset/selected">
+          <tal:block tal:repeat="subitem item/subitems">
+            <tal:block tal:condition="subitem/selected">
               <br/>
-              <span tal:content="dataset/title">Dataset Title</span>
-	      <span tal:content="dataset/threshold/label">Threshold label:</span>
-	      <span tal:content="dataset/threshold/value">Threshold value</span>
+              <span tal:content="subitem/title">Dataset Title</span>
+	      <span tal:content="subitem/threshold/label">Threshold label:</span>
+	      <span tal:content="subitem/threshold/value">Threshold value</span>
             </tal:block>
           </tal:block>
         </li>

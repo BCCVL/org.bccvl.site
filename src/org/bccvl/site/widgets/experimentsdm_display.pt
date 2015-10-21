@@ -25,9 +25,9 @@
       <li>
         <span tal:replace="item/title">Experiment Title</span>
         <ul>
-          <li tal:repeat="model python: (model for model in item['models'] if model['selected'])">
-            <tal:r tal:replace="model/title">Model Title</tal:r><br/>
-            <tal:r tal:replace="model/algorithm/Title|nothing">Algo Title</tal:r>
+          <li tal:repeat="subitem python: (subitem for subitem in item['subitems'] if subitem['selected'])">
+            <tal:r tal:replace="subitem/title">Model Title</tal:r><br/>
+            <tal:r tal:replace="subitem/algorithm/Title|nothing">Algo Title</tal:r>
           </li>
         </ul>
       </li>

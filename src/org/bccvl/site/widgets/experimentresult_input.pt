@@ -2,6 +2,8 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:define="portal_state nocall:context/@@plone_portal_state;
+                  portal_url portal_state/portal_url"
       tal:omit-tag="">
   <div id="fieldname-modal" class="modal large hide fade" tabindex="-1" role="dialog"
        tal:attributes="id string:${view/field/__name__}-modal">
@@ -17,10 +19,12 @@
     </div>
   </div>
   <a id="fieldname-popup" href="#"
-     tal:attributes="id string:${view/field/__name__}-popup"
+     tal:attributes="id string:${view/field/__name__}-popup;
+                     href string:${portal_url}/portal_facetconfig/${view/field/__name__}"
      tal:content="string:Select ${view/label}">Select SDM Experiment</a>
   <div id="form-widgets-fieldname"
-       tal:attributes="id string:${view/id}">
+       tal:attributes="id string:${view/id};
+                       data-multiple view/multiple|string:">
     <tal:block tal:repeat="item view/items">
       <div class="selecteditem"
            tal:define="index repeat/item/index;">
@@ -31,18 +35,19 @@
              data-resolution=""
              tal:attributes="data-resolution item/resolution"
              tal:content="item/title">Experiment Title</p>
-          <input type="hidden" value="" name="form.widgets.fieldname.experiment.0"
+          <input type="hidden" value="" name="form.widgets.fieldname.item.0"
+                 class="item"
                  tal:attributes="value item/uuid;
-                                 name string:${view/name}.experiment.${index};"/>
+                                 name string:${view/name}.item.${index};"/>
           <!-- List of Datesetss within experiment -->
-          <tal:repeat tal:repeat="model item/datasets">
+          <tal:repeat tal:repeat="subitem item/subitems">
             <div class="selectedmodels">
               <input type="checkbox" value=""
-                     name="form.widgets.fieldname.dataset.0:list"
-                     tal:attributes="value model/uuid;
-                                     name string:${view/name}.dataset.${index}:list;
-                                     checked model/selected;"/>
-              <span tal:content="model/title">Model Title</span>
+                     name="form.widgets.fieldname.item.0.item.0:list"
+                     tal:attributes="value subitem/uuid;
+                                     name string:${view/name}.item.${index}.item:list;
+                                     checked subitem/selected;"/>
+              <span tal:content="subitem/title">Model Title</span>
             </div>
           </tal:repeat>
         </div>
