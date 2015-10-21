@@ -1,7 +1,7 @@
 import logging
-from zope.component import getMultiAdapter
+from zope.component import getMultiAdapter, getUtility
 from zope.interface import implementer, implementer_only
-from zope.schema.interfaces import ITitledTokenizedTerm
+from zope.schema.interfaces import ITitledTokenizedTerm, IVocabularyFactory
 from z3c.form import util
 from z3c.form.interfaces import (IFieldWidget, NO_VALUE)
 from z3c.form.widget import FieldWidget, Widget, SequenceWidget
@@ -58,20 +58,27 @@ class FunctionsWidget(HTMLInputWidget, SequenceWidget):
         # TODO: check if we should cache the return list
         if self.terms is None:  # update() not yet called
             return ()
-        items = []
+        items = OrderedDict((cat,[]) for cat in ('profile', 'machineLearning', 'statistical', 'geographic'))
+        vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
         for count, term in enumerate(self.terms):
+            alg = term.brain.getObject()
+            if alg.algorithm_category is None or alg.algorithm_category not in items:
+                continue
+            itemList = items[alg.algorithm_category]
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             if ITitledTokenizedTerm.providedBy(term):
-                label = translate(term.title, context=self.request,
-                                  default=term.title)
+                label = translate(term.title, context=self.request, default=term.title)
             else:
                 label = util.toUnicode(term.value)
-            items.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
+
+            itemList.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
                    'label':label, 'checked': checked,
                    'subject': term.brain.Subject,
-                   'description': term.brain.Description})
-        return items
+                   'description': term.brain.Description,
+                   'category': vocab.getTerm(alg.algorithm_category),
+                   'pos': len(itemList) })
+        return items.values()
 
 
 @implementer(IFieldWidget)
