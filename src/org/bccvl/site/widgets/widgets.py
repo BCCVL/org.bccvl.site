@@ -70,15 +70,14 @@ def FunctionsFieldWidget(field, request):
     return FieldWidget(field, FunctionsWidget(request))
 
 
+# FIXME: rename to SelectListWidget
 @implementer(IDatasetWidget)
 class DatasetWidget(HTMLInputWidget, Widget):
     """
     Widget that stores a dataset uuid.
     """
 
-    genre = None
     multiple = None
-    filters = ['text', 'source']
 
     def items(self):
         if self.value:
@@ -99,11 +98,7 @@ def DatasetFieldWidget(field, request):
     return FieldWidget(field, DatasetWidget(request))
 
 
-# TODO: change the widget below? ...
-#       e.g. browse for datasets with layers and do layer selection on page (instead of popup)
-#       or: make layers a sort of fold down within dataset?
-#       or: ...
-
+# FIXME: rename to SelectDictWidget
 @implementer(IDatasetDictWidget)
 class DatasetDictWidget(HTMLFormElement, Widget):
     """
@@ -111,9 +106,7 @@ class DatasetDictWidget(HTMLFormElement, Widget):
     catalog query.
     """
 
-    genre = None
     multiple = None
-    filters = ['text', 'source']
 
     _dstools = None
 
@@ -152,8 +145,6 @@ class DatasetDictWidget(HTMLFormElement, Widget):
     def items(self):
         # return dict with keys for dataset/experiment uuid
         # and list of uuids for sub element
-        item = {}
-        #pc = getToolByName(self.context, 'portal_catalog')
         if self.value:
             for dsuuid in self.value.keys():
                 dsbrain = uuidToCatalogBrain(dsuuid)
@@ -182,13 +173,13 @@ class DatasetDictWidget(HTMLFormElement, Widget):
         # no count?
         if count <= 0:
             return NO_VALUE
-        # try to find up to count layers
+        # try to find up to count items (layers)
         for idx in range(0, count):
             uuid = self.request.get('{}.item.{}'.format(self.name, idx))
             subuuid = self.request.get('{}.item.{}.item'.format(self.name, idx))
             if uuid:
                 if not subuuid:
-                    subuuid = set()
+                    subuuid = set()  # FIXME: whether set or list should depend on field
                 value.setdefault(uuid, set()).update(subuuid)
         if not value:
             return NO_VALUE
@@ -203,6 +194,7 @@ def DatasetDictFieldWidget(field, request):
     return FieldWidget(field,  DatasetDictWidget(request))
 
 
+# TODO: this is a SelectDictWidget
 @implementer(IExperimentSDMWidget)
 class ExperimentSDMWidget(HTMLInputWidget, Widget):
     """
@@ -211,7 +203,6 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
     Gives user the ability to select an experiment and pick a number of sdm models from within.
     """
 
-    experiment_type = None
     genre = ['DataGenreSDMModel']
     multiple = None
     _algo_dict = None
@@ -237,7 +228,7 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
                 return {
                     'title': u'Not Available',
                     'uuid': experiment_uuid,
-                    'models': []
+                    'subitems': []  # models
                 }
             item['title'] = expbrain.Title
             item['uuid'] = expbrain.UID
@@ -250,12 +241,12 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             brains = pc.searchResults(path=expbrain.getPath(),
                                       BCCDataGenre=self.genre)
             # TODO: maybe as generator?
-            item['models'] = []
+            item['subitems'] = []
             for brain in brains:
                 # get algorithm term
                 algoid = getattr(brain.getObject(), 'job_params', {}).get('function')
                 algobrain = self.algo_dict.get(algoid, None)
-                item['models'].append(
+                item['subitems'].append(
                     {'item': brain,
                      'uuid': brain.UID,
                      'title': brain.Title,
@@ -269,15 +260,27 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
         # extract the value for the widget from the request and return
         # a tuple of (key,value) pairs
         # get experiment uuid from request
-        uuid = self.request.get(self.name)
-        if not uuid:
+        value = {}
+        try:
+            count = int(self.request.get('{}.count'.format(self.name)))
+        except:
+            count = 0
+        # no count?
+        if count <= 0:
             return NO_VALUE
-        # get selcted model uuids if any..
-        # TODO: this supports only one experiment at the moment
-        if isinstance(uuid, list):
-            uuid = uuid[0]
-        modeluuids = self.request.get('{0}.model'.format(self.name),
-                                      [])
+        # try to find up to count items (datasets)
+        for idx in range(0, count):
+            uuid = self.request.get('{}.item.{}'.format(self.name, idx))
+            subuuid = self.request.get('{}.item.{}.item'.format(self.name, idx))
+            if uuid:
+                if not subuuid:
+                    subuuid = list()  # FIXME: whether set or list should depend on field
+                value.setdefault(uuid, list()).extend(subuuid)
+        if not value:
+            return NO_VALUE
+        # FIXME: we support only one experiment at the moment, so let's grap first one from dict
+        uuid = value.keys()[0]
+        modeluuids = value[uuid]
         return {uuid: modeluuids}
 
 
@@ -293,10 +296,6 @@ class FutureDatasetsWidget(HTMLFormElement, Widget):
     render a default widget for values per key
     """
 
-    #TODO:  filter by:  text, gcm, emsc, year
-    #        hidden: resolution, layers
-
-    genre = ['DataGenreFC']
     multiple = 'multiple'
 
     _res_vocab = None
@@ -368,7 +367,7 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                 brains = pc.searchResults(path=expbrain.getPath(),
                                           BCCDataGenre=self.genre)
                 # TODO: maybe as generator?
-                item['datasets'] = [{'uuid': brain.UID,
+                item['subitems'] = [{'uuid': brain.UID,
                                      'title': brain.Title,
                                      'obj': brain.getObject(),
                                      'md': IBCCVLMetadata(brain.getObject()),
@@ -389,8 +388,8 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
             return NO_VALUE
         # try to find count experiments
         for idx in range(0, count):
-            uuid = self.request.get('{}.experiment.{}'.format(self.name, idx))
-            models = self.request.get('{}.dataset.{}'.format(self.name, idx), [])
+            uuid = self.request.get('{}.item.{}'.format(self.name, idx))
+            models = self.request.get('{}.item.{}.item'.format(self.name, idx), [])
             if uuid:
                 value[uuid] = models
         if not value:
@@ -436,7 +435,7 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                 brains = pc.searchResults(path=expbrain.getPath(),
                                           BCCDataGenre=self.genre)
                 # TODO: maybe as generator?
-                item['datasets'] = []
+                item['subitems'] = []
                 for brain in brains:
                     # FIXME: I need a different list of thresholds for display; esp. don't look up threshold, but take vales (threshold id and value) from field as is
                     thresholds = dataset.getThresholds(brain.UID)[brain.UID]
@@ -448,7 +447,7 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                         thresholds[threshold['label']] = threshold['label']
                     dsobj = brain.getObject()
                     dsmd = IBCCVLMetadata(dsobj)
-                    item['datasets'].append({
+                    item['subitems'].append({
                          'uuid': brain.UID,
                          'title': brain.Title,
                          'selected': brain.UID in self.value[experiment_uuid],
@@ -476,17 +475,17 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
             return NO_VALUE
         # try to find count experiments
         for idx in range(0, count):
-            uuid = self.request.get('{}.experiment.{}'.format(self.name, idx))
+            uuid = self.request.get('{}.item.{}'.format(self.name, idx))
             if not uuid:
                 continue
             value[uuid] = {}
             try:
-                dscount = int(self.request.get('{}.dataset.{}.count'.format(self.name, idx)))
+                dscount = int(self.request.get('{}.item.{}.count'.format(self.name, idx)))
             except:
                 dscount = 0
             for dsidx in range(0, dscount):
-                dsuuid = self.request.get('{}.dataset.{}.{}.uuid'.format(self.name, idx, dsidx))
-                dsth = self.request.get('{}.dataset.{}.{}.threshold'.format(self.name, idx, dsidx))
+                dsuuid = self.request.get('{}.item.{}.item.{}.uuid'.format(self.name, idx, dsidx))
+                dsth = self.request.get('{}.item.{}.item.{}.threshold'.format(self.name, idx, dsidx))
                 if dsuuid:
                     value[uuid][dsuuid] = {'label': dsth}
         if not value:
