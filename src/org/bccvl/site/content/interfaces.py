@@ -82,14 +82,14 @@ class ISDMExperiment(IExperiment):
     )
 
     species_pseudo_absence_points = Bool(
-        title=u"Pseudo absence points",
+        title=u"Use pseudo absence points instead of dataset.",
         description=u"Enable generation of random pseudo absence "
                     u"points across area defined in environmental data",
         default=False,
         required=False)
 
     species_number_pseudo_absence_points = Int(
-        title=u"Number of pseudo absence points",
+        title=u"Number of points",
         description=u"The number of random pseudo absence points to generate",
         default=10000,
         required=False)
