@@ -16,8 +16,6 @@
         <button class="btn btn-primary">Add Layers</button>
       </div>
     </div>
-  <script type="text/javascript"
-          tal:content="structure view/js"></script>
   <a id="fieldname-popup" href="#"
      tal:attributes="id string:${view/field/__name__}-popup"
      tal:content="string:Select ${view/label}">Select Occurrence Dataset</a>

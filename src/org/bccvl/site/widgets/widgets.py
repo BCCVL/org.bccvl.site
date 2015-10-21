@@ -14,25 +14,16 @@ from .interfaces import (IDatasetWidget,
                          IExperimentSDMWidget,
                          IFutureDatasetsWidget,
                          IExperimentResultWidget,
-                         IExperimentResultProjectionWidget,
-                         IJSWrapper)
+                         IExperimentResultProjectionWidget)
 from plone.app.uuid.utils import uuidToCatalogBrain
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
 from org.bccvl.site.api import dataset
-import json
 from itertools import chain
 from collections import OrderedDict
 
 
 LOG = logging.getLogger(__name__)
-
-# Wrap js code into a document.ready wrapper and CDATA section
-JS_WRAPPER = u"""//<![CDATA[
-    $(document).ready(function(){%(js)s});
-//]]>"""
-
-JS_WRAPPER_ADAPTER = lambda req, widget: JS_WRAPPER
 
 
 @implementer_only(IFunctionsWidget)
@@ -94,24 +85,6 @@ class DatasetWidget(HTMLInputWidget, Widget):
             for uuid in self.value:
                 brain = uuidToCatalogBrain(uuid)
                 yield brain
-
-    def js(self):
-        # TODO: shouldn't we use #self.id instead of #self.__name__ ?
-        js = u"".join((
-            u'bccvl.select_dataset($("a#', self.__name__, '-popup"),',
-            json.dumps({
-                'field': self.__name__,
-                'genre': self.genre,
-                'widgetname': self.name,
-                'widgetid': self.id,
-                'multiple': self.multiple,
-                'filters': self.filters,
-                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
-                                                        self.__name__)
-            }),
-            u');'))
-        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
-        return jswrap % {'js':  js}
 
     def extract(self):
         value = self.request.get(self.name, NO_VALUE)
@@ -197,56 +170,6 @@ class DatasetDictWidget(HTMLFormElement, Widget):
                     #        make sure template works with made up info as well
                     #        for now exclude data
                     LOG.warn("Dataset not found: %s for experiment %s", dsuuid, self.context.absolute_url())
-
-    def js(self):
-        js = u"".join((
-            u'bccvl.select_dataset_dict($("a#', self.__name__, '-popup"),',
-            json.dumps({
-                'field': self.__name__,
-                'genre': self.genre,
-                'multiple': self.multiple,
-                'widgetname': self.name,
-                'widgetid': self.id,
-                'filters': self.filters,
-                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
-                                                        self.__name__)
-            }),
-            u');'))
-        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
-        return jswrap % {'js':  js}
-
-    def items_old(self):
-        # FIXME importing here to avoid circular import of IDataset
-        from org.bccvl.site.api.dataset import getdsmetadata
-        if self.value:
-            for uuid in self.value:
-                brain = uuidToCatalogBrain(uuid)
-                # TODO: could use layer vocab again
-
-                md = getdsmetadata(brain)
-                layers = self.value[uuid]
-                # FIXME: check if layers or layers_used here
-                for layer, layeritem in md['layers'].iteritems():
-                    if not layer in layers:
-                        continue
-                    mimetype = 'application/octet-stream'
-                    layerfile = None
-                    if 'filename' in layeritem:
-                        # FIXME: hardcoded mimetype logic for zip files.
-                        #        should draw mimetype info from layer metadata
-                        #        assumes there are only geotiff in zip files
-                        mimetype = 'image/geotiff'
-                        layerfile = layeritem['filename']
-                        vizurl = '{0}#{1}'.format(md['vizurl'], layerfile)
-                    else:
-                        vizurl = md['vizurl']
-                        mimetype = md['mimetype']
-                    yield {"brain": brain,
-                           "resolution": self.dstools.resolution_vocab.getTerm(brain['BCCResolution']),
-                           "layer": self.dstools.layer_vocab.getTerm(layer),
-                           "vizurl": vizurl,
-                           'mimetype': mimetype,
-                           'vizlayer': layerfile}
 
     def extract(self):
         # extract the value for the widget from the request and return
@@ -342,24 +265,6 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
                 )
         return item
 
-    def js(self):
-        # TODO: search window to search for experiment
-        js = u"".join((
-            u'bccvl.select_dataset($("a#', self.__name__, '-popup"),',
-            json.dumps({
-                'field': self.__name__,
-                'genre': self.genre,
-                'widgetname': self.name,
-                'widgetid': self.id,
-                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
-                                                        self.__name__),
-                'remote': 'experiments_listing_popup',
-                'experimenttype': self.experiment_type,
-            }),
-            u');'))
-        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
-        return jswrap % {'js':  js}
-
     def extract(self):
         # extract the value for the widget from the request and return
         # a tuple of (key,value) pairs
@@ -396,25 +301,6 @@ class FutureDatasetsWidget(HTMLFormElement, Widget):
 
     _res_vocab = None
     _layer_vocab = None
-
-    def js(self):
-        js = u"""
-            bccvl.select_dataset_future($("a#%(fieldname)s-popup"), {
-                field: '%(fieldname)s',
-                genre: %(genre)s,
-                widgetname: '%(widgetname)s',
-                widgetid: '%(widgetid)s',
-                widgeturl: '%(widgeturl)s',
-            });""" % {
-            'fieldname': self.__name__,
-            'genre': self.genre,
-            'widgetname': self.name,
-            'widgetid': self.id,
-            'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
-                                                    self.__name__)
-        }
-        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
-        return jswrap % {'js':  js}
 
     def items(self):
         if self.value:
@@ -489,24 +375,6 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                                      'selected': brain.UID in self.value[experiment_uuid]}
                                                  for brain in brains]
                 yield item
-
-    def js(self):
-        # TODO: search window to search for experiment
-        js = u"".join((
-            u'bccvl.select_experiment($("a#', self.__name__, '-popup"),',
-            json.dumps({
-                'field': self.__name__,
-                'genre': self.genre,
-                'widgetname': self.name,
-                'widgetid': self.id,
-                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
-                                                        self.__name__),
-                'remote': 'experiments_listing_popup',
-                'multiple': self.multiple
-            }),
-            u');'))
-        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
-        return jswrap % {'js':  js}
 
     def extract(self):
         # extract the value for the widget from the request and return
@@ -593,25 +461,6 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                          'layermd': dsmd['layers'].values()[0]
                     })
                 yield item
-
-    def js(self):
-        # TODO: search window to search for experiment
-        js = u"".join((
-            u'bccvl.select_experiment($("a#', self.__name__, '-popup"),',
-            json.dumps({
-                'field': self.__name__,
-                'genre': self.genre,
-                'widgetname': self.name,
-                'widgetid': self.id,
-                'widgeturl': '{0}/++widget++{1}'.format(self.request.getURL(),
-                                                        self.__name__),
-                'remote': 'experiments_listing_popup',
-                'multiple': self.multiple,
-                'experimenttype': self.experiment_type,
-            }),
-            u');'))
-        jswrap = getMultiAdapter((self.request, self), IJSWrapper)
-        return jswrap % {'js':  js}
 
     def extract(self):
         # extract the value for the widget from the request and return
