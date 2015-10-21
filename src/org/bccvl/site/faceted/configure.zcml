@@ -16,6 +16,13 @@
     permission="zope2.View"
     />
 
+  <faceted:view
+    name="faceted-popup-items"
+    template="popup-items.pt"
+    title="Faceted items popup"
+    permission="zope2.View"
+    />
+
   <include package=".checkboxtree"/>
   <include package=".pathselect"/>  
   <include package=".userselect"/>

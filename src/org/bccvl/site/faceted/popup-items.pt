@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="context/main_template/macros/master"
+  i18n:domain="eea">
+
+<body>
+  <metal:content-core fill-slot="content-core">
+    <metal:block define-macro="content-core">
+      <div tal:define="
+        folderContents folderContents | python:context.getFolderContents();
+        Batch python:modules['Products.CMFPlone'].Batch;
+        b_start python:request.get('b_start', 0);
+        batch python:isinstance(folderContents, Batch) and folderContents or Batch(folderContents, 100, int(b_start), orphan=2);
+
+        dstools nocall:context/@@dataset_tools;
+        layer_vocab python:dstools.layer_vocab;
+        pas_member context/@@pas_member;
+        toLocalizedTime nocall: context/@@plone/toLocalizedTime;">
+
+        <div class="row" tal:condition="batch">
+          <div class="cell position-1">
+            <div metal:use-macro="context/batch_macros/macros/navigation" />
+          </div>
+        </div>
+        
+        <tal:repeat tal:repeat="item batch">
+          <tal:block tal:condition="python: item.portal_type in ('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset')">
+            <div class="row selectable"
+                 tal:attributes="data-uuid item/UID"
+                 tal:define="item_title_or_id item/pretty_title_or_id;
+                             item_icon python:plone_view.getIcon(item);
+                             item_creator item/Creator;
+                             item_modified item/ModificationDate;
+                             item_description item/Description;">
+              <p tal:content="item_title_or_id">Item Title</p>
+              <p tal:content="item_description">Item description</p>
+              <ul tal:condition="md/layers|nothing"
+                  tal:define="md python:dstools.metadata(item);">
+                <li tal:repeat="layer md/layers|nothing">
+                  <span tal:replace="python: layer_vocab.getTerm(layer).title"
+                        tal:condition="python: layer in layer_vocab">Layer Title</span>
+                  <span tal:replace="layer"
+                        tal:condition="python: layer not in layer_vocab">Layer Title</span>
+                </li>
+              </ul>
+              <p>Creator: <span tal:condition="item_creator"
+              tal:define="author python:pas_member.info(item_creator)"
+              tal:content="author/name_or_id">Bob Dobalina</span>
+              Modified: <span tal:content="python:toLocalizedTime(item_modified,long_format=1)">August 16, 2001 at 23:35:59</span>
+              </p>
+            </div>
+          </tal:block>
+          <tal:block tal:condition="python: item.portal_type not in ('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset')">
+            <div class="row selectable"
+                 tal:attributes="data-uuid item/UID"
+                 tal:define="item_title item/Title;
+                             item_icon item/getIcon;
+                             item_creator item/Creator;
+                             item_modified item/ModificationDate;
+                             item_description item/Description;
+                             ">
+              <p tal:content="item_title">Item Title</p>
+              <p tal:content="item_description">Item description</p>
+              <p>Creator: <span tal:condition="item_creator"
+              tal:define="author python:pas_member.info(item_creator)"
+              tal:content="author/name_or_id">Bob Dobalina</span>
+              Modified: <span tal:content="python:toLocalizedTime(item_modified,long_format=1)">August 16, 2001 at 23:35:59</span>
+              </p>
+            </div>
+
+          </tal:block>
+        </tal:repeat>
+             
+        <div class="row" tal:condition="batch">
+          <div class="cell position-1">
+            <div metal:use-macro="context/batch_macros/macros/navigation" />
+          </div>
+        </div>
+        
+      </div>
+
+    </metal:block>
+  </metal:content-core>
+</body>
+</html>
