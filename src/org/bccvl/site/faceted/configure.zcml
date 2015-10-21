@@ -18,6 +18,13 @@
 
   <include package=".checkboxtree"/>
   <include package=".pathselect"/>  
-  <include package=".userselect"/>  
+  <include package=".userselect"/>
+
+  <utility factory=".tool.FacetConfigUtility"/>
+
+  <subscriber
+      for=".interfaces.IFacetConfig
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".tool.facet_config_added" />
 
 </configure>
