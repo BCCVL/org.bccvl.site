@@ -393,6 +393,10 @@ class BiodiverseAdd(Add):
             )
         # check if threshold values are in range
         for dataset in (x for x in datasets.values()):
+            if not dataset:
+                raise WidgetActionExecutionError(
+                    'projection',
+                    Invalid('Please select at least one dataset within experiment'))
             # key: {label, value}
             dsuuid = dataset.keys()[0]
             ds = uuidToObject(dsuuid)
