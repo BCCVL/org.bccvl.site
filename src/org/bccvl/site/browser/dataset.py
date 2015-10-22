@@ -267,39 +267,6 @@ class CrudFileMetadataForm(crud.CrudForm):
     #     super(CrudFileMetadataForm, self).before_update(item, data)
 
 
-#TODO: Move to dataset layer:
-class ICurrentClimateMetadata(Interface):
-    # missing: resolution, source
-
-    year_from = schema.Int(
-        title=u"Year from",
-        required=False)
-
-    year_to = schema.Int(
-        title=u"Year to",
-        required=False)
-
-
-# TODO: Move to dataset layer
-class IFutureClimateMetadata(Interface):
-    # missing: resolution, source
-
-    year = schema.Int(
-        title=u"Year",
-        required=False)
-
-    gcm = schema.Choice(
-        title=u"GCM",
-        # value_type=URIRefField(),
-        vocabulary='gcm_source')
-
-    emc = schema.Choice(
-        title=u"Emmision Scenario",
-        # value_type=URIRefField(),
-        vocabulary='emsc_source')
-
-
-
 
 
 
