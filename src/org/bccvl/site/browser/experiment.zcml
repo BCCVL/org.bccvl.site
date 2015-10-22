@@ -55,14 +55,6 @@
         />
 
     <browser:page
-        name="experiments_listing_popup"
-        for="*"
-        class=".experiments_listing_view.ExperimentsListingPopup"
-        permission="zope2.View"
-        template="experiments_listing_popup.pt"
-        />
-
-    <browser:page
         name="view"
         for="org.bccvl.site.content.interfaces.IExperiment"
         class=".experiment.View"

@@ -113,49 +113,6 @@ class ExperimentsListingView(FolderView):
         return details
 
 
-class ExperimentsListingPopup(BrowserView):
-
-    def experimentslisting(self):
-        site_path = queryUtility(IPloneSiteRoot).getPhysicalPath()
-        b_start = self.request.get('b_start', 0)
-        b_size = self.request.get('b_size', 20)
-        experiment_type = self.request.get('datasets.filter.experimenttype', None)
-        query = {
-            'path': {
-                'query': '/'.join(site_path + (defaults.EXPERIMENTS_FOLDER_ID, ))
-            },
-            'object_provides': experiment_type,
-            'sort_on': 'created',
-            'sort_order': 'descending',
-            # provide batch hints to catalog
-            'b_start': b_start,
-            'b_size': b_size
-        }
-
-        text = self.request.get('datasets.filter.text')
-        if text:
-            query['SearchableText'] = text
-
-        pc = getToolByName(self.context, 'portal_catalog')
-        results = pc.searchResults(query)
-        from Products.CMFPlone import Batch
-
-        return Batch(IContentListing(results), b_size, b_start)
-
-    def experiment_details(self, expbrain):
-        details = {}
-        if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
-            details = projection_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.sdmexperiment':
-            details = sdm_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
-            details = biodiverse_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.ensemble':
-            details = ensemble_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.speciestraitsexperiment':
-            details = speciestraits_listing_details(expbrain)
-        return details
-
 
 # FIXME: the methods below, should be looked up via named adapter or similar.
 #        furthermore, in the experimentlisting view it might be good to use

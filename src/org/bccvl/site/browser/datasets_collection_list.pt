@@ -18,7 +18,7 @@
   -->
   <div id="content">
     
-    <tal:tabs metal:use-macro="context/datasets_listing_view/datasets_tabs"></tal:tabs>
+    <tal:tabs metal:use-macro="context/dataset_macros/datasets_tabs"></tal:tabs>
 
     <!-- search filters -->
     <div class="row" id="datasets-collection-listing" metal:define-macro="datasets_collection-list"
