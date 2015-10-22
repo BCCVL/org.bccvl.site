@@ -41,6 +41,7 @@
             $element.trigger('unselected');
         };
 
+        // a class to keep track of selected items
         function Basket() {
             this.uuids = [];
         };
@@ -161,12 +162,7 @@
             return this.basket.elements();
         };
 
-        // TODO: 
-        //       set initial filter? (pre-set from current page)
-        //       what about pre-set filters from page? -> we set resolution and layer list for future selection
-        //       SelectFuture also has special handling to update when another widget changes -> move widget init code out of template and onto page javascript
-        //       SelectExperiment -> depends on value from another widget as well (init and change)
-
+        // A widget to select a list of items
         function SelectList(fieldname) {
 
             this.$widget = $("#form-widgets-" + fieldname);
@@ -255,7 +251,7 @@
         };
 
 
-        // multi layer select widget        
+        // A widget to select a dict of items
         function SelectDict(fieldname) {
             SelectList.call(this, fieldname);
         }
