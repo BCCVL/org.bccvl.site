@@ -63,6 +63,20 @@ class ExperimentTools(BrowserView):
         job_state = IExperimentJobTracker(itemob).state
         return css_map.get(job_state, 'info')
 
+    def experiment_details(self, expbrain):
+        details = {}
+        if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
+            details = projection_listing_details(expbrain)
+        elif expbrain.portal_type == 'org.bccvl.content.sdmexperiment':
+            details = sdm_listing_details(expbrain)
+        elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
+            details = biodiverse_listing_details(expbrain)
+        elif expbrain.portal_type == 'org.bccvl.content.ensemble':
+            details = ensemble_listing_details(expbrain)
+        elif expbrain.portal_type == 'org.bccvl.content.speciestraitsexperiment':
+            details = speciestraits_listing_details(expbrain)
+        return details
+
 
 @implementer(IFolderContentsView)
 class ExperimentsListingView(FolderView):
@@ -97,21 +111,6 @@ class ExperimentsListingView(FolderView):
             'sort_order': 'descending',
         })
         return super(ExperimentsListingView, self).results(**kwargs)
-
-    def experiment_details(self, expbrain):
-        details = {}
-        if expbrain.portal_type == 'org.bccvl.content.projectionexperiment':
-            details = projection_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.sdmexperiment':
-            details = sdm_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
-            details = biodiverse_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.ensemble':
-            details = ensemble_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.speciestraitsexperiment':
-            details = speciestraits_listing_details(expbrain)
-        return details
-
 
 
 # FIXME: the methods below, should be looked up via named adapter or similar.

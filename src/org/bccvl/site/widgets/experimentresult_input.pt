@@ -43,7 +43,7 @@
           <tal:repeat tal:repeat="subitem item/subitems">
             <div class="selectedmodels">
               <input type="checkbox" value=""
-                     name="form.widgets.fieldname.item.0.item.0:list"
+                     name="form.widgets.fieldname.item.0.item:list"
                      tal:attributes="value subitem/uuid;
                                      name string:${view/name}.item.${index}.item:list;
                                      checked subitem/selected;"/>
@@ -52,12 +52,11 @@
           </tal:repeat>
         </div>
       </div>
-      <div class="selecteditem"
-           tal:condition="repeat/item/end">
-        <input type="hidden" value="" name="form.widgets.name.count"
-               tal:attributes="value repeat/item/number;
-                               name string:${view/name}.count"/>
-      </div>
     </tal:block>
+    <div class="selecteditem">
+      <input type="hidden" value="" name="form.widgets.name.count"
+             tal:attributes="value python:len(view.value or ());
+                             name string:${view/name}.count"/>
+    </div>
   </div>
 </html>

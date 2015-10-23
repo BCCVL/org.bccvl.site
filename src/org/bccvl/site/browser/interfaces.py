@@ -29,8 +29,8 @@ class IDatasetTools(Interface):
 class IExperimentTools(Interface):
 
     def check_if_used(itemob=None):
-        """ 
-        return true if the experiment is used as 
+        """
+        return true if the experiment is used as
         input data for another experiment. otherwise false.
         """
 
@@ -44,4 +44,9 @@ class IExperimentTools(Interface):
         """
         return true if current user has permission cmf.ModifyPortalContent
         on context or itemob
+        """
+
+    def experiment_details(expbrain=None):
+        """
+        return a dictionary with some details about the experiment
         """
