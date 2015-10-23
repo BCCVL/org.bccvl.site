@@ -265,7 +265,7 @@
             // we have all the data we need so get rid of the modal
             this.modal.close();
             // build params
-            var count = $('[name="' + this.settings.widgetname + '.count"]').val();
+            var count = $('[name="' + this.settings.widgetname + '.count"]').val() || 0;
             var params = [];
             $.each(selected, function(idx, uuid) {
                 var $existing = $('input[value="' + uuid + '"]').closest('.selecteditem');
