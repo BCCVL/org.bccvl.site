@@ -34,4 +34,55 @@
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler=".tool.facet_config_added" />
 
+  <!-- Faceted navigation -->
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="datasets_org.bccvl.site.content.interfaces.IBiodiverseExperiment.xml"
+                template="datasets_org.bccvl.site.content.interfaces.IBiodiverseExperiment.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="datasets_org.bccvl.site.content.interfaces.IProjectionExperiment.xml"
+                template="datasets_org.bccvl.site.content.interfaces.IProjectionExperiment.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="datasets_org.bccvl.site.content.interfaces.ISDMExperiment.xml"
+                template="datasets_org.bccvl.site.content.interfaces.ISDMExperiment.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="data_table.xml"
+                template="data_table.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="projection.xml"
+                template="projection.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="future_climate_datasets.xml"
+                template="future_climate_datasets.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="species_distribution_models.xml"
+                template="species_distribution_models.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="environmental_datasets.xml"
+                template="environmental_datasets.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="species_absence_dataset.xml"
+                template="species_absence_dataset.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="species_occurrence_dataset.xml"
+                template="species_occurrence_dataset.xml"
+                permission="cmf.ModifyPortalContent" />
+  
 </configure>

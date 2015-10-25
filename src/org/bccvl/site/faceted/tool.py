@@ -1,4 +1,6 @@
 
+from Products.GenericSetup.interfaces import IBody
+from Products.GenericSetup.context import SnapshotImportContext
 from eea.facetednavigation.layout.interfaces import IFacetedLayout
 from plone import api
 from plone.dexterity.content import Container
@@ -28,7 +30,6 @@ class FacetConfigUtility(object):
         return api.portal.get_tool('portal_facetconfig')
 
     def types(self, proxy=True, **kwargs):
-        import ipdb; ipdb.set_trace()
         kwargs.setdefault('portal_type', 'org.bccvl.tool.facetconfig')
         kwargs.setdefault('review_state', '')
         brains = self.context.getFolderContents(contentFilter=kwargs)
@@ -65,6 +66,16 @@ def facet_config_added(obj, evt):
         subtyper.enable()
         IFacetedLayout(obj).update_layout('faceted-popup-items');
 
+    # Add default widgets
+    widgets = queryMultiAdapter((obj, obj.REQUEST),
+                                name=obj.id + '.xml')
 
-    # TODO: load default facet config to start with:
-    #       see https://github.com/collective/eea.relations/blob/master/eea/relations/subtypes/events.py
+    if not widgets:
+        return
+
+    xml = widgets()
+    environ = SnapshotImportContext(obj, 'utf-8')
+    importer = queryMultiAdapter((obj, environ), IBody)
+    if not importer:
+        return
+    importer.body = xml

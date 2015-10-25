@@ -259,6 +259,7 @@ def upgrade_200_210_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'toolset')
     setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
 
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
