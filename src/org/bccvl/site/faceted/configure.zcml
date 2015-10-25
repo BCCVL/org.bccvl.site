@@ -36,6 +36,11 @@
 
   <!-- Faceted navigation -->
   <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="datasets_default.xml"
+                template="datasets_default.xml"
+                permission="cmf.ModifyPortalContent" />
+  
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
                 name="datasets_org.bccvl.site.content.interfaces.IBiodiverseExperiment.xml"
                 template="datasets_org.bccvl.site.content.interfaces.IBiodiverseExperiment.xml"
                 permission="cmf.ModifyPortalContent" />

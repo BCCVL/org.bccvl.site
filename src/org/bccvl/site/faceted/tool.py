@@ -64,7 +64,7 @@ def facet_config_added(obj, evt):
 
     if subtyper:
         subtyper.enable()
-        IFacetedLayout(obj).update_layout('faceted-popup-items');
+        IFacetedLayout(obj).update_layout('faceted-popup-items')
 
     # Add default widgets
     widgets = queryMultiAdapter((obj, obj.REQUEST),

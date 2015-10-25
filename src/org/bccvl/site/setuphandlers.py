@@ -1,10 +1,13 @@
 from Products.CMFCore.utils import getToolByName
+from Products.GenericSetup.interfaces import IBody
+from Products.GenericSetup.context import SnapshotImportContext
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
+from eea.facetednavigation.layout.interfaces import IFacetedLayout
 from plone import api
 from plone.uuid.interfaces import IUUID
 from zope.annotation.interfaces import IAnnotations
-from zope.component import getUtility
+from zope.component import getUtility, getMultiAdapter
 from zope.interface import alsoProvides
 from org.bccvl.site import defaults
 import logging
@@ -101,9 +104,24 @@ def setupVarious(context, logger=None):
         else:
             gtool.addGroup(**group)
 
-    # FIXME: some stuff is missing,... initial setup of site is not correct
+    # setup job catalog
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
+
+    # setup datasets search facets
+    datasets = portal[defaults.DATASETS_FOLDER_ID]
+    subtyper = getMultiAdapter((datasets, context.REQUEST),
+                               name=u'faceted_subtyper')
+    subtyper.enable()
+    IFacetedLayout(datasets).update_layout('faceted-table-items')
+    widgets = getMultiAdapter((datasets, context.REQUEST),
+                              name='datasets_default.xml')
+    xml = widgets()
+    environ = SnapshotImportContext(datasets, 'utf-8')
+    importer = getMultiAdapter((datasets, environ), IBody)
+    importer.body = xml
+
+    # FIXME: some stuff is missing,... initial setup of site is not correct
 
 
 def upgrade_180_181_1(context, logger=None):
