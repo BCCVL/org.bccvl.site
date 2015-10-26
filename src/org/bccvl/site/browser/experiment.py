@@ -57,10 +57,13 @@ class ParamGroupMixin(object):
     param_groups = ()
 
     def addToolkitFields(self):
-        groups = []
+        # FIXME: This relies on the order the vicabularies are returned, which shall be fixed.
+        groups = {'profile':[], 'machineLearning':[], 'statistical': [], 'geographic': [] }
+    
         # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
         func_vocab = getUtility(IVocabularyFactory, name=self.func_vocab_name)
         functions = getattr(self.context, self.func_select_field, None) or ()
+
         # TODO: could also use uuidToObject(term.value) instead of relying on BrainsVocabluary terms
         for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
             if self.mode == DISPLAY_MODE and not self.is_toolkit_selected(toolkit.UID(), functions):
@@ -73,6 +76,10 @@ class ParamGroupMixin(object):
             except Exception as e:
                 LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
                 continue
+
+            # Skip if algorithm does not have a category or unknown category
+            if toolkit.algorithm_category is None or toolkit.algorithm_category not in groups:
+                continue                
 
             parameters_schema = parameters_model.schema
 
@@ -89,9 +96,10 @@ class ParamGroupMixin(object):
             param_group.label = u"configuration for {}".format(toolkit.title)
             if len(parameters_schema.names()) == 0:
                 param_group.description = u"No configuration options"
-            groups.append(param_group)
+            groups[toolkit.algorithm_category].append(param_group)
 
-        self.param_groups = groups
+        # join the lists in that order
+        self.param_groups = groups['profile'] + groups['machineLearning'] + groups['statistical'] + groups['geographic']
 
     def updateFields(self):
         super(ParamGroupMixin, self).updateFields()
