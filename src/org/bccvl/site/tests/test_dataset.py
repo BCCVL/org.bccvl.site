@@ -290,6 +290,22 @@ class TestDatasetImport(unittest.TestCase):
         transaction.commit()
         # celery should run in eager mode so our job state should be up to date as well
         self.assertEqual(jt.state, 'COMPLETED')
+        # expand testdata with additional metadata fetched from ala
+        testdata.update({
+            'clazz': 'BIVALVIA',
+            'clazzGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:0c18b965-d1e9-4518-8c21-72045a340a4b',
+            'family': 'PTERIIDAE',
+            'familyGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:d6300a23-1386-4620-9cb8-0ce481ab4988',
+            'genus': 'Pteria',
+            'genusGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:3a97cb93-351e-443f-addd-624eb5b2278c',
+            'kingdom': 'ANIMALIA',
+            'kingdomGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:4647863b-760d-4b59-aaa1-502c8cdf8d3c',
+            'order': 'PTERIOIDA',
+            'orderGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:f4d97823-14fb-4eb2-a980-9a62d5ee8f08',
+            'phylum': 'MOLLUSCA',
+            'phylumGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:4fb59020-e4a8-4973-adca-a4f662c4645c',
+            'rank': 'species',
+        })
         # we should have a bit more metadat and still the same as before import
         self.assertEqual(md['species'], testdata)
         self.assertEqual(md['genre'], 'DataGenreSpeciesOccurrence')
