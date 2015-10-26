@@ -45,7 +45,7 @@
       name="oauthselect"
       for="Products.CMFCore.interfaces.IFolderish"
       class=".oauthselect.OAuthSelectModal"
-      permission="cmf.ModifyPortalContent"
+      permission="zope2.View"
       />
   
 </configure>

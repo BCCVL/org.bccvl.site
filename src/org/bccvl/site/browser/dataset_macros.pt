@@ -54,7 +54,7 @@
                           "
               metal:define-macro="datasets_listitem">
 
-    <tr>
+    <tr tal:attributes="data-uuid item/UID">
       <td>
         <img width="16" height="16"
              src="" alt=""
