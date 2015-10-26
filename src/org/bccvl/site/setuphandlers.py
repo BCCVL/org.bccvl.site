@@ -108,20 +108,30 @@ def setupVarious(context, logger=None):
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
 
+    # FIXME: some stuff is missing,... initial setup of site is not correct
+
+def setupFacets(context, logger=None):
+    if logger is None:
+        logger = LOG
+    logger.info('BCCVL site facet setup handler')
+
+    # only run for this product
+    if context.readDataFile('org.bccvl.site.marker.txt') is None:
+        return
+    portal = context.getSite()
+
     # setup datasets search facets
     datasets = portal[defaults.DATASETS_FOLDER_ID]
-    subtyper = getMultiAdapter((datasets, context.REQUEST),
+    subtyper = getMultiAdapter((datasets, datasets.REQUEST),
                                name=u'faceted_subtyper')
     subtyper.enable()
     IFacetedLayout(datasets).update_layout('faceted-table-items')
-    widgets = getMultiAdapter((datasets, context.REQUEST),
+    widgets = getMultiAdapter((datasets, datasets.REQUEST),
                               name='datasets_default.xml')
     xml = widgets()
     environ = SnapshotImportContext(datasets, 'utf-8')
     importer = getMultiAdapter((datasets, environ), IBody)
     importer.body = xml
-
-    # FIXME: some stuff is missing,... initial setup of site is not correct
 
 
 def upgrade_180_181_1(context, logger=None):
