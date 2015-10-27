@@ -581,7 +581,7 @@ class ExportResult(BrowserView):
 class DemoSDM(BrowserView):
 
     @returnwrapper
-    def __call__(self, *args, **kw):
+    def demosdm(self, *args, **kw):
         # Swift params
         # FIXME: these values should come from some configuration
         # FIXME: swift host should be discovered OpenStack API?
@@ -652,7 +652,7 @@ class DemoSDM(BrowserView):
             resource_string('org.bccvl.compute', 'rscripts/eval.R'),
             func.script])
         # where to store results
-        jobid = datetime.now().isoformat()
+        jobid = lsid
         result = {
             'results_dir': 'swift://nectar/{}/{}/'.format(swift_container, jobid),
             'outputs': json.loads(func.output)
@@ -683,5 +683,5 @@ class DemoSDM(BrowserView):
 
         return {
             'state': 'https://{}/v1/AUTH_{}/{}/{}/state.json'.format(swift_host, swift_tenant_id, swift_container, jobid),
-            'result': 'https://{}/v1/AUTH_{}/{}/{}/projection.tif'.format(swift_host, swift_tenant_id, swift_container, jobid),
+            'result': 'https://{}/v1/AUTH_{}/{}/{}/projection.png'.format(swift_host, swift_tenant_id, swift_container, jobid),
         }
