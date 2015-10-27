@@ -1,9 +1,11 @@
+from collections import OrderedDict
 from itertools import chain
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
 from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
 from zope.schema.interfaces import RequiredMissing
-from org.bccvl.site.interfaces import IJobTracker, IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IExperimentJobTracker
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit, view
@@ -56,10 +58,14 @@ class ParamGroupMixin(object):
     param_groups = ()
 
     def addToolkitFields(self):
-        groups = []
+        # FIXME: This relies on the order the vicabularies are returned, which shall be fixed.
+        vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        groups = OrderedDict((cat.value,[]) for cat in vocab)
+
         # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
         func_vocab = getUtility(IVocabularyFactory, name=self.func_vocab_name)
         functions = getattr(self.context, self.func_select_field, None) or ()
+
         # TODO: could also use uuidToObject(term.value) instead of relying on BrainsVocabluary terms
         for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
             if self.mode == DISPLAY_MODE and not self.is_toolkit_selected(toolkit.UID(), functions):
@@ -71,6 +77,10 @@ class ParamGroupMixin(object):
                 parameters_model = loadString(toolkit.schema)
             except Exception as e:
                 LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
+                continue
+
+            # Skip if algorithm does not have a category or unknown category
+            if toolkit.algorithm_category is None or toolkit.algorithm_category not in groups:
                 continue
 
             parameters_schema = parameters_model.schema
@@ -88,9 +98,13 @@ class ParamGroupMixin(object):
             param_group.label = u"configuration for {}".format(toolkit.title)
             if len(parameters_schema.names()) == 0:
                 param_group.description = u"No configuration options"
-            groups.append(param_group)
+            groups[toolkit.algorithm_category].append(param_group)
 
-        self.param_groups = groups
+        # join the lists in that order
+        self.param_groups = (tuple(groups['profile'])
+                             + tuple(groups['machineLearning'])
+                             + tuple(groups['statistical'])
+                             + tuple(groups['geographic']))
 
     def updateFields(self):
         super(ParamGroupMixin, self).updateFields()
@@ -150,7 +164,7 @@ class View(edit.DefaultEditForm):
     label = ''
 
     def job_state(self):
-        return IJobTracker(self.context).state
+        return IExperimentJobTracker(self.context).state
 
     # condition=lambda form: form.showApply)
     @button.buttonAndHandler(u'Start Job')
@@ -161,7 +175,7 @@ class View(edit.DefaultEditForm):
             self.status = self.formErrorsMessage
             return
 
-        msgtype, msg = IJobTracker(self.context).start_job(self.request)
+        msgtype, msg = IExperimentJobTracker(self.context).start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
         self.request.response.redirect(self.context.absolute_url())
@@ -232,7 +246,7 @@ class Add(add.DefaultAddForm):
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"),
                                                       "info")
         # auto start job here
-        jt = IJobTracker(obj)
+        jt = IExperimentJobTracker(obj)
         msgtype, msg = jt.start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
@@ -392,6 +406,10 @@ class BiodiverseAdd(Add):
             )
         # check if threshold values are in range
         for dataset in (x for x in datasets.values()):
+            if not dataset:
+                raise WidgetActionExecutionError(
+                    'projection',
+                    Invalid('Please select at least one dataset within experiment'))
             # key: {label, value}
             dsuuid = dataset.keys()[0]
             ds = uuidToObject(dsuuid)
@@ -403,7 +421,8 @@ class BiodiverseAdd(Add):
             #        also it will only verify if dateset has min/max values in metadata
             layermd = md['layers'].values()[0]
             if 'min' in layermd and 'max' in layermd:
-                if value <= layermd['min'] or value >= layermd['max']:
+                # FIXME: at least layermd['min'] may be a string '0', when comparing to decimal from threshold selector, this comparison fails and raises the widget validation error
+                if value <= float(layermd['min']) or value >= float(layermd['max']):
                     raise WidgetActionExecutionError(
                         'projection',
                         Invalid('Selected threshold is out of range'))

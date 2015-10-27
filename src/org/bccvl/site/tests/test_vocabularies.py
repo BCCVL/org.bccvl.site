@@ -1,4 +1,4 @@
-import unittest2 as unittest
+import unittest
 from zope.schema.interfaces import IVocabularyFactory, IVocabulary
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from plone.uuid.interfaces import IUUID
@@ -183,7 +183,7 @@ class TraitsFunctionsSourceTest(unittest.TestCase):
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
         # TODO: this test depends on whatever is setup in org.bccvl.compute:content
-        self.assertEqual(len(source), 5)
+        self.assertEqual(len(source), 6)
 
 
 class GenreSourceTest(unittest.TestCase):

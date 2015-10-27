@@ -1,4 +1,4 @@
-import unittest2 as unittest
+import unittest
 from org.bccvl.site import defaults
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
 from Products.CMFPlone.interfaces.constrains import ISelectableConstrainTypes

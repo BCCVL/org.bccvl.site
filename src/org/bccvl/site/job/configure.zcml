@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:transmogrifier="http://namespaces.plone.org/transmogrifier"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="org.bccvl"
+    >
+
+  <utility
+      factory=".utilities.JobUtility"/>
+
+  <adapter
+      for="*"
+      factory=".utilities.JobTracker"/>
+
+</configure>

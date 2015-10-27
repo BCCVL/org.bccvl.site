@@ -145,4 +145,11 @@
       template="experimentresultprojection_display.pt"
       />
 
+    <z3c:widgetTemplate
+        mode="input"
+        widget="org.bccvl.site.widgets.interfaces.IFunctionsWidget"
+        layer="z3c.form.interfaces.IFormLayer"
+        template="functions_input.pt"
+        />
+
 </configure>

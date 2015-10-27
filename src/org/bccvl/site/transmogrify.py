@@ -74,9 +74,22 @@ class ALASource(object):
         bccvlmd = {}
         bccvlmd['genre'] = 'DataGenreSpeciesOccurrence'
         bccvlmd['species'] = {
-            'scientificName': self.traverse_dict(json, 'taxonConcept/nameString'),
+            'scientificName': self.traverse_dict(json, 'classification/scientificName'),
             'vernacularName': self.traverse_dict(json, 'commonNames/0/nameString'),
-            'taxonID': self.traverse_dict(json, 'taxonConcept/guid')
+            'taxonID': self.traverse_dict(json, 'classification/guid'),
+            'rank': self.traverse_dict(json, 'classification/rank'),
+            'genus': self.traverse_dict(json, 'classification/genus'),
+            'genusGuid': self.traverse_dict(json, 'classification/genusGuid'),
+            'family': self.traverse_dict(json, 'classification/family'),
+            'familyGuid': self.traverse_dict(json, 'classification/familyGuid'),
+            'order': self.traverse_dict(json, 'classification/order'),
+            'orderGuid': self.traverse_dict(json, 'classification/orderGuid'),
+            'clazz': self.traverse_dict(json, 'classification/clazz'),
+            'clazzGuid': self.traverse_dict(json, 'classification/clazzGuid'),
+            'phylum': self.traverse_dict(json, 'classification/phylum'),
+            'phylumGuid': self.traverse_dict(json, 'classification/phylumGuid'),
+            'kingdom': self.traverse_dict(json, 'classification/kingdom'),
+            'kingdomGuid': self.traverse_dict(json, 'classification/kingdomGuid')
         }
         bccvlmd['categories'] = ['occurrence']
         # TODO: other interesting bits:

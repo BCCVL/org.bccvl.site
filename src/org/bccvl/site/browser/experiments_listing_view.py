@@ -8,8 +8,9 @@ from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.app.contenttypes.browser.folder import FolderView
 from plone.app.contentlisting.interfaces import IContentListing
 from plone.app.contentlisting.interfaces import IContentListingObject
-from org.bccvl.site.interfaces import IBCCVLMetadata, IJobTracker
+from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.content.interfaces import IExperiment
+from org.bccvl.site.interfaces import IExperimentJobTracker
 from collections import defaultdict
 from zope.component import queryUtility, getMultiAdapter
 from org.bccvl.site import defaults
@@ -59,7 +60,7 @@ class ExperimentTools(BrowserView):
             'REMOVED': 'removed'
         }
         # check job_state and return either success, error or block
-        job_state = IJobTracker(itemob).state
+        job_state = IExperimentJobTracker(itemob).state
         return css_map.get(job_state, 'info')
 
 

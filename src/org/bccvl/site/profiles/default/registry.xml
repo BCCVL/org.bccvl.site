@@ -1213,6 +1213,7 @@
         <element key="unitfull">metre</element>
         <element key="legend">altitude</element>
         <element key="type">topography</element>
+        <element key="tooltip">This dataset describes the altitude, as elevation (metres) above sea level. This layer can be a helpful inclusion when modelling species distributions that may be limited by elevation or subsequent climatic conditions at these elevations.</element>
       </element>
       <element>
         <element key="value">GPP1</element>

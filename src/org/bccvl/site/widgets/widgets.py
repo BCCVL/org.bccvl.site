@@ -1,7 +1,7 @@
 import logging
-from zope.component import getMultiAdapter
+from zope.component import getMultiAdapter, getUtility
 from zope.interface import implementer, implementer_only
-from zope.schema.interfaces import ITitledTokenizedTerm
+from zope.schema.interfaces import ITitledTokenizedTerm, IVocabularyFactory
 from z3c.form import util
 from z3c.form.interfaces import (IFieldWidget, NO_VALUE)
 from z3c.form.widget import FieldWidget, Widget, SequenceWidget
@@ -58,20 +58,28 @@ class FunctionsWidget(HTMLInputWidget, SequenceWidget):
         # TODO: check if we should cache the return list
         if self.terms is None:  # update() not yet called
             return ()
-        items = []
+        vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        items = OrderedDict((cat.value,[]) for cat in vocab)
         for count, term in enumerate(self.terms):
+            alg = term.brain.getObject()
+            # skip algorithm without category
+            if alg.algorithm_category is None or alg.algorithm_category not in items:
+                continue
+            itemList = items[alg.algorithm_category]
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             if ITitledTokenizedTerm.providedBy(term):
-                label = translate(term.title, context=self.request,
-                                  default=term.title)
+                label = translate(term.title, context=self.request, default=term.title)
             else:
                 label = util.toUnicode(term.value)
-            items.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
+
+            itemList.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
                    'label':label, 'checked': checked,
                    'subject': term.brain.Subject,
-                   'description': term.brain.Description})
-        return items
+                   'description': term.brain.Description,
+                   'category': vocab.getTerm(alg.algorithm_category),
+                   'pos': len(itemList) })
+        return items.values()
 
 
 @implementer(IFieldWidget)
@@ -291,6 +299,17 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
     experiment_type = None
     genre = ['DataGenreSDMModel']
     multiple = None
+    _algo_dict = None
+
+    @property
+    def algo_dict(self):
+        if self._algo_dict is None:
+            pc = getToolByName(self.context, 'portal_catalog')
+            brains = pc.searchResults(portal_type='org.bccvl.content.function')
+            self._algo_dict = dict(
+                (brain.getId, brain) for brain in brains
+            )
+        return self._algo_dict
 
     def item(self):
         # return dict with keys for experiment
@@ -299,6 +318,12 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
         if self.value:
             experiment_uuid = self.value.keys()[0]
             expbrain = uuidToCatalogBrain(experiment_uuid)
+            if expbrain is None:
+                return {
+                    'title': u'Not Available',
+                    'uuid': experiment_uuid,
+                    'models': []
+                }
             item['title'] = expbrain.Title
             item['uuid'] = expbrain.UID
             exp = expbrain.getObject()
@@ -310,11 +335,19 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             brains = pc.searchResults(path=expbrain.getPath(),
                                       BCCDataGenre=self.genre)
             # TODO: maybe as generator?
-            item['models'] = [{'item': brain,
-                               'uuid': brain.UID,
-                               'title': brain.Title,
-                               'selected': brain.UID in self.value[experiment_uuid]}
-                               for brain in brains]
+            item['models'] = []
+            for brain in brains:
+                # get algorithm term
+                algoid = getattr(brain.getObject(), 'job_params', {}).get('function')
+                algobrain = self.algo_dict.get(algoid, None)
+                item['models'].append(
+                    {'item': brain,
+                     'uuid': brain.UID,
+                     'title': brain.Title,
+                     'selected': brain.UID in self.value[experiment_uuid],
+                     'algorithm': algobrain
+                    }
+                )
         return item
 
     def js(self):

@@ -12,7 +12,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from org.bccvl.site.interfaces import IJobTracker
+from org.bccvl.site.job.interfaces import IJobTracker
 
 class DatasetRemoveView(form.Form):
     """
@@ -31,6 +31,7 @@ class DatasetRemoveView(form.Form):
         ## removed file working on frontend Javascript
         if hasattr(self.context, "file"):
             self.context.file = None
+        # FIXME: we should probably delete it instead of marking it as REMOVED
         jt = IJobTracker(self.context)
         jt.state = 'REMOVED'
         self.context.reindexObject()

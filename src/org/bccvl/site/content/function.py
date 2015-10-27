@@ -12,6 +12,7 @@ class IFunction(model.Schema):
         title=_(u"Experiment Type"),
         description =_(u"The experiment type this toolkit can be used for."),
         required=False,
+        default=None,
         vocabulary='experiment_type_source'
         )
 
@@ -44,6 +45,13 @@ class IFunction(model.Schema):
         title=_(u"Output mapping"),
         description=_(u"defines how to import experiment outputs"),
         required=True
+        )
+
+    algorithm_category = Choice(
+        title=_(u"Algorithm Category"),
+        description=_(u"The category an algorithm belongs to"),
+        vocabulary="org.bccvl.site.algorithm_category_vocab",
+        required=True,
         )
 
 # TODO: add validators:

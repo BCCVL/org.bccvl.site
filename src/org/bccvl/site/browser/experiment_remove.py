@@ -1,21 +1,10 @@
 
 from z3c.form import field, button, form
-from z3c.form.widget import AfterWidgetUpdateEvent
-from z3c.form.interfaces import DISPLAY_MODE
-from zope.event import notify
-from zope.lifecycleevent import modified
-from org.bccvl.site.interfaces import IBCCVLMetadata
 #from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Five.browser import BrowserView
-from Products.statusmessages.interfaces import IStatusMessage
-from Acquisition import aq_inner
-from Acquisition import aq_parent
-from org.bccvl.site.interfaces import IJobTracker
 from Products.CMFCore import permissions
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
-from zope.component import getMultiAdapter, getUtility
+from zope.component import getMultiAdapter
 from org.bccvl.site import defaults
 
 
@@ -30,7 +19,7 @@ class ExperimentRemoveView(form.Form):
 
     @button.buttonAndHandler(u'Remove')
     def handle_delete(self, action):
-        title = self.context.Title()
+        #title = self.context.Title()
 
         portal_membership = getToolByName(self.context, 'portal_membership')
 
@@ -57,4 +46,4 @@ class ExperimentRemoveView(form.Form):
     def render(self):
         if self.index:
             return self.index()
-        return super(DatasetRemoveView, self).render()
+        return super(ExperimentRemoveView, self).render()

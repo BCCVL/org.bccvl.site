@@ -146,19 +146,21 @@ traits_functions_source = CatalogVocabularyFactory(
         # },
         'object_provides': 'org.bccvl.site.content.function.IFunction',
         # FIXME: find another way to separate SDM and traits "functions"
-        'id': ['lm', 'speciestrait_glm', 'speciestrait_gam',
+        'id': ['lm', 'speciestrait_glm', 'speciestrait_gam', 'gamlss',
                'aov', 'manova'],
         'sort_on': 'sortable_title',
     },
 )
 
 
+# A vocabulary to assign functions (toolkits) to experiment types
 experiment_type_vocabulary = SimpleVocabulary([
     SimpleTerm("org.bccvl.content.sdmexperiment", "org.bccvl.content.sdmexperiment", u"Species Distribution Modelling Experiment"),
     SimpleTerm("org.bccvl.content.projectionexperiment", "org.bccvl.content.projectionexperiment", u"Climate Change Experiment"),
     SimpleTerm("org.bccvl.content.biodiverseexperiment", "org.bccvl.content.biodiverseexperiment", u"Biodiverse Experiment"),
     SimpleTerm("org.bccvl.content.speciestraitsexperiment", "org.bccvl.content.speciestraitsexperiment", u"Species Trait Modelling Experiment"),
     SimpleTerm("org.bccvl.content.ensemble", "org.bccvl.content.ensemble", u"Ensemble Analysis"),
+    SimpleTerm(None, "None", u"Unknown")
 ])
 
 
@@ -290,6 +292,18 @@ programming_language_vocab = SimpleVocabulary([
 def programming_language_vocab_factory(context):
     return programming_language_vocab
 
+algorithm_category_vocab = SimpleVocabulary([
+    SimpleTerm("profile", "profile", u'Profile Models'),
+    SimpleTerm("machineLearning", "machineLearning", u'Machine Learning Models'),
+    SimpleTerm("statistical", "statistical", u'Statistical Models'),
+    SimpleTerm("geographic", "geographic", u'Geographic Models'),
+])
+
+
+# TODO: maybe a tree vocabulary would be nice here?
+@provider(IVocabularyFactory)
+def algorithm_category_vocab_factory(context):
+    return algorithm_category_vocab
 
 genre_vocabulary = SimpleVocabulary([
     SimpleTerm("DataGenreSpeciesOccurrence", "DataGenreSpeciesOccurrence", "Species Occurrence"),

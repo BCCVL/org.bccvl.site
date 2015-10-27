@@ -68,4 +68,17 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="2.0.0"
+      destination="210"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 210"
+        description="Update user actions"
+        handler=".setuphandlers.upgrade_200_210_1"
+        />
+
+  </genericsetup:upgradeSteps>
+  
 </configure>
