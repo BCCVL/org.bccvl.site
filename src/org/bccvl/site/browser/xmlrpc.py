@@ -584,6 +584,7 @@ class DemoSDM(BrowserView):
     def __call__(self, *args, **kw):
         # Swift params
         # FIXME: these values should come from some configuration
+        # FIXME: swift host should be discovered OpenStack API?
         swift_tenant_id = '0bc40c2c2ff94a0b9404e6f960ae5677'
         swift_host = 'swift.rc.nectar.org.au:8888'
         swift_container = 'demosdm'
