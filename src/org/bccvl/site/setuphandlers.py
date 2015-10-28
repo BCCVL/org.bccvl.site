@@ -3,6 +3,7 @@ from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlug
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from plone import api
 from plone.uuid.interfaces import IUUID
+from plone.app.uuid.utils import uuidToObject
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getUtility
 from zope.interface import alsoProvides
@@ -321,3 +322,15 @@ def upgrade_200_210_1(context, logger=None):
             job.content = IUUID(result)
             jobtool.reindex_job(job)
             del annots['org.bccvl.state']
+
+    # Update job_params with algorithm used for Climate Change Experiments
+    for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
+        # go through all results
+        for result in brain.getObject().values():
+            if 'function' in result.job_params:
+                continue
+            #Add algorithm to job_params if missing algorithm                    
+            sdmds = uuidToObject(result.job_params['species_distribution_models'])
+            algorithm = sdmds.__parent__.job_params['function']
+            if algorithm:
+                result.job_params['function'] = algorithm
