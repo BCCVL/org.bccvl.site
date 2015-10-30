@@ -1,16 +1,19 @@
+from datetime import datetime
 from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from zope import contenttype
+from pkg_resources import resource_string
 #from zope.publisher.browser import BrowserView as Z3BrowserView
 #from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
 #from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
 #from functools import wraps
 from decorator import decorator
+from plone.uuid.interfaces import IUUID
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone import api
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
@@ -19,6 +22,7 @@ from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site import defaults
 import logging
 from zope.component import getUtility, queryUtility
+from zope.schema import getFields
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
 import json
@@ -572,3 +576,112 @@ class ExportResult(BrowserView):
             nexturl = self.context.__parent__.absolute_url()
         self.request.response.redirect(nexturl, 307)
         return (status, message)
+
+
+class DemoSDM(BrowserView):
+
+    @returnwrapper
+    def demosdm(self, *args, **kw):
+        # Swift params
+        # FIXME: these values should come from some configuration
+        # FIXME: swift host should be discovered OpenStack API?
+        swift_tenant_id = '0bc40c2c2ff94a0b9404e6f960ae5677'
+        swift_host = 'swift.rc.nectar.org.au:8888'
+        swift_container = 'demosdm'
+
+        # get parameters
+        lsid = self.request.form.get('lsid', None)
+        if not lsid:
+            self.request.response.setStatus(400)
+            return {'error': 'Missing parameter lsid'}
+        # we have an lsid,.... we can't really verify but at least some data is here
+        # find rest of parameters
+        # FIXME: hardcoded path to environmental datasets
+        portal = api.portal.get()
+        dspath = '/'.join([defaults.DATASETS_FOLDER_ID,
+                           defaults.DATASETS_CLIMATE_FOLDER_ID,
+                           'australia', 'australia_5km',
+                           'current.zip'])
+        ds = portal.restrictedTraverse(dspath)
+        dsuuid = IUUID(ds)
+        # FIXME: we don't use a IJobTracker here for now
+        # get toolkit and
+        func = portal[defaults.TOOLKITS_FOLDER_ID]['demosdm']
+        # build job_params:
+        dlinfo = IDownloadInfo(ds)
+        dsmd = IBCCVLMetadata(ds)
+        envlist = []
+        for layer in ('B01', 'B04', 'B05', 'B06', 'B12', 'B15', 'B16', 'B17'):
+            envlist.append({
+                'uuid': dsuuid,
+                'filename': dlinfo['filename'],
+                'downloadurl': dlinfo['url'],
+                'internalurl': dlinfo['alturl'][0],
+                'layer': layer,
+                'type': dsmd['layers'][layer]['datatype'],
+                'zippath': dsmd['layers'][layer]['filename']
+            })
+
+        job_params = {
+            'resolution': IBCCVLMetadata(ds)['resolution'],
+            'function': func.getId(),
+            'species_occurrence_dataset': {
+                'uuid': lsid,
+                'species': u'demoSDM',
+                'internalurl': 'ala://ala?lsid={}'.format(lsid),
+                'downloadurl': 'ala://ala?lsid={}'.format(lsid),
+            },
+            'environmental_datasets': envlist,
+        }
+        # add toolkit parameters: (all default values)
+        # get toolkit schema
+        from plone.supermodel import loadString
+        schema = loadString(func.schema).schema
+        for name, field in getFields(schema).items():
+            if field.default is not None:
+                job_params[name] = field.default
+        # add other default parameters
+        job_params.update({
+            'rescale_all_models': False,
+            'selected_models': 'all',
+            'modeling_id': 'bccvl',
+        })
+        # generate script to run
+        script = u'\n'.join([
+            resource_string('org.bccvl.compute', 'rscripts/bccvl.R'),
+            resource_string('org.bccvl.compute', 'rscripts/eval.R'),
+            func.script])
+        # where to store results
+        jobid = lsid
+        result = {
+            'results_dir': 'swift://nectar/{}/{}/'.format(swift_container, jobid),
+            'outputs': json.loads(func.output)
+        }
+        # worker hints:
+        worker = {
+            'script': {
+                'name': '{}.R'.format(func.getId()),
+                'script': script
+            },
+            'files': (
+                'species_occurrence_dataset',
+                'environmental_datasets'
+            )
+        }
+        # put everything together
+        jobdesc = {
+            'env': {},
+            'params': job_params,
+            'worker': worker,
+            'result': result,
+        }
+        # all set to go build task chain now
+        from org.bccvl.tasks.compute import demo_task
+        from org.bccvl.tasks.plone import after_commit_task
+        after_commit_task(demo_task, jobdesc)
+        # let's hope everything works, return result
+
+        return {
+            'state': 'https://{}/v1/AUTH_{}/{}/{}/state.json'.format(swift_host, swift_tenant_id, swift_container, jobid),
+            'result': 'https://{}/v1/AUTH_{}/{}/{}/projection.png'.format(swift_host, swift_tenant_id, swift_container, jobid),
+        }

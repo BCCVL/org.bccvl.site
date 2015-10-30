@@ -116,7 +116,10 @@ class JobStateIndexer(object):
         # TODO: if state is empty check if there is a downloadable file
         #       Yes: COMPLETED
         #       No: FAILED
-        state = jt.state
+        try:
+            state = jt.state
+        except TypeError:
+            return None
         if not state:
             if IBlobDataset.providedBy(self.context):
                 # we have no state, may happen for imported datasets,

@@ -58,10 +58,11 @@ class FunctionsWidget(HTMLInputWidget, SequenceWidget):
         # TODO: check if we should cache the return list
         if self.terms is None:  # update() not yet called
             return ()
-        items = OrderedDict((cat,[]) for cat in ('profile', 'machineLearning', 'statistical', 'geographic'))
         vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        items = OrderedDict((cat.value,[]) for cat in vocab)
         for count, term in enumerate(self.terms):
             alg = term.brain.getObject()
+            # skip algorithm without category
             if alg.algorithm_category is None or alg.algorithm_category not in items:
                 continue
             itemList = items[alg.algorithm_category]

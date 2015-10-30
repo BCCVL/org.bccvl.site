@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from itertools import chain
 from z3c.form import button
 from z3c.form.form import extends, applyChanges
@@ -58,8 +59,9 @@ class ParamGroupMixin(object):
 
     def addToolkitFields(self):
         # FIXME: This relies on the order the vicabularies are returned, which shall be fixed.
-        groups = {'profile':[], 'machineLearning':[], 'statistical': [], 'geographic': [] }
-    
+        vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        groups = OrderedDict((cat.value,[]) for cat in vocab)
+
         # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
         func_vocab = getUtility(IVocabularyFactory, name=self.func_vocab_name)
         functions = getattr(self.context, self.func_select_field, None) or ()
@@ -79,7 +81,7 @@ class ParamGroupMixin(object):
 
             # Skip if algorithm does not have a category or unknown category
             if toolkit.algorithm_category is None or toolkit.algorithm_category not in groups:
-                continue                
+                continue
 
             parameters_schema = parameters_model.schema
 
@@ -99,7 +101,10 @@ class ParamGroupMixin(object):
             groups[toolkit.algorithm_category].append(param_group)
 
         # join the lists in that order
-        self.param_groups = groups['profile'] + groups['machineLearning'] + groups['statistical'] + groups['geographic']
+        self.param_groups = (tuple(groups['profile'])
+                             + tuple(groups['machineLearning'])
+                             + tuple(groups['statistical'])
+                             + tuple(groups['geographic']))
 
     def updateFields(self):
         super(ParamGroupMixin, self).updateFields()
@@ -401,6 +406,10 @@ class BiodiverseAdd(Add):
             )
         # check if threshold values are in range
         for dataset in (x for x in datasets.values()):
+            if not dataset:
+                raise WidgetActionExecutionError(
+                    'projection',
+                    Invalid('Please select at least one dataset within experiment'))
             # key: {label, value}
             dsuuid = dataset.keys()[0]
             ds = uuidToObject(dsuuid)
