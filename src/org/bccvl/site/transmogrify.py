@@ -411,10 +411,15 @@ class FileMetadataToBCCVL(object):
             if not data_type:
                 # get global data_type if not a file specific one set
                 data_type = bandmd.get('type', jsonmd.get('data_type'))
-            if data_type and data_type.lower() == 'categorical':
-                layermd['datatype'] = 'categorical'
-            else:
-                layermd['datatype'] = 'continuous'
+
+            # Assume Continous data type by default
+            layermd['datatype'] = 'continuous'
+            if data_type:
+                if data_type.lower() == 'categorical':
+                    layermd['datatype'] = 'categorical'
+                elif data_type.lower() == 'discrete':
+                    layermd['datatype'] = 'discrete'
+                
             # TODO: bbox: which units do we want bbox?
             #       lat/long?, whatever coordinates layer uses?
             # End Layer

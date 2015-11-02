@@ -1362,7 +1362,7 @@
       <element>
         <element key="value">projection</element>
         <element key="title">Environmental Suitability</element>
-        <element key="unit"></element>
+        <element key="unit"> </element>
         <element key="legend">suitability</element>
         <element key="type">suitability</element>
         <element key="tooltip">Environmental Suitability</element>
@@ -1370,10 +1370,18 @@
       <element>
         <element key="value">projection_binary</element>
         <element key="title">Environmental Suitability</element>
-        <element key="unit"></element>
+        <element key="unit"> </element>
         <element key="legend">binary</element>
         <element key="type">suitability</element>
         <element key="tooltip">Environmental Suitability</element>   
+      </element>
+      <element>
+        <element key="value">clamping_mask</element>
+        <element key="title">Clamping Mask</element>
+        <element key="unit"> </element>
+        <element key="legend">discrete</element>
+        <element key="type">clampingmask</element>
+        <element key="tooltip">Clamping Mask is the number of variables that are out of their calibrating/training range.</element>   
       </element>
     </value>
   </record>
