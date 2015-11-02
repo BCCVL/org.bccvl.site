@@ -311,6 +311,10 @@ class ProjectionJobTracker(MultiJobTracker):
 
     def _create_result_container(self, sdmuuid, dsbrain, projlayers):
         # create result object:
+        # Get the algorithm used in SDM experiment
+        sdmdsObj = uuidToCatalogBrain(sdmuuid).getObject()
+        algorithm = sdmdsObj.__parent__.job_params['function']
+
         # get more metadata about dataset
         dsmd = IBCCVLMetadata(dsbrain.getObject())
 
@@ -332,6 +336,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'gcm': dsmd['gcm'],
             'resolution': dsmd['resolution'],
             'future_climate_datasets': projlayers,
+            'function': algorithm
             }
         return result
 
