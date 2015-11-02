@@ -257,6 +257,7 @@ def upgrade_200_210_1(context, logger=None):
     portal = api.portal.get()
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'toolset')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
 
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
