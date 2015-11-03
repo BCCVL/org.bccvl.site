@@ -120,6 +120,9 @@ def setup_job_catalog(portal):
     addIndex(cat, 'state', 'FieldIndex')
     addIndex(cat, 'content', 'FieldIndex')
     addIndex(cat, 'created', 'DateIndex')
+    addIndex(cat, 'lsid', 'FieldIndex')
+    addIndex(cat, 'type', 'FieldIndex')
+    addIndex(cat, 'function', 'FieldIndex')
 
     #cat.addColumn('name')
     addColumn(cat, 'id')

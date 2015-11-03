@@ -48,6 +48,7 @@
   <include package=".faceted"/>
   <include package=".behavior"/>
   <include package=".job"/>
+  <include package=".api"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
 

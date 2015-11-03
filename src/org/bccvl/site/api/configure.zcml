@@ -1,0 +1,98 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="org.bccvl.site"
+    >
+
+ <!-- TODO: add class security for adapters? -->
+
+  
+  <!-- view is expected to have browser:page subviews with attributes -->
+  <!-- can't use browser:view or browser:page as Zope2 messes with the class -->
+  <!-- user adapter to simulate browser:view registration without Zope2 messing with class -->
+  <adapter
+      name="API"
+      for="* *"
+      provides="zope.publisher.interfaces.IPublishTraverse"
+      factory=".browser.APITraverser"
+      permission="zope2.View"
+      />
+
+  <!-- <class class=".browser.APITraverser"> -->
+  <!--   <require -->
+  <!--       permission="zope2.View" -->
+  <!--       attributes="schema" -->
+  <!--       /> -->
+  <!-- </class> -->
+
+  <!-- dataset manager APIs -->
+  <adapter
+      name="dm"
+      for="* * *"
+      provides=".interfaces.IAPIService"
+      factory=".browser.DMVersionTraverser"
+      permission="zope2.View"
+      />
+  
+  <adapter
+      name="v1"
+      for="* * *"
+      provides=".interfaces.IDMService"
+      factory=".browser.DMService"
+      permission="zope2.View"
+      />
+
+  <!-- job manager APIs -->
+  <adapter
+      name="job"
+      for="* * *"
+      provides=".interfaces.IAPIService"
+      factory=".browser.JobVersionTraverser"
+      permission="zope2.View"
+      />
+  
+  <adapter
+      name="v1"
+      for="* * *"
+      provides=".interfaces.IJobService"
+      factory=".browser.JobService"
+      permission="zope2.View"
+      />
+
+  <!-- experiment manager APIs -->
+  <adapter
+      name="em"
+      for="* * *"
+      provides=".interfaces.IAPIService"
+      factory=".browser.ExperimentVersionTraverser"
+      permission="zope2.View"
+      />
+  
+  <adapter
+      name="v1"
+      for="* * *"
+      provides=".interfaces.IExperimentService"
+      factory=".browser.ExperimentService"
+      permission="zope2.View"
+      />
+
+  <!-- job manager APIs -->
+  <adapter
+      name="site"
+      for="* * *"
+      provides=".interfaces.IAPIService"
+      factory=".browser.SiteVersionTraverser"
+      permission="zope2.View"
+      />
+  
+  <adapter
+      name="v1"
+      for="* * *"
+      provides=".interfaces.ISiteService"
+      factory=".browser.SiteService"
+      permission="zope2.View"
+      />
+  
+  
+  
+ </configure>
