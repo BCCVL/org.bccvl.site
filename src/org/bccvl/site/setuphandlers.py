@@ -262,6 +262,18 @@ def upgrade_200_210_1(context, logger=None):
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
 
+    # Update job_params with algorithm used for Climate Change Experiments
+    for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
+        # go through all results
+        for result in brain.getObject().values():
+            if 'function' in result.job_params:
+                continue
+            #Add algorithm to job_params if missing algorithm
+            sdmds = uuidToObject(result.job_params['species_distribution_models'])
+            algorithm = sdmds.__parent__.job_params['function']
+            if algorithm:
+                result.job_params['function'] = algorithm
+
     pc = api.portal.get_tool('portal_catalog')
     from org.bccvl.site.job.interfaces import IJobUtility
     jobtool = getUtility(IJobUtility)
@@ -289,6 +301,8 @@ def upgrade_200_210_1(context, logger=None):
         job.taskid = old_job['taskid']
         job.userid = ds.getOwner().getId()
         job.content = IUUID(ds)
+        job.type = brain.portal_type
+
         jobtool.reindex_job(job)
         del annots['org.bccvl.state']
 
@@ -321,17 +335,9 @@ def upgrade_200_210_1(context, logger=None):
             job.taskid = old_job['taskid']
             job.userid = result.getOwner().getId()
             job.content = IUUID(result)
+            job.type = brain.portal_type
+            job.function = result.job_params['function']
+            job.toolkit = IUUID(portal[defaults.TOOLKITS_FOLDER_ID][job.function])
+
             jobtool.reindex_job(job)
             del annots['org.bccvl.state']
-
-    # Update job_params with algorithm used for Climate Change Experiments
-    for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
-        # go through all results
-        for result in brain.getObject().values():
-            if 'function' in result.job_params:
-                continue
-            #Add algorithm to job_params if missing algorithm                    
-            sdmds = uuidToObject(result.job_params['species_distribution_models'])
-            algorithm = sdmds.__parent__.job_params['function']
-            if algorithm:
-                result.job_params['function'] = algorithm
