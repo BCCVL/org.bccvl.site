@@ -38,13 +38,13 @@
    <property name="position">right</property>
    <property name="section">default</property>
    <property name="hidden">1</property>
-   <property name="count">0</property>
-   <property name="sortcountable">0</property>
-   <property name="hidezerocount">0</property>
+   <property name="count"></property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
    <property name="index">BCCDataGenre</property>
    <property name="vocabulary"></property>
    <property name="catalog">portal_catalog</property>
-   <property name="sortreversed">0</property>
+   <property name="sortreversed"></property>
    <property name="default">DataGenreTraits</property>
   </criterion>
   <criterion name="c1">
@@ -53,16 +53,16 @@
    <property name="position">right</property>
    <property name="section">default</property>
    <property name="hidden">1</property>
-   <property name="count">0</property>
-   <property name="sortcountable">0</property>
-   <property name="hidezerocount">0</property>
+   <property name="count"></property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
    <property name="index">job_state</property>
    <property name="operator">or</property>
-   <property name="operator_visible">0</property>
+   <property name="operator_visible"></property>
    <property name="vocabulary"></property>
    <property name="catalog">portal_catalog</property>
    <property name="maxitems"></property>
-   <property name="sortreversed">0</property>
+   <property name="sortreversed"></property>
    <property name="default">COMPLETED</property>
   </criterion>
   <criterion name="c5">
@@ -72,9 +72,9 @@
    <property name="section">default</property>
    <property name="hidden">0</property>
    <property name="count">1</property>
-   <property name="sortcountable">0</property>
-   <property name="hidezerocount">0</property>
-   <property name="sortreversed">0</property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
+   <property name="sortreversed"></property>
   </criterion>
  </criteria>
 </object>
