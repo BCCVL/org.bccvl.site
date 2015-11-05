@@ -87,7 +87,11 @@ class JobTracker(object):
         return cmp(idx1, idx2)
 
     def get_job(self):
-        return self.job_tool.find_job_by_uuid(IUUID(self.context))
+        try:
+            uuid = IUUID(self.context)
+        except TypeError:
+            return None
+        return self.job_tool.find_job_by_uuid(uuid)
 
     @property
     def state(self):

@@ -17,13 +17,6 @@
 
   <adapter factory=".converter.ExperimentResultProjectionConverter"/>
 
-  <adapter
-      for="zope.interface.Interface
-           .interfaces.IDatasetWidget"
-      provides=".interfaces.IJSWrapper"
-      factory=".widgets.JS_WRAPPER_ADAPTER"
-      />
-
     <z3c:widgetTemplate
       mode="input"
       widget=".interfaces.IDatasetWidget"
@@ -36,13 +29,6 @@
       widget=".interfaces.IDatasetWidget"
       layer="z3c.form.interfaces.IFormLayer"
       template="dataset_display.pt"
-      />
-
-    <adapter
-      for="zope.interface.Interface
-           .interfaces.IDatasetDictWidget"
-      provides=".interfaces.IJSWrapper"
-      factory=".widgets.JS_WRAPPER_ADAPTER"
       />
 
     <z3c:widgetTemplate
@@ -59,13 +45,6 @@
       template="datasetdict_display.pt"
       />
     
-    <adapter
-      for="zope.interface.Interface
-           .interfaces.IExperimentSDMWidget"
-      provides=".interfaces.IJSWrapper"
-      factory=".widgets.JS_WRAPPER_ADAPTER"
-      />
-
     <z3c:widgetTemplate
       mode="input"
       widget=".interfaces.IExperimentSDMWidget"
@@ -78,13 +57,6 @@
       widget=".interfaces.IExperimentSDMWidget"
       layer="z3c.form.interfaces.IFormLayer"
       template="experimentsdm_display.pt"
-      />
-
-    <adapter
-      for="zope.interface.Interface
-           .interfaces.IExperimentResultWidget"
-      provides=".interfaces.IJSWrapper"
-      factory=".widgets.JS_WRAPPER_ADAPTER"
       />
 
     <z3c:widgetTemplate
@@ -102,13 +74,6 @@
       />
 
 
-    <adapter
-      for="zope.interface.Interface
-           .interfaces.IFutureDatasetsWidget"
-      provides=".interfaces.IJSWrapper"
-      factory=".widgets.JS_WRAPPER_ADAPTER"
-      />
-
     <z3c:widgetTemplate
       mode="input"
       widget=".interfaces.IFutureDatasetsWidget"
@@ -121,14 +86,6 @@
       widget=".interfaces.IFutureDatasetsWidget"
       layer="z3c.form.interfaces.IFormLayer"
       template="futuredatasets_display.pt"
-      />
-
-
-    <adapter
-      for="zope.interface.Interface
-           .interfaces.IExperimentResultProjectionWidget"
-      provides=".interfaces.IJSWrapper"
-      factory=".widgets.JS_WRAPPER_ADAPTER"
       />
 
     <z3c:widgetTemplate

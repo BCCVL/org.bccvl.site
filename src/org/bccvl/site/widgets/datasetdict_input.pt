@@ -2,7 +2,10 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:define="portal_state nocall:context/@@plone_portal_state;
+                  portal_url portal_state/portal_url"
       tal:omit-tag="">
+  <!-- FIXME: rename to selectdict_input.pt -->
     <div id="fieldname-modal" class="modal large hide fade" tabindex="-1" role="dialog"
          tal:attributes="id string:${view/field/__name__}-modal">
       <div class="modal-header">
@@ -16,19 +19,20 @@
         <button class="btn btn-primary">Select Layers</button>
       </div>
     </div>
-  <script type="text/javascript"
-          tal:content="structure view/js"></script>
   <a id="fieldname-popup" href="#"
-     tal:attributes="id string:${view/field/__name__}-popup"
+     tal:attributes="id string:${view/field/__name__}-popup;
+                     href string:${portal_url}/portal_facetconfig/${view/field/__name__}"
      tal:content="string:Select ${view/label}">Select Occurrence Dataset</a>
   <div id="form-widgets-fieldname"
-       tal:attributes="id string:${view/id}">
+       tal:attributes="id string:${view/id};
+                       data-multiple view/multiple|string:">
     <tal:repeat tal:repeat="item view/items">
       <div class="selecteditem"
            tal:define="brain item/brain;
                        index repeat/item/index;">
         <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
         <input type="hidden" value="" name="form.widgets.fieldname.item.0"
+               class="item"
                tal:attributes="value item/id;
                                name string:${view/name}.item.${index};
                                "/>

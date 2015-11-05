@@ -26,6 +26,6 @@
                   "
       tal:omit-tag="">
 
-      <metal:block use-macro="context/aq_parent/datasets_listing_view/datasets_listitem"></metal:block>
+      <metal:block use-macro="context/aq_parent/dataset_macros/datasets_listitem"></metal:block>
 
 </html>

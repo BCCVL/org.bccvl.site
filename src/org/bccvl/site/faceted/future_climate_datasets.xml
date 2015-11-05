@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<object name="future_climate_datasets" meta_type="Dexterity Container">
+ <criteria>
+  <criterion name="c3">
+   <property name="widget">text</property>
+   <property name="title">Search</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="index">SearchableText</property>
+   <property name="default"></property>
+   <property name="onlyallelements">1</property>
+   <property name="wildcard">1</property>
+  </criterion>
+  <criterion name="c7">
+   <property name="widget">checkbox</property>
+   <property name="title">Emission scenario</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable">1</property>
+   <property name="hidezerocount">1</property>
+   <property name="index">BCCEmissionScenario</property>
+   <property name="operator">or</property>
+   <property name="operator_visible">0</property>
+   <property name="vocabulary">emsc_source</property>
+   <property name="catalog"></property>
+   <property name="maxitems"></property>
+   <property name="sortreversed">0</property>
+   <property name="default"/>
+  </criterion>
+  <criterion name="c8">
+   <property name="widget">select</property>
+   <property name="title">Year Future Projection</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable">0</property>
+   <property name="hidezerocount">0</property>
+   <property name="index">BCCYear</property>
+   <property name="vocabulary"></property>
+   <property name="catalog">portal_catalog</property>
+   <property name="sortreversed">1</property>
+   <property name="default"></property>
+  </criterion>
+  <criterion name="c9">
+   <property name="widget">select</property>
+   <property name="title">General Circulation Model</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable">0</property>
+   <property name="hidezerocount">0</property>
+   <property name="index">BCCGlobalClimateModel</property>
+   <property name="vocabulary">gcm_source</property>
+   <property name="catalog">portal_catalog</property>
+   <property name="sortreversed">0</property>
+   <property name="default"></property>
+  </criterion>
+  <criterion name="c6">
+   <property name="widget">select</property>
+   <property name="title">Resolution</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
+   <property name="index">BCCResolution</property>
+   <property name="vocabulary">resolution_source</property>
+   <property name="catalog"></property>
+   <property name="sortreversed"></property>
+   <property name="default"></property>
+  </criterion>
+  <criterion name="c10">
+   <property name="widget">pathselect</property>
+   <property name="title">Collections</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable">0</property>
+   <property name="hidezerocount">0</property>
+   <property name="index">path</property>
+   <property name="root">/datasets</property>
+   <property name="vocabulary">data_collections_source</property>
+   <property name="sortreversed">0</property>
+  </criterion>
+  <criterion name="c5">
+   <property name="widget">userselect</property>
+   <property name="title">Source</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
+   <property name="sortreversed"></property>
+  </criterion>
+  <criterion name="c0">
+   <property name="widget">resultsperpage</property>
+   <property name="title">Results per page</property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">1</property>
+   <property name="start"></property>
+   <property name="end">20</property>
+   <property name="step">5</property>
+   <property name="default">5</property>
+  </criterion>
+  <criterion name="c2">
+   <property name="widget">sorting</property>
+   <property name="title">Sort on</property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">1</property>
+   <property name="vocabulary"></property>
+   <property name="default">effective(reverse)</property>
+  </criterion>
+  <criterion name="c4">
+   <property name="widget">select</property>
+   <property name="title">Genre</property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">1</property>
+   <property name="count"></property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
+   <property name="index">BCCDataGenre</property>
+   <property name="vocabulary"></property>
+   <property name="catalog">portal_catalog</property>
+   <property name="sortreversed"></property>
+   <property name="default">DataGenreFC</property>
+  </criterion>
+  <criterion name="c1">
+   <property name="widget">checkbox</property>
+   <property name="title">state</property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">1</property>
+   <property name="count"></property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
+   <property name="index">job_state</property>
+   <property name="operator">or</property>
+   <property name="operator_visible"></property>
+   <property name="vocabulary"></property>
+   <property name="catalog">portal_catalog</property>
+   <property name="maxitems"></property>
+   <property name="sortreversed"></property>
+   <property name="default">COMPLETED</property>
+  </criterion>
+ </criteria>
+</object>

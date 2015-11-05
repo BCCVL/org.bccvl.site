@@ -26,7 +26,15 @@
       description="Import BCCVL content from filesystem with BCCVL dataimport
                    transmogrifier pipeline"
       handler="org.bccvl.site.exportimport.dataimport">
-    <depends name="content"/>
+    <depends name="org.bccvl.site"/>
+  </genericsetup:importStep>
+
+  <genericsetup:importStep
+      name="org.bccvl.site.facet"
+      title="BCCVL Site facet setup handlers"
+      description="BCCVL site facet setup"
+      handler="org.bccvl.site.setuphandlers.setupFacets">
+    <depends name="org.bccvl.site.content"/>
   </genericsetup:importStep>
 
   <genericsetup:upgradeSteps

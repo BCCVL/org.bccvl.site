@@ -21,8 +21,8 @@
       margin-left: -40%; /* width/2 */
       }
 
-       #datasets-popup-result .ui-selecting { background: #FECA40; }
-       #datasets-popup-result .ui-selected { background: #F39814; color: white; }
+       .ui-selecting { background: #FECA40; }
+       .ui-selected { background: #F39814; color: white; }
     </style>
   </metal:styleslot>
   <metal:javascriptslot fill-slot="javascript_head_slot">

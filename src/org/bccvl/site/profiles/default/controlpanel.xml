@@ -16,5 +16,18 @@
         i18n:attributes="title">
       <permission>Manage portal</permission>
     </configlet>
-    
+
+    <configlet
+        title="Popup Facet Settings"
+        action_id="org.bccvl.facet.settings"
+        appId="org.bccvl"
+        category="Products"
+        condition_expr="python:getattr(portal, 'portal_facetconfig', None)"
+        url_expr="string:$portal_url/portal_facetconfig/"
+        icon_expr="string:$portal_url/++resource++fingerprint.png"
+        visible="True"
+        i18n:attributes="title">
+      <permission>Manage portal</permission>
+    </configlet>
+
 </object>

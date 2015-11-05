@@ -1,0 +1,122 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      tal:define="dataset_tools nocall:context/@@dataset_tools;"
+      i18n:domain="plone"
+      tal:omit-tag="">
+
+
+  <ul id="datasets_tabs" class="formTabs" metal:define-macro="datasets_tabs"
+      tal:define="current_view view/__name__">
+    <li class="formTab">
+      <a href="#"
+         tal:define="selected python: 'selected' if current_view == context.getLayout() else ''"
+         tal:attributes="href string:${context/absolute_url};
+                         class selected">Search Datasets</a>
+    </li>
+    <li class="formTab">
+      <a href="#"
+         tal:define="selected python: 'selected' if current_view == 'datasets_collection_list' else ''"
+         tal:attributes="href string:${context/absolute_url}/datasets_collection_list;
+                         class selected">Browse Collections</a>
+    </li>      
+    <li class="formTab">
+      <a href="#"
+         tal:define="selected python: 'selected' if current_view == 'datasets_import_view' else ''"
+         tal:attributes="href string:${context/absolute_url}/datasets_import_view;
+                         class selected">Import Species Dataset</a>
+    </li>
+    <li class="formTab">
+      <a href="#"
+         tal:define="selected python: 'selected' if current_view == 'datasets_upload_view' else ''"
+         tal:attributes="href string:${context/absolute_url}/datasets_upload_view;
+                         class selected">Upload Dataset</a>
+    </li>
+  </ul>
+
+
+  <tal:define tal:define="item_title_or_id item/pretty_title_or_id;
+                          item_icon python:plone_view.getIcon(item);
+                          item_creator item/Creator;
+                          item_modified item/ModificationDate;
+                          item_url item/getURL|item/absolute_url;
+                          item_description item/Description;
+                          item_type item/portal_type;
+                          item_type_class python:'contenttype-' + normalizeString(item_type);
+                          item_genre item/BCCDataGenre;
+                          item_genre_title python:dataset_tools.genre_title(item['BCCDataGenre']);
+                          item_wf_state item/review_state|python: context.portal_workflow.getInfoFor(item, 'review_state', '');
+                          item_wf_state_class python:'state-' + normalizeString(item_wf_state);
+                          use_view_action site_properties/typesUseViewActionInListings|python:();
+                          item_obj item/getObject
+                          "
+              metal:define-macro="datasets_listitem">
+
+    <tr tal:attributes="data-uuid item/UID">
+      <td>
+        <img width="16" height="16"
+             src="" alt=""
+             tal:condition="item_icon/url"
+             tal:attributes="src item_icon/url;
+                             alt item_icon/description;
+                             title item_icon/title;
+                             width item_icon/width;
+                             height item_icon/height;" />
+        <a href="#"
+           tal:attributes="href python: item_type in use_view_action and item_url+'/view' or item_url;
+                           class string:$item_wf_state_class $item_type_class;
+                           title item_description;"
+           tal:content="item_title_or_id">Item Title</a>
+      </td>
+      <!-- Author -->
+      <td tal:condition="show_about">
+        <tal:name tal:condition="item_creator"
+                  tal:define="author python:pas_member.info(item_creator)">
+          <a href="#"
+             tal:attributes="href string:${navigation_root_url}/author/${item_creator}"
+             tal:content="author/name_or_id"
+             tal:omit-tag="not:author">Bob Dobalina</a>
+        </tal:name>
+      </td>
+      <!-- Type -->
+      <td tal:content="item_genre_title"
+          i18n:translate="">Page</td>
+      <!-- Modified -->
+      <td tal:condition="show_about"
+          tal:content="python:toLocalizedTime(item_modified,long_format=1)">August 16, 2001 at 23:35:59</td>
+      <!-- job state -->
+      <td tal:condition="show_about">
+        <span tal:replace="item/job_state"></span>
+      </td>
+      <!-- Actions -->
+      <!-- TODO: expects simple publication workflow
+           publish/retract -->
+      <!-- TODO: change this to some sort of popup to let user change review_state
+           and show review_state here ... would need permissions again to check if link is available to user :(
+           TODO: check review_state and permission ... need permission here
+           TODO: indexing won't work as this is per user
+      -->
+      <td tal:define="action item_obj/dataset_tools/get_transition"
+          tal:condition="show_about">
+        <a href="#"
+           tal:attributes="href string:${item_url}/dm/share"
+           tal:condition="python: 'publish' in action">Share</a>
+        <a href="#"
+           tal:attributes="href string:${item_url}/dm/unshare"
+           tal:condition="python: 'retract' in action">Un-share</a>
+        <i tal:content="item/review_state"></i>
+      </td>
+      <!-- Download -->
+      <td>
+        <a href="#"
+           tal:condition="python: item.job_state in ('COMPLETED', None, '')"
+           tal:define="dlinfo item_obj/dataset_tools/get_download_info"
+           tal:attributes="href dlinfo/url">Download</a>
+      </td>
+    </tr>
+  </tal:define>
+
+
+</html>

@@ -24,7 +24,7 @@
         <li>
           <span tal:replace="item/title">Experiment Title</span>
           <ul>
-            <li tal:repeat="model python: (model for model in item['datasets'] if model['selected'])"
+            <li tal:repeat="model python: (model for model in item['subitems'] if model['selected'])"
                 tal:content="model/title">Dataset Title</li>
           </ul>
         </li>

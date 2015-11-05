@@ -292,13 +292,24 @@ programming_language_vocab = SimpleVocabulary([
 def programming_language_vocab_factory(context):
     return programming_language_vocab
 
-algorithm_category_vocab = SimpleVocabulary([
-    SimpleTerm("profile", "profile", u'Profile Models'),
-    SimpleTerm("machineLearning", "machineLearning", u'Machine Learning Models'),
-    SimpleTerm("statistical", "statistical", u'Statistical Models'),
-    SimpleTerm("geographic", "geographic", u'Geographic Models'),
-])
 
+def createTerm(value, token, title, data):
+    term = SimpleTerm(value, token, title)
+    term.data = data
+    return term
+
+category_desc = {'profile' : u"These models only use occurrence data, and are based on the characterization of the environmental conditions of locations associated with species presence.",
+                 'machineLearning' : u"These models typically use one part of the dataset to 'learn' and describe the dataset (training) and the other part to to assess the accuracy of the model.",
+                 'statistical' : u"These models estimate the parameters of the predictors, and construct a function that best describes the effect of environmental variables on species occurrence. The suitability of a particular model is often defined by specific model assumptions.",
+                 'geographic' : u"These models use the geographic location of known occurrences of a species to predict the likelihood of presence in other locations, and do not rely on the values of environmental variables."
+}
+
+algorithm_category_vocab = SimpleVocabulary([
+    createTerm("profile", "profile", u'Profile Models', {'description' : category_desc['profile']}),
+    createTerm("machineLearning", "machineLearning", u'Machine Learning Models', {'description' : category_desc['machineLearning']}),
+    createTerm("statistical", "statistical", u'Statistical Models', {'description' : category_desc['statistical']}),
+    createTerm("geographic", "geographic", u'Geographic Models', {'description' : category_desc['geographic']}),
+])
 
 # TODO: maybe a tree vocabulary would be nice here?
 @provider(IVocabularyFactory)

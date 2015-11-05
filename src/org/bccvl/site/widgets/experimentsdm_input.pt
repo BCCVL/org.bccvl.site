@@ -2,6 +2,8 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:define="portal_state nocall:context/@@plone_portal_state;
+                  portal_url portal_state/portal_url"
       tal:omit-tag="">
   <div id="fieldname-modal" class="modal large hide fade" tabindex="-1" role="dialog"
        tal:attributes="id string:${view/field/__name__}-modal">
@@ -16,18 +18,18 @@
       <button class="btn btn-primary">Select Experiment</button>
     </div>
   </div>
-  <script type="text/javascript"
-          tal:content="structure view/js"></script>
   <a id="fieldname-popup" href="#"
-     tal:attributes="id string:${view/field/__name__}-popup"
+     tal:attributes="id string:${view/field/__name__}-popup;
+                     href string:${portal_url}/portal_facetconfig/${view/field/__name__}"
      tal:content="string:Select ${view/label}">Select SDM Experiment</a>
   <div id="form-widgets-fieldname"
-       tal:attributes="id string:${view/id}">
+       tal:attributes="id string:${view/id};
+                       data-multiple view/multiple|string:">
     <div class="selecteditem"
          tal:define="item view/item"
          tal:condition="python: view.value and item">
       <!-- Experiment block -->
-      <div class="selectedexperiment">
+      <div class="selecteditem">
         <!-- TODO: show experiment infos -->
         <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
         <p class="experiment-title"
@@ -35,20 +37,26 @@
            tal:attributes="data-layers python:','.join(item['layers']);
                            data-resolution item/resolution"
            tal:content="item/title">Experiment Title</p>
-        <input type="hidden" value="" name="form.widgets.fieldname"
+        <input type="hidden" value="" name="form.widgets.fieldname.item.0"
+               class="item"
                tal:attributes="value item/uuid;
-                               name string:${view/name};"/>
+                               name string:${view/name}.item.0;"/>
         <!-- List of Models within experiment -->
-        <tal:repeat tal:repeat="model item/models">
+        <tal:repeat tal:repeat="subitem item/subitems">
           <div class="selectedmodels">
             <input type="checkbox" value=""
-                   name="form.widgets.fieldname.model:list"
-                   tal:attributes="value model/uuid;
-                                   name string:${view/name}.model:list;
-                                   checked model/selected;"/>
-            <span tal:content="model/title">Model Title</span>
+                   name="form.widgets.fieldname.item.0.item:list"
+                   tal:attributes="value subitem/uuid;
+                                   name string:${view/name}.item.0.item:list;
+                                   checked subitem/selected;"/>
+            <span tal:content="subitem/title">Model Title</span>
           </div>
         </tal:repeat>
+      </div>
+      <div class="selecteditem">
+        <input type="hidden" value="" name="form.widgets.name.count"
+               tal:attributes="value string:1;
+                               name string:${view/name}.count;"/>
       </div>
     </div>
   </div>
