@@ -294,6 +294,7 @@ def upgrade_200_210_1(context, logger=None):
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
 
+    pc = api.portal.get_tool('portal_catalog')
     # Update job_params with algorithm used for Climate Change Experiments
     for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
         # go through all results
@@ -306,7 +307,6 @@ def upgrade_200_210_1(context, logger=None):
             if algorithm:
                 result.job_params['function'] = algorithm
 
-    pc = api.portal.get_tool('portal_catalog')
     from org.bccvl.site.job.interfaces import IJobUtility
     jobtool = getUtility(IJobUtility)
     # search all datasets and create job object with infos from dataset
