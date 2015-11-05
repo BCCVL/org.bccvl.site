@@ -18,12 +18,21 @@
       permission="zope2.View"
       />
 
+  <class class=".browser.APITraverser">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IAPITraverser"
+        />  
+  </class>
+
   <!-- <class class=".browser.APITraverser"> -->
   <!--   <require -->
   <!--       permission="zope2.View" -->
   <!--       attributes="schema" -->
   <!--       /> -->
   <!-- </class> -->
+
+  
 
   <!-- dataset manager APIs -->
   <adapter
@@ -33,7 +42,15 @@
       factory=".browser.DMVersionTraverser"
       permission="zope2.View"
       />
+
+  <class class=".browser.DMVersionTraverser">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IAPIService"
+        />  
+  </class>
   
+   
   <adapter
       name="v1"
       for="* * *"
@@ -41,6 +58,16 @@
       factory=".browser.DMService"
       permission="zope2.View"
       />
+  <class class=".browser.DMService">
+    <require
+        permission="zope2.View"
+        attributes="metadata"
+        />  
+    <require
+        permission="zope2.View"
+        attributes="schema __call__"
+        />  
+  </class>
 
   <!-- job manager APIs -->
   <adapter
@@ -50,6 +77,12 @@
       factory=".browser.JobVersionTraverser"
       permission="zope2.View"
       />
+  <class class=".browser.JobVersionTraverser">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IAPIService"
+        />  
+  </class>
   
   <adapter
       name="v1"
@@ -58,6 +91,16 @@
       factory=".browser.JobService"
       permission="zope2.View"
       />
+  <class class=".browser.JobService">
+    <require
+        permission="zope2.View"
+        attributes="state, get"
+        />  
+    <require
+        permission="zope2.View"
+        attributes="schema __call__"
+        />  
+  </class>
 
   <!-- experiment manager APIs -->
   <adapter
@@ -67,6 +110,13 @@
       factory=".browser.ExperimentVersionTraverser"
       permission="zope2.View"
       />
+  <class class=".browser.ExperimentVersionTraverser">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IAPIService"
+        />  
+  </class>
+  
   
   <adapter
       name="v1"
@@ -75,6 +125,16 @@
       factory=".browser.ExperimentService"
       permission="zope2.View"
       />
+  <class class=".browser.ExperimentService">
+    <require
+        permission="org.bccvl.AddExperiment"
+        attributes="demosdm"
+        />  
+    <require
+        permission="zope2.View"
+        attributes="schema __call__"
+        />  
+  </class>
 
   <!-- job manager APIs -->
   <adapter
@@ -84,6 +144,12 @@
       factory=".browser.SiteVersionTraverser"
       permission="zope2.View"
       />
+  <class class=".browser.SiteVersionTraverser">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IAPIService"
+        />  
+  </class>
   
   <adapter
       name="v1"
@@ -92,6 +158,12 @@
       factory=".browser.SiteService"
       permission="zope2.View"
       />
+  <class class=".browser.SiteService">
+    <require
+        permission="zope2.View"
+        attributes="schema __call__"
+        />  
+  </class>
   
   
   

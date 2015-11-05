@@ -311,6 +311,7 @@ class ExperimentService(BaseService):
 
     # TODO: update demosdm task to send progress updates to plone
     # TODO: add context parameter to task, so that worker knows where to send progress updates to
+    # TODO: check security
 
 
 
