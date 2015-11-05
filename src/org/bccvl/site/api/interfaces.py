@@ -1,6 +1,19 @@
 from zope.interface import Interface
 
 
+class IAPITraverser(Interface):
+    """Marker interface for API entrypoint
+    """
+
+    def schema():
+        """Return json schema for this API endpoint.
+        """
+
+    def __call__():
+        """Return json descrition for this API endpoint.
+        """
+
+
 class IAPIService(Interface):
     """
     Marker interface for API Services

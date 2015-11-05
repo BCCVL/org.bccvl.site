@@ -163,6 +163,13 @@ class JobService(BaseService):
         if not kw:
             raise BadRequest('No query parameters supplied')
         jobtool = getUtility(IJobUtility)
+        # add current userid to query
+        user = ploneapi.user.get_current()
+        roles = user.getRoles()
+        # intersect required roles with user roles
+        if not (set(roles) & set(('Manager', 'SiteAdministrator'))):
+            kw['userid'] = user.getId()
+
         brains = jobtool.query(**kw)
         if brains:
             brain = brains[0]
@@ -211,7 +218,7 @@ class ExperimentService(BaseService):
         # we have an lsid,.... we can't really verify but at least some data is here
         # find rest of parameters
         # FIXME: hardcoded path to environmental datasets
-        portal = api.portal.get()
+        portal = ploneapi.portal.get()
         dspath = '/'.join([defaults.DATASETS_FOLDER_ID,
                            defaults.DATASETS_CLIMATE_FOLDER_ID,
                            'australia', 'australia_5km',
@@ -287,6 +294,7 @@ class ExperimentService(BaseService):
             'worker': worker,
             'result': result,
         }
+
         # create job
         jobtool = getUtility(IJobUtility)
         job = jobtool.new_job()
@@ -295,22 +303,32 @@ class ExperimentService(BaseService):
         job.function = func.getId()
         job.type = 'org.bccvl.content.sdmexperiment'
         jobtool.reindex_job(job)
+        # create job context object
+        member = ploneapi.user.get_current()
+        context = {
+            # we use the site object as context
+            'context': '/'.join(portal.getPhysicalPath()),
+            'jobid': job.id,
+            'user': {
+                'id': member.getUserName(),
+                'email': member.getProperty('email'),
+                'fullname': member.getProperty('fullname')
+            },
+        }
 
         # all set to go build task chain now
         from org.bccvl.tasks.compute import demo_task
         from org.bccvl.tasks.plone import after_commit_task
-        after_commit_task(demo_task, jobdesc)
+        after_commit_task(demo_task, jobdesc, context)
         # let's hope everything works, return result
 
-        swift_url = 'https://{host}:{port}/{version}/{account}/{container}'.format(swift)
+        swift_url = 'https://{host}:{port}/{version}/{account}/{container}'.format(**swift)
         return {
             'state': '{}/{}/state.json'.format(swift_url, lsid),
             'result': '{}/{}/projection.png'.format(swift_url, lsid),
             'jobid': job.id
         }
 
-    # TODO: update demosdm task to send progress updates to plone
-    # TODO: add context parameter to task, so that worker knows where to send progress updates to
     # TODO: check security
 
 

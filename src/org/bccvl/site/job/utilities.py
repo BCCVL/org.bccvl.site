@@ -11,9 +11,28 @@ from org.bccvl.site.job.job import Job
 @implementer(IJobUtility)
 class JobUtility(object):
 
+    # TODO: CANCELED state?
+    _states = ('PENDING', 'QUEUED', 'RUNNING', 'COMPLETED', 'FAILED', 'REMOVED')
+
     # TODO: memoize?
     def _catalog(self):
         return api.portal.get_tool('job_catalog')
+
+    def _comparestate(self, state1, state2):
+        """
+        -1 if state1 < state2
+        0  if state1 == state2
+        1  if state1 > state2
+        """
+        if any(map(lambda x: x is None, [state1, state2])):
+            if all(map(lambda x: x is None, [state1, state2])):
+                return 0
+            return -1 if state1 is None else 1
+
+        # TODO: may raise ValueError if state not in list
+        idx1 = self._states.index(state1)
+        idx2 = self._states.index(state2)
+        return cmp(idx1, idx2)
 
     def new_job(self):
         # FIXME: do we really need to locate it?
@@ -43,6 +62,20 @@ class JobUtility(object):
             return None
         return brains[0].getObject()
 
+    def set_progress(self, job, progress=None, message=None):
+        """
+        progress ... a short notice (maybe percent?, #step)
+        message ... longer description of progress
+        """
+        job.progress = progress
+        job.message = message
+        self.reindex_job(job)
+
+    def set_state(self, job, state):
+        if self._comparestate(job.state, state) < 0:
+            job.state = state
+            self.reindex_job(job)
+
     def query(self, **kw):
         brains = self._catalog().searchResults(**kw)
 
@@ -63,28 +96,9 @@ class JobTracker(object):
     #     - message ... short descr of activity
     #     - .... could be more here; e.g. percent complete, steps, etc..
 
-    # TODO: CANCELED state?
-    _states = ('PENDING', 'QUEUED', 'RUNNING', 'COMPLETED', 'FAILED', 'REMOVED')
-
     def __init__(self, context):
         self.context = context
         self.job_tool = getUtility(IJobUtility)  # rather use get_tool as it depends on current portal anyway?
-
-    def _comparestate(self, state1, state2):
-        """
-        -1 if state1 < state2
-        0  if state1 == state2
-        1  if state1 > state2
-        """
-        if any(map(lambda x: x is None, [state1, state2])):
-            if all(map(lambda x: x is None, [state1, state2])):
-                return 0
-            return -1 if state1 is None else 1
-
-        # TODO: may raise ValueError if state not in list
-        idx1 = self._states.index(state1)
-        idx2 = self._states.index(state2)
-        return cmp(idx1, idx2)
 
     def get_job(self):
         try:
@@ -107,9 +121,7 @@ class JobTracker(object):
         if not job:
             return
         # TODO: do message update as well, may need to change comparison to <= 0 so that even if state does not change we can update the message
-        if self._comparestate(job.state, state) < 0:
-            job.state = state
-            self.job_tool.reindex_job(job)
+        self.job_tool.set_state(job, state)
 
     # FIXME: message vs. state vs. dict?
     def progress(self):
@@ -128,9 +140,7 @@ class JobTracker(object):
         """
         job = self.get_job()
         if job:
-            job.progress = progress
-            job.message = message
-            self.job_tool.reindex_job(job)
+            self.job_tool.set_progress(job, progress, message)
 
     def new_job(self, taskid, title):
         # FIXME: this is duplicate API ... should probably go away
