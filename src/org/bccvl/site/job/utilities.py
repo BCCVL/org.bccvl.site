@@ -78,6 +78,7 @@ class JobUtility(object):
 
     def query(self, **kw):
         brains = self._catalog().searchResults(**kw)
+        return brains
 
 
 

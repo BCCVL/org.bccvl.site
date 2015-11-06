@@ -158,9 +158,10 @@ class JobService(BaseService):
                 'descirption': 'query parameters as keywords'
             }
     })
-    def get(self, **kw):
+    def query(self):
         # FIXME: add owner check here -> probably easiest to make userid query parameter part of jobtool query function?  ; could also look inteo allowed_roles in catalog?
-        if not kw:
+        query = self.request.form
+        if not query:
             raise BadRequest('No query parameters supplied')
         jobtool = getUtility(IJobUtility)
         # add current userid to query
@@ -168,9 +169,9 @@ class JobService(BaseService):
         roles = user.getRoles()
         # intersect required roles with user roles
         if not (set(roles) & set(('Manager', 'SiteAdministrator'))):
-            kw['userid'] = user.getId()
+            query['userid'] = user.getId()
 
-        brains = jobtool.query(**kw)
+        brains = jobtool.query(**query)
         if brains:
             brain = brains[0]
             return {
