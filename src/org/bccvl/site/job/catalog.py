@@ -1,7 +1,11 @@
+import logging
+
 from AccessControl import ClassSecurityInfo
 from BTrees.OOBTree import OOBTree
 from Globals import InitializeClass
-from Products.CMFCore.permissions import ManagePortal
+from AccessControl.Permissions import (
+    manage_zcatalog_entries as ManageZCatalogEntries)
+from AccessControl.Permissions import search_zcatalog as SearchZCatalog
 from Products.CMFPlone.CatalogTool import CatalogTool
 from Products.ZCatalog.Catalog import Catalog
 from Products.ZCatalog.CatalogBrains import AbstractCatalogBrain
@@ -11,6 +15,9 @@ from plone import api
 from zope.interface import implementer
 
 from org.bccvl.site.job.interfaces import IJobCatalog
+
+
+LOG = logging.getLogger(__name__)
 
 
 class JobCatalog(Catalog):
@@ -81,7 +88,18 @@ class JobCatalogTool(CatalogTool):
         self._catalog = JobCatalog()
         self.jobs = OOBTree()
 
-    security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+    security.declareProtected(SearchZCatalog, 'resolve_path')
+    def resolve_path(self, path):
+        # Attempt to resolve a job id (path) within this catalog.
+        # The path is meant to be  a job id.
+        # If no object is found, None is returned.
+        # No exceptions are raised.
+        try:
+            return self.jobs[path]
+        except Exception:
+            pass
+
+    security.declareProtected(ManageZCatalogEntries, 'clearFindAndRebuild')
     def clearFindAndRebuild(self):
         """
         Empties catalog, then finds all contentish objects (i.e. objects
@@ -92,6 +110,36 @@ class JobCatalogTool(CatalogTool):
 
         for job in self.jobs.values():
             self.reindexObject(job, uid=job.id)
+
+    security.declareProtected(ManageZCatalogEntries, 'reindexIndex')
+    def reindexIndex(self, name, REQUEST, pghandler=None):
+        if isinstance(name, str):
+            name = (name, )
+
+        paths = self._catalog.uids.keys()
+
+        i = 0
+        if pghandler:
+            pghandler.init('reindexing %s' % name, len(paths))
+
+        for p in paths:
+            i += 1
+            if pghandler:
+                pghandler.report(i)
+
+            obj = self.resolve_path(p)
+            if obj is None:
+                LOG.error('reindexIndex could not resolve '
+                          'an object from the uid %r.' % p)
+            else:
+                # don't update metadata when only reindexing a single
+                # index via the UI
+                self.catalog_object(obj, p, idxs=name,
+                                    update_metadata=0, pghandler=pghandler)
+
+        if pghandler:
+            pghandler.finish()
+
 
     # FIXME: either Job objects need to be locatable (SimpleItems)
     #        or we should override a few more methods here (and potentially in Catalog class as well), because currently indexed objects don't have a path or url (they are not Acquisition providers, and are therefore not accessible via traverse?)
