@@ -114,8 +114,9 @@ class ProjectionExperimentHelper(object):
         data.update({
             'form.widgets.IDublinCore.title': u"My CC Experiment",
             'form.widgets.IDublinCore.description': u'This is my experiment description',
-            'form.widgets.species_distribution_models': unicode(self.sdmexp.UID()),
-            'form.widgets.species_distribution_models.model': [unicode(self.sdmmodel.UID())],
+            'form.widgets.species_distribution_models.count': 1,
+            'form.widgets.species_distribution_models.item.0': unicode(self.sdmexp.UID()),
+            'form.widgets.species_distribution_models.item.0.item': [unicode(self.sdmmodel.UID())],
             'form.widgets.future_climate_datasets': [unicode(self.future.UID())]
         })
         self.request.form.update(data)
@@ -156,10 +157,10 @@ class BiodiverseExperimentHelper(object):
             'form.widgets.IDublinCore.title': u"My BD Experiment",
             'form.widgets.IDublinCore.description': u'This is my experiment description',
             'form.widgets.projection.count': '1',
-            'form.widgets.projection.experiment.0': unicode(self.sdmexp.UID()),
-            'form.widgets.projection.dataset.0.count': 1,
-            'form.widgets.projection.dataset.0.0.uuid': unicode(self.sdmproj.UID()),
-            'form.widgets.projection.dataset.0.0.threshold': u'0.5',
+            'form.widgets.projection.item.0': unicode(self.sdmexp.UID()),
+            'form.widgets.projection.item.0.count': 1,
+            'form.widgets.projection.item.0.item.0.uuid': unicode(self.sdmproj.UID()),
+            'form.widgets.projection.item.0.item.0.threshold': u'0.5',
             'form.widgets.cluster_size': '5000',
         })
         self.request.form.update(data)
@@ -200,8 +201,8 @@ class EnsembleExperimentHelper(object):
             'form.widgets.IDublinCore.description': u'This is my experiment description',
             'form.widgets.experiment_type': ISDMExperiment.__identifier__,
             'form.widgets.datasets.count': '1',
-            'form.widgets.datasets.experiment.0': unicode(self.sdmexp.UID()),
-            'form.widgets.datasets.dataset.0': [unicode(self.sdmproj.UID())],
+            'form.widgets.datasets.item.0': unicode(self.sdmexp.UID()),
+            'form.widgets.datasets.item.0.item': [unicode(self.sdmproj.UID())],
         })
         self.request.form.update(data)
         form = getMultiAdapter((self.experiments, self.request),

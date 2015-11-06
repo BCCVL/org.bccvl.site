@@ -83,54 +83,6 @@ class DatasetSetupTest(unittest.TestCase):
         self.assertIn('species', md) # check if species attribute exists
 
 
-class TestDatasetListing(unittest.TestCase):
-
-    layer = BCCVL_INTEGRATION_TESTING
-
-    def getview(self):
-        portal = self.layer['portal']
-        datasets = portal[defaults.DATASETS_FOLDER_ID]
-        view = getMultiAdapter((datasets, portal.REQUEST),
-                               name='datasets_list')
-        # FIXME: we have to call the view to get everything setup:(
-        view()
-        return view
-
-    # view methods:
-    # contentFilterAQ
-    # contentFilter
-    # datasetslisting
-    # __call__
-    # genre_list
-    # resolution_list
-    # source_list
-
-    def test_datasetslisting(self):
-        view = self.getview()
-        batch = view.datasetslisting()
-        # test datasets list
-        self.assertEqual(batch.length, 7)
-        self.assertEqual(batch.pagesize, 20)
-
-    def test_datasetslisting_occur(self):
-        req = self.layer['request']
-        req.form.update({
-            'b_size': '2',
-            # 'datasets.filter.sort': '',
-            # 'datasets.filter.order': '',
-            # 'datasets.filter.text': '',
-            'datasets.filter.genre': ['DataGenreSpeciesOccurrence', ],
-            # 'datasets.filter.cesolution': '',
-        })
-        view = self.getview()
-        batch = view.datasetslisting()
-        self.assertEqual(batch.length, 1)
-        self.assertEqual(batch.pagesize, 2)
-        item = batch[0]
-        self.assertEqual(item.Title, 'ABT')
-        self.assertEqual(item.BCCDataGenre, 'DataGenreSpeciesOccurrence')
-
-
 class TestDatasetTools(unittest.TestCase):
 
     layer = BCCVL_INTEGRATION_TESTING
@@ -284,9 +236,6 @@ class TestDatasetImport(unittest.TestCase):
         jt = IJobTracker(ds)
         self.assertEqual(jt.state, 'PENDING')
         # commit transaction to start job
-        # TODO: this test needs a running DataMover. (see below))
-        # TODO: we should Mock org.bccvl.tasks.datamover.DataMover (generate files as requested?)
-        #       and maybe org.bccvl.tasks.plone.import_ala
         transaction.commit()
         # celery should run in eager mode so our job state should be up to date as well
         self.assertEqual(jt.state, 'COMPLETED')
