@@ -326,7 +326,8 @@ class FileMetadataToBCCVL(object):
                     # FIXME: extract some of json metadata? like acknowledgement, etc...
             elif content.format not in ('text/csv', ):
                 # TODO: we should have a better check here whether to extract layer metadata for a single file dataset
-                self._update_layer_metadata(bccvlmd, filemd, fileid, item['_layermd'])
+                # FIXME: upload does not pass on '_layermd' ... fix with background md extraction
+                self._update_layer_metadata(bccvlmd, filemd, fileid, item.get('_layermd', {}))
 
             # continue pipeline
             yield item
@@ -419,7 +420,7 @@ class FileMetadataToBCCVL(object):
                     layermd['datatype'] = 'categorical'
                 elif data_type.lower() == 'discrete':
                     layermd['datatype'] = 'discrete'
-                
+
             # TODO: bbox: which units do we want bbox?
             #       lat/long?, whatever coordinates layer uses?
             # End Layer
