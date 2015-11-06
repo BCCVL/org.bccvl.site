@@ -3,6 +3,7 @@ from urlparse import urlsplit
 from itertools import chain
 import os.path
 import tempfile
+from org.bccvl.site import defaults
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
@@ -490,7 +491,7 @@ class ProjectionJobTracker(MultiJobTracker):
                     job = resultjt.new_job('TODO: generate id',
                                            'generate taskname: projection experiment')
                     job.type = self.context.portal_type
-                    job.function = dsobj.__parent__.job_params['function']
+                    job.function = result.job_params['function']
                     job.toolkit = IUUID(api.portal.get()[defaults.TOOLKITS_FOLDER_ID][job.function])
                     # reindex job object here ... next call should do that
                     resultjt.set_progress('PENDING',
@@ -925,7 +926,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
             job.type = self.context.portal_type
             job.function = algorithm.id
-            job.toolkit = IUUID(algorithm)
+            job.toolkit = algorithm.UID
             # job reindex happens in next call
 
             resultjt.set_progress('PENDING',
