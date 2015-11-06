@@ -14,5 +14,8 @@
     <type type_id="News Item">
       <bound-workflow workflow_id="intranet_workflow"/>
     </type>
+    <type type_id="org.bccvl.tool.facetconfig">
+      <bound-workflow workflow_id="intranet_folder_workflow"/>
+    </type>
   </bindings>
 </object>

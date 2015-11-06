@@ -1,4 +1,5 @@
 {
-  "_type": "org.bccvl.tool.facetconfig",
-  "title": "Future Climate Datasets"
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Future Climate Datasets",
+    "_transitions": ["show_internally"]
 }

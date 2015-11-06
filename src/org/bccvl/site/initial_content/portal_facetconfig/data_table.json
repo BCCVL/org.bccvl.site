@@ -1,4 +1,5 @@
 {
-  "_type": "org.bccvl.tool.facetconfig",
-  "title": "Species Traits Dataset"
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Species Traits Dataset",
+    "_transitions": ["show_internally"]    
 }

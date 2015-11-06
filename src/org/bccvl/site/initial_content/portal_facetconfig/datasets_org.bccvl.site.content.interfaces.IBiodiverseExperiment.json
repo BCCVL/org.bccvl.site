@@ -1,4 +1,5 @@
 {
-  "_type": "org.bccvl.tool.facetconfig",
-  "title": "Datasets Biodivers"
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Datasets Biodivers",
+    "_transitions": ["show_internally"]
 }

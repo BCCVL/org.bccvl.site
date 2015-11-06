@@ -1,4 +1,5 @@
 {
-  "_type": "org.bccvl.tool.facetconfig",
-  "title": "Environmental Datasets"
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Environmental Datasets",
+    "_transitions": ["show_internally"]    
 }

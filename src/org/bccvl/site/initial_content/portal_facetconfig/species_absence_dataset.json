@@ -1,4 +1,5 @@
 {
-  "_type": "org.bccvl.tool.facetconfig",
-  "title": "Species Absence Dataset"
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Species Absence Dataset",
+    "_transitions": ["show_internally"]
 }

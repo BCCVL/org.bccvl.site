@@ -1,4 +1,5 @@
 {
-  "_type": "org.bccvl.tool.facetconfig",
-  "title": "Species Occurrence Dataset"
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Species Occurrence Dataset",
+    "_transitions": ["show_internally"]
 }

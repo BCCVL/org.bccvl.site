@@ -1,4 +1,5 @@
 {
-  "_type": "org.bccvl.tool.facetconfig",
-  "title": "Datasets SDM"
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Datasets SDM",
+    "_transitions": ["show_internally"]
 }

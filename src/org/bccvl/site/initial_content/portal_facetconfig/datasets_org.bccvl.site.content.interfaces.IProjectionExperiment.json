@@ -1,4 +1,5 @@
 {
-  "_type": "org.bccvl.tool.facetconfig",
-  "title": "Datasets CC"
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Datasets CC",
+    "_transitions": ["show_internally"]        
 }
