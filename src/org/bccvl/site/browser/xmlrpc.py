@@ -31,6 +31,7 @@ from org.bccvl.site.browser.ws import IDataMover, IALAService
 from plone.dexterity.utils import createContentInContainer
 from org.bccvl.site.api import dataset
 from org.bccvl.site.utils import DecimalJSONEncoder
+from org.bccvl.site.job.interfaces import IJobUtility
 
 
 LOG = logging.getLogger(__name__)
@@ -675,13 +676,36 @@ class DemoSDM(BrowserView):
             'worker': worker,
             'result': result,
         }
+
+        # create job
+        jobtool = getUtility(IJobUtility)
+        job = jobtool.new_job()
+        job.lsid = lsid
+        job.toolkit = IUUID(func)
+        job.function = func.getId()
+        job.type = 'org.bccvl.content.sdmexperiment'
+        jobtool.reindex_job(job)
+        # create job context object
+        member = api.user.get_current()
+        context = {
+            # we use the site object as context
+            'context': '/'.join(portal.getPhysicalPath()),
+            'jobid': job.id,
+            'user': {
+                'id': member.getUserName(),
+                'email': member.getProperty('email'),
+                'fullname': member.getProperty('fullname')
+            },
+        }
+
         # all set to go build task chain now
         from org.bccvl.tasks.compute import demo_task
         from org.bccvl.tasks.plone import after_commit_task
-        after_commit_task(demo_task, jobdesc)
+        after_commit_task(demo_task, jobdesc, context)
         # let's hope everything works, return result
 
         return {
             'state': 'https://{}/v1/AUTH_{}/{}/{}/state.json'.format(swift_host, swift_tenant_id, swift_container, jobid),
             'result': 'https://{}/v1/AUTH_{}/{}/{}/projection.png'.format(swift_host, swift_tenant_id, swift_container, jobid),
+            'jobid': job.id,
         }
