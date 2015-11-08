@@ -94,7 +94,7 @@
   <class class=".browser.JobService">
     <require
         permission="zope2.View"
-        attributes="state get"
+        attributes="state query"
         />  
     <require
         permission="zope2.View"
