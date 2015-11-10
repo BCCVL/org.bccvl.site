@@ -62,8 +62,8 @@
                        tal:attributes="href explore_url;
                                        title item_description;">
                        <tal:r tal:replace="item_title_or_id">Item Title</tal:r></a>
-                       &nbsp;
-                       <a class="btn btn-info btn-small" href="#"
+                      
+                       <a href="#" style="font-size:0.8em;"
                          role="button" data-toggle="InfoModal" title="More information for this dataset."
                          tal:attributes="href string:${item_url}/modal_view">
                            <i class="fa fa-info-circle"></i>
@@ -77,10 +77,10 @@
                   <p tal:condition="not:item_description"
                     i18n:translate=""><em>No description has been provided for this collection.</em></p>
 
-                  <a href="#"
+                  <a class="btn btn-primary btn-small" href="#"
                        tal:attributes="href explore_url;
                                        title item_description;">
-                    <i class="fa fa-chevron-right-cricle" title="Browse datasets in this collection."></i>&nbsp;
+                    <i class="fa fa-search" title="Browse datasets in this collection."></i>&nbsp;
                   Search Collection</a>                  
                 </div>
 
