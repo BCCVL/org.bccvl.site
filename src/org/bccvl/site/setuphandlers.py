@@ -300,6 +300,7 @@ def upgrade_200_210_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
 
     # make error logs visible
     ignored_exceptions = portal.error_log._ignored_exceptions
