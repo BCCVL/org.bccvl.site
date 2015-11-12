@@ -287,7 +287,7 @@ def upgrade_200_210_1(context, logger=None):
     # Do some registry cleanup:
     from plone.registry.interfaces import IRegistry
     registry = getUtility(IRegistry)
-    for key in registry.records.keys():
+    for key in list(registry.records.keys()):
         if (key.startswith('plone.app.folderui')
             or key.startswith('dexterity.membrane')
             or key.startswith('collective.embedly')):
@@ -393,8 +393,9 @@ def upgrade_200_210_1(context, logger=None):
             job.userid = result.getOwner().getId()
             job.content = IUUID(result)
             job.type = brain.portal_type
-            job.function = result.job_params['function']
-            job.toolkit = IUUID(portal[defaults.TOOLKITS_FOLDER_ID][job.function])
+            job.function = result.job_paramsi.get('function')
+            if job.function:
+                job.toolkit = IUUID(portal[defaults.TOOLKITS_FOLDER_ID][job.function])
 
             jobtool.reindex_job(job)
             del annots['org.bccvl.state']
