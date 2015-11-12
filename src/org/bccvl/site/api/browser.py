@@ -341,3 +341,24 @@ class SiteService(BaseService):
     title = u'Global misc. API v1'
     description = u'Access site wide information'
     method = 'GET'
+
+    @returnwrapper
+    @apimethod(
+        properties={
+            'uuid': {
+                'type': 'string',
+                'title': 'Object UUID',
+                'description': 'The UUID for a content object',
+            }
+        }
+    )
+    def can_access(self, uuid=None):
+        import ipdb; ipdb.set_trace()
+        if uuid:
+            context = uuidToCatalogBrain(uuid)
+        else:
+            context = self.context
+        if context is None:
+            return 'denied'
+        else:
+            return 'allowed'
