@@ -20,8 +20,8 @@
    <property name="hidden">0</property>
    <property name="count">1</property>
    <property name="sortcountable">1</property>
-   <property name="hidezerocount">0</property>
-   <property name="sortreversed">0</property>
+   <property name="hidezerocount"></property>
+   <property name="sortreversed"></property>
   </criterion>
   <criterion name="c3">
    <property name="widget">checkboxtree</property>
@@ -30,14 +30,14 @@
    <property name="section">default</property>
    <property name="hidden">0</property>
    <property name="count">1</property>
-   <property name="sortcountable">0</property>
-   <property name="hidezerocount">0</property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
    <property name="index">BCCCategory</property>
    <property name="operator">or</property>
-   <property name="operator_visible">0</property>
+   <property name="operator_visible"></property>
    <property name="vocabulary">scientific_category_source</property>
    <property name="maxitems"></property>
-   <property name="sortreversed">0</property>
+   <property name="sortreversed"></property>
    <property name="default"></property>
   </criterion>
   <criterion name="c6">
@@ -83,12 +83,12 @@
    <property name="section">default</property>
    <property name="hidden">0</property>
    <property name="count">1</property>
-   <property name="sortcountable">0</property>
+   <property name="sortcountable"></property>
    <property name="hidezerocount">1</property>
    <property name="index">BCCEnviroLayer</property>
    <property name="vocabulary">layer_source</property>
    <property name="catalog"></property>
-   <property name="sortreversed">0</property>
+   <property name="sortreversed"></property>
    <property name="default"></property>
   </criterion>
   <criterion name="c10">
@@ -99,11 +99,11 @@
    <property name="hidden">0</property>
    <property name="count">1</property>
    <property name="sortcountable">1</property>
-   <property name="hidezerocount">0</property>
+   <property name="hidezerocount"></property>
    <property name="index">BCCGlobalClimateModel</property>
    <property name="vocabulary">gcm_source</property>
    <property name="catalog">portal_catalog</property>
-   <property name="sortreversed">0</property>
+   <property name="sortreversed"></property>
    <property name="default"></property>
   </criterion>
   <criterion name="c5">
@@ -114,12 +114,26 @@
    <property name="hidden">0</property>
    <property name="count">1</property>
    <property name="sortcountable">1</property>
-   <property name="hidezerocount">0</property>
+   <property name="hidezerocount"></property>
    <property name="index">BCCYear</property>
    <property name="vocabulary"></property>
    <property name="catalog">portal_catalog</property>
    <property name="sortreversed">1</property>
    <property name="default"></property>
+  </criterion>
+  <criterion name="c2">
+   <property name="widget">pathselect</property>
+   <property name="title">Collections</property>
+   <property name="position">center</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
+   <property name="index">path</property>
+   <property name="root">/datasets</property>
+   <property name="vocabulary">data_collections_source</property>
+   <property name="sortreversed"></property>
   </criterion>
   <criterion name="c12">
    <property name="widget">sorting</property>
@@ -187,20 +201,6 @@
     <element value="org.bccvl.content.remotedataset"/>
     <element value="org.bccvl.content.dataset"/>
    </property>
-  </criterion>
-  <criterion name="c2">
-   <property name="widget">pathselect</property>
-   <property name="title">Collections</property>
-   <property name="position">left</property>
-   <property name="section">default</property>
-   <property name="hidden">0</property>
-   <property name="count">1</property>
-   <property name="sortcountable">0</property>
-   <property name="hidezerocount">0</property>
-   <property name="index">path</property>
-   <property name="root">/datasets</property>
-   <property name="vocabulary">data_collections_source</property>
-   <property name="sortreversed">0</property>
   </criterion>
  </criteria>
 </object>
