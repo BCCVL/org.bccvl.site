@@ -161,6 +161,10 @@
   <class class=".browser.SiteService">
     <require
         permission="zope2.View"
+        attributes="can_access"
+        />  
+    <require
+        permission="zope2.View"
         attributes="schema __call__"
         />  
   </class>

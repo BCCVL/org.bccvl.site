@@ -283,6 +283,16 @@ def upgrade_200_210_1(context, logger=None):
         logger = LOG
     # Run GS steps
     portal = api.portal.get()
+
+    # Do some registry cleanup:
+    from plone.registry.interfaces import IRegistry
+    registry = getUtility(IRegistry)
+    for key in registry.records.keys():
+        if (key.startswith('plone.app.folderui')
+            or key.startswith('dexterity.membrane')
+            or key.startswith('collective.embedly')):
+            del registry.records[key]
+
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'propertiestool')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
@@ -291,6 +301,9 @@ def upgrade_200_210_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
 
+    # make error logs visible
+    ignored_exceptions = portal.error_log._ignored_exceptions
+    portal.error_log._ignored_exceptions = ()
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
 
@@ -302,10 +315,13 @@ def upgrade_200_210_1(context, logger=None):
             if 'function' in result.job_params:
                 continue
             #Add algorithm to job_params if missing algorithm
-            sdmds = uuidToObject(result.job_params['species_distribution_models'])
-            algorithm = sdmds.__parent__.job_params['function']
-            if algorithm:
-                result.job_params['function'] = algorithm
+            try:
+                sdmds = uuidToObject(result.job_params['species_distribution_models'])
+                algorithm = sdmds.__parent__.job_params['function']
+                if algorithm:
+                    result.job_params['function'] = algorithm
+            except Exception as e:
+                LOG.warning("Can't add algorithm id to %s: %s", result, e)
 
     from org.bccvl.site.job.interfaces import IJobUtility
     jobtool = getUtility(IJobUtility)
@@ -318,7 +334,11 @@ def upgrade_200_210_1(context, logger=None):
         if job:
             # already processed ... skip
             continue
-        ds = brain.getObject()
+        try:
+            ds = brain.getObject()
+        except Exception as e:
+            LOG.warning('Could not resolve %s: %s', brain.getPath(), e)
+            continue
         annots = IAnnotations(ds)
         old_job = annots.get('org.bccvl.state', None)
         if not old_job:
@@ -349,7 +369,12 @@ def upgrade_200_210_1(context, logger=None):
     for brain in pc.searchResults(portal_type=EXP_TYPES):
         # go through all results
         for result in brain.getObject().values():
-            job = jobtool.find_job_by_uuid(IUUID(result))
+            job = None
+            try:
+                job = jobtool.find_job_by_uuid(IUUID(result))
+            except Exception as e:
+                LOG.info('Could not resolve %s: %s', result, e)
+                continue
             if job:
                 # already processed ... skip
                 continue
@@ -373,3 +398,6 @@ def upgrade_200_210_1(context, logger=None):
 
             jobtool.reindex_job(job)
             del annots['org.bccvl.state']
+
+    # restore error_log filter
+    portal.error_log._ignored_exceptions = ignored_exceptions
