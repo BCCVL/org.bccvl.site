@@ -1381,7 +1381,7 @@
         <element key="value">clamping_mask</element>
         <element key="title">Clamping Mask</element>
         <element key="unit">Count</element>
-        <element key="unitfull">Environmental Suitability</element>
+        <element key="unitfull">Number of Variables</element>
         <element key="legend">discrete</element>
         <element key="type">clampingmask</element>
         <element key="tooltip">Clamping Mask is the number of variables that are out of their calibrating/training range.</element>   

@@ -1141,20 +1141,23 @@ Vocabulary endpoint:
      {'legend': 'suitability',
       'title': 'Environmental Suitability',
       'token': 'projection',
-      'tooltip': 'Environmental Suitability',
+      'tooltip': 'This value describes the environmental suitability of a species presence in a given location.',
       'type': 'suitability',
-      'unit': ' '},
+      'unit': 'MoS',
+      'unitfull': 'Environmental Suitability'},
      {'legend': 'binary',
       'title': 'Environmental Suitability',
       'token': 'projection_binary',
-      'tooltip': 'Environmental Suitability',
+      'tooltip': 'This value describes the environmental suitability of a species presence in a given location.',
       'type': 'suitability',
-      'unit': ' '},
+      'unit': 'MoS',
+      'unitfull': 'Environmental Suitability'},
      {'legend': 'discrete',
       'title': 'Clamping Mask',
       'token': 'clamping_mask',
       'tooltip': 'Clamping Mask is the number of variables that are out of their calibrating/training range.',
       'type': 'clampingmask',
-      'unit': ' '}]
+      'unit': 'Count',
+      'unitfull': 'Number of Variables'}]
 
 TODO: add test cases that fail because of restricted access
