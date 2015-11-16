@@ -7,6 +7,8 @@ from Products.Five.browser import BrowserView
 from plone import api
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.app.contenttypes.interfaces import IFolder
+from Products.CMFCore.interfaces import ITypeInformation
+from zope.component import getUtility
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.interfaces import IExperimentJobTracker
 from ..content.interfaces import (
@@ -122,8 +124,11 @@ class StatisticsView(BrowserView):
         return len(self._experiments_pub)
 
     def experiment_types(self):
-        experiments = Counter(x.Type for x in self._experiments)
+        experiments = Counter(x.portal_type for x in self._experiments)
         return experiments.most_common()
+
+    def experiment_type_title(self, portal_type):
+        return getUtility(ITypeInformation, portal_type).Title()
 
     def experiment_average_runtimes(self):
         runtime = {}
@@ -131,16 +136,17 @@ class StatisticsView(BrowserView):
             exp = x._unrestrictedGetObject()
             jt = IExperimentJobTracker(exp)
             success = jt.state in (None, 'COMPLETED')
-            if not runtime.has_key(x.Type):
-                runtime[x.Type] = {'runtime': 0, 'failed': 0, 'success': 0, 'count': 0}
+            if not runtime.has_key(x.portal_type):
+                runtime[x.portal_type] = {'runtime': 0, 'failed': 0, 'success': 0, 'count': 0,
+                                          'title': self.experiment_type_title(x.portal_type)}
 
             if hasattr(exp, 'runtime'):
-                runtime[x.Type]['runtime'] += exp.runtime
-                runtime[x.Type]['count'] += 1
+                runtime[x.portal_type]['runtime'] += exp.runtime
+                runtime[x.portal_type]['count'] += 1
             if success:
-                runtime[x.Type]['success'] += 1
+                runtime[x.portal_type]['success'] += 1
             else:
-                runtime[x.Type]['failed'] += 1
+                runtime[x.portal_type]['failed'] += 1
 
         for i in runtime.keys():
             if runtime[i]['count']:
@@ -154,8 +160,7 @@ class StatisticsView(BrowserView):
         stats = {}
 
         for x in self._experiments:
-            #if x.Type not in ['org.bccvl.content.sdmexperiment', 'org.bccvl.content.speciestraitsexperiment']:
-            if x.Type not in ['SDM Experiment', 'Species Traits Modelling']:
+            if x.portal_type not in ['org.bccvl.content.sdmexperiment', 'org.bccvl.content.speciestraitsexperiment']:
                 continue
             # Get the runtime each algorithm for each experiement type from the result file
             # An algorithm is mutually exclusive for SDM or Species Traits experiement.
@@ -198,7 +203,9 @@ class StatisticsView(BrowserView):
                         yield funcid
                 if hasattr(exp, 'algorithm'):
                     yield exp.algorithm
-
+        # FIXME: this counts experiment objects... the number of result objects per algorithm
+        #        may be different (esp. if experiment has been saved but not started or has
+        #        been re-run multiple times)
         algorithm_types = Counter(self.get_func_obj(x).getId for x in func_ids())
         return algorithm_types.most_common()
 
