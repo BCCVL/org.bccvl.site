@@ -1360,22 +1360,31 @@
         <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
-        <element key="value">projection</element>
+        <element key="value">projection_suitability</element>
         <element key="title">Environmental Suitability</element>
-        <element key="unit">MoS</element>
+        <element key="unit"> </element>
         <element key="unitfull">Environmental Suitability</element>
         <element key="legend">suitability</element>
-        <element key="type">suitability</element>
-        <element key="tooltip">This value describes the environmental suitability of a species presence in a given location.</element>
+        <element key="type">projection</element>
+        <element key="tooltip">This value describes the environmental suitability of a location for a specios to be present.</element>
       </element>
       <element>
+        <element key="value">projection_probability</element>
+        <element key="title">Probability</element>
+        <element key="unit"> </element>
+        <element key="unitfull">Probability</element>
+        <element key="legend">suitability</element>
+        <element key="type">projection</element>
+        <element key="tooltip">This value describes the probability of a species occurring in a given location.</element>
+      </element>      
+      <element>
         <element key="value">projection_binary</element>
-        <element key="title">Environmental Suitability</element>
-        <element key="unit">MoS</element>
-        <element key="unitfull">Environmental Suitability</element>
+        <element key="title">Presence</element>
+        <element key="unit"> </element>
+        <element key="unitfull">Presence</element>
         <element key="legend">binary</element>
-        <element key="type">suitability</element>
-        <element key="tooltip">This value describes the environmental suitability of a species presence in a given location.</element>   
+        <element key="type">projection</element>
+        <element key="tooltip">This value describes whether a species is present in a given location.</element>   
       </element>
       <element>
         <element key="value">clamping_mask</element>
