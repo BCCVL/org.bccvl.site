@@ -310,6 +310,7 @@ def upgrade_200_210_1(context, logger=None):
 
     pc = api.portal.get_tool('portal_catalog')
     # Update job_params with algorithm used for Climate Change Experiments
+    LOG.info('Updating job params of old projection experiments')
     for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
         # go through all results
         for result in brain.getObject().values():
@@ -328,6 +329,7 @@ def upgrade_200_210_1(context, logger=None):
     jobtool = getUtility(IJobUtility)
     # search all datasets and create job object with infos from dataset
     # -> delete job info on dataset
+    LOG.info('Migrating job data for datasets')
     DS_TYPES = ['org.bccvl.content.dataset',
                 'org.bccvl.content.remotedataset']
     for brain in pc.searchResults(portal_type=DS_TYPES):
@@ -361,6 +363,7 @@ def upgrade_200_210_1(context, logger=None):
 
     # search all experiments and create job object with infos from experiment
     # -> delete job info on experiment
+    LOG.info('Migrating job data for experiments')
     EXP_TYPES = ['org.bccvl.content.sdmexperiment',
                  'org.bccvl.content.projectionexperiment',
                  'org.bccvl.content.biodiverseexperiment',
@@ -401,5 +404,33 @@ def upgrade_200_210_1(context, logger=None):
             jobtool.reindex_job(job)
             del annots['org.bccvl.state']
 
+    LOG.info('Updating layer metadata for projection outputs')
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    for brain in pc.searchResults(BCCDataGenre=('DataGenreCP', 'DataGenreFP', 'DataGenreClampingMask')):
+        ds = brain.getObject()
+        md = IBCCVLMetadata(ds)
+        # md['layers'][ds.file.filename] ... there should be only one key
+        keys = md['layers'].keys()
+        if len(keys) != 1:
+            LOG.warning('Found multiple layer keys; do not know what to do: %s', ds.absolute_url())
+            continue
+        layermd = md['layers'][keys[0]]
+        #if 'layer' in layermd:
+            # already converted
+        #    continue
+        if md['genre'] == 'DataGenreClampingMask':
+            layerid = 'clamping_mask'
+        else:  # DataGenreCP and DataGenreFP
+            algorithm = ds.__parent__.job_params['function']
+            if algorithm in ('circles', 'convhull', 'voronoiHull'):
+                layerid = 'projection_binary'
+            elif algorithm in ('maxent',):
+                layerid = 'projection_suitability'
+            else:
+                layerid = 'projection_probability'
+        layermd['layer'] = layerid
+        md['layers'] = {layerid: layermd}
+
     # restore error_log filter
     portal.error_log._ignored_exceptions = ignored_exceptions
+    LOG.info('Upgrade step finished')
