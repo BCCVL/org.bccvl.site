@@ -415,9 +415,9 @@ def upgrade_200_210_1(context, logger=None):
             LOG.warning('Found multiple layer keys; do not know what to do: %s', ds.absolute_url())
             continue
         layermd = md['layers'][keys[0]]
-        #if 'layer' in layermd:
+        if 'layer' in layermd:
             # already converted
-        #    continue
+            continue
         if md['genre'] == 'DataGenreClampingMask':
             layerid = 'clamping_mask'
         else:  # DataGenreCP and DataGenreFP
