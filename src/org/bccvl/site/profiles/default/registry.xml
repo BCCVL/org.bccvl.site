@@ -1366,7 +1366,7 @@
         <element key="unitfull">Environmental Suitability</element>
         <element key="legend">suitability</element>
         <element key="type">projection</element>
-        <element key="tooltip">This value describes the environmental suitability of a location for a specios to be present.</element>
+        <element key="tooltip">This value describes the environmental suitability of a location for a species to be present.</element>
       </element>
       <element>
         <element key="value">projection_probability</element>
