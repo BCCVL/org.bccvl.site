@@ -62,6 +62,7 @@ class ISDMExperiment(IExperiment):
     directives.widget('species_occurrence_dataset',
                 DatasetFieldWidget,
                 genre=['DataGenreSpeciesOccurrence'],
+                description=u"Form help text",
                 errmsg=u"Please select at least 1 occurrence dataset.",
                 vizclass=u'bccvl-occurrence-viz')
     species_occurrence_dataset = TextLine(
