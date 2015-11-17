@@ -76,5 +76,13 @@
    <property name="hidezerocount">0</property>
    <property name="sortreversed">0</property>
   </criterion>
+  <criterion name="c7">
+   <property name="widget">portlet</property>
+   <property name="title">Help Text</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="macro">occurrences_modal_text/macros/portlet</property>
+  </criterion>
  </criteria>
 </object>
