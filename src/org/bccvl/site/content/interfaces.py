@@ -5,6 +5,7 @@ from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text, Set, URI
 from z3c.form.browser.radio import RadioFieldWidget
+from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
 # FIXME: remove form hints here and put them into special form schemata?
@@ -107,6 +108,13 @@ class ISDMExperiment(IExperiment):
         required=True,
     )
 
+    directives.mode(modelling_region=HIDDEN_MODE)
+    modelling_region = Text(
+        title=u"Modelling Region",
+        description=u"GEOJson describing the geographic region which is used to generate the model.",
+        required=False,
+    )
+
 
 class IProjectionExperiment(IExperiment):
 
@@ -134,6 +142,14 @@ class IProjectionExperiment(IExperiment):
         default=None,
         required=True
     )
+
+    directives.mode(projection_region=HIDDEN_MODE)
+    projection_region = Text(
+        title=u"Projection Region",
+        description=u"GEOJson describing the geographic region the onto which the selected model is projected,",
+        required=False,
+    )
+
 
 
 class IBiodiverseExperiment(IExperiment):
