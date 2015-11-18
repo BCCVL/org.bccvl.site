@@ -27,6 +27,14 @@
          Page:
             Pages, PagesPage -->
     <!-- TODO: check if Public permission is correct here -->
+
+    <browser:page
+        name="download"
+        for="..content.interfaces.IRemoteDataset"
+        class=".dataset.RemoteDatasetDownload"
+        permission="zope2.View"
+        />
+    
     <browser:page
         for="..content.interfaces.IDataset"
         name="remove"

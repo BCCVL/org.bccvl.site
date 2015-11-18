@@ -1,6 +1,8 @@
 #from plone.dexaterity.browser.view import DefaultView (template override in plone.app.dexterity.browser)
 
-
+from Products.Five.browser import BrowserView
+from zope.interface import implementer
+from zope.publisher.interfaces import IPublishTraverse, NotFound
 from z3c.form import field, button, form
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
@@ -47,6 +49,33 @@ class DatasetRemoveView(form.Form):
         if self.index:
             return self.index()
         return super(DatasetRemoveView, self).render()
+
+
+@implementer(IPublishTraverse)
+class RemoteDatasetDownload(BrowserView):
+
+    def __init__(self, context, request):
+        super(RemoteDatasetDownload, self).__init__(context, request)
+        self.filename = None
+
+    def publishTraverse(self, request, name):
+        # allow filename in url, so that it is possible to parse the url
+        if self.filename is None:  # ../@@download/filename
+            self.filename = name
+        else:
+            raise NotFound(self, name, request)
+
+        return self
+
+    def __call__(self):
+        # respect field level security as defined in plone.autoform
+        # check if attribute access would be allowed!
+        #url = guarded_getattr(self.context, 'remoteUrl', None)
+        remoteUrl = getattr(self.context, 'remoteUrl', None)
+        if remoteUrl is None:
+            raise NotFound(self, 'remoteUrl', self.request)
+        return self.request.RESPONSE.redirect(remoteUrl)
+
 
 
 # FIXME: Turn this whole form into something re-usable
