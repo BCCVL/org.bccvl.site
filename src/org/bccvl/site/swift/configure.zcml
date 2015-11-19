@@ -1,0 +1,33 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="bccvl"
+    >
+
+  <browser:page
+      name="swift-settings"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".controlpanel.SwiftSettingsView"
+      permission="cmf.ManagePortal"
+      />
+
+  <!-- alternative?
+       zope.lifecycleevent.IObjectModifiedEvent"
+       with new object is None -->
+  <subscriber
+    for="..content.interfaces.IRemoteDataset
+         zope.app.container.interfaces.IObjectRemovedEvent"
+    handler=".events.dataset_removed"
+    />
+
+  <utility
+      factory=".utilities.SwiftUtility"
+      />
+
+  <browser:resource
+      name="swift.png"
+      image="Swift-complete-300.png"
+      />
+
+</configure>

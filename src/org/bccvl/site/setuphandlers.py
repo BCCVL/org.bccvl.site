@@ -434,3 +434,13 @@ def upgrade_200_210_1(context, logger=None):
     # restore error_log filter
     portal.error_log._ignored_exceptions = ignored_exceptions
     LOG.info('Upgrade step finished')
+
+
+def upgrade_210_220_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    # portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')

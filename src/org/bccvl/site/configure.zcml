@@ -49,6 +49,7 @@
   <include package=".behavior"/>
   <include package=".job"/>
   <include package=".api"/>
+  <include package=".swift"/>
 
   <cmf:registerDirectory name="bccvl_skin" />
 
