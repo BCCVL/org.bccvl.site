@@ -67,8 +67,11 @@ def DatasetDownloadInfo(context):
 @adapter(IRemoteDataset)
 def RemoteDatasetDownloadInfo(context):
     url = urlsplit(context.remoteUrl)
+    filename = os.path.basename(url.path)
     return {
-        'url': context.remoteUrl,
+        'url': '{}/@@download/{}'.format(
+            context.absolute_url(),
+            filename),
         'alturl': (context.remoteUrl,),
         'filename': os.path.basename(url.path),
         'contenttype': context.format or 'application/octet-stream'
