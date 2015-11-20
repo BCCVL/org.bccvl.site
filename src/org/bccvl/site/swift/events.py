@@ -39,7 +39,6 @@ class SwiftDataManager(object):
             tool = getUtility(ISwiftUtility)
             temp_url = tool.generate_temp_url(url=self.dataset.remoteUrl,
                                               method='DELETE')
-            import ipdb; ipdb.set_trace()
             r = requests.delete(temp_url)
             # Make sure we raise an exception in case of an error
             r.raise_for_status()
