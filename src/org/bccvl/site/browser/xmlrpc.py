@@ -617,7 +617,6 @@ class DemoSDM(BrowserView):
                 'uuid': dsuuid,
                 'filename': dlinfo['filename'],
                 'downloadurl': dlinfo['url'],
-                'internalurl': dlinfo['alturl'][0],
                 'layer': layer,
                 'type': dsmd['layers'][layer]['datatype'],
                 'zippath': dsmd['layers'][layer]['filename']
@@ -629,7 +628,6 @@ class DemoSDM(BrowserView):
             'species_occurrence_dataset': {
                 'uuid': lsid,
                 'species': u'demoSDM',
-                'internalurl': 'ala://ala?lsid={}'.format(lsid),
                 'downloadurl': 'ala://ala?lsid={}'.format(lsid),
             },
             'environmental_datasets': envlist,

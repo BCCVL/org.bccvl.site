@@ -9,7 +9,6 @@ class IDownloadInfo(Interface):
 
     filename ... the naem of the file
     url      ... the url to fetch it from
-    alturl   ... a tuple of alternative urls
     """
 
 class IExperimentJobTracker(Interface):

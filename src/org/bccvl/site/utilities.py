@@ -50,14 +50,8 @@ def DatasetDownloadInfo(context):
         context.absolute_url(),
         filename
     )
-    internalurl = '{}{}/@@download/file/{}'.format(
-        int_url,
-        "/".join(context.getPhysicalPath()),
-        filename
-    )
     return {
         'url': downloadurl,
-        'alturl': (internalurl,),
         'filename': filename,
         'contenttype': contenttype or 'application/octet-stream',
     }
@@ -72,7 +66,6 @@ def RemoteDatasetDownloadInfo(context):
         'url': '{}/@@download/{}'.format(
             context.absolute_url(),
             filename),
-        'alturl': (context.remoteUrl,),
         'filename': os.path.basename(url.path),
         'contenttype': context.format or 'application/octet-stream'
     }

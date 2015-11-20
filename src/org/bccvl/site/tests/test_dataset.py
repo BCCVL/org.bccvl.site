@@ -61,16 +61,12 @@ class DatasetSetupTest(unittest.TestCase):
         di = IDownloadInfo(ds)
         self.assertIn(u'future/@@download', di['url'])
         self.assertEqual(u'future', di['filename'])
-        self.assertEqual(u'http://127.0.0.1:8201/plone/datasets/climate/future/@@download/file/future',
-                         di['alturl'][0])
-
         ds = self.get_dataset(defaults.DATASETS_CLIMATE_FOLDER_ID, 'remote')
         di = IDownloadInfo(ds)
         self.assertEqual(u'https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677/australia_5km/RCP3PD_cccma-cgcm31_2015.zip',
                          di['url'])
         self.assertEqual(u'RCP3PD_cccma-cgcm31_2015.zip',
                          di['filename'])
-        self.assertEqual(di['url'], di['alturl'][0])
 
     def test_filemetadata(self):
         ds = self.get_dataset(defaults.DATASETS_SPECIES_FOLDER_ID,

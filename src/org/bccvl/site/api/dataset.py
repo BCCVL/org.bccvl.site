@@ -63,7 +63,6 @@ def getdsmetadata(ds):
         'mimetype': dlinfo['contenttype'],
         'filename': dlinfo['filename'],
         'file': dlinfo['url'],
-        'vizurl': dlinfo['alturl'][0]
     })
     return md
 
