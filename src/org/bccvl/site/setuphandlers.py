@@ -19,31 +19,6 @@ PROFILE_ID = 'profile-org.bccvl.site:default'
 PROFILE = 'org.bccvl.site'
 
 
-AUTH_SCRIPT = """
-# check for credentials extracted by extraction script
-ipRangeKey = creds.get('ipRangeKey')
-if ipRangeKey is None:
-    return None
-return ('admin', 'admin')
-"""
-
-
-EXTRACT_SCRIPT = """
-credentials = {}
-
-# get client IP
-clientIP = (request.get('HTTP_X_FORWARDED_FOR') or
-            request.get('REMOTE_ADDR', None))
-if not clientIP:
-    return None
-
-# examine request for IP range
-if clientIP.lower() in ('127.0.0.1', 'localhost'):
-    credentials['ipRangeKey'] = 'allow'
-return credentials
-"""
-
-
 def setupVarious(context, logger=None):
     if logger is None:
         logger = LOG
@@ -59,30 +34,6 @@ def setupVarious(context, logger=None):
     if 'AutoUserMakerPASPLugin' in (p['id'] for
                                     p in qi.listInstallableProducts()):
         qi.installProduct('AutoUserMakerPASPlugin')
-
-    # install local login pas plugin
-    # FIXME: needs to go onto zope root, or needs special admin user in plone site
-    acl = portal.acl_users
-    if not 'localscript' in acl:
-        factory = acl.manage_addProduct['PluggableAuthService']
-        factory.addScriptablePlugin('localscript', 'Local manager access')
-    plugin = acl['localscript']
-    # add scripts
-    factory = plugin.manage_addProduct['PythonScripts']
-    if 'extractCredentials' not in plugin:
-        factory.manage_addPythonScript('extractCredentials')
-        alsoProvides(plugin, IExtractionPlugin)
-        script = plugin['extractCredentials']
-        script.ZPythonScript_edit('request', EXTRACT_SCRIPT)
-    if 'authenticateCredentials' not in plugin:
-        factory.manage_addPythonScript('authenticateCredentials')
-        script = plugin['authenticateCredentials']
-        script.ZPythonScript_edit('creds', AUTH_SCRIPT)
-        alsoProvides(plugin, IAuthenticationPlugin)
-    if 'localscript' not in acl.plugins.listPluginIds(IExtractionPlugin):
-        acl.plugins.activatePlugin(IExtractionPlugin, 'localscript')
-    if 'localscript' not in acl.plugins.listPluginIds(IAuthenticationPlugin):
-        acl.plugins.activatePlugin(IAuthenticationPlugin, 'localscript')
 
     # set default front-page
     portal.setDefaultPage('front-page')
@@ -440,7 +391,12 @@ def upgrade_210_220_1(context, logger=None):
     if logger is None:
         logger = LOG
     # Run GS steps
-    # portal = api.portal.get()
+    portal = api.portal.get()
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
+
+    # remove local login hack
+    for acl in (portal.acl_users, portal.__parent__.acl_users):
+        if 'localscript' in acl:
+            acl.manage_delObjects('localscript')
