@@ -30,6 +30,13 @@
 
     <browser:page
         name="download"
+        for="..content.interfaces.IDataset"
+        class=".dataset.DatasetDownload"
+        permission="zope2.View"
+        />
+    
+    <browser:page
+        name="download"
         for="..content.interfaces.IRemoteDataset"
         class=".dataset.RemoteDatasetDownload"
         permission="zope2.View"

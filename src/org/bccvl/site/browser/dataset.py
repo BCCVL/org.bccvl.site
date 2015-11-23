@@ -5,6 +5,7 @@ from Acquisition import aq_parent
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
+from plone.namedfile.browser import Download
 from z3c.form import field, button, form
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
@@ -65,9 +66,10 @@ class RemoteDatasetDownload(BrowserView):
         # allow filename in url, so that it is possible to parse the url
         if self.filename is None:  # ../@@download/filename
             self.filename = name
+        elif name == 'HEAD':
+            return self
         else:
             raise NotFound(self, name, request)
-
         return self
 
     def __call__(self):
@@ -84,6 +86,23 @@ class RemoteDatasetDownload(BrowserView):
         except:
             url = remoteUrl
         return self.request.RESPONSE.redirect(url)
+
+    def HEAD(self):
+        # we wan't to redirect here as well
+        return self.__call__()
+
+
+class DatasetDownload(Download):
+
+    def publishTraverse(self, request, name):
+        # allow filename in url, so that it is possible to parse the url
+        if self.filename and self.fieldname and name == 'HEAD':
+            return self
+        return super(DatasetDownload, self).publishTraverse(request, name)
+
+    def HEAD(self):
+        # we wan't to redirect here as well
+        return self.__call__()
 
 
 
