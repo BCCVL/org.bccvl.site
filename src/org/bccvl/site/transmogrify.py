@@ -267,13 +267,6 @@ class FileMetadataToBCCVL(object):
                 yield item
                 continue
 
-            # get metadata for file itself _filemetadata
-            filemd = item.setdefault(self.filemetadatakey, {}).get(fileid, {})
-            if not filemd:
-                # no filemetadata (delete or leave untouched?)
-                yield item
-                continue
-
             # FIXME: we don't need content object here (Only for format)
             # we'll also need a content object
             pathkey = self.pathkey(*item.keys())[0]
@@ -295,12 +288,18 @@ class FileMetadataToBCCVL(object):
                 yield item
                 continue
 
-            # get or create rdf graph
-            # TODO: Ending up here means we have a file as main content
-            #       let's set the format attribute to this mime type
-            #       ? if there is none set yet?
+            # We have a file or url, and should have a contenttype
+            # set format attribute on content to this mime type
             if contenttype and content.format != contenttype:
+                # FIXME: somehow this doesn't work?
                 content.format = contenttype
+
+            # get metadata for file itself _filemetadata
+            filemd = item.setdefault(self.filemetadatakey, {}).get(fileid, {})
+            if not filemd:
+                # no filemetadata (delete or leave untouched?)
+                yield item
+                continue
 
             # TODO: probably needs a different check for multi layer files in future
             # store metadata in self.bccvlmdkey
@@ -326,7 +325,8 @@ class FileMetadataToBCCVL(object):
                     # FIXME: extract some of json metadata? like acknowledgement, etc...
             elif content.format not in ('text/csv', ):
                 # TODO: we should have a better check here whether to extract layer metadata for a single file dataset
-                # FIXME: upload does not pass on '_layermd' ... fix with background md extraction
+                # FIXME: hack to get correct key into _layermd dictionary in case we have a remote file
+                fileid = os.path.basename(fileid)
                 self._update_layer_metadata(bccvlmd, filemd, fileid, item.get('_layermd', {}))
 
             # continue pipeline
@@ -413,6 +413,8 @@ class FileMetadataToBCCVL(object):
                 # get global data_type if not a file specific one set
                 data_type = bandmd.get('type', jsonmd.get('data_type'))
 
+            # FIXME: everywhere ... is data_type capital or lower case?
+            #        also. the following lines override any data_type coming from jsonmd. .. some weird code here
             # Assume Continous data type by default
             layermd['datatype'] = 'continuous'
             if data_type:
@@ -513,7 +515,11 @@ class ProvenanceImporter(object):
             entity.add(DCTERMS['title'], Literal(obj.title))
             entity.add(DCTERMS['description'], Literal(obj.description))
             entity.add(DCTERMS['rights'], Literal(obj.rights))
-            entity.add(DCTERMS['format'], Literal(obj.file.contentType))
+            if obj.portal_type == 'org.bccvl.content.dataset':
+                entity.add(DCTERMS['format'], Literal(obj.file.contentType))
+            else:
+                # FIXME: this doesn't seem to do the right thing
+                entity.add(DCTERMS['format'], Literal(obj.format))
             # TODO: add metadata about file?
             #    genre, layers, emsc, gcm, year
 
