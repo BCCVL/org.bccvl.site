@@ -30,11 +30,11 @@
                         />
                     </h3>
                     <ul>
-                        <li tal:repeat="item python:result.getObject().restrictedTraverse('@@folderListing')(portal_type='org.bccvl.content.dataset')">
+                        <li tal:repeat="item python:result.getObject().restrictedTraverse('@@folderListing')(portal_type=('org.bccvl.content.dataset','org.bccvl.content.remotedataset'))">
                             <a href="#" data-mimetype="application/octet-stream"
                                tal:content="item/Title"
                                tal:attributes="href string:${item/getURL}${item/appendViewAction};
-                                               data-mimetype item/Format">Dataset Title</a>
+                                               data-mimetype item/format">Dataset Title</a>
                         </li>
                     </ul>
                 </div>

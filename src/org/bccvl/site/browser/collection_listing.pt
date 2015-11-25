@@ -25,7 +25,7 @@
          tal:define="has_text exists:context/aq_explicit/text/output;
                      text python:has_text and here.text.output or ''"
          tal:condition="text"
-         tal:attributes="class python: context.Format() in ('text/structured',
+         tal:attributes="class python: context.format in ('text/structured',
                                                'text/x-rst', ) and  'stx' or 'plain'">
         <div metal:define-slot="inside" tal:replace="structure text">The body</div>
     </div>
