@@ -11,7 +11,12 @@ class ISwiftUtility(Interface):
         path ... full path to object including version and account
         """
 
-
+# Temp_url:
+#    ... need temp_url_key and storage_url set up
+# Swift results:
+#    ... need result_container (has default) and storage_url set up
+# All need CORS header setup on containers for visualiser
+# TODO: should have extra flag to decide whether to store in swift or locally.... to ensure temp_urls work but results don't go into swift (low priority)
 class ISwiftSettings(model.Schema):
 
     auth_url = schema.URI(
@@ -36,4 +41,11 @@ class ISwiftSettings(model.Schema):
         title=u"Swift temp URL key",
         description=u"Key used to generate swift temp URLs",
         required=False
+    )
+
+    result_container = schema.TextLine(
+        title=u"Result container",
+        description=u"Container to store results in",
+        default=u"results",
+        required=False,
     )
