@@ -1,37 +1,36 @@
-from datetime import datetime
-from Products.Five.browser import BrowserView
+import json
+import logging
+from pkg_resources import resource_string
+
+from decorator import decorator
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
-from zope import contenttype
-from pkg_resources import resource_string
-#from zope.publisher.browser import BrowserView as Z3BrowserView
-#from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
-#from zope.publisher.interfaces import IPublishTraverse
-from zope.publisher.interfaces import NotFound
-#from functools import wraps
-from decorator import decorator
-from plone.uuid.interfaces import IUUID
-from plone.app.uuid.utils import uuidToCatalogBrain
+from Products.Five.browser import BrowserView
+from Products.statusmessages.interfaces import IStatusMessage
 from plone import api
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
-from org.bccvl.site.job.interfaces import IJobTracker
+from plone.app.uuid.utils import uuidToCatalogBrain
+from plone.dexterity.utils import createContentInContainer
+from plone.registry.interfaces import IRegistry
+from plone.uuid.interfaces import IUUID
+from zope import contenttype
+from zope.component import getUtility, queryUtility
+from zope.publisher.interfaces import NotFound
+from zope.schema import getFields
+from zope.schema.vocabulary import getVocabularyRegistry
+from zope.schema.interfaces import IContextSourceBinder
+
+from org.bccvl.site import defaults
+from org.bccvl.site.api import dataset
+from org.bccvl.site.browser.ws import IDataMover, IALAService
 from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
 from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site import defaults
-import logging
-from zope.component import getUtility, queryUtility
-from zope.schema import getFields
-from zope.schema.vocabulary import getVocabularyRegistry
-from zope.schema.interfaces import IContextSourceBinder
-import json
-from Products.statusmessages.interfaces import IStatusMessage
-from org.bccvl.site.browser.ws import IDataMover, IALAService
-from plone.dexterity.utils import createContentInContainer
-from org.bccvl.site.api import dataset
-from org.bccvl.site.utils import DecimalJSONEncoder
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
+from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.job.interfaces import IJobUtility
+from org.bccvl.site.swift.interfaces import ISwiftSettings
+from org.bccvl.site.utils import decimal_encoder
 
 
 LOG = logging.getLogger(__name__)
@@ -83,7 +82,7 @@ def returnwrapper(f, *args, **kw):
 
     # if we don't have xmlrpc we serialise to json
     if not isxmlrpc:
-        ret = DecimalJSONEncoder().encode(ret)
+        ret = json.dumps(ret, default=decimal_encoder)
         view.request.response['CONTENT-TYPE'] = 'application/json'
     # FIXME: chaching headers should be more selective
     # prevent caching of ajax results... should be more selective here
@@ -473,7 +472,6 @@ class ALAProxy(BrowserView):
 
 class DataMover(BrowserView):
 
-    # TODO: typo in view ergistartion in api.zcml-> update js as well
     @returnwrapper
     def pullOccurrenceFromALA(self, lsid, taxon,  common=None):
         # TODO: check permisions?
@@ -484,11 +482,18 @@ class DataMover(BrowserView):
         title = [taxon]
         if common:
             title.append(u"({})".format(common))
-        # TODO: check whether title will be updated in transmog import?
-        #       set title now to "Whatever (import pending)"?
+
+        # TODO: move content creation into IALAJobTracker?
+        # remotedataset?
+        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+        if swiftsettings.storage_url:
+            portal_type = 'org.bccvl.content.remotedataset'
+        else:
+            portal_type = 'org.bccvl.content.dataset'
+
         # TODO: make sure we get a better content id that dataset-x
         ds = createContentInContainer(dscontainer,
-                                      'org.bccvl.content.dataset',
+                                      portal_type,
                                       title=u' '.join(title))
         # TODO: add number of occurences to description
         ds.description = u' '.join(title) + u' imported from ALA'
