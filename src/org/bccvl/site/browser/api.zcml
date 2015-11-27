@@ -142,16 +142,13 @@
     <browser:view
         name="dv"
         class=".xmlrpc.DataMover"
-        allowed_attributes="pullOccurrenceFromALA checkALAJobStatus"
+        allowed_attributes="pullOccurrenceFromALA"
         for="Products.CMFCore.interfaces.IFolderish"
         permission="org.bccvl.AddDataset" >
 
         <browser:page
             name="pullOccurrenceFromALA"
             attribute="pullOccurrenceFromALA"/>
-        <browser:page
-            name="checkALAJobStatus"
-            attribute="checkALAJobStatus"/>
 
     </browser:view>
 

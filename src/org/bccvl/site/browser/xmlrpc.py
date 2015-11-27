@@ -521,13 +521,6 @@ class DataMover(BrowserView):
 
         return (status, message)
 
-    @returnwrapper
-    def checkALAJobStatus(self, job_id):
-        # TODO: check permissions? or maybe git rid of this here and
-        #       use job tracking for status. (needs job annotations)
-        dm = getUtility(IDataMover)
-        return dm.check_move_status(job_id)
-
 
 class ExportResult(BrowserView):
     # TODO: should be post only? see plone.security for
