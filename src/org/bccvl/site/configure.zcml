@@ -170,11 +170,6 @@
   <adapter factory=".utilities.ALAJobTracker"/>
 
   <utility
-      component=".transmogrify.ALASource"
-      name="org.bccvl.site.transmogrify.alasource"
-      />
-
-  <utility
       component=".transmogrify.BCCVLMetadataUpdater"
       name="org.bccvl.site.transmogrify.bccvlmetadata"
       />
