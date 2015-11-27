@@ -1,22 +1,28 @@
-from Acquisition import aq_inner
 import logging
-from Products.Five import BrowserView
-from plone.dexterity.browser.add import DefaultAddForm
+
+from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
-from collective.transmogrifier.transmogrifier import Transmogrifier
-from plone.dexterity.utils import addContentToContainer
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
+
+from plone import api
 from plone.app.dexterity.behaviors.metadata import IDublinCore
+from plone.dexterity.browser.add import DefaultAddForm
+from plone.dexterity.utils import addContentToContainer
+from z3c.form import button
 from z3c.form.field import Fields
+from zope.schema import Bool
+
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.content.dataset import (IBlobDataset,
                                             ISpeciesDataset,
                                             ILayerDataset,
                                             ITraitsDataset)
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.schema import Bool
-from z3c.form import button
-from Products.statusmessages.interfaces import IStatusMessage
+from org.bccvl.tasks.celery import app
+from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.tasks.plone import after_commit_task
 
 
 LOG = logging.getLogger(__name__)
@@ -61,11 +67,32 @@ class BCCVLUploadForm(DefaultAddForm):
         #     self.immediate_view = "%s/%s/%s" % (container.absolute_url(), new_object.id, fti.immediate_view,)
         # else:
         #     self.immediate_view = "%s/%s" % (container.absolute_url(), new_object.id)
-        # run transmogrify md extraction here
-        # TODO: move this to an event listener?
+        # TODO: upload to swift somehow?
+        # start background import process (just a metadata update)
 
-        tm = Transmogrifier(new_object)
-        tm('org.bccvl.site.add_file_metadata')
+        # run transmogrify md extraction here
+        context_path = '/'.join(new_object.getPhysicalPath())
+        member = api.user.get_current()
+        # FIXME works only for local files
+        update_task = app.signature(
+            "org.bccvl.tasks.datamover.update_metadata",
+            args=('{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
+                  new_object.file.filename,
+                  new_object.file.contentType,
+                  {'context': context_path,
+                   'user': {
+                       'id': member.getUserName(),
+                       'email': member.getProperty('email'),
+                       'fullname': member.getProperty('fullname')
+                   }}),
+            options={'immutable': True});
+        # queue job submission
+        after_commit_task(update_task)
+        # create job tracking object
+        jt = IJobTracker(new_object)
+        job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
+        job.type = new_object.portal_type
+        jt.set_progress('PENDING', u'Metadata update pending')
         # We have to reindex after updating the object
         new_object.reindexObject()
 
