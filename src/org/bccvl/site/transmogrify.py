@@ -8,6 +8,8 @@ import simplejson
 from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
 import logging
 import json
+import re
+from urlparse import urlsplit
 from rdflib import Graph, Namespace, Literal
 from rdflib.namespace import RDF, DCTERMS, XSD
 from rdflib.resource import Resource
@@ -147,33 +149,85 @@ class ContextSource(object):
 
         self.pathkey = options.get('path-key', '_path')
 
+        self.items = options.get('items')
+
+    def create_item(self, import_item):
+        url = import_item.get('file', {}).get('url')
+        name = import_item.get('file', {}).get('filename')
+        if not name:
+            name = self.context.file.filename
+        mimetype = import_item.get('file', {}).get('contenttype')
+        if not mimetype:
+            mimetype = self.context.format
+
+        bccvlmd = dict(IBCCVLMetadata(self.context))
+        bccvlmd.update(import_item.get('bccvlmetadata', {}))
+
+        item = {
+            self.pathkey: '/'.join(self.context.getPhysicalPath()),
+            '_type': self.context.portal_type,  # TODO: should be the same as in import_item
+            'bccvlmetadata': bccvlmd,
+        }
+        for key in ('title', 'description'):
+            if import_item.get(key):
+                item[key] = import_item[key]
+        # TODO: funny part here.... we already have a specific type of dataset
+        # dataset or remotedataset?
+        # We have an existing content object... use it to decide portal_type
+        if self.context.portal_type == 'org.bccvl.content.remotedataset':
+            # remote
+            if url:
+                remoteurl = re.sub(r'^swift\+', '', import_item['file']['url'])
+            else:
+                remoteurl = self.context.remoteUrl
+            item.update({
+                'remoteUrl': remoteurl,
+                # FIXME: hack to pass on content type to FileMetadataToBCCVL blueprint
+                '_files': {
+                    remoteurl: {
+                        'contenttype': mimetype,
+                    }
+                },
+                '_filemetadata': {
+                    # key relates to 'remoteUrl'
+                    remoteurl: import_item.get('filemetadata', {}) or {},  # make sure it's not none
+                }
+            })
+        else:
+            # assume local storage
+            if url:
+                urlparts = urlsplit(url)
+                item.update({
+                    'file': {
+                        'file': name,
+                        'contenttype': mimetype,
+                        'filename': name
+                    },
+                    '_files': {
+                        name: {
+                            'name': name,
+                            # 'path': urlparts.path, TODO: do I need this key?
+                            'data': open(urlparts.path, 'r')
+                        }
+                    },
+                })
+            else:
+                # FIXME: this is an ugly hack to get the FileMetadataToBCCVL step working for metadata updates
+                item['remoteUrl'] = name
+            item['_filemetadata'] = {
+                # key relates to 'file':'file'
+                name: import_item.get('filemetadata', {}) or {},  # make sure it's not none
+            }
+        return item
+
     def __iter__(self):
         # exhaust previous iterator
         for item in self.previous:
             yield item
 
-        filename = self.context.file.filename
-        item = {
-            self.pathkey: '/'.join(self.context.getPhysicalPath()),
-            '_type': self.context.portal_type,
-            'file': {
-                'file': filename,
-            },
-            # TODO: consider deepcopy here (for now it's safe because all are normal dicts; no persistent dicts)
-            'bccvlmetadata': dict(IBCCVLMetadata(self.context)),
-            '_files': {
-                filename: {
-                    # FIXME: there is some chaos here... do I really need name and filename?
-                    'name': self.context.file.filename,
-                    'filename': self.context.file.filename,
-                    'contenttype': self.context.file.contentType,
-                    # data is a readable file like object
-                    # it may be an uncommitted blob file
-                    'data': self.context.file.open('r')
-                }
-            }
-        }
-        yield item
+        for import_item in self.items:
+            item = self.create_item(import_item)
+            yield item
 
 
 @provider(ISectionBlueprint)
@@ -258,7 +312,7 @@ class FileMetadataToBCCVL(object):
                 #       the name for _filemetadata dictionary
                 _files = item.get('_files', {}).get(item.get('remoteUrl'), {})
                 fileid = item.get('remoteUrl')
-                contenttype = _files.get('contenttype', 'application/octet-stream')
+                contenttype = _files.get('contenttype') # 'application/octet-stream')
             elif 'file' in item:
                 fileid = item.get('file', {}).get('file')
                 contenttype = item.get('file', {}).get('contenttype')
@@ -345,16 +399,16 @@ class FileMetadataToBCCVL(object):
 
         # species:
         if filemd.get('species'):
-            # check if 'species' is a set ... if it is the csv had multiple species names in it
+            # check if 'species' is a list ... if it is the csv had multiple species names in it
             # issue a warning and pick a random species name (in case there is non set already)
             bccvlmd.setdefault('species', {})
             if not bccvlmd['species'].get('scientificName'):
                 speciesmd = filemd['species']
-                # TODO: currently the file metadata extractor creates a set of species names
+                # TODO: currently the file metadata extractor creates a list of species names
                 #       in case there are multiple species names in the csv file we should
                 #       create multiple datasets (possibly grouped?) or suppert datasets for multiple species
-                if isinstance(speciesmd, set):
-                    speciesmd = next(iter(speciesmd))
+                if isinstance(speciesmd, list):
+                    speciesmd = speciesmd[0]
                 bccvlmd['species']['scientificname'] = speciesmd
 
     def _update_layer_metadata(self, bccvlmd, filemd, fileid, jsonmd):
@@ -486,10 +540,8 @@ class ProvenanceImporter(object):
                 path.encode(), None)
                 #path.encode().lstrip('/'), None)
 
-            # FIXME: need a better distinction between result import
-            #        and ala import (prov data from parent or obj)
-            if '_ala_provenance' in item:
-                # ALA import?
+            if self.context.portal_type in ('org.bccvl.conetent.dataset', 'org.bccvl.content.remotedataset'):
+                # dataset import?
                 context = obj
             else:
                 # Result import?
