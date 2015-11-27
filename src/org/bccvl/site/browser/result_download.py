@@ -4,7 +4,6 @@ from org.bccvl.site.content.interfaces import IBlobDataset
 from Products.CMFCore.utils import getToolByName
 from ZPublisher.Iterators import filestream_iterator
 from org.bccvl.site.api.dataset import getdsmetadata
-from org.bccvl.site.utils import DecimalJSONEncoder
 from zope.component import getMultiAdapter
 import os
 import os.path

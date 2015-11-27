@@ -1,9 +1,11 @@
 import inspect
+import json
+
 from decorator import decorator
 from zope import contenttype
 from zope.annotation.interfaces import IAnnotations
 
-from org.bccvl.site.utils import DecimalJSONEncoder
+from org.bccvl.site.utils import decimal_encoder
 
 
 def apimethod(name=None, title=None,
@@ -107,7 +109,7 @@ def returnwrapper(f, *args, **kw):
     # if we don't have xmlrpc we serialise to json
     if not isxmlrpc:
         # TODO: maybe add HTTP link header to refer to schema?
-        ret = DecimalJSONEncoder().encode(ret)
+        ret = json.dumps(ret, default=decimal_encoder)
         annots = IAnnotations(view.request)
         if 'json.schema' in annots:
             ctype = 'application/json; profile={}'.format(annots['json.schema'])
