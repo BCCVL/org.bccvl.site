@@ -26,7 +26,7 @@ from org.bccvl.site.content.interfaces import IProjectionExperiment
 from org.bccvl.site.content.interfaces import ISDMExperiment
 from org.bccvl.site.content.interfaces import IBiodiverseExperiment
 from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo, IProvenanceData
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.job.interfaces import IJobUtility
 from org.bccvl.site.swift.interfaces import ISwiftSettings
@@ -547,7 +547,19 @@ class ExportResult(BrowserView):
         context_path = '/'.join(self.context.getPhysicalPath())
         member = api.user.get_current()
 
-        zipurl = self.context.absolute_url() + '/resultdownload'
+        # collect list of files to export:
+        urllist = []
+        for content in self.context.values():
+            if content.portal_type not in ('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset'):
+                # skip non datasets
+                continue
+            dlinfo = IDownloadInfo(content)
+            urllist.append(dlinfo['url'])
+        # add mets.xml
+        urllist.append('{}/mets.xml'.format(self.context.absolute_url()))
+
+        # FIXME: make provdata available via url
+        provdata = IProvenanceData(self.context)
 
         from org.bccvl.tasks.celery import app
         from org.bccvl.tasks.plone import after_commit_task
@@ -556,7 +568,8 @@ class ExportResult(BrowserView):
         #        servicetype via API with serviceid
         export_task = app.signature(
             "org.bccvl.tasks.export_services.export_result",
-            args=(zipurl,
+            args=(urllist,
+                  provdata, # prov.ttl
                   serviceid, {'context': context_path,
                               'user': {
                                   'id': member.getUserName(),
