@@ -4,7 +4,6 @@ from collective.transmogrifier.interfaces import ISection
 import os
 import os.path
 from collective.transmogrifier.utils import defaultMatcher
-import simplejson
 from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
 import logging
 import json
