@@ -4,6 +4,7 @@ from pkg_resources import resource_string
 
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToCatalogBrain
+from plone.registry.interfaces import IRegistry
 from plone.supermodel import loadString
 from plone.uuid.interfaces import IUUID
 
@@ -19,6 +20,7 @@ from org.bccvl.site.api.decorators import api, apimethod, returnwrapper
 from org.bccvl.site.api.interfaces import IAPIService, IDMService, IJobService, IExperimentService, ISiteService
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobUtility
+from org.bccvl.site.swift.interfaces import ISwiftSettings
 
 
 LOG = logging.getLogger(__name__)
@@ -203,15 +205,7 @@ class ExperimentService(BaseService):
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             raise BadRequest('Request must be POST')
         # Swift params
-        # FIXME: these values should come from some configuration
-        # FIXME: swift host should be discovered OpenStack API?
-        swift = {
-            'host': 'swift.rc.nectar.org.au',
-            'port': '8888',
-            'version': 'v1',
-            'account': 'AUTH_0bc40c2c2ff94a0b9404e6f960ae5677',
-            'container': 'demosdm'
-        }
+        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
 
         # get parameters
         if not lsid:
@@ -272,7 +266,7 @@ class ExperimentService(BaseService):
             func.script])
         # where to store results
         result = {
-            'results_dir': 'swift://nectar/{}/{}/'.format(swift['container'], lsid),
+            'results_dir': 'swift+{}/demosdm/{}/'.format(swiftsettings.storage_url, lsid),
             'outputs': json.loads(func.output)
         }
         # worker hints:
@@ -321,7 +315,7 @@ class ExperimentService(BaseService):
         after_commit_task(demo_task, jobdesc, context)
         # let's hope everything works, return result
 
-        swift_url = 'https://{host}:{port}/{version}/{account}/{container}'.format(**swift)
+        swift_url = '{}/demosdm'.format(swiftsettings.storage_url)
         return {
             'state': '{}/{}/state.json'.format(swift_url, lsid),
             'result': '{}/{}/projection.png'.format(swift_url, lsid),
