@@ -39,24 +39,25 @@ class ContextSource(object):
         self.context = transmogrifier.context
 
         self.pathkey = options.get('path-key', '_path')
-
+        self.content_id = options.get('content_id')
         self.items = options.get('items')
 
     def create_item(self, import_item):
+        content = self.context[self.content_id]
         url = import_item.get('file', {}).get('url')
         name = import_item.get('file', {}).get('filename')
         if not name:
-            name = self.context.file.filename
+            name = content.file.filename
         mimetype = import_item.get('file', {}).get('contenttype')
         if not mimetype:
-            mimetype = self.context.format
+            mimetype = content.format
 
-        bccvlmd = dict(IBCCVLMetadata(self.context))
+        bccvlmd = dict(IBCCVLMetadata(content))
         bccvlmd.update(import_item.get('bccvlmetadata', {}))
 
         item = {
-            self.pathkey: '/'.join(self.context.getPhysicalPath()),
-            '_type': self.context.portal_type,  # TODO: should be the same as in import_item
+            self.pathkey: content.getId(),
+            '_type': content.portal_type,
             'bccvlmetadata': bccvlmd,
         }
         for key in ('title', 'description'):
@@ -65,12 +66,12 @@ class ContextSource(object):
         # TODO: funny part here.... we already have a specific type of dataset
         # dataset or remotedataset?
         # We have an existing content object... use it to decide portal_type
-        if self.context.portal_type == 'org.bccvl.content.remotedataset':
+        if content.portal_type == 'org.bccvl.content.remotedataset':
             # remote
             if url:
                 remoteurl = re.sub(r'^swift\+', '', import_item['file']['url'])
             else:
-                remoteurl = self.context.remoteUrl
+                remoteurl = content.remoteUrl
             item.update({
                 'remoteUrl': remoteurl,
                 # FIXME: hack to pass on content type to FileMetadataToBCCVL blueprint
