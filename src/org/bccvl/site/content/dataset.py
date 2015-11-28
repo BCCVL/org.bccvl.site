@@ -23,9 +23,10 @@ class Dataset(Item):
     def format(self, value):
         if self.file is not None:
             self.file.contentType = value
-        else:
-            self.setFormat(value)
-
+        # TODO: really do nothing otherwise?
+        #       calling setFormat causes infinite recursion
+        #else:
+        #    self.setFormat(value)
 
 
 class ISpeciesDataset(model.Schema):
