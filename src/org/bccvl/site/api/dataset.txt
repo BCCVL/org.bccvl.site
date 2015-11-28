@@ -24,7 +24,7 @@ Once we have a XMLRPC proxy we can just call the available methods.
     >>> pprint(res)
     {'@id': '...',
      '@type': 'org.bccvl.content.dataset',
-     'bounds': {'bottom': 1.0, 'left': 1.0, 'right': 3.0, 'top': 3.0},
+     'bounds': {'bottom': 1, 'left': 1, 'right': 3, 'top': 3},
      'description': '',
      'file': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',

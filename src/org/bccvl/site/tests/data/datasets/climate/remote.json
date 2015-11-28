@@ -10,13 +10,13 @@
     "emsc": "RCP3PD",
     "gcm": "cccma-cgcm31",
     "layers": {
-      "http://example.com/file01":{
+      "B01":{
         "fileName": "remote/data/file1.tif"
       },
-      "http://example.com/file02":{
+      "B02":{
         "fileName": "remote/data/file2.tif"
       },
-      "http://example.com/file03":{
+      "B03":{
         "fileName": "remote/data/file3.tif"
       }
     }

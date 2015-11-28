@@ -1,17 +1,18 @@
-from decimal import Decimal
 from itertools import chain
-import csv
-import json
+import os.path
+from PIL import Image
+from urlparse import urlsplit
+
+from plone.app.z3cform.interfaces import IPloneFormLayer
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.publisher.browser import TestRequest as TestRequestBase
-from plone.app.z3cform.interfaces import IPloneFormLayer
-import os.path
-from urlparse import urlparse
+
 from org.bccvl.site import defaults
 from org.bccvl.site.content.interfaces import ISDMExperiment
-from org.bccvl.tasks.datamover import DataMover
+from org.bccvl.tasks.utils import import_result_job, import_cleanup
+from org.bccvl.tasks.utils import set_progress
 
 
 @implementer(IPloneFormLayer, IAttributeAnnotatable)
@@ -80,6 +81,66 @@ class SDMExperimentHelper(object):
                                name="newSpeciesDistribution")
         return form
 
+    def mock_run_script(self, *args, **kw):
+        # simulate a script run
+        wrapper, params, context = args
+        # 1. write file into results_dir
+        tmpdir = urlsplit(params['result']['results_dir']).path
+        try:
+            # 2. create some result files
+            for fname in ('model.RData',
+                          'proj_test.tif'):
+                img = Image.new('F', (10, 10))
+                img.save(os.path.join(tmpdir, fname), 'TIFF')
+            # 3. store results
+            items = [
+                {
+                    'file': {
+                        'url': 'file://{}/model.RData'.format(tmpdir),
+                        'contenttype': 'application/x-r-data',
+                        'filename': 'model.RData',
+                    },
+                    'title': 'Model Title',
+                    'description': 'Model Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreSDMModel',
+                    },
+                    'filemetadata': {},
+                    'layermd': {}
+                },
+                {
+                    'file': {
+                        'url': 'file://{}/proj_test.tif'.format(tmpdir),
+                        'contenttype': 'image/tiff',
+                        'filename': 'proj_test.tif',
+                    },
+                    'title': 'Test Projection',
+                    'description': 'Test Projection Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreCP',
+                    },
+                    'filemetadata': {
+                        'band': [{
+                            'min': 0.0,
+                            'STATISTICS_MINIMUM': 0.0,
+                            'max': 1.0
+                        }]
+                    },
+                    'layermd': {'files': {'proj_test.tif': {'layer': 'projection_probability', 'data_type': 'Continuous'}}}
+                }
+            ]
+            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
+            import_result_job(items, params['result']['results_dir'], context).delay()
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('COMPLETED', 'Test Task succeeded', context)
+        except Exception as e:
+            # 4. clean up if problem otherwise import task cleans up
+            #    TODO: should be done by errback or whatever
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('FAILED', 'Test Task failed', context)
+            raise
+
+
 
 class ProjectionExperimentHelper(object):
     """
@@ -123,6 +184,50 @@ class ProjectionExperimentHelper(object):
         form = getMultiAdapter((self.experiments, self.request),
                                name="newProjection")
         return form
+
+    def mock_run_script(self, *args, **kw):
+        # simulate a script run
+        wrapper, params, context = args
+        # 1. write file into results_dir
+        tmpdir = urlsplit(params['result']['results_dir']).path
+        try:
+            # 2. create some result files
+            for fname in ('proj_test.tif',):
+                img = Image.new('F', (10, 10))
+                img.save(os.path.join(tmpdir, fname), 'TIFF')
+            # 3. store results
+            items = [
+                {
+                    'file': {
+                        'url': 'file://{}/proj_test.tif'.format(tmpdir),
+                        'contenttype': 'image/tiff',
+                        'filename': 'proj_test.tif',
+                    },
+                    'title': 'Test Projection',
+                    'description': 'Test Projection Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreFP',
+                    },
+                    'filemetadata': {
+                        'band': [{
+                            'min': 0.0,
+                            'STATISTICS_MINIMUM': 0.0,
+                            'max': 1.0
+                        }]
+                    },
+                    'layermd': {'files': {'proj_test.tif': {'layer': 'projection_probability', 'data_type': 'Continuous'}}}
+                }
+            ]
+            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
+            import_result_job(items, params['result']['results_dir'], context).delay()
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('COMPLETED', 'Test Task succeeded', context)
+        except Exception as e:
+            # 4. clean up if problem otherwise import task cleans up
+            #    TODO: should be done by errback or whatever
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('FAILED', 'Test Task failed', context)
+            raise
 
 
 class BiodiverseExperimentHelper(object):
@@ -168,6 +273,50 @@ class BiodiverseExperimentHelper(object):
                                name="newBiodiverse")
         return form
 
+    def mock_run_script(self, *args, **kw):
+        # simulate a script run
+        wrapper, params, context = args
+        # 1. write file into results_dir
+        tmpdir = urlsplit(params['result']['results_dir']).path
+        try:
+            # 2. create some result files
+            for fname in ('endw_cwe.tif',):
+                img = Image.new('F', (10, 10))
+                img.save(os.path.join(tmpdir, fname), 'TIFF')
+            # 3. store results
+            items = [
+                {
+                    'file': {
+                        'url': 'file://{}/endw_cwe.tif'.format(tmpdir),
+                        'contenttype': 'image/tiff',
+                        'filename': 'endw_cwe.tif',
+                    },
+                    'title': 'Biodiverse Output',
+                    'description': 'Biodiverse Output Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreENDW_CWE',
+                    },
+                    'filemetadata': {
+                        'band': [{
+                            'min': 0.0,
+                            'STATISTICS_MINIMUM': 0.0,
+                            'max': 1.0
+                        }]
+                    },
+                    'layermd': {},
+                }
+            ]
+            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
+            import_result_job(items, params['result']['results_dir'], context).delay()
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('COMPLETED', 'Test Task succeeded', context)
+        except Exception as e:
+            # 4. clean up if problem otherwise import task cleans up
+            #    TODO: should be done by errback or whatever
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('FAILED', 'Test Task failed', context)
+            raise
+
 
 class EnsembleExperimentHelper(object):
     """
@@ -208,6 +357,50 @@ class EnsembleExperimentHelper(object):
         form = getMultiAdapter((self.experiments, self.request),
                                name="newEnsemble")
         return form
+
+    def mock_run_script(self, *args, **kw):
+        # simulate a script run
+        wrapper, params, context = args
+        # 1. write file into results_dir
+        tmpdir = urlsplit(params['result']['results_dir']).path
+        try:
+            # 2. create some result files
+            for fname in ('ensemble.tif',):
+                img = Image.new('F', (10, 10))
+                img.save(os.path.join(tmpdir, fname), 'TIFF')
+            # 3. store results
+            items = [
+                {
+                    'file': {
+                        'url': 'file://{}/ensemble.tif'.format(tmpdir),
+                        'contenttype': 'image/tiff',
+                        'filename': 'ensemble.tif',
+                    },
+                    'title': 'Ensemble Output',
+                    'description': 'Ensemble Output Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreEnsembleResult',
+                    },
+                    'filemetadata': {
+                        'band': [{
+                            'min': 0.0,
+                            'STATISTICS_MINIMUM': 0.0,
+                            'max': 1.0
+                        }]
+                    },
+                    'layermd': {},
+                }
+            ]
+            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
+            import_result_job(items, params['result']['results_dir'], context).delay()
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('COMPLETED', 'Test Task succeeded', context)
+        except Exception as e:
+            # 4. clean up if problem otherwise import task cleans up
+            #    TODO: should be done by errback or whatever
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('FAILED', 'Test Task failed', context)
+            raise
 
 
 class SpeciesTraitsExperimentHelper(object):
@@ -255,87 +448,53 @@ class SpeciesTraitsExperimentHelper(object):
                                name="newSpeciesTraits")
         return form
 
-
-class MockDataMover(DataMover):
-
-    targetpath = None
-    ala_dataset = None
-    ala_metadata = None
-    ala_occurrence = None
-
-    def move(self, move_args):
-        params = move_args[0]
-        self.targetpath = urlparse(params[1]).path
-        # generate fake data
-        self.ala_dataset = {
-            'files': [
-                { 'url': os.path.join(self.targetpath, 'ala_occurrence.csv'),
-                  'dataset_type': 'occurrences',
-                  'size': 0
+    def mock_run_script(self, *args, **kw):
+        # simulate a script run
+        wrapper, params, context = args
+        # 1. write file into results_dir
+        tmpdir = urlsplit(params['result']['results_dir']).path
+        try:
+            for fname in ('model.RData',
+                          'traits.txt'):
+                open(os.path.join(tmpdir, fname), 'w').write('Mock Result')
+            # 3. store results
+            items = [
+                {
+                    'file': {
+                        'url': 'file://{}/model.RData'.format(tmpdir),
+                        'contenttype': 'application/x-r-data',
+                        'filename': 'model.RData',
+                    },
+                    'title': 'Model Title',
+                    'description': 'Model Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreSTModel',
+                    },
+                    'filemetadata': {},
+                    'layermd': {}
                 },
-                { 'url': os.path.join(self.targetpath, 'ala_metadata.json'),
-                  'dataset_type': 'attribution',
-                  'size': 0
+                {
+                    'file': {
+                        'url': 'file://{}/traits.txt'.format(tmpdir),
+                        'contenttype': 'text/plain',
+                        'filename': 'traits.txt',
+                    },
+                    'title': 'Test Traits',
+                    'description': 'Test Traits Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreSTResult',
+                    },
+                    'filemetadata': {},
+                    'layermd': {},
                 }
-            ],
-            'provenance': {
-                'url': 'source_url',
-                'source': 'ALA',
-                'source_data': '01/01/2001'
-            },
-            'num_occurrences': 5,
-            'description': 'Observed occurrences for Black Banded Winged Pearl Shell (Pteria penguin), imported from ALA on 04/08/2015',
-            'title': 'Black Banded Winged Pearl Shell (Pteria penguin) occurrences'
-        }
-        self.ala_metadata = {
-            'taxonConcept': {
-                'nameString': 'Pteria penguin',
-                'guid': 'urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5',
-            },
-            'classification': {
-                'guid': 'urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5',
-                'scientificName': 'Pteria penguin',
-                'rank': 'species',
-                'rankId': '7000',
-                'kingdom': 'ANIMALIA',
-                'kingdomGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:4647863b-760d-4b59-aaa1-502c8cdf8d3c',
-                'phylum': 'MOLLUSCA',
-                'phylumGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:4fb59020-e4a8-4973-adca-a4f662c4645c',
-                'clazz': 'BIVALVIA',
-                'clazzGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:0c18b965-d1e9-4518-8c21-72045a340a4b',
-                'order': 'PTERIOIDA',
-                'orderGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:f4d97823-14fb-4eb2-a980-9a62d5ee8f08',
-                'family': 'PTERIIDAE',
-                'familyGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:d6300a23-1386-4620-9cb8-0ce481ab4988',
-                'genus': 'Pteria',
-                'genusGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:3a97cb93-351e-443f-addd-624eb5b2278c',
-                'species': 'Pteria penguin',
-                'speciesGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5',
-            },
-            'commonNames': [
-                {'nameString': 'Black Banded Winged Pearl Shell'},
             ]
-        }
-        self.ala_occurrence = [
-            ['species', 'lon', 'lat'],
-            ['Pteria penguin', '145.453448', '-14.645126'],
-            ['Pteria penguin', '145.850', '-5.166'],
-            ['Pteria penguin', '167.68167', '-28.911835'],
-            ['Pteria penguin', '114.166', '-21.783'],
-            ['Pteria penguin', '147.283', '-18.633'],
-        ]
-        # return fake state
-        return [{'status': 'PONDING', 'id': 1}]
-
-    def wait(self, states, sleep=10):
-        # write fake data to files
-        with open(os.path.join(self.targetpath, 'ala_dataset.json'), 'w') as fp:
-            json.dump(self.ala_dataset, fp, indent=2)
-        with open(os.path.join(self.targetpath, 'ala_metadata.json'), 'w') as fp:
-            json.dump(self.ala_metadata, fp, indent=2)
-        with open(os.path.join(self.targetpath, 'ala_occurrence.csv'), 'wb') as fp:
-            csvwriter = csv.writer(fp)
-            for data in self.ala_occurrence:
-                csvwriter.writerow(data)
-        # return fake status
-        return [{'status': 'COMPLETED', 'id': 1}]
+            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
+            import_result_job(items, params['result']['results_dir'], context).delay()
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('COMPLETED', 'Test Task succeeded', context)
+        except Exception as e:
+            # 4. clean up if problem otherwise import task cleans up
+            #    TODO: should be done by errback or whatever
+            import_cleanup(params['result']['results_dir'], context)
+            set_progress('FAILED', 'Test Task failed', context)
+            raise

@@ -1,5 +1,7 @@
 import unittest
 from decimal import Decimal
+
+import mock
 import transaction
 
 from org.bccvl.site import defaults
@@ -17,6 +19,8 @@ from org.bccvl.site.tests.utils import SpeciesTraitsExperimentHelper
 # - create new experiment (make sure content is here)
 # - check view page for elements
 # - see plone.app.contenttypes browser tests for how to
+
+
 
 class ExperimentSDMAddTest(unittest.TestCase):
 
@@ -45,7 +49,8 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # check self.experiments still empty
         # IStatusMessage
 
-    def test_add_experiment(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def test_add_experiment(self, mock_run_script):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
@@ -69,6 +74,8 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # test job state
         jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
+        # setup mock_run_script
+        mock_run_script.side_effect = self.form.mock_run_script
         # after transaction commit the job sholud finish
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
@@ -77,7 +84,8 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # TODO: assrt two result folders,....
         # TODO: check mix of jt.state (in multistate scenario with queued, running etc. mixed)
 
-    def test_run_experiment_twice(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def test_run_experiment_twice(self, mock_run_script):
         # create experiment
         form = self.form.get_form()
         form.request.form.update({
@@ -91,6 +99,8 @@ class ExperimentSDMAddTest(unittest.TestCase):
         #error
         state = jt.start_job(form.request)
         self.assertEqual(state[0], 'error')
+        # setup mock_run_script
+        mock_run_script.side_effect = self.form.mock_run_script
         # finish current job
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
@@ -98,7 +108,6 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # following code will fail, bceause without site we can't find
         # a catalog without whchi we can't finde the toolkit by uuid
         jt.start_job(form.request)
-        # FIXME: why is this running? (would a transaction abort work as well? to refresh my object?)
         self.assertEqual(jt.state, u'RUNNING')
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
@@ -126,17 +135,21 @@ class ExperimentProjectionAddTest(unittest.TestCase):
     # integration testing gives only a new transaction for each test (rolled back at end)
     #layer = BCCVL_INTEGRATION_TESTING
 
-    def setUp(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
         self.datasets = self.portal[defaults.DATASETS_FOLDER_ID]
         # create and run sdm experiment
-        sdmform = SDMExperimentHelper(self.portal).get_form()
+        formhelper = SDMExperimentHelper(self.portal)
+        sdmform = formhelper.get_form()
         sdmform.request.form.update({
             'form.buttons.save': 'Create and start',
             })
         # update form with updated request
         sdmform.update()
+        # setup mock_run_script
+        mock_run_script.side_effect = formhelper.mock_run_script
         transaction.commit()
         # We should have only one SDM
         sdmexp = self.experiments.values()[0]
@@ -159,7 +172,8 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         # check self.experiments still empty
         # IStatusMessage
 
-    def test_add_experiment(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def test_add_experiment(self, mock_run_script):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
@@ -193,6 +207,8 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         # test job state
         jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
+        # setup mock_run_script
+        mock_run_script.side_effect = self.form.mock_run_script
         # after transaction commit the job should finish
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
@@ -200,7 +216,8 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.assertGreaterEqual(len(result.keys()), 1)
         # TODO: check result metadata
 
-    def test_mixed_resolution(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def test_mixed_resolution(self, mock_run_script):
         future_1k_uuid = unicode(self.datasets[defaults.DATASETS_CLIMATE_FOLDER_ID]['future_1k'].UID())
         form = self.form.get_form()
         form.request.form.update({
@@ -209,6 +226,8 @@ class ExperimentProjectionAddTest(unittest.TestCase):
             'form.widgets.future_climate_datasets': [future_1k_uuid],
         })
         form.update()
+        # setup mock_run_script
+        mock_run_script.side_effect = self.form.mock_run_script
         # run experiment
         transaction.commit()
         exp = self.experiments['my-cc-experiment']
@@ -229,16 +248,20 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
     # integration testing gives only a new transaction for each test (rolled back at end)
     #layer = BCCVL_INTEGRATION_TESTING
 
-    def setUp(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
         # create and run sdm experiment
-        sdmform = SDMExperimentHelper(self.portal).get_form()
+        formhelper = SDMExperimentHelper(self.portal)
+        sdmform = formhelper.get_form()
         sdmform.request.form.update({
             'form.buttons.save': 'Create and start',
             })
         # update form with updated request
         sdmform.update()
+        # setup mock_run_script
+        mock_run_script.side_effect = formhelper.mock_run_script
         # We should have only one SDM
         sdmexp = self.experiments.values()[0]
         transaction.commit()
@@ -266,7 +289,8 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # check self.experiments still empty
         # IStatusMessage
 
-    def test_add_experiment(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def test_add_experiment(self, mock_run_script):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
@@ -297,6 +321,8 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # test job state
         jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
+        # setup mock_run_script
+        mock_run_script.side_effect = self.form.mock_run_script
         # after transaction commit the job should finish
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
@@ -312,16 +338,20 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
     # integration testing gives only a new transaction for each test (rolled back at end)
     #layer = BCCVL_INTEGRATION_TESTING
 
-    def setUp(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
         # create and run sdm experiment
-        sdmform = SDMExperimentHelper(self.portal).get_form()
+        formhelper = SDMExperimentHelper(self.portal)
+        sdmform = formhelper.get_form()
         sdmform.request.form.update({
             'form.buttons.save': 'Create and start',
             })
         # update form with updated request
         sdmform.update()
+        # setup mock_run_script
+        mock_run_script.side_effect = formhelper.mock_run_script
         transaction.commit()
         # We should have only one SDM
         sdmexp = self.experiments.values()[0]
@@ -341,7 +371,8 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
         # check self.experiments still empty
         # IStatusMessage
 
-    def test_add_experiment(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def test_add_experiment(self, mock_run_script):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
@@ -367,6 +398,8 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
         # test job state
         jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
+        # setup mock_run_script
+        mock_run_script.side_effect = self.form.mock_run_script
         # after transaction commit the job should finish
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
@@ -401,7 +434,8 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         # check self.experiments still empty
         # IStatusMessage
 
-    def test_add_experiment(self):
+    @mock.patch('org.bccvl.tasks.compute.run_script')
+    def test_add_experiment(self, mock_run_script):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
@@ -428,6 +462,8 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         # test job state
         jt = IExperimentJobTracker(exp)
         self.assertEqual(jt.state, u'QUEUED')
+        # setup mock_run_script
+        mock_run_script.side_effect = self.form.mock_run_script
         # after transaction commit the job should finish
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')

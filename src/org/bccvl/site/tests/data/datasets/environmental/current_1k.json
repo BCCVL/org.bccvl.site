@@ -6,13 +6,13 @@
     "genre": "DataGenreCC",
     "resolution": "Resolution2_5m",
     "layers": {
-      "http://example.com/file01":{
+      "B01":{
         "fileName": "current_1k/data/file1.tif"
       },
-      "http://example.com/file02":{
+      "B03":{
         "fileName": "current_1k/data/file2.tif"
       },
-      "http://example.com/file03":{
+      "B03":{
         "fileName": "current_1k/data/file3.tif"
       }
     }
