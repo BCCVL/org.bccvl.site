@@ -137,7 +137,6 @@ class BCCVLMetadataUpdater(object):
         self.bccvlmdkey = options.get('bccvlmd-key', 'bccvlmetadata').strip()
 
     def __iter__(self):
-        # exhaust previous iterator
         for item in self.previous:
             pathkey = self.pathkey(*item.keys())[0]
             # no path .. can't do anything
@@ -152,8 +151,7 @@ class BCCVLMetadataUpdater(object):
                 continue
 
             obj = self.context.unrestrictedTraverse(
-                path.encode(), None)
-                #path.encode().lstrip('/'), None)
+                path.encode().lstrip('/'), None)
 
             # path doesn't exist
             if obj is None:
@@ -164,7 +162,6 @@ class BCCVLMetadataUpdater(object):
             if not bccvlmd:
                 yield item
                 continue
-
             # apply bccvl metadata
             # FIXME: replace or update?
             IBCCVLMetadata(obj).update(bccvlmd)
@@ -194,9 +191,7 @@ class FileMetadataToBCCVL(object):
         self.bccvlmdkey = options.get('bccvlmd-key', 'bccvlmetadata').strip()
 
     def __iter__(self):
-        # exhaust previous iterator
         for item in self.previous:
-
             fileid = None
             if 'remoteUrl' in item:
                 # TODO: assumse, that there is a _file entry to it which has
@@ -226,8 +221,7 @@ class FileMetadataToBCCVL(object):
                 continue
 
             content = self.context.unrestrictedTraverse(
-                #path.encode().lstrip('/'), None)
-                path.encode(), None)
+                path.encode().lstrip('/'), None)
 
             if content is None:
                 yield item
@@ -405,7 +399,7 @@ class ProvenanceImporter(object):
                                            '_filemetadata').strip()
 
     def __iter__(self):
-        """missing docstring."""        # exhaust previous iterator
+        """missing docstring."""
         for item in self.previous:
             # check if we have a dataset
 
@@ -428,8 +422,7 @@ class ProvenanceImporter(object):
                 continue
 
             obj = self.context.unrestrictedTraverse(
-                path.encode(), None)
-                #path.encode().lstrip('/'), None)
+                path.encode().lstrip('/'), None)
 
             if self.context.portal_type in ('org.bccvl.conetent.dataset', 'org.bccvl.content.remotedataset'):
                 # dataset import?
