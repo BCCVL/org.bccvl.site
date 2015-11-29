@@ -213,9 +213,10 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if IFile.providedBy(ds):
-                if ds.file is not None:
-                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -239,9 +240,10 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if IFile.providedBy(ds):
-                if ds.file is not None:
-                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # TODO: genre ...
             for layer in layers:
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
@@ -400,8 +402,10 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ds.file is not None:
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -428,9 +432,10 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if IFile.providedBy(ds):
-                if ds.file is not None:
-                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # TODO: genre, resolution, emsc, gcm, year(s) ...
             for layer in layers:
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
@@ -560,8 +565,10 @@ class BiodiverseJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ds.file is not None:
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # threshold used:
             # FIXME: what's the label of manually entered value?
             dsprov.add(BCCVL['threshold_label'], Literal(value['threshold']['label']))
@@ -727,8 +734,10 @@ class EnsembleJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ds.file is not None:
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -859,8 +868,10 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ds.file is not None:
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
