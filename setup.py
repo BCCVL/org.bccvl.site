@@ -62,6 +62,7 @@ setup(
         'test': [
             'plone.app.testing',
             'mock',
+            'org.bccvl.tasks[metadata]',
         ],
         'deprecated':  [
         ],
