@@ -443,7 +443,7 @@ class ProvenanceImporter(object):
             BCCVL = Namespace(u"http://ns.bccvl.org.au/")
             LOCAL = Namespace(u"urn:bccvl:")
             graph = Graph()
-            graph.parse(data=provdata.data, format='turtle')
+            graph.parse(data=provdata.data or '', format='turtle')
             activity = Resource(graph, LOCAL['activity'])
             # FIXME: shouldn't I use uuid instead of id?
             entity = Resource(graph, LOCAL[obj.id])
