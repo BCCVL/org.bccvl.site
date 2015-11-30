@@ -310,22 +310,22 @@ class FileMetadataToBCCVL(object):
         if bandmd:
             # TODO: assumes there is only one band
             bandmd = bandmd[0]
-            min_ = bandmd.get('min') or bandmd.get('STATISTICS_MINIMUM')
-            max_ = bandmd.get('max') or bandmd.get('STATISTICS_MAXIMUM')
-            mean_ = bandmd.get('mean') or bandmd.get('STATISTICS_MEAN')
-            stddev_ = bandmd.get('stddev') or bandmd.get('STATISTICS_STDDEV')
+            min_ = bandmd.get('STATISTICS_MINIMUM') if bandmd.get('min') is None else bandmd.get('min')
+            max_ = bandmd.get('STATISTICS_MAXIMUM') if bandmd.get('max') is None else bandmd.get('max')
+            mean_ = bandmd.get('STATISTICS_MEAN') if bandmd.get('mean') is None else bandmd.get('mean')
+            stddev_ = bandmd.get('STATISTICS_STDDEV') if bandmd.get('stddev') is None else bandmd.get('stddev')
             width, height = bandmd.get('size', (None, None))
-            if min_:
+            if min_ is not None:
                 layermd['min'] = min_
-            if max_:
+            if max_ is not None:
                 layermd['max'] = max_
-            if mean_:
+            if mean_ is not None:
                 layermd['mean'] = mean_
-            if stddev_:
+            if stddev_ is not None:
                 layermd['stddev'] = stddev_
             if 'nodata' in bandmd:
                 layermd['nodata'] = bandmd['nodata']
-            if width and height:
+            if width is not None and height is not None:
                 layermd['width'] = width
                 layermd['height'] = height
             # check if we have more info in layer?
