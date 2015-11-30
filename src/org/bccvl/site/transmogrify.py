@@ -1,18 +1,21 @@
-from zope.interface import implementer, provider
-from collective.transmogrifier.interfaces import ISectionBlueprint
-from collective.transmogrifier.interfaces import ISection
+from datetime import datetime
+import json
+import logging
 import os
 import os.path
-from collective.transmogrifier.utils import defaultMatcher
-from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
-import logging
-import json
 import re
 from urlparse import urlsplit
+
+from collective.transmogrifier.interfaces import ISectionBlueprint
+from collective.transmogrifier.interfaces import ISection
+from collective.transmogrifier.utils import defaultMatcher
 from rdflib import Graph, Namespace, Literal
 from rdflib.namespace import RDF, DCTERMS, XSD
 from rdflib.resource import Resource
-from datetime import datetime
+from zope.interface import implementer, provider
+
+from org.bccvl.site.content.interfaces import IExperiment
+from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
 
 
 LOG = logging.getLogger(__name__)
@@ -425,12 +428,14 @@ class ProvenanceImporter(object):
             obj = self.context.unrestrictedTraverse(
                 path.encode().lstrip('/'), None)
 
-            if self.context.portal_type in ('org.bccvl.conetent.dataset', 'org.bccvl.content.remotedataset'):
+            # FIXME: this is really not a great way to check where to find provenenace data
+            # check if we are inside an experiment (means we import result)
+            if IExperiment.providedBy(self.context.__parent__):
+                # result import
+                context = self.context
+            else:
                 # dataset import?
                 context = obj
-            else:
-                # Result import?
-                context = obj.__parent__
 
             # TODO: do some sanity checks
             provdata = IProvenanceData(context)
