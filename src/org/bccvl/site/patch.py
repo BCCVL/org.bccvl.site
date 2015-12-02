@@ -96,7 +96,6 @@ def createTicket(secret, userid, tokens=(), user_data='', ip='0.0.0.0', timestam
     # Unfortunately, some older versions of Python assume that longs are always
     # 32 bits, so we need to trucate the result in case we are on a 64-bit
     # naive system.
-    import ipdb; ipdb.set_trace()
     data1 = inet_aton(ip)[:4] + pack("!I", timestamp)
     data2 = '\0'.join((userid, token_list, user_data))
     if mod_auth_tkt:
