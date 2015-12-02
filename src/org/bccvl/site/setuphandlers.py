@@ -395,6 +395,7 @@ def upgrade_210_220_1(context, logger=None):
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
 
     # remove local login hack
     for acl in (portal.acl_users, portal.__parent__.acl_users):
