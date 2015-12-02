@@ -6,7 +6,6 @@ from urlparse import urlsplit
 
 from Products.ZCatalog.interfaces import ICatalogBrain
 from plone import api
-from plone.app.contenttypes.interfaces import IFile
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from plone.uuid.interfaces import IUUID
