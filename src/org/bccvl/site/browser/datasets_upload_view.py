@@ -151,8 +151,10 @@ class SpeciesAbsenceAddForm(BCCVLUploadForm):
     description = (
         u"<p>Upload absence data for single species</p>"
         u"<p>An absence dataset is expected to be in CSV format."
-        u" BCCVL will only try to interpret columns with labels"
-        u" 'lon' and 'lat'.</p>")
+        u"Your longitude and latitude must be in decimal degrees."
+        u"The BCCVL will only try to interpret columns with labels "
+        u"'lon' and 'lat', so ensure your headings match these labels.</p>"
+    )
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
         'vernacularName', 'rights')
@@ -167,8 +169,10 @@ class SpeciesAbundanceAddForm(BCCVLUploadForm):
     description = (
         u"<p>Upload abundance data for single species</p>"
         u"<p>An abundance dataset is expected to be in CSV format."
-        u" BCCVL will only try to interpret columns with labels"
-        u" 'lon' and 'lat'.</p>")
+        u"Your longitude and latitude must be in decimal degrees."
+        u"The BCCVL will only try to interpret columns with labels "
+        u"'lon' and 'lat', so ensure your headings match these labels.</p>"
+    )
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
         'vernacularName', 'rights')
@@ -182,8 +186,10 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
     description = (
         u"<p>Upload occurrences data for single species</p>"
         u"<p>An occurrence dataset is expected to be in CSV format."
-        u" BCCVL will only try to interpret columns with labels"
-        u" 'lon' and 'lat'.</p>")
+        u"Your longitude and latitude must be in decimal degrees."
+        u"The BCCVL will only try to interpret columns with labels "
+        u"'lon' and 'lat', so ensure your headings match these labels.</p>"
+    )
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
         'vernacularName', 'rights')
@@ -198,10 +204,10 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
         u"<p>Upload current climate data</p>"
         u"<p>BCCVL can only deal with raster data in GeoTIFF format."
         u" Valid files are either single GeoTiff files or a number of"
-        u" GeoTiff packaged within a zip file."
-        u" Idealy the map projection information is embedded as metadata"
-        u" within the GeoTiff itself. In case of missing map projection"
-        u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
+        u" GeoTiff packaged within a zip file.</p>"
+        u"<p>It is easy to convert your csv files to GeoTIFF format,"
+        u"follow the instructions here <a href=\"https://github.com/NICTA/nationalmap/wiki/csv-geo-au\" target=\"_blank\">https://github.com/NICTA/nationalmap/wiki/csv-geo-au</a>."
+        u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
@@ -219,10 +225,10 @@ class EnvironmentalAddForm(BCCVLUploadForm):
         u"<p>Upload environmental data</p>"
         u"<p>BCCVL can only deal with raster data in GeoTIFF format."
         u" Valid files are either single GeoTiff files or a number of"
-        u" GeoTiff packaged within a zip file."
-        u" Idealy the map projection information is embedded as metadata"
-        u" within the GeoTiff itself. In case of missing map projection"
-        u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
+        u" GeoTiff packaged within a zip file.</p>"
+        u"<p>It is easy to convert your csv files to GeoTIFF format,"
+        u"follow the instructions here <a href=\"https://github.com/NICTA/nationalmap/wiki/csv-geo-au\" target=\"_blank\">https://github.com/NICTA/nationalmap/wiki/csv-geo-au</a>."
+        u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'resolution', 'resolutiono',
@@ -239,10 +245,10 @@ class ClimateFutureAddForm(BCCVLUploadForm):
         u"<p>Upload future climate data</p>"
         u"<p>BCCVL can only deal with raster data in GeoTIFF format."
         u" Valid files are either single GeoTiff files or a number of"
-        u" GeoTiff packaged within a zip file."
-        u" Idealy the map projection information is embedded as metadata"
-        u" within the GeoTiff itself. In case of missing map projection"
-        u" BCCVL assumes WGS-84 (EPSG:4326)</p>")
+        u" GeoTiff packaged within a zip file.</p>"
+        u"<p>It is easy to convert your csv files to GeoTIFF format,"
+        u"follow the instructions here <a href=\"https://github.com/NICTA/nationalmap/wiki/csv-geo-au\" target=\"_blank\">https://github.com/NICTA/nationalmap/wiki/csv-geo-au</a>."
+        u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
         'file', 'title', 'description', 'emsc', 'gcm',
@@ -257,8 +263,13 @@ class SpeciesTraitAddForm(BCCVLUploadForm):
     # TODO: these wolud be schema forms... sholud try it
 
     title = u"Upload Species Traits"
-    description = \
+    description = (
         u"<p>Upload CSV file to use for species traits modelling.</p>"
+        u"<p>A species traits dataset is expected to be in CSV format."
+        u"Your longitude and latitude must be in decimal degrees."
+        u"The BCCVL will only try to interpret columns with labels "
+        u"'lon' and 'lat', so ensure your headings match these labels.</p>"
+    )
 
     fields = Fields(IBlobDataset, IDublinCore, ITraitsDataset).select(
         'file', 'title', 'description', 'rights')
