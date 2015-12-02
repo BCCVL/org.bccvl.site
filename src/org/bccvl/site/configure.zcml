@@ -35,6 +35,20 @@
         />
   </configure>
 
+  <monkey:patch
+      description="Patch plone.session tktauth to url unquote user ids"
+      module="plone.session.tktauth"
+      original="splitTicket"
+      replacement=".patch.splitTicket"
+      />
+
+  <monkey:patch
+      description="Patch plone.session tktauth to url quote user ids"
+      module="plone.session.tktauth"
+      original="createTicket"
+      replacement=".patch.createTicket"
+      />
+  
   <i18n:registerTranslations directory="locales" />
 
   <includeDependencies package="."/>

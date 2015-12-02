@@ -1,4 +1,3 @@
-
 # this should be sent upstream to z3c.form.converter:
 #   in case the siglecheckbox-empty-marker is not present in the request,
 #   the widget extracts NO_VALUE and passes this on to this converter.toFieldValue
@@ -6,6 +5,7 @@
 #   other option would be to make NO_VALUE evaluate to False. bool(NO_VALUE)
 #-> possibly related to custom singlechockboxwidget in plone.z3cform? (which renders a radio as workaround?)
 #-> empt-marker no longer needed on checkbox
+
 
 from plone.app.dexterity.behaviors.exclfromnav import IExcludeFromNavigation
 
@@ -57,6 +57,87 @@ BOOLEAN_HTML_ATTRS = frozenset([
 
 
 boolean_html_attrs = lambda: BOOLEAN_HTML_ATTRS  # Now we have a callable method!
+
+
+# plone.session.tktauth patches
+#   ... these should go upstream,...
+#   ... does url (un)quoting of userid (allows ! in userid)
+#   ... should fix digest length (use hexdigest) for sha256 digest
+# TODO: could monkey patch pyramid compatible sha256 support in here
+
+from socket import inet_aton
+from struct import pack
+import time
+import hmac
+import hashlib
+from urllib import quote, unquote
+from plone.session.tktauth import mod_auth_tkt_digest
+
+
+def createTicket(secret, userid, tokens=(), user_data='', ip='0.0.0.0', timestamp=None, encoding='utf-8', mod_auth_tkt=False):
+    """
+    By default, use a more compatible
+    """
+    if timestamp is None:
+        timestamp = int(time.time())
+    if encoding is not None:
+        userid = userid.encode(encoding)
+        tokens = [t.encode(encoding) for t in tokens]
+        user_data = user_data.encode(encoding)
+    # if type(userid) == unicode:
+        # userid = userid.encode('utf-8')
+
+    token_list = ','.join(tokens)
+
+    # ip address is part of the format, set it to 0.0.0.0 to be ignored.
+    # inet_aton packs the ip address into a 4 bytes in network byte order.
+    # pack is used to convert timestamp from an unsigned integer to 4 bytes
+    # in network byte order.
+    # Unfortunately, some older versions of Python assume that longs are always
+    # 32 bits, so we need to trucate the result in case we are on a 64-bit
+    # naive system.
+    import ipdb; ipdb.set_trace()
+    data1 = inet_aton(ip)[:4] + pack("!I", timestamp)
+    data2 = '\0'.join((userid, token_list, user_data))
+    if mod_auth_tkt:
+        digest = mod_auth_tkt_digest(secret, data1, data2)
+    else:
+        # a sha256 digest is the same length as an md5 hexdigest
+        # TODO: this should be fixed in plone.session....
+        #       the digest length should not be fixed and sha256 should also use hexdigest
+        digest = hmac.new(secret, data1+data2, hashlib.sha256).digest()
+
+    # digest + timestamp as an eight character hexadecimal + userid + !
+    ticket = "%s%08x%s!" % (digest, timestamp, quote(userid))
+    if tokens:
+        ticket += token_list + '!'
+    ticket += user_data
+
+    return ticket
+
+
+def splitTicket(ticket, encoding=None):
+    digest = ticket[:32]
+    val = ticket[32:40]
+    remainder = ticket[40:]
+    if not val:
+        raise ValueError
+    timestamp = int(val, 16) # convert from hexadecimal+
+
+    if encoding is not None:
+        remainder = remainder.decode(encoding)
+    parts = remainder.split("!")
+
+    if len(parts) == 2:
+        userid, user_data = parts
+        tokens = ()
+    elif len(parts) == 3:
+        userid, token_list, user_data = parts
+        tokens = tuple(token_list.split(','))
+    else:
+        raise ValueError
+
+    return (digest, unquote(userid), tokens, user_data, timestamp)
 
 
 def apply_patched_const(scope, original, replacement):
