@@ -49,8 +49,6 @@ class ContextSource(object):
         content = self.context[self.content_id]
         url = import_item.get('file', {}).get('url')
         name = import_item.get('file', {}).get('filename')
-        if not name:
-            name = content.file.filename
         mimetype = import_item.get('file', {}).get('contenttype')
         if not mimetype:
             mimetype = content.format
@@ -90,6 +88,8 @@ class ContextSource(object):
             })
         else:
             # assume local storage
+            if not name:
+                name = content.file.filename
             if url:
                 urlparts = urlsplit(url)
                 item.update({
