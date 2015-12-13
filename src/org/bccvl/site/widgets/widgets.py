@@ -429,6 +429,11 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
             for experiment_uuid, model_uuids in self.value.items():
                 item = {}
                 expbrain = uuidToCatalogBrain(experiment_uuid)
+                # TODO: we have an experiment_uuid, but can't access the
+                #       experiment (deleted?, access denied?)
+                #       shall we at least try to get some details?
+                if expbrain is None:
+                    continue
                 item['title'] = expbrain.Title
                 item['uuid'] = expbrain.UID
                 item['brain'] = expbrain
