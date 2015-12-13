@@ -223,7 +223,8 @@ class SDMJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
+            if md['species'].get('taxonID'):
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
             dsprov.add(DCTERMS['extent'], Literal('{} rows'.format(md.get('rows', 'N/A'))))
             # ... species data, ... species id
 
@@ -412,7 +413,8 @@ class ProjectionJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+            if md['species'].get('taxonID'):
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
             for layer in md.get('layers_used',()):
@@ -579,7 +581,8 @@ class BiodiverseJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+            if md['species']['taxonID']:
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
             for layer in md.get('layers_used',()):
@@ -744,7 +747,8 @@ class EnsembleJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+            if md['species'].get('taxonID'):
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
             for layer in md.get('layers_used',()):
