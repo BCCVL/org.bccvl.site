@@ -180,16 +180,18 @@ class StatisticsView(BrowserView):
                 if not v.has_key('pstats.json'):
                     continue
 
-                js = json.loads(v['pstats.json'].file.data)
-                runtime = js['rusage'].get('ru_utime', -1.0) + js['rusage'].get('ru_stime', -1.0)
-                if runtime >= 0.0:
-                    stats[algid]['runtime'] += runtime
-                    stats[algid]['count'] += 1
-                    stats[algid]['mean'] = stats[algid]['runtime']/stats[algid]['count']
-                    if success:
-                        stats[algid]['success'] += 1
-                    else:
-                        stats[algid]['failed'] += 1
+                pstats = v['pstats.json']
+                if hasattr(pstats, 'file'):
+                    js = json.loads(pstats.file.data)
+                    runtime = js['rusage'].get('ru_utime', -1.0) + js['rusage'].get('ru_stime', -1.0)
+                    if runtime >= 0.0:
+                        stats[algid]['runtime'] += runtime
+                        stats[algid]['count'] += 1
+                        stats[algid]['mean'] = stats[algid]['runtime']/stats[algid]['count']
+                        if success:
+                            stats[algid]['success'] += 1
+                        else:
+                            stats[algid]['failed'] += 1
         for i in stats.keys():
             stats[i]['mean'] = "%.1f" %(stats[i]['mean'])
         return stats
