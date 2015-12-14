@@ -41,13 +41,17 @@ class SwiftDataManager(object):
                                               method='DELETE')
             r = requests.delete(temp_url)
             # Make sure we raise an exception in case of an error
-            r.raise_for_status()
+            # FIXME: we always get a 404 error with swift here
+            #        however, as object is gone even with 404
+            #        let's just ignore it
+            if r.status_code != 404:
+                r.raise_for_status()
             # TODO: should we be worried if there is a redirect?
         except Exception, e:
             # TODO: maybe use tx.log instance? (has transaction name assigned)
             LOG.exception('Some error happened while removing SWIFT object %s: %s',
                           self.dataset.remoteUrl, e)
-            # TODO: due to a bug? in smift, if we get a 404 the erquest was probably successful anyway
+
 
 def dataset_removed(obj, event):
     # We'll do the delet in swift with a datamaneger
