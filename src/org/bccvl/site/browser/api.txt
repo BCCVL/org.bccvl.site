@@ -69,61 +69,6 @@ have to pass in a parameter to tell it in which object we are interested.
     True
 
 
-
-Test getProjectionDatasets:
-===========================
-
-    >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
-    >>> res = proxy.getProjectionDatasets()
-    >>> pprint(res)
-    {'projections': []}
-
-Let's try to to log in to find some datasets.
-
-    >>> from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
-    >>> from urlparse import urlsplit, urlunsplit
-    >>> urlparts = urlsplit(portal.absolute_url() + '/dm')
-    >>> urlparts = urlparts._replace(netloc="{}:{}@{}".format(
-    ...     TEST_USER_NAME, TEST_USER_PASSWORD, urlparts.netloc))
-    >>> proxy = xmlrpclib.ServerProxy(urlunsplit(urlparts))
-    >>> res = proxy.getProjectionDatasets()
-    >>> pprint(res)
-    {'projections': [{'name': 'Test Projection',
-                      'result': [{'emsc': 'RCP3PD',
-                                  'files': ['Result_file.tiff'],
-                                  'gcm': 'cccma-cgcm31',
-                                  'month': None,
-                                  'resolution': None,
-                                  'sdm': {'algorithm': 'bioclim',
-                                          'title': 'Test SDM',
-                                          'url': 'http://localhost:55001/plone/experiments/sdm/sdmresult/sdmrds'},
-                                  'species': 'Result species',
-                                  'title': 'Result Test',
-                                  'type': 'Future',
-                                  'uuid': '...',
-                                  'year': 2014}],
-                      'species': ['Result species'],
-                      'uuid': '...',
-                      'years': [2014]},
-                     {'name': 'Test SDM',
-                      'result': [{'emsc': None,
-                                  'files': ['Result_file.Rdata'],
-                                  'gcm': None,
-                                  'month': None,
-                                  'resolution': None,
-                                  'sdm': {'algorithm': 'bioclim',
-                                          'title': 'Test SDM',
-                                          'url': 'http://localhost:55001/plone/experiments/sdm/sdmresult/sdmrds'},
-                                  'species': 'Result species',
-                                  'title': 'Result Test SDM RData',
-                                  'type': 'Current',
-                                  'uuid': '...',
-                                  'year': None}],
-                      'species': ['Result species'],
-                      'uuid': '...',
-                      'years': [None]}]}
-
-
 Vocabulary endpoint:
 ====================
 
