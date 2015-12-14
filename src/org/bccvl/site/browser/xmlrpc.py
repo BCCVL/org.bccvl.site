@@ -1,6 +1,5 @@
 import json
 import logging
-from pkg_resources import resource_string
 
 from decorator import decorator
 from Products.CMFCore.utils import getToolByName
@@ -8,27 +7,20 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 from plone import api
-from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from plone.registry.interfaces import IRegistry
-from plone.uuid.interfaces import IUUID
 from zope import contenttype
 from zope.component import getUtility, queryUtility
 from zope.publisher.interfaces import NotFound
-from zope.schema import getFields
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
-from org.bccvl.site.browser.ws import IDataMover, IALAService
-from org.bccvl.site.content.interfaces import IProjectionExperiment
-from org.bccvl.site.content.interfaces import ISDMExperiment
-from org.bccvl.site.content.interfaces import IBiodiverseExperiment
+from org.bccvl.site.browser.ws import IALAService
 from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo, IProvenanceData
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobTracker
-from org.bccvl.site.job.interfaces import IJobUtility
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.site.utils import decimal_encoder
 
