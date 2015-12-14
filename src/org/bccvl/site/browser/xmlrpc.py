@@ -399,9 +399,8 @@ class ExportResult(BrowserView):
             urllist.append(dlinfo['url'])
         # add mets.xml
         urllist.append('{}/mets.xml'.format(self.context.absolute_url()))
-
-        # FIXME: make provdata available via url
-        provdata = IProvenanceData(self.context)
+        # add prov.ttl
+        urllist.append('{}/prov.ttl'.format(self.context.absolute_url()))
 
         from org.bccvl.tasks.celery import app
         from org.bccvl.tasks.plone import after_commit_task
@@ -411,7 +410,6 @@ class ExportResult(BrowserView):
         export_task = app.signature(
             "org.bccvl.tasks.export_services.export_result",
             args=(urllist,
-                  provdata.data, # prov.ttl
                   serviceid, {'context': context_path,
                               'user': {
                                   'id': member.getUserName(),
