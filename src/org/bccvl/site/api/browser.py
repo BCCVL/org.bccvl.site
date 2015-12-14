@@ -83,6 +83,7 @@ class DMService(BaseService):
     title = u'Dataset API v1'
     description = u'Access datasets'
     method = 'GET'
+    encType = "application/x-www-form-urlencoded"
 
     @returnwrapper
     @apimethod(
@@ -109,6 +110,7 @@ class JobService(BaseService):
     title = u'Job API v1'
     description = u'Access jobs'
     method = 'GET'
+    encType = "application/x-www-form-urlencoded"
 
     @returnwrapper
     @apimethod(
@@ -191,9 +193,12 @@ class ExperimentService(BaseService):
     title = u'Experiment API v1'
     description = u'Manage experiments'
     method = 'GET'
+    encType = "application/x-www-form-urlencoded"
 
     @returnwrapper
     @apimethod(
+        method='POST',
+        encType='application/x-www-form-urlencoded',
         properties={
             'lsid': {
                 'type': 'string',
@@ -333,6 +338,7 @@ class SiteService(BaseService):
     title = u'Global misc. API v1'
     description = u'Access site wide information'
     method = 'GET'
+    encType = "application/x-www-form-urlencoded"
 
     @returnwrapper
     @apimethod(
