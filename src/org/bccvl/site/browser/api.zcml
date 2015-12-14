@@ -24,10 +24,7 @@
         name="dm"
         class=".xmlrpc.DataSetManager"
         allowed_attributes="query metadata getRAT
-                            getMetadata queryDataset getVocabulary
-                            getSDMDatasets
-                            getBiodiverseDatasets
-                            getProjectionDatasets getThresholds"
+                            getMetadata queryDataset getVocabulary"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="zope2.View" >
 
@@ -54,22 +51,6 @@
         <browser:page
             name="getVocabulary"
             attribute="getVocabulary"/>
-
-       <browser:page
-            name="getSDMDatasets"
-            attribute="getSDMDatasets"/>
-
-       <browser:page
-            name="getBiodiverseDatasets"
-            attribute="getBiodiverseDatasets"/>
-
-       <browser:page
-            name="getProjectionDatasets"
-            attribute="getProjectionDatasets"/>
-
-       <browser:page
-            name="getThresholds"
-            attribute="getThresholds"/>
 
     </browser:view>
 
@@ -142,16 +123,13 @@
     <browser:view
         name="dv"
         class=".xmlrpc.DataMover"
-        allowed_attributes="pullOccurrenceFromALA checkALAJobStatus"
+        allowed_attributes="pullOccurrenceFromALA"
         for="Products.CMFCore.interfaces.IFolderish"
         permission="org.bccvl.AddDataset" >
 
         <browser:page
             name="pullOccurrenceFromALA"
             attribute="pullOccurrenceFromALA"/>
-        <browser:page
-            name="checkALAJobStatus"
-            attribute="checkALAJobStatus"/>
 
     </browser:view>
 
@@ -159,24 +137,12 @@
         class=".xmlrpc.ExportResult"
         allowed_attributes="export_result"
         for="Products.CMFCore.interfaces.IFolderish"
-        permission="cmf.ModifyPortalContent"
+        permission="zope2.View"
         >
       <browser:page
           name="export_result"
           attribute="export_result"
           />
-    </browser:pages>
-
-    <browser:pages
-        class=".xmlrpc.DemoSDM"
-        allowed_attributes="demosdm"
-        for="Products.CMFCore.interfaces.IFolderish"
-        permission="org.bccvl.AddExperiment"
-        >
-        <browser:page
-            name="demosdm"
-            attribute="demosdm"
-            />
     </browser:pages>
 
 </configure>

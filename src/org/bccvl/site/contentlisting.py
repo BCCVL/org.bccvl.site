@@ -6,7 +6,9 @@ class ContentListingObject(catalog.CatalogContentListingObject):
 
     def Format(self):
         ob = self.getObject()
-        mime = 'application/octet-stream'
+        # TODO: protect adainst acquisition here?
         if IFile.providedBy(ob):
             mime = ob.file.contentType
+        else:
+            mime = getattr(ob, 'format', 'application/octet-stream')
         return mime

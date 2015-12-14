@@ -11,7 +11,7 @@
   <browser:page
       for="plone.app.layout.navigation.interfaces.INavigationRoot"
       name="change-password"
-      class=".overrides.PasswordAccountPanel"
+      class=".overrides.PasswordAccountPanelView"
       permission="cmf.SetOwnPassword"
       />
   

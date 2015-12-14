@@ -1,15 +1,18 @@
 import inspect
+import json
+
 from decorator import decorator
 from zope import contenttype
 from zope.annotation.interfaces import IAnnotations
 
-from org.bccvl.site.utils import DecimalJSONEncoder
+from org.bccvl.site.utils import decimal_encoder
 
 
 def apimethod(name=None, title=None,
               description=None,
-              # methods=None,
-              #enc_types=None, protos=None,
+              method=None,  # TODO: allow more than one method
+              encType=None,  # TODO: need multiple encType,
+              #protos=None,
               properties=None):
     """Add metadata to a function.
 
@@ -25,9 +28,11 @@ def apimethod(name=None, title=None,
             'id': name or f.__name__,
             'title': title or name or f.__name__,
             'description': description or f.__doc__ or '',
-            'method': 'GET',
-            'enc_type': 'application/x-www-form-urlencoded',
         }
+        if method:
+            schema['method'] = method
+        if encType:
+            schema['encType'] = encType
 
         argspec = inspect.getargspec(f)
         if (properties or argspec.args):
@@ -53,8 +58,13 @@ def api(cls):
     for name, func in inspect.getmembers(cls, inspect.ismethod):
         if not getattr(func, '__schema__', None):
             continue
+        # FIXME: this code is probably never executed
         # we have an api func ,... create a metadata
         schema = func.__schema__
+        for attr, default in (('method', 'GET'),
+                              ('encType', 'application/x-www-form-urlencoded')):
+            if attr not in schema:
+                schema[attr] = getattr(cls, attr, default)
         cls.__methods__[schema['id']] = {
             'method': func.__name__,
             'schema': schema
@@ -107,7 +117,7 @@ def returnwrapper(f, *args, **kw):
     # if we don't have xmlrpc we serialise to json
     if not isxmlrpc:
         # TODO: maybe add HTTP link header to refer to schema?
-        ret = DecimalJSONEncoder().encode(ret)
+        ret = json.dumps(ret, default=decimal_encoder)
         annots = IAnnotations(view.request)
         if 'json.schema' in annots:
             ctype = 'application/json; profile={}'.format(annots['json.schema'])

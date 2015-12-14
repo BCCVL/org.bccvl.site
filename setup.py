@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.9.3.dev'
+version = '1.9.4.dev'
 
 setup(
     name='org.bccvl.site',
@@ -61,6 +61,8 @@ setup(
     extras_require={
         'test': [
             'plone.app.testing',
+            'mock',
+            'org.bccvl.tasks[metadata]',
         ],
         'deprecated':  [
         ],

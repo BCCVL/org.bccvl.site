@@ -1,30 +1,28 @@
 from datetime import datetime
-from urlparse import urlsplit
 from itertools import chain
+import logging
 import os.path
-import tempfile
+from urlparse import urlsplit
+
+from Products.ZCatalog.interfaces import ICatalogBrain
+from plone import api
+from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
+from plone.dexterity.utils import createContentInContainer
+from plone.uuid.interfaces import IUUID
+from zope.component import adapter, queryUtility
+from zope.interface import implementer
+
 from org.bccvl.site import defaults
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
-    IExperiment, ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
+    ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
-from org.bccvl.site.interfaces import IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData
+from org.bccvl.site.interfaces import IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker
 from org.bccvl.site.job.interfaces import IJobTracker
-from org.bccvl.site.interfaces import IExperimentJobTracker
-from org.bccvl.tasks.ala_import import ala_import
+from org.bccvl.site.utils import build_ala_import_task
 from org.bccvl.tasks.plone import after_commit_task
-from persistent.dict import PersistentDict
-from plone import api
-from plone.app.contenttypes.interfaces import IFile
-from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
-from plone.dexterity.utils import createContentInContainer
-from Products.ZCatalog.interfaces import ICatalogBrain
-from zope.annotation.interfaces import IAnnotations
-from zope.component import adapter, queryUtility
-from zope.interface import implementer
-import logging
-from plone.uuid.interfaces import IUUID
+
 
 LOG = logging.getLogger(__name__)
 
@@ -33,9 +31,6 @@ LOG = logging.getLogger(__name__)
 @adapter(IDataset)
 def DatasetDownloadInfo(context):
     # TODO: get rid of INTERNAL_URL
-    import os
-    INTERNAL_URL = 'http://127.0.0.1:8201'
-    int_url = os.environ.get("INTERNAL_URL", INTERNAL_URL)
     if context.file is None or context.file.filename is None:
         # TODO: What to do here? the download url doesn't make sense
         #        for now use id as filename
@@ -50,14 +45,8 @@ def DatasetDownloadInfo(context):
         context.absolute_url(),
         filename
     )
-    internalurl = '{}{}/@@download/file/{}'.format(
-        int_url,
-        "/".join(context.getPhysicalPath()),
-        filename
-    )
     return {
         'url': downloadurl,
-        'alturl': (internalurl,),
         'filename': filename,
         'contenttype': contenttype or 'application/octet-stream',
     }
@@ -67,9 +56,11 @@ def DatasetDownloadInfo(context):
 @adapter(IRemoteDataset)
 def RemoteDatasetDownloadInfo(context):
     url = urlsplit(context.remoteUrl)
+    filename = os.path.basename(url.path)
     return {
-        'url': context.remoteUrl,
-        'alturl': (context.remoteUrl,),
+        'url': '{}/@@download/{}'.format(
+            context.absolute_url(),
+            filename),
         'filename': os.path.basename(url.path),
         'contenttype': context.format or 'application/octet-stream'
     }
@@ -221,9 +212,10 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if IFile.providedBy(ds):
-                if ds.file is not None:
-                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -231,7 +223,8 @@ class SDMJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
+            if md['species'].get('taxonID'):
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
             dsprov.add(DCTERMS['extent'], Literal('{} rows'.format(md.get('rows', 'N/A'))))
             # ... species data, ... species id
 
@@ -247,9 +240,10 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if IFile.providedBy(ds):
-                if ds.file is not None:
-                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # TODO: genre ...
             for layer in layers:
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
@@ -410,8 +404,10 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ds.file is not None:
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -419,7 +415,8 @@ class ProjectionJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+            if md['species'].get('taxonID'):
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
             for layer in md.get('layers_used',()):
@@ -438,9 +435,10 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if IFile.providedBy(ds):
-                if ds.file is not None:
-                    dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # TODO: genre, resolution, emsc, gcm, year(s) ...
             for layer in layers:
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
@@ -570,8 +568,10 @@ class BiodiverseJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ds.file is not None:
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # threshold used:
             # FIXME: what's the label of manually entered value?
             dsprov.add(BCCVL['threshold_label'], Literal(value['threshold']['label']))
@@ -583,7 +583,8 @@ class BiodiverseJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+            if md['species']['taxonID']:
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
             for layer in md.get('layers_used',()):
@@ -737,8 +738,10 @@ class EnsembleJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ds.file is not None:
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -746,7 +749,8 @@ class EnsembleJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
+            if md['species'].get('taxonID'):
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
             for layer in md.get('layers_used',()):
@@ -869,8 +873,10 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ds.file is not None:
-                dsprov.add(DCTERMS['format'], Literal(ds.file.contentType))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                or
+                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
@@ -992,22 +998,10 @@ class ALAJobTracker(MultiJobTracker):
         #       should check for it
         lsid = md['species']['taxonID']
 
-        # we need site-path, context-path and lsid for this job
-        #site_path = '/'.join(api.portal.get().getPhysicalPath())
-        context_path = '/'.join(self.context.getPhysicalPath())
-        member = api.user.get_current()
-        # a folder for the datamover to place files in
-        tmpdir = tempfile.mkdtemp()
-
         # ala_import will be submitted after commit, so we won't get a
         # result here
-        ala_import_task = ala_import(
-            lsid, tmpdir, {'context': context_path,
-                           'user': {
-                               'id': member.getUserName(),
-                               'email': member.getProperty('email'),
-                               'fullname': member.getProperty('fullname')
-                           }})
+        # FIXME: hacky way to get to request
+        ala_import_task = build_ala_import_task(lsid, self.context, self.context.REQUEST)
         # TODO: add title, and url for dataset? (like with experiments?)
         # update provenance
         self._createProvenance(self.context)

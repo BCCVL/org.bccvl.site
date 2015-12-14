@@ -1,18 +1,26 @@
 {
-  "_type": "org.bccvl.content.dataset",
-  "title": "ABT",
-  "file": {
-          "file": "occurrence.csv",
-          "contenttype": "text/csv",
-          "filename": "occurrence.csv"
-          },
-  "_transitions": "publish",
-  "bccvlmetadata": {
-    "genre": "DataGenreSpeciesOccurrence",
-    "species": {
-      "scientificName": "Alectura lathami",
-      "vernacularName": "Australian Brush-turkey",
-      "taxonID": "urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986"
+    "_type": "org.bccvl.content.dataset",
+    "title": "ABT",
+    "file": {
+        "file": "occurrence.csv",
+        "contenttype": "text/csv",
+        "filename": "occurrence.csv"
+    },
+    "_transitions": "publish",
+    "bccvlmetadata": {
+        "genre": "DataGenreSpeciesOccurrence",
+        "species": {
+            "scientificName": "Alectura lathami",
+            "vernacularName": "Australian Brush-turkey",
+            "taxonID": "urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986"
+        },
+        "rows": 3,
+        "bounds": {
+            "bottom": 1,
+            "left": 1,
+            "top": 3,
+            "right": 3            
+        },
+        "headers": ["Name", "lon", "lat"]
     }
-  }
 }

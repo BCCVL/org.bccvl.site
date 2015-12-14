@@ -1,10 +1,5 @@
 import unittest
-from zope.component import getMultiAdapter
-from plone.app.testing import TEST_USER_ID, setRoles
-from org.bccvl.site import defaults
 from org.bccvl.site.testing import BCCVL_INTEGRATION_TESTING
-from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IDownloadInfo
 
 
 class DatasetManagerTest(unittest.TestCase):
@@ -14,11 +9,7 @@ class DatasetManagerTest(unittest.TestCase):
 #     getRAT
 #     query
 #     queryDataset
-#     getSDMDatasets
-#     getBiodiverseDatasets
-#     getProjectionDatasets
 #     getVocabulary
-#     getThresholds
 
     layer = BCCVL_INTEGRATION_TESTING
 

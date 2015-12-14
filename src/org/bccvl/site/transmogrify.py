@@ -1,128 +1,24 @@
-from zope.interface import implementer, provider
-from collective.transmogrifier.interfaces import ISectionBlueprint
-from collective.transmogrifier.interfaces import ISection
+from datetime import datetime
+import json
+import logging
 import os
 import os.path
+import re
+from urlparse import urlsplit
+
+from collective.transmogrifier.interfaces import ISectionBlueprint
+from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
-import simplejson
-from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
-import logging
-import json
 from rdflib import Graph, Namespace, Literal
 from rdflib.namespace import RDF, DCTERMS, XSD
 from rdflib.resource import Resource
-from datetime import datetime
+from zope.interface import implementer, provider
+
+from org.bccvl.site.content.interfaces import IExperiment
+from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
 
 
 LOG = logging.getLogger(__name__)
-
-
-@provider(ISectionBlueprint)
-@implementer(ISection)
-class ALASource(object):
-
-    def __init__(self, transmogrifier, name, options, previous):
-        self.transmogrifier = transmogrifier
-        self.context = transmogrifier.context
-        self.name = name
-        self.options = options
-        self.previous = previous
-
-        self.file = options['file'].strip()
-        if self.file is None or not os.path.isfile(self.file):
-            raise Exception('File ({}) does not exists.'.format(str(self.file)))
-        self.lsid = options['lsid']
-        self.id = options.get('id')
-        # add path prefix to imported content
-        self.prefix = options.get('prefix', '').strip().strip(os.sep)
-        # keys for sections further down the chain
-        self.pathkey = options.get('path-key', '_path').strip()
-        self.fileskey = options.get('files-key', '_files').strip()
-
-    def traverse_dict(self, source, path):
-        current = source
-        try:
-            for el in path.split('/'):
-                if isinstance(current, list):
-                    el = int(el)
-                current = current[el]
-        except:
-            # TODO: at least log error?
-            current = None
-        return current
-
-    def __iter__(self):
-        # exhaust previous iterator
-        for item in self.previous:
-            yield item
-
-        # start our own source
-        # 1. read meatada from json
-        json = simplejson.load(open(self.file, 'r'))
-        ala_prov = json['provenance']
-        # index files by dataset_type
-        files = {}
-        for file in json['files']:
-            files[file['dataset_type']] = file
-        title = json['title']
-        description = json['description']
-
-        # 2. read ala metadata form json
-        json = simplejson.load(open(files['attribution']['url'], 'r'))
-        csv = files['occurrences']['url']
-
-        bccvlmd = {}
-        bccvlmd['genre'] = 'DataGenreSpeciesOccurrence'
-        bccvlmd['species'] = {
-            'scientificName': self.traverse_dict(json, 'classification/scientificName'),
-            'vernacularName': self.traverse_dict(json, 'commonNames/0/nameString'),
-            'taxonID': self.traverse_dict(json, 'classification/guid'),
-            'rank': self.traverse_dict(json, 'classification/rank'),
-            'genus': self.traverse_dict(json, 'classification/genus'),
-            'genusGuid': self.traverse_dict(json, 'classification/genusGuid'),
-            'family': self.traverse_dict(json, 'classification/family'),
-            'familyGuid': self.traverse_dict(json, 'classification/familyGuid'),
-            'order': self.traverse_dict(json, 'classification/order'),
-            'orderGuid': self.traverse_dict(json, 'classification/orderGuid'),
-            'clazz': self.traverse_dict(json, 'classification/clazz'),
-            'clazzGuid': self.traverse_dict(json, 'classification/clazzGuid'),
-            'phylum': self.traverse_dict(json, 'classification/phylum'),
-            'phylumGuid': self.traverse_dict(json, 'classification/phylumGuid'),
-            'kingdom': self.traverse_dict(json, 'classification/kingdom'),
-            'kingdomGuid': self.traverse_dict(json, 'classification/kingdomGuid')
-        }
-        bccvlmd['categories'] = ['occurrence']
-        # TODO: other interesting bits:
-        #       images/0/thumbnail ... URL to thumbnail image
-        # TODO: important thing ... date of export (import date in
-        #       plone)/ date modified in ALA
-        # FIXME: import of the same guid changes current existing dataset
-        #_, id = json['taxonConcept']['guid'].rsplit(':', 1)
-        item = {'_type': 'org.bccvl.content.dataset',
-                'title': title,
-                'description': description,
-                'file': {
-                    'file': 'data.csv',
-                    'contenttype': 'text/csv',
-                    'filename': '{}.csv'.format(self.lsid),
-                },
-                'bccvlmetadata': bccvlmd,
-                # FIXME: don't load files into ram
-                '_files': {
-                    'data.csv': {
-                        'name': 'data.csv',
-                        'data': open(csv).read()
-                    },
-                },
-                '_ala_provenance': ala_prov,
-        }
-        # if we have an id use it to possibly update existing content
-        # TODO: check if improt context is already correct folder, or
-        #       do we need full path here instead of just the id?
-        if self.id:
-            item['_path'] = self.id
-
-        yield item
 
 
 @provider(ISectionBlueprint)
@@ -146,34 +42,87 @@ class ContextSource(object):
         self.context = transmogrifier.context
 
         self.pathkey = options.get('path-key', '_path')
+        self.content_id = options.get('content_id')
+        self.items = options.get('items')
+
+    def create_item(self, import_item):
+        content = self.context[self.content_id]
+        url = import_item.get('file', {}).get('url')
+        name = import_item.get('file', {}).get('filename')
+        mimetype = import_item.get('file', {}).get('contenttype')
+        if not mimetype:
+            mimetype = content.format
+
+        bccvlmd = dict(IBCCVLMetadata(content))
+        bccvlmd.update(import_item.get('bccvlmetadata', {}))
+
+        item = {
+            self.pathkey: content.getId(),
+            '_type': content.portal_type,
+            'bccvlmetadata': bccvlmd,
+        }
+        for key in ('title', 'description'):
+            if import_item.get(key):
+                item[key] = import_item[key]
+        # TODO: funny part here.... we already have a specific type of dataset
+        # dataset or remotedataset?
+        # We have an existing content object... use it to decide portal_type
+        if content.portal_type == 'org.bccvl.content.remotedataset':
+            # remote
+            if url:
+                remoteurl = re.sub(r'^swift\+', '', import_item['file']['url'])
+            else:
+                remoteurl = content.remoteUrl
+            item.update({
+                'remoteUrl': remoteurl,
+                # FIXME: hack to pass on content type to FileMetadataToBCCVL blueprint
+                '_files': {
+                    remoteurl: {
+                        'contenttype': mimetype,
+                    }
+                },
+                '_filemetadata': {
+                    # key relates to 'remoteUrl'
+                    remoteurl: import_item.get('filemetadata', {}) or {},  # make sure it's not none
+                }
+            })
+        else:
+            # assume local storage
+            if not name:
+                name = content.file.filename
+            if url:
+                urlparts = urlsplit(url)
+                item.update({
+                    'file': {
+                        'file': name,
+                        'contenttype': mimetype,
+                        'filename': name
+                    },
+                    '_files': {
+                        name: {
+                            'name': name,
+                            # 'path': urlparts.path, TODO: do I need this key?
+                            'data': open(urlparts.path, 'r')
+                        }
+                    },
+                })
+            else:
+                # FIXME: this is an ugly hack to get the FileMetadataToBCCVL step working for metadata updates
+                item['remoteUrl'] = name
+            item['_filemetadata'] = {
+                # key relates to 'file':'file'
+                name: import_item.get('filemetadata', {}) or {},  # make sure it's not none
+            }
+        return item
 
     def __iter__(self):
         # exhaust previous iterator
         for item in self.previous:
             yield item
 
-        filename = self.context.file.filename
-        item = {
-            self.pathkey: '/'.join(self.context.getPhysicalPath()),
-            '_type': self.context.portal_type,
-            'file': {
-                'file': filename,
-            },
-            # TODO: consider deepcopy here (for now it's safe because all are normal dicts; no persistent dicts)
-            'bccvlmetadata': dict(IBCCVLMetadata(self.context)),
-            '_files': {
-                filename: {
-                    # FIXME: there is some chaos here... do I really need name and filename?
-                    'name': self.context.file.filename,
-                    'filename': self.context.file.filename,
-                    'contenttype': self.context.file.contentType,
-                    # data is a readable file like object
-                    # it may be an uncommitted blob file
-                    'data': self.context.file.open('r')
-                }
-            }
-        }
-        yield item
+        for import_item in self.items:
+            item = self.create_item(import_item)
+            yield item
 
 
 @provider(ISectionBlueprint)
@@ -192,7 +141,6 @@ class BCCVLMetadataUpdater(object):
         self.bccvlmdkey = options.get('bccvlmd-key', 'bccvlmetadata').strip()
 
     def __iter__(self):
-        # exhaust previous iterator
         for item in self.previous:
             pathkey = self.pathkey(*item.keys())[0]
             # no path .. can't do anything
@@ -207,8 +155,7 @@ class BCCVLMetadataUpdater(object):
                 continue
 
             obj = self.context.unrestrictedTraverse(
-                path.encode(), None)
-                #path.encode().lstrip('/'), None)
+                path.encode().lstrip('/'), None)
 
             # path doesn't exist
             if obj is None:
@@ -219,7 +166,6 @@ class BCCVLMetadataUpdater(object):
             if not bccvlmd:
                 yield item
                 continue
-
             # apply bccvl metadata
             # FIXME: replace or update?
             IBCCVLMetadata(obj).update(bccvlmd)
@@ -249,28 +195,19 @@ class FileMetadataToBCCVL(object):
         self.bccvlmdkey = options.get('bccvlmd-key', 'bccvlmetadata').strip()
 
     def __iter__(self):
-        # exhaust previous iterator
         for item in self.previous:
-
             fileid = None
             if 'remoteUrl' in item:
                 # TODO: assumse, that there is a _file entry to it which has
                 #       the name for _filemetadata dictionary
                 _files = item.get('_files', {}).get(item.get('remoteUrl'), {})
                 fileid = item.get('remoteUrl')
-                contenttype = _files.get('contenttype', 'application/octet-stream')
+                contenttype = _files.get('contenttype') # 'application/octet-stream')
             elif 'file' in item:
                 fileid = item.get('file', {}).get('file')
                 contenttype = item.get('file', {}).get('contenttype')
             if not fileid:
                 # there should be no other None key
-                yield item
-                continue
-
-            # get metadata for file itself _filemetadata
-            filemd = item.setdefault(self.filemetadatakey, {}).get(fileid, {})
-            if not filemd:
-                # no filemetadata (delete or leave untouched?)
                 yield item
                 continue
 
@@ -288,19 +225,24 @@ class FileMetadataToBCCVL(object):
                 continue
 
             content = self.context.unrestrictedTraverse(
-                #path.encode().lstrip('/'), None)
-                path.encode(), None)
+                path.encode().lstrip('/'), None)
 
             if content is None:
                 yield item
                 continue
 
-            # get or create rdf graph
-            # TODO: Ending up here means we have a file as main content
-            #       let's set the format attribute to this mime type
-            #       ? if there is none set yet?
+            # We have a file or url, and should have a contenttype
+            # set format attribute on content to this mime type
             if contenttype and content.format != contenttype:
+                # FIXME: somehow this doesn't work?
                 content.format = contenttype
+
+            # get metadata for file itself _filemetadata
+            filemd = item.setdefault(self.filemetadatakey, {}).get(fileid, {})
+            if not filemd:
+                # no filemetadata (delete or leave untouched?)
+                yield item
+                continue
 
             # TODO: probably needs a different check for multi layer files in future
             # store metadata in self.bccvlmdkey
@@ -326,7 +268,8 @@ class FileMetadataToBCCVL(object):
                     # FIXME: extract some of json metadata? like acknowledgement, etc...
             elif content.format not in ('text/csv', ):
                 # TODO: we should have a better check here whether to extract layer metadata for a single file dataset
-                # FIXME: upload does not pass on '_layermd' ... fix with background md extraction
+                # FIXME: hack to get correct key into _layermd dictionary in case we have a remote file
+                fileid = os.path.basename(fileid)
                 self._update_layer_metadata(bccvlmd, filemd, fileid, item.get('_layermd', {}))
 
             # continue pipeline
@@ -345,16 +288,16 @@ class FileMetadataToBCCVL(object):
 
         # species:
         if filemd.get('species'):
-            # check if 'species' is a set ... if it is the csv had multiple species names in it
+            # check if 'species' is a list ... if it is the csv had multiple species names in it
             # issue a warning and pick a random species name (in case there is non set already)
             bccvlmd.setdefault('species', {})
             if not bccvlmd['species'].get('scientificName'):
                 speciesmd = filemd['species']
-                # TODO: currently the file metadata extractor creates a set of species names
+                # TODO: currently the file metadata extractor creates a list of species names
                 #       in case there are multiple species names in the csv file we should
                 #       create multiple datasets (possibly grouped?) or suppert datasets for multiple species
-                if isinstance(speciesmd, set):
-                    speciesmd = next(iter(speciesmd))
+                if isinstance(speciesmd, list):
+                    speciesmd = speciesmd[0]
                 bccvlmd['species']['scientificname'] = speciesmd
 
     def _update_layer_metadata(self, bccvlmd, filemd, fileid, jsonmd):
@@ -370,22 +313,22 @@ class FileMetadataToBCCVL(object):
         if bandmd:
             # TODO: assumes there is only one band
             bandmd = bandmd[0]
-            min_ = bandmd.get('min') or bandmd.get('STATISTICS_MINIMUM')
-            max_ = bandmd.get('max') or bandmd.get('STATISTICS_MAXIMUM')
-            mean_ = bandmd.get('mean') or bandmd.get('STATISTICS_MEAN')
-            stddev_ = bandmd.get('stddev') or bandmd.get('STATISTICS_STDDEV')
+            min_ = bandmd.get('STATISTICS_MINIMUM') if bandmd.get('min') is None else bandmd.get('min')
+            max_ = bandmd.get('STATISTICS_MAXIMUM') if bandmd.get('max') is None else bandmd.get('max')
+            mean_ = bandmd.get('STATISTICS_MEAN') if bandmd.get('mean') is None else bandmd.get('mean')
+            stddev_ = bandmd.get('STATISTICS_STDDEV') if bandmd.get('stddev') is None else bandmd.get('stddev')
             width, height = bandmd.get('size', (None, None))
-            if min_:
+            if min_ is not None:
                 layermd['min'] = min_
-            if max_:
+            if max_ is not None:
                 layermd['max'] = max_
-            if mean_:
+            if mean_ is not None:
                 layermd['mean'] = mean_
-            if stddev_:
+            if stddev_ is not None:
                 layermd['stddev'] = stddev_
             if 'nodata' in bandmd:
                 layermd['nodata'] = bandmd['nodata']
-            if width and height:
+            if width is not None and height is not None:
                 layermd['width'] = width
                 layermd['height'] = height
             # check if we have more info in layer?
@@ -413,6 +356,8 @@ class FileMetadataToBCCVL(object):
                 # get global data_type if not a file specific one set
                 data_type = bandmd.get('type', jsonmd.get('data_type'))
 
+            # FIXME: everywhere ... is data_type capital or lower case?
+            #        also. the following lines override any data_type coming from jsonmd. .. some weird code here
             # Assume Continous data type by default
             layermd['datatype'] = 'continuous'
             if data_type:
@@ -458,7 +403,7 @@ class ProvenanceImporter(object):
                                            '_filemetadata').strip()
 
     def __iter__(self):
-        """missing docstring."""        # exhaust previous iterator
+        """missing docstring."""
         for item in self.previous:
             # check if we have a dataset
 
@@ -481,17 +426,16 @@ class ProvenanceImporter(object):
                 continue
 
             obj = self.context.unrestrictedTraverse(
-                path.encode(), None)
-                #path.encode().lstrip('/'), None)
+                path.encode().lstrip('/'), None)
 
-            # FIXME: need a better distinction between result import
-            #        and ala import (prov data from parent or obj)
-            if '_ala_provenance' in item:
-                # ALA import?
-                context = obj
+            # FIXME: this is really not a great way to check where to find provenenace data
+            # check if we are inside an experiment (means we import result)
+            if IExperiment.providedBy(self.context.__parent__):
+                # result import
+                context = self.context
             else:
-                # Result import?
-                context = obj.__parent__
+                # dataset import?
+                context = obj
 
             # TODO: do some sanity checks
             provdata = IProvenanceData(context)
@@ -499,7 +443,7 @@ class ProvenanceImporter(object):
             BCCVL = Namespace(u"http://ns.bccvl.org.au/")
             LOCAL = Namespace(u"urn:bccvl:")
             graph = Graph()
-            graph.parse(data=provdata.data, format='turtle')
+            graph.parse(data=provdata.data or '', format='turtle')
             activity = Resource(graph, LOCAL['activity'])
             # FIXME: shouldn't I use uuid instead of id?
             entity = Resource(graph, LOCAL[obj.id])
@@ -513,7 +457,11 @@ class ProvenanceImporter(object):
             entity.add(DCTERMS['title'], Literal(obj.title))
             entity.add(DCTERMS['description'], Literal(obj.description))
             entity.add(DCTERMS['rights'], Literal(obj.rights))
-            entity.add(DCTERMS['format'], Literal(obj.file.contentType))
+            if obj.portal_type == 'org.bccvl.content.dataset':
+                entity.add(DCTERMS['format'], Literal(obj.file.contentType))
+            else:
+                # FIXME: this doesn't seem to do the right thing
+                entity.add(DCTERMS['format'], Literal(obj.format))
             # TODO: add metadata about file?
             #    genre, layers, emsc, gcm, year
 

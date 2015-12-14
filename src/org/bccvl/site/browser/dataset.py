@@ -1,20 +1,24 @@
 #from plone.dexaterity.browser.view import DefaultView (template override in plone.app.dexterity.browser)
 
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from Products.Five.browser import BrowserView
-from zope.interface import implementer
-from zope.publisher.interfaces import IPublishTraverse, NotFound
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
+from plone.namedfile.browser import Download
 from z3c.form import field, button, form
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
+from zope.component import getUtility
 from zope.event import notify
+from zope.interface import implementer
 from zope.lifecycleevent import modified
+from zope.publisher.interfaces import IPublishTraverse, NotFound
 from org.bccvl.site.interfaces import IBCCVLMetadata
 #from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
-from Acquisition import aq_inner
-from Acquisition import aq_parent
 from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.site.swift.interfaces import ISwiftUtility
+
 
 class DatasetRemoveView(form.Form):
     """
@@ -62,9 +66,10 @@ class RemoteDatasetDownload(BrowserView):
         # allow filename in url, so that it is possible to parse the url
         if self.filename is None:  # ../@@download/filename
             self.filename = name
+        elif name == 'HEAD':
+            return self
         else:
             raise NotFound(self, name, request)
-
         return self
 
     def __call__(self):
@@ -74,7 +79,30 @@ class RemoteDatasetDownload(BrowserView):
         remoteUrl = getattr(self.context, 'remoteUrl', None)
         if remoteUrl is None:
             raise NotFound(self, 'remoteUrl', self.request)
-        return self.request.RESPONSE.redirect(remoteUrl)
+        # Generate temp url
+        tool = getUtility(ISwiftUtility)
+        try:
+            url = tool.generate_temp_url(url=remoteUrl)
+        except:
+            url = remoteUrl
+        return self.request.RESPONSE.redirect(url)
+
+    def HEAD(self):
+        # we wan't to redirect here as well
+        return self.__call__()
+
+
+class DatasetDownload(Download):
+
+    def publishTraverse(self, request, name):
+        # allow filename in url, so that it is possible to parse the url
+        if self.filename and self.fieldname and name == 'HEAD':
+            return self
+        return super(DatasetDownload, self).publishTraverse(request, name)
+
+    def HEAD(self):
+        # we wan't to redirect here as well
+        return self.__call__()
 
 
 
@@ -87,7 +115,6 @@ class RemoteDatasetDownload(BrowserView):
 from plone.z3cform.crud import crud
 from zope import schema
 from zope.interface import Interface
-from zope.component import getUtility
 import zipfile
 
 

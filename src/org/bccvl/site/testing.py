@@ -22,17 +22,23 @@ def configureCelery():
         "CELERY_IGNORE_RESULT":  True,
         "CELERY_ACCEPT_CONTENT":  ["json", "msgpack", "yaml"],
         "CELERY_IMPORTS":  [
-            #"org.bccvl.tasks.plone",
-            "org.bccvl.site.tests.compute"],
+            "org.bccvl.tasks.datamover",
+            "org.bccvl.tasks.plone",
+            "org.bccvl.tasks.compute",
+        ],
         "CELERY_ROUTES": [
             {"org.bccvl.tasks.plone.set_progress": {"queue": "plone", "routing_key": "plone"}},
             {"org.bccvl.tasks.plone.import_ala": {"queue": "plone", "routing_key": "plone"}},
             {"org.bccvl.tasks.plone.import_cleanup": {"queue": "plone", "routing_key": "plone"}},
+            {"org.bccvl.tasks.plone.import_file_metadata": {"queue": "plone", "routing_key": "plone"}},
             {"org.bccvl.tasks.plone.import_result": {"queue": "plone", "routing_key": "plone"}},
             {"org.bccvl.tasks.datamover.move": {"queue": "datamover", "routing_key": "datamover"}},
-            {"org.bccvl.tasks.ala_import.ala_import": {"queue": "datamover", "routing_key": "datamover"}},
+            {"org.bccvl.tasks.datamover.pull_occurrences_from_ala": {"queue": "datamover", "routing_key": "datamover"}},
+            {"org.bccvl.tasks.datamover.update_metadata": {"queue": "datamover", "routing_key": "datamover"}},
+            {"org.bccvl.tasks.export_services.export_result": {"queue": "datamover", "routing_key": "datamover"}},
             {"org.bccvl.tasks.compute.r_task": {"queue": "worker", "routing_key": "worker"}},
-            {"org.bccvl.tasks.compute.perl_task": {"queue": "worker", "routing_key": "worker"}}
+            {"org.bccvl.tasks.compute.perl_task": {"queue": "worker", "routing_key": "worker"}},
+            {"org.bccvl.tasks.compute.demo_task": {"queue": "worker", "routing_key": "worker"}}
         ],
         "CELERY_TASK_SERIALIZER": "json",
         "CELERY_QUEUES": {
@@ -88,10 +94,6 @@ class BCCVLLayer(PloneSandboxLayer):
         pwf.setDefaultChain('simple_publication_workflow')
         # apply configuration profile
         self.applyProfile(portal, 'org.bccvl.site:default')
-        # FIXME: for testing we access the site via localhost,
-        #        so we can't use the localscript extraction plugin
-        from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
-        portal.acl_users.plugins.deactivatePlugin(IAuthenticationPlugin, 'localscript')
 
         app = portal.getPhysicalRoot()
         z2.login(app['acl_users'], SITE_OWNER_NAME)

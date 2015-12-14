@@ -17,7 +17,16 @@ class Dataset(Item):
             return self.file.contentType
         # TODO: is this a good fallback?
         #       that one is used in RFC822 marshaller
-        return self.conent_type()
+        return self.content_type()
+
+    @format.setter
+    def format(self, value):
+        if self.file is not None:
+            self.file.contentType = value
+        # TODO: really do nothing otherwise?
+        #       calling setFormat causes infinite recursion
+        #else:
+        #    self.setFormat(value)
 
 
 class ISpeciesDataset(model.Schema):

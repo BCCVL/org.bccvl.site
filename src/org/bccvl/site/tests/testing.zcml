@@ -13,26 +13,5 @@
     <include package="gu.transmogrifier"/>
 
     <includeOverrides package="org.bccvl.site" file="overrides.zcml"/>
-
-    <!-- register some mock functions -->
-    <utility
-        component=".compute.testsdm"
-        name="org.bccvl.site.content.interfaces.ISDMExperiment"/>
-
-    <utility
-        component=".compute.testprojection"
-        name="org.bccvl.site.content.interfaces.IProjectionExperiment"/>
-
-    <utility
-        component=".compute.testbiodiverse"
-        name="org.bccvl.site.content.interfaces.IBiodiverseExperiment"/>
-
-    <utility
-        component=".compute.testensemble"
-        name="org.bccvl.site.content.interfaces.IEnsembleExperiment"/>
-
-    <utility
-        component=".compute.testtraits"
-        name="org.bccvl.site.content.interfaces.ISpeciesTraitsExperiment"/>
     
 </configure>

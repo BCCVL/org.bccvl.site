@@ -30,4 +30,17 @@
       <permission>Manage portal</permission>
     </configlet>
 
+    <configlet
+        title="Swift Settings"
+        action_id="org.bccvl.swift.settings"
+        appId="org.bccvl"
+        category="Products"
+        condition_expl=""
+        url_expr="string:${portal_url}/@@swift-settings"
+        icon_expr="string:$portal_url/++resource++swift.png"
+        visible="True"
+        i18n:attributes="title">
+      <permission>Manage portal</permission>
+    </configlet>
+
 </object>

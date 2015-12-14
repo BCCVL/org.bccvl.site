@@ -24,7 +24,7 @@ Once we have a XMLRPC proxy we can just call the available methods.
     >>> pprint(res)
     {'@id': '...',
      '@type': 'org.bccvl.content.dataset',
-     'bounds': {'bottom': 1.0, 'left': 1.0, 'right': 3.0, 'top': 3.0},
+     'bounds': {'bottom': 1, 'left': 1, 'right': 3, 'top': 3},
      'description': '',
      'file': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',
@@ -37,8 +37,7 @@ Once we have a XMLRPC proxy we can just call the available methods.
                  'taxonID': 'urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986',
                  'vernacularName': 'Australian Brush-turkey'},
      'title': 'ABT',
-     'url': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv',
-     'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
+     'url': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv'}
     >>> res['id'] == abtuid
     True
 
@@ -52,7 +51,7 @@ have to pass in a parameter to tell it in which object we are interested.
     >>> pprint(res)
     {'@id': '...',
      '@type': 'org.bccvl.content.dataset',
-     'bounds': {'bottom': 1.0, 'left': 1.0, 'right': 3.0, 'top': 3.0},
+     'bounds': {'bottom': 1, 'left': 1, 'right': 3, 'top': 3},
      'description': '',
      'file': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv',
      'filename': 'occurrence.csv',
@@ -65,65 +64,9 @@ have to pass in a parameter to tell it in which object we are interested.
                  'taxonID': 'urn:lsid:biodiversity.org.au:afd.taxon:036fcf6e-6acc-4872-b5ce-e28904c50986',
                  'vernacularName': 'Australian Brush-turkey'},
      'title': 'ABT',
-     'url': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv',
-     'vizurl': 'http://127.0.0.1:8201/plone/datasets/species/ABT/occurrence.csv/@@download/file/occurrence.csv'}
+     'url': 'http://localhost:55001/plone/datasets/species/ABT/occurrence.csv'}
     >>> res['id'] == abtuid
     True
-
-
-
-Test getProjectionDatasets:
-===========================
-
-    >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
-    >>> res = proxy.getProjectionDatasets()
-    >>> pprint(res)
-    {'projections': []}
-
-Let's try to to log in to find some datasets.
-
-    >>> from plone.app.testing import TEST_USER_NAME, TEST_USER_PASSWORD
-    >>> from urlparse import urlsplit, urlunsplit
-    >>> urlparts = urlsplit(portal.absolute_url() + '/dm')
-    >>> urlparts = urlparts._replace(netloc="{}:{}@{}".format(
-    ...     TEST_USER_NAME, TEST_USER_PASSWORD, urlparts.netloc))
-    >>> proxy = xmlrpclib.ServerProxy(urlunsplit(urlparts))
-    >>> res = proxy.getProjectionDatasets()
-    >>> pprint(res)
-    {'projections': [{'name': 'Test Projection',
-                      'result': [{'emsc': 'RCP3PD',
-                                  'files': ['Result_file.tiff'],
-                                  'gcm': 'cccma-cgcm31',
-                                  'month': None,
-                                  'resolution': None,
-                                  'sdm': {'algorithm': 'bioclim',
-                                          'title': 'Test SDM',
-                                          'url': 'http://localhost:55001/plone/experiments/sdm/sdmresult/sdmrds'},
-                                  'species': 'Result species',
-                                  'title': 'Result Test',
-                                  'type': 'Future',
-                                  'uuid': '...',
-                                  'year': 2014}],
-                      'species': ['Result species'],
-                      'uuid': '...',
-                      'years': [2014]},
-                     {'name': 'Test SDM',
-                      'result': [{'emsc': None,
-                                  'files': ['Result_file.Rdata'],
-                                  'gcm': None,
-                                  'month': None,
-                                  'resolution': None,
-                                  'sdm': {'algorithm': 'bioclim',
-                                          'title': 'Test SDM',
-                                          'url': 'http://localhost:55001/plone/experiments/sdm/sdmresult/sdmrds'},
-                                  'species': 'Result species',
-                                  'title': 'Result Test SDM RData',
-                                  'type': 'Current',
-                                  'uuid': '...',
-                                  'year': None}],
-                      'species': ['Result species'],
-                      'uuid': '...',
-                      'years': [None]}]}
 
 
 Vocabulary endpoint:

@@ -1,37 +1,28 @@
-from datetime import datetime
-from Products.Five.browser import BrowserView
+import json
+import logging
+
+from decorator import decorator
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
-from zope import contenttype
-from pkg_resources import resource_string
-#from zope.publisher.browser import BrowserView as Z3BrowserView
-#from zope.publisher.browser import BrowserPage as Z3BrowserPage  # + publishTraverse
-#from zope.publisher.interfaces import IPublishTraverse
-from zope.publisher.interfaces import NotFound
-#from functools import wraps
-from decorator import decorator
-from plone.uuid.interfaces import IUUID
-from plone.app.uuid.utils import uuidToCatalogBrain
+from Products.Five.browser import BrowserView
+from Products.statusmessages.interfaces import IStatusMessage
 from plone import api
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
-from org.bccvl.site.job.interfaces import IJobTracker
-from org.bccvl.site.content.interfaces import IProjectionExperiment
-from org.bccvl.site.content.interfaces import ISDMExperiment
-from org.bccvl.site.content.interfaces import IBiodiverseExperiment
-from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site import defaults
-import logging
+from plone.dexterity.utils import createContentInContainer
+from plone.registry.interfaces import IRegistry
+from zope import contenttype
 from zope.component import getUtility, queryUtility
-from zope.schema import getFields
+from zope.publisher.interfaces import NotFound
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
-import json
-from Products.statusmessages.interfaces import IStatusMessage
-from org.bccvl.site.browser.ws import IDataMover, IALAService
-from plone.dexterity.utils import createContentInContainer
+
+from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
-from org.bccvl.site.utils import DecimalJSONEncoder
-from org.bccvl.site.job.interfaces import IJobUtility
+from org.bccvl.site.browser.ws import IALAService
+from org.bccvl.site.content.interfaces import IDataset
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
+from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.site.swift.interfaces import ISwiftSettings
+from org.bccvl.site.utils import decimal_encoder
 
 
 LOG = logging.getLogger(__name__)
@@ -83,7 +74,7 @@ def returnwrapper(f, *args, **kw):
 
     # if we don't have xmlrpc we serialise to json
     if not isxmlrpc:
-        ret = DecimalJSONEncoder().encode(ret)
+        ret = json.dumps(ret, default=decimal_encoder)
         view.request.response['CONTENT-TYPE'] = 'application/json'
     # FIXME: chaching headers should be more selective
     # prevent caching of ajax results... should be more selective here
@@ -164,151 +155,6 @@ class DataSetManager(BrowserView):
                            'title': brain.Title})
         return result
 
-    # TODO: this is rather experiment API
-    @returnwrapper
-    def getSDMDatasets(self):
-        # get all SDM current projection datasets
-        pc = getToolByName(self.context, 'portal_catalog')
-        sdmbrains = pc.searchResults(
-            object_provides=ISDMExperiment.__identifier__,
-            sort_on='sortable_title')  # date?
-        sdms = []
-        for sdmbrain in sdmbrains:
-            # TODO: this loop over loop is inefficient
-            # TODO: this pattern is all the same across, get XXXDatasets
-            datasets = []
-            for dsbrain in pc.searchResults(
-                    path=sdmbrain.getPath(),
-                    BCCDataGenre='DataGenreCP'):
-                # get required metadata about dataset
-                datasets.append({
-                    #"files": [raster file names],
-                    "title": dsbrain.Title,
-                    "uuid": dsbrain.UID,
-                    "url": dsbrain.getURL(),
-                    #"year", "gcm", "msc", "species"
-                })
-            sdms.append({
-                #"species": [],
-                #"years": [],
-                "name": sdmbrain.Title,
-                "uuid": sdmbrain.UID,
-                "url": sdmbrain.getURL(),
-                "result": datasets
-            })
-        return {'sdms': sdms}
-
-    # TODO: this is rather experiment API
-    @returnwrapper
-    def getBiodiverseDatasets(self):
-        # TODO: there must be a way to do this with lfewer queries
-        pc = getToolByName(self.context, 'portal_catalog')
-        biodiversebrains = pc.searchResults(
-            object_provides=IBiodiverseExperiment.__identifier__,
-            sort_on='sortable_title')  # date?
-        biodiverses = []
-        for biodiversebrain in biodiversebrains:
-            # search for datasets with this experiment
-            datasets = []
-            # TODO: query for data genre class?
-            for dsbrain in pc.searchResults(
-                    path=biodiversebrain.getPath(),
-                    BCCDataGenre=('DataGenreENDW_CWE',
-                                  'DataGenreENDW_WE',
-                                  'DataGenreENDW_RICHNESS',
-                                  'DataGenreENDW_SINGLE',
-                                  'DataGenreREDUNDANCY_SET1',
-                                  'DataGenreREDUNDANCY_SET2',
-                                  'DataGenreREDUNDANCY_ALL')):
-                # get required metadata about dataset
-                datasets.append({
-                    "title": dsbrain.Title,
-                    "uuid": dsbrain.UID,
-                    "url": dsbrain.getURL(),
-                })
-            biodiverses.append({
-                "name": biodiversebrain.Title,
-                "uuid": biodiversebrain.UID,
-                "url": biodiversebrain.getURL(),
-                "result": datasets
-            })
-        return {'biodiverses': biodiverses}
-
-    # TODO: This method is very specific to UI in use,...
-    #       maybe move to UI specific part?
-    @returnwrapper
-    def getProjectionDatasets(self):
-        pc = getToolByName(self.context, 'portal_catalog')
-        # to make it easire to produce required structure do separate queries
-        # 1st query for all projection experiments
-        projbrains = pc.searchResults(
-            object_provides=(IProjectionExperiment.__identifier__, ISDMExperiment.__identifier__),
-            sort_on='sortable_title')  # date?
-        # the list to collect results
-        projections = []
-        for projbrain in projbrains:
-            # get all result datasets from experiment and build list
-            datasets = []
-            agg_species = set()
-            agg_years = set()
-            for dsbrain in pc.searchResults(
-                    path=projbrain.getPath(),
-                    BCCDataGenre=('DataGenreFP', 'DataGenreCP')):
-                # get year, gcm, emsc, species, filename/title, fileuuid
-                # TODO: Result is one file per species ... should this be a dict by species or year as well?
-                ds = dsbrain.getObject()
-                md = IBCCVLMetadata(ds)
-                # parse year
-                year = md.get('year', None)
-                month = md.get('month', None)
-                species = md.get('species', {}).get('scientificName')
-                dsinfo = {
-                    # passible fields on brain:
-                    #   Description, BCCResolution
-                    #   ds.file.contentType
-                    # TODO: restructure ... tile, filename no list
-                    "title":  dsbrain.Title,
-                    "uuid": dsbrain.UID,
-                    "files": [ds.file.filename],  # filenames
-                    "year": year,  # int or string?
-                    "month": month,
-                    "gcm": md.get('gcm'),  # URI? title? both?-> ui can fetch vocab to get titles
-                    "emsc": md.get('emsc'),
-                    "species": species,
-                    "resolution": dsbrain.BCCResolution,
-                }
-                # add info about sdm
-                if 'DataGenreCP' in dsbrain.BCCDataGenre:
-                    sdmresult = ds.__parent__
-                    # sdm = .... it's the model as sibling to this current projection ds
-                    sdm = ds  # FIXME: wrong object here
-                    dsinfo['type'] = u"Current"
-                else:
-                    sdmuuid = ds.__parent__.job_params['species_distribution_models']
-                    sdm = uuidToCatalogBrain(sdmuuid).getObject()
-                    sdmresult = sdm.__parent__
-                    dsinfo['type'] = u"Future"
-                sdmexp = sdmresult.__parent__
-                dsinfo['sdm'] = {
-                    'title': sdmexp.title,
-                    'algorithm': sdmresult.job_params['function'],
-                    'url': sdm.absolute_url()
-                }
-                datasets.append(dsinfo)
-                agg_species.add(species)
-                agg_years.add(year)
-            # TODO: could also aggregate all data on projections result:
-            #       e.g. list all years, grms, emsc, aggregated from datasets
-            projections.append({
-                "name": projbrain.Title,  # TODO: rename to title
-                "uuid":  projbrain.UID,   # TODO: rename to uuid
-                "species":  tuple(agg_species),
-                "years": tuple(agg_years),
-                "result": datasets
-            })
-        # wrap in projections neccesarry?
-        return {'projections': projections}
-
     # TODO: this is generic api ....
     @returnwrapper
     def getVocabulary(self, name):
@@ -335,12 +181,6 @@ class DataSetManager(BrowserView):
                 data.update(term.data)
             result.append(data)
         return result
-
-    @returnwrapper
-    def getThresholds(self, datasets, thresholds=None):
-        # datasets: a future projection dataset as a result of projectien experiment
-        # thresholds: list of names to retrieve or all
-        return dataset.getThresholds(datasets, thresholds)
 
 
 class DataSetAPI(BrowserView):
@@ -473,7 +313,6 @@ class ALAProxy(BrowserView):
 
 class DataMover(BrowserView):
 
-    # TODO: typo in view ergistartion in api.zcml-> update js as well
     @returnwrapper
     def pullOccurrenceFromALA(self, lsid, taxon,  common=None):
         # TODO: check permisions?
@@ -484,11 +323,18 @@ class DataMover(BrowserView):
         title = [taxon]
         if common:
             title.append(u"({})".format(common))
-        # TODO: check whether title will be updated in transmog import?
-        #       set title now to "Whatever (import pending)"?
+
+        # TODO: move content creation into IALAJobTracker?
+        # remotedataset?
+        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+        if swiftsettings.storage_url:
+            portal_type = 'org.bccvl.content.remotedataset'
+        else:
+            portal_type = 'org.bccvl.content.dataset'
+
         # TODO: make sure we get a better content id that dataset-x
         ds = createContentInContainer(dscontainer,
-                                      'org.bccvl.content.dataset',
+                                      portal_type,
                                       title=u' '.join(title))
         # TODO: add number of occurences to description
         ds.description = u' '.join(title) + u' imported from ALA'
@@ -516,13 +362,6 @@ class DataMover(BrowserView):
 
         return (status, message)
 
-    @returnwrapper
-    def checkALAJobStatus(self, job_id):
-        # TODO: check permissions? or maybe git rid of this here and
-        #       use job tracking for status. (needs job annotations)
-        dm = getUtility(IDataMover)
-        return dm.check_move_status(job_id)
-
 
 class ExportResult(BrowserView):
     # TODO: should be post only? see plone.security for
@@ -542,7 +381,18 @@ class ExportResult(BrowserView):
         context_path = '/'.join(self.context.getPhysicalPath())
         member = api.user.get_current()
 
-        zipurl = self.context.absolute_url() + '/resultdownload'
+        # collect list of files to export:
+        urllist = []
+        for content in self.context.values():
+            if content.portal_type not in ('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset'):
+                # skip non datasets
+                continue
+            dlinfo = IDownloadInfo(content)
+            urllist.append(dlinfo['url'])
+        # add mets.xml
+        urllist.append('{}/mets.xml'.format(self.context.absolute_url()))
+        # add prov.ttl
+        urllist.append('{}/prov.ttl'.format(self.context.absolute_url()))
 
         from org.bccvl.tasks.celery import app
         from org.bccvl.tasks.plone import after_commit_task
@@ -551,7 +401,7 @@ class ExportResult(BrowserView):
         #        servicetype via API with serviceid
         export_task = app.signature(
             "org.bccvl.tasks.export_services.export_result",
-            args=(zipurl,
+            args=(urllist,
                   serviceid, {'context': context_path,
                               'user': {
                                   'id': member.getUserName(),
@@ -577,135 +427,3 @@ class ExportResult(BrowserView):
             nexturl = self.context.__parent__.absolute_url()
         self.request.response.redirect(nexturl, 307)
         return (status, message)
-
-# FIXME: Remove Me
-class DemoSDM(BrowserView):
-
-    @returnwrapper
-    def demosdm(self, *args, **kw):
-        # Swift params
-        # FIXME: these values should come from some configuration
-        # FIXME: swift host should be discovered OpenStack API?
-        swift_tenant_id = '0bc40c2c2ff94a0b9404e6f960ae5677'
-        swift_host = 'swift.rc.nectar.org.au:8888'
-        swift_container = 'demosdm'
-
-        # get parameters
-        lsid = self.request.form.get('lsid', None)
-        if not lsid:
-            self.request.response.setStatus(400)
-            return {'error': 'Missing parameter lsid'}
-        # we have an lsid,.... we can't really verify but at least some data is here
-        # find rest of parameters
-        # FIXME: hardcoded path to environmental datasets
-        portal = api.portal.get()
-        dspath = '/'.join([defaults.DATASETS_FOLDER_ID,
-                           defaults.DATASETS_CLIMATE_FOLDER_ID,
-                           'australia', 'australia_5km',
-                           'current.zip'])
-        ds = portal.restrictedTraverse(dspath)
-        dsuuid = IUUID(ds)
-        # FIXME: we don't use a IJobTracker here for now
-        # get toolkit and
-        func = portal[defaults.TOOLKITS_FOLDER_ID]['demosdm']
-        # build job_params:
-        dlinfo = IDownloadInfo(ds)
-        dsmd = IBCCVLMetadata(ds)
-        envlist = []
-        for layer in ('B01', 'B04', 'B05', 'B06', 'B12', 'B15', 'B16', 'B17'):
-            envlist.append({
-                'uuid': dsuuid,
-                'filename': dlinfo['filename'],
-                'downloadurl': dlinfo['url'],
-                'internalurl': dlinfo['alturl'][0],
-                'layer': layer,
-                'type': dsmd['layers'][layer]['datatype'],
-                'zippath': dsmd['layers'][layer]['filename']
-            })
-
-        job_params = {
-            'resolution': IBCCVLMetadata(ds)['resolution'],
-            'function': func.getId(),
-            'species_occurrence_dataset': {
-                'uuid': lsid,
-                'species': u'demoSDM',
-                'internalurl': 'ala://ala?lsid={}'.format(lsid),
-                'downloadurl': 'ala://ala?lsid={}'.format(lsid),
-            },
-            'environmental_datasets': envlist,
-        }
-        # add toolkit parameters: (all default values)
-        # get toolkit schema
-        from plone.supermodel import loadString
-        schema = loadString(func.schema).schema
-        for name, field in getFields(schema).items():
-            if field.default is not None:
-                job_params[name] = field.default
-        # add other default parameters
-        job_params.update({
-            'rescale_all_models': False,
-            'selected_models': 'all',
-            'modeling_id': 'bccvl',
-        })
-        # generate script to run
-        script = u'\n'.join([
-            resource_string('org.bccvl.compute', 'rscripts/bccvl.R'),
-            resource_string('org.bccvl.compute', 'rscripts/eval.R'),
-            func.script])
-        # where to store results
-        jobid = lsid
-        result = {
-            'results_dir': 'swift://nectar/{}/{}/'.format(swift_container, jobid),
-            'outputs': json.loads(func.output)
-        }
-        # worker hints:
-        worker = {
-            'script': {
-                'name': '{}.R'.format(func.getId()),
-                'script': script
-            },
-            'files': (
-                'species_occurrence_dataset',
-                'environmental_datasets'
-            )
-        }
-        # put everything together
-        jobdesc = {
-            'env': {},
-            'params': job_params,
-            'worker': worker,
-            'result': result,
-        }
-
-        # create job
-        jobtool = getUtility(IJobUtility)
-        job = jobtool.new_job()
-        job.lsid = lsid
-        job.toolkit = IUUID(func)
-        job.function = func.getId()
-        job.type = 'org.bccvl.content.sdmexperiment'
-        jobtool.reindex_job(job)
-        # create job context object
-        member = api.user.get_current()
-        context = {
-            # we use the site object as context
-            'context': '/'.join(portal.getPhysicalPath()),
-            'jobid': job.id,
-            'user': {
-                'id': member.getUserName(),
-                'email': member.getProperty('email'),
-                'fullname': member.getProperty('fullname')
-            },
-        }
-
-        # all set to go build task chain now
-        from org.bccvl.tasks.compute import demo_task
-        from org.bccvl.tasks.plone import after_commit_task
-        after_commit_task(demo_task, jobdesc, context)
-        # let's hope everything works, return result
-
-        return {
-            'state': 'https://{}/v1/AUTH_{}/{}/{}/state.json'.format(swift_host, swift_tenant_id, swift_container, jobid),
-            'result': 'https://{}/v1/AUTH_{}/{}/{}/projection.png'.format(swift_host, swift_tenant_id, swift_container, jobid),
-            'jobid': job.id,
-        }
