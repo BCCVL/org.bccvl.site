@@ -137,7 +137,7 @@
         class=".xmlrpc.ExportResult"
         allowed_attributes="export_result"
         for="Products.CMFCore.interfaces.IFolderish"
-        permission="cmf.ModifyPortalContent"
+        permission="zope2.View"
         >
       <browser:page
           name="export_result"
