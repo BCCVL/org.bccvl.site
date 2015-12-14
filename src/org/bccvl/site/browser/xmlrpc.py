@@ -411,7 +411,7 @@ class ExportResult(BrowserView):
         export_task = app.signature(
             "org.bccvl.tasks.export_services.export_result",
             args=(urllist,
-                  provdata, # prov.ttl
+                  provdata.data, # prov.ttl
                   serviceid, {'context': context_path,
                               'user': {
                                   'id': member.getUserName(),
