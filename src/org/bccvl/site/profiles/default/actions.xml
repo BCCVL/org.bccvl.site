@@ -56,12 +56,24 @@
       <property name="visible">True</property>
     </object>
     <object name="knowledgebase" meta_type="CMF Action" i18n:domain="plone">
-      <property name="title" i18n:translate="">Knowledge Base</property>
+      <property name="title" i18n:translate="">Support</property>
       <property name="description" i18n:translate=""></property>
       <property name="url_expr">string:${portal/knowledgebase/absolute_url}</property>
       <property name="link_target"></property>
       <property name="icon_expr"></property>
       <property name="available_expr"></property>
+      <property name="permissions">
+        <element value="View"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+    <object name="oauthprefs" meta_type="CMF Action" i18n:domain="bccvl">
+      <property name="title" i18n:translate="">Share</property>
+      <property name="description" i18n:translate=""></property>
+      <property name="url_expr">string:${globals_view/navigationRootUrl}/@@oauth-preferences</property>
+      <property name="link_target"></property>
+      <property name="icon_expr"></property>
+      <property name="available_expr">python:member is not None</property>
       <property name="permissions">
         <element value="View"/>
       </property>
