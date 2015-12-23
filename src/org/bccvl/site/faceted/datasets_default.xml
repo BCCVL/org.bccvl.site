@@ -106,21 +106,6 @@
    <property name="sortreversed"></property>
    <property name="default"></property>
   </criterion>
-  <criterion name="c5">
-   <property name="widget">select</property>
-   <property name="title">Year</property>
-   <property name="position">left</property>
-   <property name="section">default</property>
-   <property name="hidden">0</property>
-   <property name="count">1</property>
-   <property name="sortcountable">1</property>
-   <property name="hidezerocount"></property>
-   <property name="index">BCCYear</property>
-   <property name="vocabulary"></property>
-   <property name="catalog">portal_catalog</property>
-   <property name="sortreversed">1</property>
-   <property name="default"></property>
-  </criterion>
   <criterion name="c2">
    <property name="widget">pathselect</property>
    <property name="title">Collections</property>
@@ -201,6 +186,24 @@
     <element value="org.bccvl.content.remotedataset"/>
     <element value="org.bccvl.content.dataset"/>
    </property>
+  </criterion>
+  <criterion name="c15">
+   <property name="widget">checkbox</property>
+   <property name="title">Year</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable">1</property>
+   <property name="hidezerocount">1</property>
+   <property name="index">BCCYear</property>
+   <property name="operator">or</property>
+   <property name="operator_visible">0</property>
+   <property name="vocabulary"></property>
+   <property name="catalog">portal_catalog</property>
+   <property name="maxitems"></property>
+   <property name="sortreversed">1</property>
+   <property name="default"/>
   </criterion>
  </criteria>
 </object>
