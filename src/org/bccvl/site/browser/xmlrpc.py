@@ -1,6 +1,5 @@
 import json
 import logging
-from pkg_resources import resource_string
 
 from decorator import decorator
 from Products.CMFCore.utils import getToolByName
@@ -8,27 +7,20 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 from plone import api
-from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from plone.registry.interfaces import IRegistry
-from plone.uuid.interfaces import IUUID
 from zope import contenttype
 from zope.component import getUtility, queryUtility
 from zope.publisher.interfaces import NotFound
-from zope.schema import getFields
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
-from org.bccvl.site.browser.ws import IDataMover, IALAService
-from org.bccvl.site.content.interfaces import IProjectionExperiment
-from org.bccvl.site.content.interfaces import ISDMExperiment
-from org.bccvl.site.content.interfaces import IBiodiverseExperiment
+from org.bccvl.site.browser.ws import IALAService
 from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo, IProvenanceData
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobTracker
-from org.bccvl.site.job.interfaces import IJobUtility
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.site.utils import decimal_encoder
 
@@ -163,151 +155,6 @@ class DataSetManager(BrowserView):
                            'title': brain.Title})
         return result
 
-    # TODO: this is rather experiment API
-    @returnwrapper
-    def getSDMDatasets(self):
-        # get all SDM current projection datasets
-        pc = getToolByName(self.context, 'portal_catalog')
-        sdmbrains = pc.searchResults(
-            object_provides=ISDMExperiment.__identifier__,
-            sort_on='sortable_title')  # date?
-        sdms = []
-        for sdmbrain in sdmbrains:
-            # TODO: this loop over loop is inefficient
-            # TODO: this pattern is all the same across, get XXXDatasets
-            datasets = []
-            for dsbrain in pc.searchResults(
-                    path=sdmbrain.getPath(),
-                    BCCDataGenre='DataGenreCP'):
-                # get required metadata about dataset
-                datasets.append({
-                    #"files": [raster file names],
-                    "title": dsbrain.Title,
-                    "uuid": dsbrain.UID,
-                    "url": dsbrain.getURL(),
-                    #"year", "gcm", "msc", "species"
-                })
-            sdms.append({
-                #"species": [],
-                #"years": [],
-                "name": sdmbrain.Title,
-                "uuid": sdmbrain.UID,
-                "url": sdmbrain.getURL(),
-                "result": datasets
-            })
-        return {'sdms': sdms}
-
-    # TODO: this is rather experiment API
-    @returnwrapper
-    def getBiodiverseDatasets(self):
-        # TODO: there must be a way to do this with lfewer queries
-        pc = getToolByName(self.context, 'portal_catalog')
-        biodiversebrains = pc.searchResults(
-            object_provides=IBiodiverseExperiment.__identifier__,
-            sort_on='sortable_title')  # date?
-        biodiverses = []
-        for biodiversebrain in biodiversebrains:
-            # search for datasets with this experiment
-            datasets = []
-            # TODO: query for data genre class?
-            for dsbrain in pc.searchResults(
-                    path=biodiversebrain.getPath(),
-                    BCCDataGenre=('DataGenreENDW_CWE',
-                                  'DataGenreENDW_WE',
-                                  'DataGenreENDW_RICHNESS',
-                                  'DataGenreENDW_SINGLE',
-                                  'DataGenreREDUNDANCY_SET1',
-                                  'DataGenreREDUNDANCY_SET2',
-                                  'DataGenreREDUNDANCY_ALL')):
-                # get required metadata about dataset
-                datasets.append({
-                    "title": dsbrain.Title,
-                    "uuid": dsbrain.UID,
-                    "url": dsbrain.getURL(),
-                })
-            biodiverses.append({
-                "name": biodiversebrain.Title,
-                "uuid": biodiversebrain.UID,
-                "url": biodiversebrain.getURL(),
-                "result": datasets
-            })
-        return {'biodiverses': biodiverses}
-
-    # TODO: This method is very specific to UI in use,...
-    #       maybe move to UI specific part?
-    @returnwrapper
-    def getProjectionDatasets(self):
-        pc = getToolByName(self.context, 'portal_catalog')
-        # to make it easire to produce required structure do separate queries
-        # 1st query for all projection experiments
-        projbrains = pc.searchResults(
-            object_provides=(IProjectionExperiment.__identifier__, ISDMExperiment.__identifier__),
-            sort_on='sortable_title')  # date?
-        # the list to collect results
-        projections = []
-        for projbrain in projbrains:
-            # get all result datasets from experiment and build list
-            datasets = []
-            agg_species = set()
-            agg_years = set()
-            for dsbrain in pc.searchResults(
-                    path=projbrain.getPath(),
-                    BCCDataGenre=('DataGenreFP', 'DataGenreCP')):
-                # get year, gcm, emsc, species, filename/title, fileuuid
-                # TODO: Result is one file per species ... should this be a dict by species or year as well?
-                ds = dsbrain.getObject()
-                md = IBCCVLMetadata(ds)
-                # parse year
-                year = md.get('year', None)
-                month = md.get('month', None)
-                species = md.get('species', {}).get('scientificName')
-                dsinfo = {
-                    # passible fields on brain:
-                    #   Description, BCCResolution
-                    #   ds.file.contentType
-                    # TODO: restructure ... tile, filename no list
-                    "title":  dsbrain.Title,
-                    "uuid": dsbrain.UID,
-                    "files": [ds.file.filename],  # filenames
-                    "year": year,  # int or string?
-                    "month": month,
-                    "gcm": md.get('gcm'),  # URI? title? both?-> ui can fetch vocab to get titles
-                    "emsc": md.get('emsc'),
-                    "species": species,
-                    "resolution": dsbrain.BCCResolution,
-                }
-                # add info about sdm
-                if 'DataGenreCP' in dsbrain.BCCDataGenre:
-                    sdmresult = ds.__parent__
-                    # sdm = .... it's the model as sibling to this current projection ds
-                    sdm = ds  # FIXME: wrong object here
-                    dsinfo['type'] = u"Current"
-                else:
-                    sdmuuid = ds.__parent__.job_params['species_distribution_models']
-                    sdm = uuidToCatalogBrain(sdmuuid).getObject()
-                    sdmresult = sdm.__parent__
-                    dsinfo['type'] = u"Future"
-                sdmexp = sdmresult.__parent__
-                dsinfo['sdm'] = {
-                    'title': sdmexp.title,
-                    'algorithm': sdmresult.job_params['function'],
-                    'url': sdm.absolute_url()
-                }
-                datasets.append(dsinfo)
-                agg_species.add(species)
-                agg_years.add(year)
-            # TODO: could also aggregate all data on projections result:
-            #       e.g. list all years, grms, emsc, aggregated from datasets
-            projections.append({
-                "name": projbrain.Title,  # TODO: rename to title
-                "uuid":  projbrain.UID,   # TODO: rename to uuid
-                "species":  tuple(agg_species),
-                "years": tuple(agg_years),
-                "result": datasets
-            })
-        # wrap in projections neccesarry?
-        return {'projections': projections}
-
     # TODO: this is generic api ....
     @returnwrapper
     def getVocabulary(self, name):
@@ -334,12 +181,6 @@ class DataSetManager(BrowserView):
                 data.update(term.data)
             result.append(data)
         return result
-
-    @returnwrapper
-    def getThresholds(self, datasets, thresholds=None):
-        # datasets: a future projection dataset as a result of projectien experiment
-        # thresholds: list of names to retrieve or all
-        return dataset.getThresholds(datasets, thresholds)
 
 
 class DataSetAPI(BrowserView):
@@ -550,9 +391,8 @@ class ExportResult(BrowserView):
             urllist.append(dlinfo['url'])
         # add mets.xml
         urllist.append('{}/mets.xml'.format(self.context.absolute_url()))
-
-        # FIXME: make provdata available via url
-        provdata = IProvenanceData(self.context)
+        # add prov.ttl
+        urllist.append('{}/prov.ttl'.format(self.context.absolute_url()))
 
         from org.bccvl.tasks.celery import app
         from org.bccvl.tasks.plone import after_commit_task
@@ -562,7 +402,6 @@ class ExportResult(BrowserView):
         export_task = app.signature(
             "org.bccvl.tasks.export_services.export_result",
             args=(urllist,
-                  provdata, # prov.ttl
                   serviceid, {'context': context_path,
                               'user': {
                                   'id': member.getUserName(),

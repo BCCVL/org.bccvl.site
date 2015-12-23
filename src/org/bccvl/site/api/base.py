@@ -153,7 +153,8 @@ class BaseService(BrowserView):
                 'title': method['schema']['title'],
                 'description': method['schema']['description'],
                 'method': method['schema']['method'],
-                'schema': method['schema']['schema']
+                'schema': method['schema']['schema'],
+                'encType': method['schema']['encType'],
                 # TODO: target method['schema'] ... return value
             })
         #self.request.response['CONTENT-TYPE'] = 'application/json; profile=http://json-schema.org/draft-04/hyper-schema#'
