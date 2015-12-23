@@ -61,7 +61,7 @@
   <class class=".browser.DMService">
     <require
         permission="zope2.View"
-        attributes="metadata"
+        attributes="metadata update_metadata"
         />  
     <require
         permission="zope2.View"
