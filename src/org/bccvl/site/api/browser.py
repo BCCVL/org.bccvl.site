@@ -102,6 +102,66 @@ class DMService(BaseService):
             LOG.error('Caught exception %s', e)
         raise NotFound(self, 'metadata', self.request)
 
+    @returnwrapper
+    @apimethod(
+        properties={
+            'uuid': {
+                'type': 'string',
+                'title': 'Dataset UUID',
+            }
+        })
+    def update_metadata(self, uuid):
+        try:
+            brain = uuidToCatalogBrain(uuid)
+            if brain:
+                # get username
+                member = ploneapi.user.get_current()
+                if member.getId():
+                    user = {
+                        'id': member.getUserName(),
+                        'email': member.getProperty('email'),
+                        'fullname': member.getProperty('fullname')
+                    }
+                else:
+                    raise Exception("Invalid user")
+
+                # build download url
+                # 1. get context (site) relative path
+                obj_url = brain.getURL()
+                obj = brain.getObject()
+                if obj.portal_type == 'org.bccvl.content.dataset':
+                    filename = obj.file.filename
+                    obj_url = '{}/@@download/file/{}'.format(obj_url, filename)
+                else:
+                    filename = os.path.basename(obj.remoteUrl)
+                    obj_url = '{}/@@download/{}'.format(obj_url, filename)
+
+                from org.bccvl.tasks.celery import app
+                update_task = app.signature(
+                    "org.bccvl.tasks.datamover.update_metadata",
+                    args=(obj_url,
+                          filename,
+                          obj.format,
+                          {
+                              'context': '/'.join(obj.getPhysicalPath()),
+                              'user': user,
+                          }
+                    ),
+                    options={'immutable': True});
+
+                from org.bccvl.tasks.plone import after_commit_task
+                from org.bccvl.site.job.interfaces import IJobTracker
+                after_commit_task(update_task)
+                # track background job state
+                jt = IJobTracker(obj)
+                job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
+                job.type = obj.portal_type
+                jt.set_progress('PENDING', 'Metadata update pending')
+                return job.id
+        except Exception as e:
+            LOG.error('Caught exception %s', e)
+        raise NotFound(self, 'update_metadata', self.request)
+
 
 @api
 @implementer(IJobService)
@@ -351,7 +411,6 @@ class SiteService(BaseService):
         }
     )
     def can_access(self, uuid=None):
-        import ipdb; ipdb.set_trace()
         if uuid:
             context = uuidToCatalogBrain(uuid)
         else:
