@@ -1360,6 +1360,33 @@
         <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
+        <element key="value">FPARmean</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Mean)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
+      </element>
+      <element>
+        <element key="value">FPARmin</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Min)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
+      </element>
+            <element>
+        <element key="value">FPARmax</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Max)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
+      </element>
+      <element>
         <element key="value">projection_suitability</element>
         <element key="title">Environmental Suitability</element>
         <element key="unit"> </element>
