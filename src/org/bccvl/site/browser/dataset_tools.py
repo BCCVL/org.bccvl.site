@@ -1,3 +1,4 @@
+import json
 from Products.Five import BrowserView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
@@ -92,6 +93,16 @@ class DatasetTools(BrowserView):
         if itemobj is None:
             itemobj = self.context
         return getdsmetadata(itemobj)
+
+    # FIXME: make sure self.metadata is cached somehow and requseted only once per request
+    # TODO: use more suitable serialisation (pure json doesn't have CRS)
+    def bbox(self, itemobj=None):
+        md = self.metadata(itemobj)
+        if 'bounds' in md:
+            return json.dumps(md.get("bounds", ""))
+        # get first bounds of first layer... all layers should have thesame bounds
+        layermd = md['layers'].values()[0]
+        return json.dumps(layermd.get("bounds", ""))
 
     def bccvlmd(self, itemobj=None):
         if itemobj is None:

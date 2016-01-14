@@ -283,6 +283,7 @@ class SDMJobTracker(MultiJobTracker):
                     'species_pseudo_absence_points': self.context.species_pseudo_absence_points,
                     'species_number_pseudo_absence_points': self.context.species_number_pseudo_absence_points,
                     'environmental_datasets': self.context.environmental_datasets,
+                    'modelling_region': self.context.modelling_region,
                 }
                 # add toolkit params:
                 result.job_params.update(self.context.parameters[IUUID(func)])
@@ -335,7 +336,8 @@ class ProjectionJobTracker(MultiJobTracker):
             'gcm': dsmd['gcm'],
             'resolution': dsmd['resolution'],
             'future_climate_datasets': projlayers,
-            'function': algorithm
+            'function': algorithm,
+            'projection_region': self.context.projection_region,
             }
         return result
 
