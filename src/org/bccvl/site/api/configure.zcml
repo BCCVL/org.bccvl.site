@@ -161,7 +161,7 @@
   <class class=".browser.SiteService">
     <require
         permission="zope2.View"
-        attributes="can_access"
+        attributes="can_access send_support_email"
         />  
     <require
         permission="zope2.View"

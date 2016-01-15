@@ -22,6 +22,9 @@ from org.bccvl.site.api.interfaces import IAPIService, IDMService, IJobService, 
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobUtility
 from org.bccvl.site.swift.interfaces import ISwiftSettings
+import pkg_resources
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 LOG = logging.getLogger(__name__)
@@ -429,3 +432,53 @@ class SiteService(BaseService):
             return 'denied'
         else:
             return 'allowed'
+
+    @returnwrapper
+    @apimethod(
+        properties={
+            'uuid': {
+                'type': 'string',
+                'title': 'Experiment URL',
+            }
+        }
+    )
+    def send_support_email(self, url=None):
+        try:
+            if url is None:
+                raise Exception("URL is not specified")
+
+            # get username
+            member = ploneapi.user.get_current()
+            if member.getId():
+                user = {
+                    'id': member.getUserName(),
+                    'email': member.getProperty('email'),
+                    'fullname': member.getProperty('fullname')
+                }
+            else:
+                raise Exception("Invalid user")
+
+            portal_email =  ploneapi.portal.get().getProperty('email_from_address')
+            email_to = [portal_email, user['email']]
+            subject = "Help: BCCVL experiment failed"
+            body = pkg_resources.resource_string("org.bccvl.site.api", "help_email.txt")
+            body = body.format(experiment_url=url, username=user['fullname'], user_email=user['email'])
+
+            htmlbody = pkg_resources.resource_string("org.bccvl.site.api", "help_email.html")
+            htmlbody = htmlbody.format(experiment_url=url, username=user['fullname'], user_email=user['email'])
+
+            msg = MIMEMultipart('alternative')
+            msg.attach(MIMEText(body, 'plain'))
+            msg.attach(MIMEText(htmlbody, 'html'))
+
+            ploneapi.portal.send_email(recipient=email_to, sender=portal_email, subject=subject, body=msg.as_string())
+            return {
+                'success': True,
+                'message': u'Your email has been sent'
+            }
+        except Exception as e:
+            LOG.error('send_support_email: exception %s', e)
+            return {
+                'success': False,
+                'message': u'Fail to send your email to BCCVL support. Exception {}'.format(e)
+            }
