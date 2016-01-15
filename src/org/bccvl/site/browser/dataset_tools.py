@@ -326,6 +326,24 @@ class DatasetTools(BrowserView):
                                       BCCDataGenre=genres):
             yield brain
 
+    # FIXME: this method should be merged with experiment_results above
+    # TODO: both methods are good candidates for ajax API methods and template API methods (also should be more generic like finding results from different experiments / results)
+    def experiment_plots(self, context=None):
+        # return visualisable results for experiment
+        # - used in overlay and compare
+        if context is None:
+            context = self.context
+        pc = getToolByName(self.context, 'portal_catalog')
+        genres = ('DataGenreSDMEval', )
+        # context should be a result folder
+        for brain in pc.searchResults(path='/'.join(context.getPhysicalPath()),
+                                      BCCDataGenre=genres):
+            # FIXME: this check is very inefficient but we are lacking a contentype index field
+            dlinfo = IDownloadInfo(brain.getObject())
+            if not dlinfo['contenttype'].startswith('image/'):
+                continue
+            yield brain
+
     def details(self, context=None):
         # fetch details about dataset, if attributes are unpopulated
         # get data from associated collection
