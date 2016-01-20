@@ -62,13 +62,14 @@ class JobUtility(object):
             return None
         return brains[0].getObject()
 
-    def set_progress(self, job, progress=None, message=None):
+    def set_progress(self, job, progress=None, message=None, rusage=None):
         """
         progress ... a short notice (maybe percent?, #step)
         message ... longer description of progress
         """
         job.progress = progress
         job.message = message
+        job.rusage = rusage
         self.reindex_job(job)
 
     def set_state(self, job, state):
