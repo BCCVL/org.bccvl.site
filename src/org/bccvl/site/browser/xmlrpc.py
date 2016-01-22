@@ -401,13 +401,18 @@ class ExportResult(BrowserView):
         #        servicetype via API with serviceid
         export_task = app.signature(
             "org.bccvl.tasks.export_services.export_result",
-            args=(urllist,
-                  serviceid, {'context': context_path,
-                              'user': {
-                                  'id': member.getUserName(),
-                                  'email': member.getProperty('email'),
-                                  'fullname': member.getProperty('fullname')
-                              }}),
+            kwargs={
+                'zipurl': urllist,
+                'serviceid': serviceid,
+                'context': {
+                    'context': context_path,
+                    'user': {
+                        'id': member.getUserName(),
+                        'email': member.getProperty('email'),
+                        'fullname': member.getProperty('fullname')
+                    }
+                }
+            },
             options={'immutable': True});
 
         # queue job submission

@@ -134,7 +134,7 @@ class DMService(BaseService):
                     'fullname': member.getProperty('fullname')
                 }
             else:
-                raise Exception("Invalid user")                        
+                raise Exception("Invalid user")
 
             # build download url
             # 1. get context (site) relative path
@@ -152,14 +152,15 @@ class DMService(BaseService):
             from org.bccvl.tasks.celery import app
             update_task = app.signature(
                 "org.bccvl.tasks.datamover.update_metadata",
-                args=(obj_url,
-                      filename,
-                      obj.format,
-                      {
-                          'context': '/'.join(obj.getPhysicalPath()),
-                          'user': user,
-                      }
-                ),
+                kwargs={
+                    'url': obj_url,
+                    'filename': filename,
+                    'contenttype': obj.format,
+                    'context': {
+                        'context': '/'.join(obj.getPhysicalPath()),
+                        'user': user,
+                    }
+                },
                 options={'immutable': True});
 
             from org.bccvl.tasks.plone import after_commit_task

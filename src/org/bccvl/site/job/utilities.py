@@ -67,9 +67,14 @@ class JobUtility(object):
         progress ... a short notice (maybe percent?, #step)
         message ... longer description of progress
         """
-        job.progress = progress
-        job.message = message
-        job.rusage = rusage
+        # only set values if the have been passed in as params
+        if progress != None:
+            job.progress = progress
+        if message != None:
+            job.message = message
+        if rusage != None:
+            job.rusage = rusage
+        # TODO: only reindex if there were changes
         self.reindex_job(job)
 
     def set_state(self, job, state):
@@ -135,14 +140,14 @@ class JobTracker(object):
             }
         return None
 
-    def set_progress(self, progress=None, message=None):
+    def set_progress(self, progress=None, message=None, rusage=None):
         """
         progress ... a short notice (maybe percent?, #step)
         message ... longer description of progress
         """
         job = self.get_job()
         if job:
-            self.job_tool.set_progress(job, progress, message)
+            self.job_tool.set_progress(job, progress, message, rusage)
 
     def new_job(self, taskid, title):
         # FIXME: this is duplicate API ... should probably go away

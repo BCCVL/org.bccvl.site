@@ -76,15 +76,19 @@ class BCCVLUploadForm(DefaultAddForm):
         # FIXME works only for local files
         update_task = app.signature(
             "org.bccvl.tasks.datamover.update_metadata",
-            args=('{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
-                  new_object.file.filename,
-                  new_object.file.contentType,
-                  {'context': context_path,
-                   'user': {
-                       'id': member.getUserName(),
-                       'email': member.getProperty('email'),
-                       'fullname': member.getProperty('fullname')
-                   }}),
+            kwargs={
+                'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
+                'filename': new_object.file.filename,
+                'contenttype': new_object.file.contentType,
+                'context': {
+                    'context': context_path,
+                    'user': {
+                        'id': member.getUserName(),
+                        'email': member.getProperty('email'),
+                        'fullname': member.getProperty('fullname')
+                    }
+                }
+            },
             options={'immutable': True});
         # queue job submission
         after_commit_task(update_task)
