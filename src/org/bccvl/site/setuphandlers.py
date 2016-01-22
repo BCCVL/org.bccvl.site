@@ -428,7 +428,7 @@ def upgrade_220_230_1(context, logger=None):
     for brain in pc.searchResults(portal_type=EXP_TYPES):
         # Update job with process statistic i.e. rusage
         for result in brain.getObject().values():
-            if not result.has_key('pstats.json'):
+            if not 'pstats.json' in result:
                 continue
 
             jt = IJobTracker(result)
