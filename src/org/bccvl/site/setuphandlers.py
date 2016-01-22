@@ -401,3 +401,46 @@ def upgrade_210_220_1(context, logger=None):
     for acl in (portal.acl_users, portal.__parent__.acl_users):
         if 'localscript' in acl:
             acl.manage_delObjects('localscript')
+
+
+def upgrade_220_230_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    pc = api.portal.get_tool('portal_catalog')
+
+   # search all experiments and update job object with infos from experiment
+    # -> delete job info on experiment
+    LOG.info('Migrating job data for experiments')
+    EXP_TYPES = ['org.bccvl.content.sdmexperiment',
+                 'org.bccvl.content.projectionexperiment',
+                 'org.bccvl.content.biodiverseexperiment',
+                 'org.bccvl.content.ensemble',
+                 'org.bccvl.content.speciestraitsexperiment'
+    ]
+
+    from org.bccvl.site.job.interfaces import IJobTracker
+    import json
+    for brain in pc.searchResults(portal_type=EXP_TYPES):
+        # Update job with process statistic i.e. rusage
+        for result in brain.getObject().values():
+            if not result.has_key('pstats.json'):
+                continue
+
+            jt = IJobTracker(result)
+            job = None
+            try:
+                job = jt.get_job()
+            except Exception as e:
+                LOG.info('Could not resolve %s: %s', result, e)
+            if not job:
+                continue
+
+            pstats = result['pstats.json']
+            if hasattr(pstats, 'file'):
+                job.rusage = json.loads(pstats.file.data)
+                del result['pstats.json']

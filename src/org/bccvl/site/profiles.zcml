@@ -101,5 +101,18 @@
         />
 
   </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="220"
+      destination="230"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 230"
+        description="Update to store rusage in job"
+        handler=".setuphandlers.upgrade_220_230_1"
+        />
+
+  </genericsetup:upgradeSteps>
   
 </configure>

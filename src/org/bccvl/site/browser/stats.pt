@@ -138,7 +138,7 @@
                        tal:define="algo_run view/algorithm_average_runtimes">
               <tr tal:condition="python: algo_type[0] in algo_run">
                 <td tal:content="python: view.get_func_obj(funcid=algo_type[0]).Title"/>
-                <td tal:content="python: algo_type[1]" style="text-align:right;"/>
+                <td tal:content="python: algo_run[algo_type[0]]['count']" style="text-align:right;"/>
                 <td tal:content="python: algo_run[algo_type[0]]['success']" style="text-align:right;"></td>
                 <td tal:content="python: algo_run[algo_type[0]]['failed']" style="text-align:right;"></td>
                 <td tal:content="python: algo_run[algo_type[0]]['mean']" style="text-align:right;"></td>
