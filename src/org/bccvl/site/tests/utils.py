@@ -132,12 +132,12 @@ class SDMExperimentHelper(object):
             # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
             import_result_job(items, params['result']['results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('COMPLETED', 'Test Task succeeded', context)
+            set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
             # 4. clean up if problem otherwise import task cleans up
             #    TODO: should be done by errback or whatever
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('FAILED', 'Test Task failed', context)
+            set_progress('FAILED', 'Test Task failed', None, context)
             raise
 
 
@@ -221,12 +221,12 @@ class ProjectionExperimentHelper(object):
             # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
             import_result_job(items, params['result']['results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('COMPLETED', 'Test Task succeeded', context)
+            set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
             # 4. clean up if problem otherwise import task cleans up
             #    TODO: should be done by errback or whatever
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('FAILED', 'Test Task failed', context)
+            set_progress('FAILED', 'Test Task failed', None, context)
             raise
 
 
@@ -309,12 +309,12 @@ class BiodiverseExperimentHelper(object):
             # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
             import_result_job(items, params['result']['results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('COMPLETED', 'Test Task succeeded', context)
+            set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
             # 4. clean up if problem otherwise import task cleans up
             #    TODO: should be done by errback or whatever
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('FAILED', 'Test Task failed', context)
+            set_progress('FAILED', 'Test Task failed', None, context)
             raise
 
 
@@ -394,12 +394,12 @@ class EnsembleExperimentHelper(object):
             # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
             import_result_job(items, params['result']['results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('COMPLETED', 'Test Task succeeded', context)
+            set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
             # 4. clean up if problem otherwise import task cleans up
             #    TODO: should be done by errback or whatever
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('FAILED', 'Test Task failed', context)
+            set_progress('FAILED', 'Test Task failed', None, context)
             raise
 
 
@@ -491,10 +491,10 @@ class SpeciesTraitsExperimentHelper(object):
             # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
             import_result_job(items, params['result']['results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('COMPLETED', 'Test Task succeeded', context)
+            set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
             # 4. clean up if problem otherwise import task cleans up
             #    TODO: should be done by errback or whatever
             import_cleanup(params['result']['results_dir'], context)
-            set_progress('FAILED', 'Test Task failed', context)
+            set_progress('FAILED', 'Test Task failed', None, context)
             raise
