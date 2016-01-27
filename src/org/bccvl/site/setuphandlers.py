@@ -1,15 +1,12 @@
 from Products.CMFCore.utils import getToolByName
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.context import SnapshotImportContext
-from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
-from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from eea.facetednavigation.layout.interfaces import IFacetedLayout
 from plone import api
 from plone.uuid.interfaces import IUUID
 from plone.app.uuid.utils import uuidToObject
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getUtility, getMultiAdapter
-from zope.interface import alsoProvides
 from org.bccvl.site import defaults
 import logging
 
@@ -37,6 +34,13 @@ def setupVarious(context, logger=None):
 
     # set default front-page
     portal.setDefaultPage('front-page')
+
+    # Setup cookie settings
+    sess = portal.acl_users.session
+    sess.manage_changeProperties(
+        mod_auth_tkt=True,
+        secure=True
+    )
 
     # setup default groups
     groups = [
@@ -411,6 +415,7 @@ def upgrade_220_230_1(context, logger=None):
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
     pc = api.portal.get_tool('portal_catalog')
 
    # search all experiments and update job object with infos from experiment
@@ -444,3 +449,24 @@ def upgrade_220_230_1(context, logger=None):
             if hasattr(pstats, 'file'):
                 job.rusage = json.loads(pstats.file.data)
                 del result['pstats.json']
+
+    # Setup cookie settings
+    sess = portal.acl_users.session
+    sess.manage_changeProperties(
+        mod_auth_tkt=True,
+        secure=True
+    )
+
+    # update facet configurations
+    from org.bccvl.site.faceted.interface import IFacetConfigUtility
+    from org.bccvl.site.faceted.tool import import_facet_config
+    fct = getUtility(IFacetConfigUtility)
+    for cfgobj in fct.types():
+        LOG.info("Import facet config for %s", cfgobj.id)
+        import_facet_config(cfgobj)
+
+    # set cookie secret from celery configuration
+    from org.bccvl.tasks.celery import app
+    cookie_cfg = app.conf.get('bccvl', {}).get('cookie', {})
+    if cookie_cfg.get('secret', None):
+        sess._shared_secret = cookie_cfg.get('secret')
