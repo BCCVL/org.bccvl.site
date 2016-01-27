@@ -342,6 +342,12 @@ class SDMAdd(ParamGroupMixin, Add):
                 resolution_idx = idx
         data['resolution'] = res_vocab._terms[resolution_idx].value
 
+class MSDMAdd(SDMAdd):
+    """
+    Add MSDM Experiment
+    """
+
+    portal_type = "org.bccvl.content.msdmexperiment"
 
 class ProjectionAdd(Add):
 

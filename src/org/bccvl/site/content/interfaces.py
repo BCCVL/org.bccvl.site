@@ -115,6 +115,74 @@ class ISDMExperiment(IExperiment):
         required=False,
     )
 
+class IMSDMExperiment(IExperiment):
+
+    directives.widget('functions', FunctionsFieldWidget)
+    functions = List(
+        title=u'Algorithm',
+        value_type=Choice(vocabulary='sdm_functions_source'),
+        default=None,
+        required=True,
+    )
+
+    directives.widget('species_occurrence_dataset',
+                DatasetDictFieldWidget,
+                multiple='multiple',
+                genre=['DataGenreSpeciesOccurrence'],
+                errmsg=u"Please select at least 1 occurrence dataset.",
+                vizclass=u'bccvl-occurrence-viz')
+    species_occurrence_dataset = List(
+        title=u'Species Occurrence Datasets',
+        value_type=TextLine(),
+        default=None,
+        required=True,
+        min_length=2,
+        max_length=5,
+    )
+
+    directives.widget('species_absence_dataset',
+                DatasetFieldWidget,
+                genre=['DataGenreSpeciesAbsence'],
+                errmsg=u"Please select at least 1 emmission scenario.",
+                vizclass=u'bccvl-absence-viz')
+    species_absence_dataset = TextLine(
+        title=u'Species Absence Datasets',
+        default=None,
+        required=False,
+    )
+
+    species_pseudo_absence_points = Bool(
+        title=u"Use pseudo absence points instead of dataset.",
+        description=u"Enable generation of random pseudo absence "
+                    u"points across area defined in environmental data",
+        default=False,
+        required=False)
+
+    species_number_pseudo_absence_points = Int(
+        title=u"Number of points",
+        description=u"The number of random pseudo absence points to generate",
+        default=10000,
+        required=False)
+
+    directives.widget('environmental_datasets',
+                DatasetDictFieldWidget,
+                multiple='multiple',
+                genre=['DataGenreCC', 'DataGenreE'],
+                filters=['text', 'source', 'layer', 'resolution'],
+                errmsg=u"Please select at least 1 layer.")
+    environmental_datasets = Dict(
+        title=u'Climate & Environmental Datasets',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        required=True,
+    )
+
+    directives.mode(modelling_region=HIDDEN_MODE)
+    modelling_region = Text(
+        title=u"Modelling Region",
+        description=u"GEOJson describing the geographic region which is used to generate the model.",
+        required=False,
+    )
 
 class IProjectionExperiment(IExperiment):
 
