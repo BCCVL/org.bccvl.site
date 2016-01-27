@@ -469,4 +469,4 @@ def upgrade_220_230_1(context, logger=None):
     from org.bccvl.tasks.celery import app
     cookie_cfg = app.conf.get('bccvl', {}).get('cookie', {})
     if cookie_cfg.get('secret', None):
-        sess._shared_secret = cookie_cfg.get('secret')
+        sess._shared_secret = cookie_cfg.get('secret').encode('utf-8')
