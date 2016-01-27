@@ -125,7 +125,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         form.update()
         # resolution should be set to the lowest of selected datasets
         expmd = IBCCVLMetadata(self.experiments['my-experiment'])
-        self.assertEqual(expmd['resolution'], 'Resolution2_5m')
+        self.assertEqual(expmd['resolution'], 'Resolution30s')
 
 
 class ExperimentProjectionAddTest(unittest.TestCase):
