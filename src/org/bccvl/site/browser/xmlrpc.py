@@ -402,7 +402,8 @@ class ExportResult(BrowserView):
         export_task = app.signature(
             "org.bccvl.tasks.export_services.export_result",
             kwargs={
-                'zipurl': urllist,
+                'siteurl': api.portal.get().absolute_url(),
+                'fileurls': urllist,
                 'serviceid': serviceid,
                 'context': {
                     'context': context_path,
