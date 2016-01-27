@@ -458,7 +458,7 @@ def upgrade_220_230_1(context, logger=None):
     )
 
     # update facet configurations
-    from org.bccvl.site.faceted.interface import IFacetConfigUtility
+    from org.bccvl.site.faceted.interfaces import IFacetConfigUtility
     from org.bccvl.site.faceted.tool import import_facet_config
     fct = getUtility(IFacetConfigUtility)
     for cfgobj in fct.types():
