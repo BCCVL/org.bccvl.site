@@ -1,3 +1,4 @@
+import json
 from Products.Five import BrowserView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
@@ -92,6 +93,16 @@ class DatasetTools(BrowserView):
         if itemobj is None:
             itemobj = self.context
         return getdsmetadata(itemobj)
+
+    # FIXME: make sure self.metadata is cached somehow and requseted only once per request
+    # TODO: use more suitable serialisation (pure json doesn't have CRS)
+    def bbox(self, itemobj=None):
+        md = self.metadata(itemobj)
+        if 'bounds' in md:
+            return json.dumps(md.get("bounds", ""))
+        # get first bounds of first layer... all layers should have thesame bounds
+        layermd = md['layers'].values()[0]
+        return json.dumps(layermd.get("bounds", ""))
 
     def bccvlmd(self, itemobj=None):
         if itemobj is None:
@@ -313,6 +324,24 @@ class DatasetTools(BrowserView):
         # context should be a result folder
         for brain in pc.searchResults(path='/'.join(context.getPhysicalPath()),
                                       BCCDataGenre=genres):
+            yield brain
+
+    # FIXME: this method should be merged with experiment_results above
+    # TODO: both methods are good candidates for ajax API methods and template API methods (also should be more generic like finding results from different experiments / results)
+    def experiment_plots(self, context=None):
+        # return visualisable results for experiment
+        # - used in overlay and compare
+        if context is None:
+            context = self.context
+        pc = getToolByName(self.context, 'portal_catalog')
+        genres = ('DataGenreSDMEval', )
+        # context should be a result folder
+        for brain in pc.searchResults(path='/'.join(context.getPhysicalPath()),
+                                      BCCDataGenre=genres):
+            # FIXME: this check is very inefficient but we are lacking a contentype index field
+            dlinfo = IDownloadInfo(brain.getObject())
+            if not dlinfo['contenttype'].startswith('image/'):
+                continue
             yield brain
 
     def details(self, context=None):

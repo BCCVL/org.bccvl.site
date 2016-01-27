@@ -177,13 +177,9 @@ class StatisticsView(BrowserView):
                 if not stats.has_key(algid):
                     stats[algid] = {'runtime' : 0.0, 'count' : 0, 'mean' : 0.0, 'success' : 0, 'failed' : 0}
 
-                if not v.has_key('pstats.json'):
-                    continue
-
-                pstats = v['pstats.json']
-                if hasattr(pstats, 'file'):
-                    js = json.loads(pstats.file.data)
-                    runtime = js['rusage'].get('ru_utime', -1.0) + js['rusage'].get('ru_stime', -1.0)
+                job = jt.get_job()
+                if hasattr(job, 'rusage') and job.rusage is not None:
+                    runtime = job.rusage['rusage'].get('ru_utime', -1.0) + job.rusage['rusage'].get('ru_stime', -1.0)
                     if runtime >= 0.0:
                         stats[algid]['runtime'] += runtime
                         stats[algid]['count'] += 1

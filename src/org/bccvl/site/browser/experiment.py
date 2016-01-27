@@ -331,14 +331,14 @@ class SDMAdd(ParamGroupMixin, Add):
                 raise ActionExecutionError(RequiredMissing('No absence points selected'))
             elif numabspoints < 0:
                 raise ActionExecutionError(Invalid('Number of absence points cannot be negative.'))
-        # Determine lowest resolution
+        # Determine highest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
         res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
-        resolution_idx = -1
+        resolution_idx = 99 # Arbitrary choice of upper index limit
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
             idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
-            if idx > resolution_idx:
+            if idx < resolution_idx:
                 resolution_idx = idx
         data['resolution'] = res_vocab._terms[resolution_idx].value
 

@@ -1,0 +1,7 @@
+This email has been sent to the BCCVL for support.
+
+Please look into why the experiment failed at {experiment_url}.
+
+from
+Name: {username}
+Email: {user_email}

@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 from pkg_resources import resource_string
@@ -21,6 +22,9 @@ from org.bccvl.site.api.interfaces import IAPIService, IDMService, IJobService, 
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobUtility
 from org.bccvl.site.swift.interfaces import ISwiftSettings
+import pkg_resources
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 LOG = logging.getLogger(__name__)
@@ -101,6 +105,76 @@ class DMService(BaseService):
         except Exception as e:
             LOG.error('Caught exception %s', e)
         raise NotFound(self, 'metadata', self.request)
+
+    @returnwrapper
+    @apimethod(
+        properties={
+            'uuid': {
+                'type': 'string',
+                'title': 'Dataset UUID',
+            }
+        })
+    def update_metadata(self, uuid=None):
+        try:
+            if uuid:
+                brain = uuidToCatalogBrain(uuid)
+                if brain is None:
+                    raise Exception("Brain not found")
+
+                obj = brain.getObject()
+            else:
+                obj = self.context
+
+            # get username
+            member = ploneapi.user.get_current()
+            if member.getId():
+                user = {
+                    'id': member.getUserName(),
+                    'email': member.getProperty('email'),
+                    'fullname': member.getProperty('fullname')
+                }
+            else:
+                raise Exception("Invalid user")
+
+            # build download url
+            # 1. get context (site) relative path
+            obj_url = obj.absolute_url()
+
+            if obj.portal_type == 'org.bccvl.content.dataset':
+                filename = obj.file.filename
+                obj_url = '{}/@@download/file/{}'.format(obj_url, filename)
+            elif obj.portal_type == 'org.bccvl.content.remotedataset':
+                filename = os.path.basename(obj.remoteUrl)
+                obj_url = '{}/@@download/{}'.format(obj_url, filename)
+            else:
+                raise Exception("Wrong content type")
+
+            from org.bccvl.tasks.celery import app
+            update_task = app.signature(
+                "org.bccvl.tasks.datamover.update_metadata",
+                kwargs={
+                    'url': obj_url,
+                    'filename': filename,
+                    'contenttype': obj.format,
+                    'context': {
+                        'context': '/'.join(obj.getPhysicalPath()),
+                        'user': user,
+                    }
+                },
+                options={'immutable': True});
+
+            from org.bccvl.tasks.plone import after_commit_task
+            from org.bccvl.site.job.interfaces import IJobTracker
+            after_commit_task(update_task)
+            # track background job state
+            jt = IJobTracker(obj)
+            job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
+            job.type = obj.portal_type
+            jt.set_progress('PENDING', 'Metadata update pending')
+            return job.id
+        except Exception as e:
+            LOG.error('Caught exception %s', e)
+        raise NotFound(self, 'update_metadata', self.request)
 
 
 @api
@@ -351,7 +425,6 @@ class SiteService(BaseService):
         }
     )
     def can_access(self, uuid=None):
-        import ipdb; ipdb.set_trace()
         if uuid:
             context = uuidToCatalogBrain(uuid)
         else:
@@ -360,3 +433,53 @@ class SiteService(BaseService):
             return 'denied'
         else:
             return 'allowed'
+
+    @returnwrapper
+    @apimethod(
+        properties={
+            'uuid': {
+                'type': 'string',
+                'title': 'Experiment URL',
+            }
+        }
+    )
+    def send_support_email(self, url=None):
+        try:
+            if url is None:
+                raise Exception("URL is not specified")
+
+            # get username
+            member = ploneapi.user.get_current()
+            if member.getId():
+                user = {
+                    'id': member.getUserName(),
+                    'email': member.getProperty('email'),
+                    'fullname': member.getProperty('fullname')
+                }
+            else:
+                raise Exception("Invalid user")
+
+            portal_email =  ploneapi.portal.get().getProperty('email_from_address')
+            email_to = [portal_email, user['email']]
+            subject = "Help: BCCVL experiment failed"
+            body = pkg_resources.resource_string("org.bccvl.site.api", "help_email.txt")
+            body = body.format(experiment_url=url, username=user['fullname'], user_email=user['email'])
+
+            htmlbody = pkg_resources.resource_string("org.bccvl.site.api", "help_email.html")
+            htmlbody = htmlbody.format(experiment_url=url, username=user['fullname'], user_email=user['email'])
+
+            msg = MIMEMultipart('alternative')
+            msg.attach(MIMEText(body, 'plain'))
+            msg.attach(MIMEText(htmlbody, 'html'))
+
+            ploneapi.portal.send_email(recipient=email_to, sender=portal_email, subject=subject, body=msg.as_string())
+            return {
+                'success': True,
+                'message': u'Your email has been sent'
+            }
+        except Exception as e:
+            LOG.error('send_support_email: exception %s', e)
+            return {
+                'success': False,
+                'message': u'Fail to send your email to BCCVL support. Exception {}'.format(e)
+            }

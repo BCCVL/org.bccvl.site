@@ -19,8 +19,6 @@ class FacetConfigTool(Container):
         self.portal_type = 'org.bccvl.tool.facetconfigtool'
         super(FacetConfigTool, self).__init__(*args, **kw)
 
-    pass
-
 
 @implementer(IFacetConfigUtility)
 class FacetConfigUtility(object):
@@ -67,12 +65,14 @@ def facet_config_added(obj, evt):
         IFacetedLayout(obj).update_layout('faceted-popup-items')
 
     # Add default widgets
+    import_facet_config(obj)
+
+
+def import_facet_config(obj):
     widgets = queryMultiAdapter((obj, obj.REQUEST),
                                 name=obj.id + '.xml')
-
     if not widgets:
         return
-
     xml = widgets()
     environ = SnapshotImportContext(obj, 'utf-8')
     importer = queryMultiAdapter((obj, environ), IBody)

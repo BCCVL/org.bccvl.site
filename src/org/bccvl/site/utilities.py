@@ -193,9 +193,14 @@ class SDMJobTracker(MultiJobTracker):
                     continue
                 param.add(BCCVL['value'], LOCAL[value])
             elif key in ('environmental_datasets',):
-                param.add(BCCVL['value'], LOCAL[value])
-                for layer in result.job_params[key]:
-                    param.add(BCCVL['layer'], LOCAL[layer])
+                # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
+                # FIXME: look for dict params in other experiment types as well
+                # value is a dictionary, where keys are dataset uuids and values are a set of selected layers
+                for uuid, layers in value.items():
+                    param.add(BCCVL['value'], LOCAL[uuid])
+                    for layer in layers:
+                        # TODO: maybe URIRef?
+                        param.add(BCCVL['layer'], LOCAL[layer])
             else:
                 param.add(BCCVL['value'], Literal(value))
 
@@ -205,7 +210,7 @@ class SDMJobTracker(MultiJobTracker):
             if not dsbrain:
                 continue
             ds = dsbrain.getObject()
-            dsprov = Resource(graph, LOCAL[value])
+            dsprov = Resource(graph, LOCAL[dsbrain.UID])
             dsprov.add(RDF['type'], PROV['Entity'])
             #dsprov.add(PROV['..'], Literal(''))
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
@@ -283,6 +288,7 @@ class SDMJobTracker(MultiJobTracker):
                     'species_pseudo_absence_points': self.context.species_pseudo_absence_points,
                     'species_number_pseudo_absence_points': self.context.species_number_pseudo_absence_points,
                     'environmental_datasets': self.context.environmental_datasets,
+                    'modelling_region': self.context.modelling_region,
                 }
                 # add toolkit params:
                 result.job_params.update(self.context.parameters[IUUID(func)])
@@ -335,7 +341,8 @@ class ProjectionJobTracker(MultiJobTracker):
             'gcm': dsmd['gcm'],
             'resolution': dsmd['resolution'],
             'future_climate_datasets': projlayers,
-            'function': algorithm
+            'function': algorithm,
+            'projection_region': self.context.projection_region,
             }
         return result
 

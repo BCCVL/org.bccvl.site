@@ -17,3 +17,4 @@ class Job(Persistent):
         self.toolkit = None  # function uuid
         self.function = None  # function id
         self.type = None  # type of job ... ?? maybe experiment portal_type?
+        self.rusage = None # process statistics for the job
