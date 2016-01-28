@@ -8,10 +8,10 @@
    <property name="position">right</property>
    <property name="section">default</property>
    <property name="hidden">1</property>
-   <property name="start"></property>
-   <property name="end">20</property>
+   <property name="start">5</property>
+   <property name="end">200</property>
    <property name="step">5</property>
-   <property name="default">5</property>
+   <property name="default">200</property>
   </criterion>
   <criterion name="c2">
    <property name="widget">sorting</property>
