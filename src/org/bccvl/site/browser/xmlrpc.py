@@ -17,7 +17,7 @@ from zope.schema.interfaces import IContextSourceBinder
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
-from org.bccvl.site.browser.ws import IALAService
+from org.bccvl.site.browser.ws import IALAService, IGBIFService
 from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobTracker
@@ -260,9 +260,59 @@ class UrlLibResponseIterator(object):
             raise StopIteration
         return data
 
+    def isError(self):
+        return self.resp.code != 200
+
     def __len__(self):
         return self.length
 
+class GBIFProxy(BrowserView):
+#@returnwrapper ... returning file here ... returnwrapper not handling it properly
+    _gbif_datasetkey = u'd7dddbf4-2cf0-4f39-9b2a-bb099caae36c'
+    def autojson(self, q, callback=None):
+        # TODO: do parameter checking and maybe set defaults so that
+        # js side doesn't have to do it
+        gbif = getUtility(IGBIFService)
+        return self._doResponse(gbif.autojson(q, self._gbif_datasetkey, None, callback))
+
+    #@returnwrapper ... returning file here ... returnwrapper not handling it properly
+    def searchjson(self, name, start=0, pageSize=None, callback=None):
+        # TODO: do parameter checking and maybe set defaults so that
+        #       js side doesn't have to do it
+        gbif = getUtility(IGBIFService)
+        return self._doResponse(gbif.searchjson(name, self._gbif_datasetkey, start, pageSize, callback))
+
+    def speciesjson(self, genusKey, start=0, pageSize=None, callback=None):
+        gbif = getUtility(IGBIFService)
+        return self._doResponse(gbif.speciesjson(genusKey, self._gbif_datasetkey, start, pageSize, callback))
+
+
+    def _doResponse(self, resp):
+        # TODO: add headers like:
+        #    User-Agent
+        #    orig-request
+        #    etc...
+        # TODO: check response code?
+        for name in ('Date', 'Pragma', 'Expires', 'Content-Type',
+                     'Cache-Control', 'Content-Language', 'Content-Length',
+                     'transfer-encoding'):
+            value = resp.headers.getheader(name)
+            if value:
+                self.request.response.setHeader(name, value)
+        self.request.response.setStatus(resp.code)
+        ret = UrlLibResponseIterator(resp)
+        if len(ret) != 0:
+            # we have a content-length so let the publisher stream it
+            return ret
+        import ipdb; ipdb.set_trace()
+        # we don't have content-length and stupid publisher want's one
+        # for stream, so let's stream it ourselves.
+        while True:
+            try:
+                data = ret.next()
+                self.request.response.write(data)
+            except StopIteration:
+                break
 
 class ALAProxy(BrowserView):
 
@@ -314,7 +364,7 @@ class ALAProxy(BrowserView):
 class DataMover(BrowserView):
 
     @returnwrapper
-    def pullOccurrenceFromALA(self, lsid, taxon,  common=None):
+    def pullOccurrenceFromALA(self, lsid, taxon, dataSrc='ala', common=None):
         # TODO: check permisions?
         # 1. create new dataset with taxon, lsid and common name set
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
@@ -336,8 +386,9 @@ class DataMover(BrowserView):
         ds = createContentInContainer(dscontainer,
                                       portal_type,
                                       title=u' '.join(title))
+        ds.dataSource = dataSrc    # Either ALA or GBIF as source
         # TODO: add number of occurences to description
-        ds.description = u' '.join(title) + u' imported from ALA'
+        ds.description = u' '.join(title) + u' imported from ' + unicode(dataSrc.upper())
         md = IBCCVLMetadata(ds)
         # TODO: provenance ... import url?
         # FIXME: verify input parameters before adding to graph

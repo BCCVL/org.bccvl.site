@@ -27,6 +27,9 @@
     <utility
         factory=".ws.ALAService"/>
 
+    <utility
+        factory=".ws.GBIFService"/>
+
     <!-- maybe register for
          plone.dexterity.interfaces.IDexterityContent
          plone.dexterity.interfaces.IDexterityItem

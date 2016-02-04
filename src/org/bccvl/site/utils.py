@@ -126,4 +126,7 @@ def build_ala_import_task(lsid, dataset, request):
     }
 
     results_dir = get_results_dir(dataset, request)
-    return datamover.pull_occurrences_from_ala.si(lsid, results_dir, context)
+    if dataset.dataSource == 'gbif':
+        return datamover.pull_occurrences_from_gbif.si(lsid, results_dir, context)
+    else:
+        return datamover.pull_occurrences_from_ala.si(lsid, results_dir, context)

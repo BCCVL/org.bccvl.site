@@ -121,6 +121,25 @@
     </browser:view>
 
     <browser:view
+        class=".xmlrpc.GBIFProxy"
+        name="gbif"
+        allowed_attributes="autojson searchjson"
+        for="*"
+        permission="zope2.View">
+
+        <browser:page
+            name="auto.json"
+            attribute="autojson"/>
+        <browser:page
+            name="search.json"
+            attribute="searchjson"/>
+        <browser:page
+            name="species.json"
+            attribute="speciesjson"/>
+
+    </browser:view>
+
+    <browser:view
         name="dv"
         class=".xmlrpc.DataMover"
         allowed_attributes="pullOccurrenceFromALA"
