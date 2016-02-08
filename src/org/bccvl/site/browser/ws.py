@@ -99,7 +99,7 @@ class GBIFService(object):
     def __init__(self):
         pass
 
-    def autojson(self, q, datasetKey, rank=None, callback=None):
+    def autojson(self, q, datasetKey=None, rank=None, callback=None):
         qs = [p for p in
               (('q', q),
                ('datasetKey', datasetKey),
@@ -109,7 +109,7 @@ class GBIFService(object):
         url = self.baseurl + 'species/suggest?' + urlencode(qs)
         return urlopen(self.baseurl + 'species/suggest?' + urlencode(qs))
 
-    def searchjson(self, name, datasetKey, start=None, pageSize=None, callback=None):
+    def searchjson(self, name, datasetKey=None, start=None, pageSize=None, callback=None):
         qs = [p for p in
               (('name', name),
                ('datasetKey', datasetKey),

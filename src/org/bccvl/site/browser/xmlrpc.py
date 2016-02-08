@@ -268,23 +268,22 @@ class UrlLibResponseIterator(object):
 
 class GBIFProxy(BrowserView):
 #@returnwrapper ... returning file here ... returnwrapper not handling it properly
-    _gbif_datasetkey = u'd7dddbf4-2cf0-4f39-9b2a-bb099caae36c'
     def autojson(self, q, callback=None):
         # TODO: do parameter checking and maybe set defaults so that
         # js side doesn't have to do it
         gbif = getUtility(IGBIFService)
-        return self._doResponse(gbif.autojson(q, self._gbif_datasetkey, None, callback))
+        return self._doResponse(gbif.autojson(q, None, None, callback))
 
     #@returnwrapper ... returning file here ... returnwrapper not handling it properly
     def searchjson(self, name, start=0, pageSize=None, callback=None):
         # TODO: do parameter checking and maybe set defaults so that
         #       js side doesn't have to do it
         gbif = getUtility(IGBIFService)
-        return self._doResponse(gbif.searchjson(name, self._gbif_datasetkey, start, pageSize, callback))
+        return self._doResponse(gbif.searchjson(name, None, start, pageSize, callback))
 
     def speciesjson(self, genusKey, start=0, pageSize=None, callback=None):
         gbif = getUtility(IGBIFService)
-        return self._doResponse(gbif.speciesjson(genusKey, self._gbif_datasetkey, start, pageSize, callback))
+        return self._doResponse(gbif.speciesjson(genusKey, None, start, pageSize, callback))
 
 
     def _doResponse(self, resp):
