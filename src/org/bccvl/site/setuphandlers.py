@@ -39,8 +39,15 @@ def setupVarious(context, logger=None):
     sess = portal.acl_users.session
     sess.manage_changeProperties(
         mod_auth_tkt=True,
-        secure=True
     )
+    # set cookie secret from celery configuration
+    from org.bccvl.tasks.celery import app
+    cookie_cfg = app.conf.get('bccvl', {}).get('cookie', {})
+    if cookie_cfg.get('secret', None):
+        sess._shared_secret = cookie_cfg.get('secret').encode('utf-8')
+        sess.manage_changeProperties(
+            secure=cookie_cfg.get('secure', True)
+        )
 
     # setup default groups
     groups = [
@@ -470,3 +477,8 @@ def upgrade_220_230_1(context, logger=None):
     cookie_cfg = app.conf.get('bccvl', {}).get('cookie', {})
     if cookie_cfg.get('secret', None):
         sess._shared_secret = cookie_cfg.get('secret').encode('utf-8')
+        sess = portal.acl_users.session
+        sess.manage_changeProperties(
+            mod_auth_tkt=True,
+            secure=cookie_cfg.get('secure', True)
+        )
