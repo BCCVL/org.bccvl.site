@@ -53,11 +53,12 @@ class ExperimentTools(BrowserView):
             itemob = itemob.getObject()
         css_map = {
             None: 'success',
-            'QUEUED': 'info',
-            'RUNNING': 'info',
+            'QUEUED': 'warning',
+            'RUNNING': 'warning',
             'COMPLETED': 'success',
             'FAILED': 'error',
-            'REMOVED': 'removed'
+            'REMOVED': 'removed',
+            'FINISHED': 'info'
         }
         # check job_state and return either success, error or block
         job_state = IExperimentJobTracker(itemob).state

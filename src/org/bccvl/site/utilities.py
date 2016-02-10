@@ -108,10 +108,13 @@ class MultiJobTracker(object):
         completed = all((state in ('COMPLETED', 'FAILED') for state in states))
         # do we have failed jobs if all completed?
         if completed:
-            if 'FAILED' in states:
-                return u'FAILED'
-            else:
-                return u'COMPLETED'
+            if all((state in ('COMPLETED',) for state in states)):
+                # all finished successfully
+                return 'COMPLETED'
+            if all((state in ('FAILED',) for state in states)):
+                # all failed
+                return 'FAILED'
+            return 'FINISHED'
         # is everything still in Nem or Queued?
         queued = all((state in ('PENDING', 'QUEUED') for state in states))
         if queued:
