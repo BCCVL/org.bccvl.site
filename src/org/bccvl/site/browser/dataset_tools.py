@@ -2,6 +2,7 @@ import json
 from Products.Five import BrowserView
 from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
+from plone.app.contentlisting.interfaces import IContentListingObject
 from plone import api
 from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment
 from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata
@@ -122,6 +123,24 @@ class DatasetTools(BrowserView):
         if progress:
             return progress.get('message')
         return None
+
+    # TODO: this is a result method
+    def get_primary_output(self, resultobj=None):
+        # FIXME: assumes resultobj or context is a brain
+        if resultobj is None:
+            resultobj = self.context
+        pc = api.portal.get_tool('portal_catalog')
+        for brain in pc.searchResults(path={'query':resultobj.getPath(), 'depth':1},
+                                      BCCDataGenre=('DataGenreCP', 'DataGenceFP')):
+            return IContentListingObject(brain)
+        return None
+
+    def get_viz_class(self, itemobj=None):
+        md = self.bccvlmd(itemobj)
+        return {
+            'DataGenreSpeciesOccurrence': 'bccvl-occurrence-viz',
+            'DataGenreSpeciesAbsence': 'bccvl-absence-viz',
+        }.get(md.get('genre'), 'bccvl-auto-viz')
 
     @property
     def genre_vocab(self):
