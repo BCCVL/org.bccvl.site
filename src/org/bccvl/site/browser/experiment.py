@@ -302,13 +302,6 @@ class SDMAdd(ParamGroupMixin, Add):
         IBCCVLMetadata(newob)['resolution'] = data['resolution']
         return newob
 
-    def updateWidgets(self):
-        super(SDMAdd, self).updateWidgets()
-        # TODO: the template checks required to set required class, but
-        #       the fields themselves are actually not required (only one or the other)
-        self.widgets['species_absence_dataset'].required = True
-        self.widgets['species_number_pseudo_absence_points'].required = True
-
     def validateAction(self, data):
         # ActionExecutionError ... form wide error
         # WidgetActionExecutionError ... widget specific
@@ -319,18 +312,6 @@ class SDMAdd(ParamGroupMixin, Add):
             # FIXME: Make this a widget error, currently shown as form wide error
             raise ActionExecutionError(Invalid('No environmental dataset selected.'))
 
-        # TODO: we should make sure only user picks only one option, otherwise pseudo absence
-        #       will be preferred (maybe we can do both?, select absence points, and fill up mith pseudo absences?)
-        # we need an absence dataset or a a number of pseudo absence points
-        if not data.get('species_pseudo_absence_points'):
-            if not data.get('species_absence_dataset'):
-                raise ActionExecutionError(RequiredMissing('No absence points selected.'))
-        else:
-            numabspoints = data.get('species_number_pseudo_absence_points')
-            if numabspoints is None:
-                raise ActionExecutionError(RequiredMissing('No absence points selected'))
-            elif numabspoints < 0:
-                raise ActionExecutionError(Invalid('Number of absence points cannot be negative.'))
         # Determine highest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
