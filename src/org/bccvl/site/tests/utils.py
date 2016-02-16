@@ -67,7 +67,6 @@ class SDMExperimentHelper(object):
             'form.widgets.functions': [self.algorithm.UID()],  # BIOCLIM
             'form.widgets.species_occurrence_dataset': [unicode(self.occur.UID())],  # ABT
             'form.widgets.species_absence_dataset': [unicode(self.absen.UID())],
-            'form.widgets.species_pseudo_absence_points': [],
             'form.widgets.resolution': ('Resolution2_5m', ),
             # FIXME: shouldn't be necessary to use unicode here,... widget converter should take care of it
             'form.widgets.environmental_datasets.item.0': unicode(self.current.UID()),

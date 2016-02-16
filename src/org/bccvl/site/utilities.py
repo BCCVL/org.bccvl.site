@@ -288,8 +288,6 @@ class SDMJobTracker(MultiJobTracker):
                     'function': func.getId(),
                     'species_occurrence_dataset': self.context.species_occurrence_dataset,
                     'species_absence_dataset': self.context.species_absence_dataset,
-                    'species_pseudo_absence_points': self.context.species_pseudo_absence_points,
-                    'species_number_pseudo_absence_points': self.context.species_number_pseudo_absence_points,
                     'environmental_datasets': self.context.environmental_datasets,
                     'modelling_region': self.context.modelling_region,
                 }
