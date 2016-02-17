@@ -511,7 +511,10 @@ def upgrade_230_240_1(context, logger=None):
         for prop in custom_props:
             if not member.hasProperty(prop):
                 continue
-            member_annots[prop] = member.getProperty(prop)
+            value = member.getProperty(prop)
+            if not value:
+                continue
+            member_annots[prop] = value
     # remove current properties
     pmd.manage_delProperties(custom_props)
     import transaction
