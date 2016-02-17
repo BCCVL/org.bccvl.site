@@ -89,7 +89,7 @@ class UserAnnotation(object):
         return len(self._data)
 
     def __setitem__(self, key, value):
-        if self._v_store is not None:
+        if getattr(self, '_v_store', None) is not None:
             # _v_store is used to remember a mapping object that we should
             # be saved in if we ever change
             self._v_store[self.principalId] = self._data
