@@ -15,7 +15,11 @@ from zope.security import checkPermission
 from .interfaces import IOAuth1Settings, IOAuth2Settings
 from .googledrive import IGoogleDrive
 
+from org.bccvl.site.userannotation.interfaces import IUserAnnotationsUtility
+
+
 LOG = logging.getLogger(__name__)
+
 
 def check_authenticated(func):
     def check(*args, **kw):
@@ -24,37 +28,13 @@ def check_authenticated(func):
         return func(*args, **kw)
     return check
 
-class IUserAnnotation(object):
+
+def IUserAnnotation(object):
     # simulate future IUserAnnotation interface via user properties
     # this should be a dict like interface
     # which holds authorisation tokens for this user (context) and
     # a specific oauth provider (provider id?)
-
-    def __init__(self, context):
-        # context ... a member object from plone portal_membership
-        self.context = context
-
-    def get(self, key, default=None):
-        # FIXME: default handling correct this way? Would I ever see a Attribute or Key Error here?
-        # key ... something that identifies the oauth provider settings
-        # FIXME: key manipulation should happen outside of this tool
-        property = '{0}_oauth_token'.format(key)
-        return self.context.getProperty(property, default)
-
-    def set(self, key, value):
-        # FIXME: key manipulation should happen outside of this tool
-        property = '{0}_oauth_token'.format(key)
-        # We have to define the property in portal_memberdata before we can use it
-        # CMF way
-        pmd = getToolByName(self.context, 'portal_memberdata')
-        if not pmd.hasProperty(property):
-            LOG.info('added new token property to member data tool')
-            pmd.manage_addProperty(id=property, value="", type="string")
-        # Would there be a PAS way as well?
-        # acl_users = getToolByName(self.context, 'acl_users')
-        # property_plugins = acl_users.plugins.listPlugins(IPropertiesPlugin)
-        self.context.setProperties({property: value})
-
+    return getUtility(IUserAnnotationsUtility).getAnnotations(object)
 
 
 class OAuthBaseView(BrowserView):
@@ -79,7 +59,7 @@ class OAuthBaseView(BrowserView):
     def getToken(self):
         # get token for current user
         member = api.user.get_current()
-        token = IUserAnnotation(member).get(self.config.id, "")
+        token = IUserAnnotation(member).get('{0}_oauth_token'.format(self.config.id), "")
         #LOG.info('Found stored token: %s', token)
         if token:
             token = json.loads(token)
@@ -89,7 +69,7 @@ class OAuthBaseView(BrowserView):
         # permanently store token for user.
         # creates new memberdata property if necesarry
         member = api.user.get_current()
-        IUserAnnotation(member).set(self.config.id, json.dumps(token))
+        IUserAnnotation(member)['{0}_oauth_token'.format(self.config.id)] = json.dumps(token)
 
     def hasToken(self):
         try:
@@ -102,7 +82,7 @@ class OAuthBaseView(BrowserView):
         if self.session.has_key(self._skey):
             del self.session[self._skey]
         member = api.user.get_current()
-        IUserAnnotation(member).set(self.config.id, "")
+        del IUserAnnotation(member)['{0}_oauth_token'.format(self.config.id)]
         return_url = self.request.get('HTTP_REFERER')
         self.request.response.redirect(return_url)
 
@@ -193,7 +173,7 @@ class OAuth2View(OAuthBaseView):
             # we are admin ... check if user is set
             username = self.request.form.get('user')
             member = api.user.get(username=username)
-            access_token = IUserAnnotation(member).get(self.config.id, "")
+            access_token = IUserAnnotation(member).get('{0}_oauth_token'.format(self.config.id), "")
             if access_token:
                 access_token = json.loads(access_token)
         else:
@@ -339,7 +319,7 @@ class OAuth1View(OAuthBaseView):
             # we are admin ... check if user is set
             username = self.request.form.get('user')
             member = api.user.get(username=username)
-            access_token = IUserAnnotation(member).get(self.config.id, "")
+            access_token = IUserAnnotation(member).get('{0}_oauth_token'.format(self.config.id), "")
             if access_token:
                 access_token = json.loads(access_token)
         else:
