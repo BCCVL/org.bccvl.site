@@ -40,6 +40,10 @@ setup(
         'collective.googleanalytics',
         'collective.onlogin',
         'collective.indexing',
+        'collective.emailconfirmationregistration',
+        'plone.formwidget.captcha',
+        'plone.formwidget.recaptcha',
+        'collective.z3cform.norobots',
         #'collective.deletepermission', careful it interfers with delete buttons when not activated
         'borg.localrole',
         'plone.app.contenttypes',
