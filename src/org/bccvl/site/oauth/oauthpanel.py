@@ -14,7 +14,7 @@ class OAuthPreferencePanel(AccountPanelForm):
 
     template = ViewPageTemplateFile('oauthpanel.pt')
 
-    label = u"OAuth User Settings"
+    label = u"External Authorisations"
     description = u"BCCVL is allowed to access the following services."
     enableCSRFProtection = True
 
@@ -38,7 +38,7 @@ class OAuthPreferencePanel(AccountPanelForm):
         # TODO: insert before id:user_data-change-password
         if _check_allowed(self.context, self.request, 'oauth-preferences'):
             tabs.append({
-                'title': u'OAuth Preferences',
+                'title': u'External Authorisations',
                 'url': navigation_root_url + '/@@oauth-preferences',
                 'selected': (self.__name__ == 'oauth-preferences'),
                 'id': 'user_data-oauth-preferences',
