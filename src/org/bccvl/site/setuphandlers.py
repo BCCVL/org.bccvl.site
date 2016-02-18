@@ -514,6 +514,6 @@ def upgrade_230_240_1(context, logger=None):
             if not value:
                 continue
             member_annots[prop] = value
-            member.setMemberProperties({prop, ''})
+            member.setMemberProperties({prop: ''})
     # remove current properties
     pmd.manage_delProperties(custom_props)
