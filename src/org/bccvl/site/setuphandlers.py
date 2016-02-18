@@ -71,6 +71,9 @@ def setupVarious(context, logger=None):
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
 
+    # setup userannotation storage
+    from org.bccvl.site.userannotation.utility import init_user_annotation
+    init_user_annotation()
     # FIXME: some stuff is missing,... initial setup of site is not correct
 
 def setupFacets(context, logger=None):
@@ -482,3 +485,35 @@ def upgrade_220_230_1(context, logger=None):
             mod_auth_tkt=True,
             secure=cookie_cfg.get('secure', True)
         )
+
+
+def upgrade_230_240_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
+
+    # setup userannotation storage
+    from org.bccvl.site.userannotation.utility import init_user_annotation
+    from org.bccvl.site.userannotation.interfaces import IUserAnnotationsUtility
+    init_user_annotation()
+    # migrate current properties into userannotations
+    pm = api.portal.get_tool('portal_membership')
+    pmd = api.portal.get_tool('portal_memberdata')
+    custom_props = [p for p in pmd.propertyIds() if '_oauth_' in p]
+    ut = getUtility(IUserAnnotationsUtility)
+    for member in pm.listMembers():
+        member_annots = ut.getAnnotations(member)
+        for prop in custom_props:
+            if not member.hasProperty(prop):
+                continue
+            value = member.getProperty(prop)
+            if not value:
+                continue
+            member_annots[prop] = value
+            member.setMemberProperties({prop, ''})
+    # remove current properties
+    pmd.manage_delProperties(custom_props)

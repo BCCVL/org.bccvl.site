@@ -114,5 +114,18 @@
         />
 
   </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="230"
+      destination="240"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 240"
+        description="SDM upgrades"
+        handler=".setuphandlers.upgrade_230_240_1"
+        />
+
+  </genericsetup:upgradeSteps>
   
 </configure>
