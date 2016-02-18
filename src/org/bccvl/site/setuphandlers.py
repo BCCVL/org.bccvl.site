@@ -491,7 +491,6 @@ def upgrade_230_240_1(context, logger=None):
     if logger is None:
         logger = LOG
     # Run GS steps
-    import ipdb; ipdb.set_trace()
     portal = api.portal.get()
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
@@ -517,5 +516,3 @@ def upgrade_230_240_1(context, logger=None):
             member_annots[prop] = value
     # remove current properties
     pmd.manage_delProperties(custom_props)
-    import transaction
-    transaction.abort()
