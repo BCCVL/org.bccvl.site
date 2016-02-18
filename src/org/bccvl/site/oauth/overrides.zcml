@@ -4,15 +4,22 @@
   <browser:page
       for="plone.app.layout.navigation.interfaces.INavigationRoot"
       name="personal-information"
-      class=".overrides.UserDataPanelView"
+      class=".overrides.UserDataPanel"
       permission="cmf.SetOwnProperties"
       />
 
   <browser:page
       for="plone.app.layout.navigation.interfaces.INavigationRoot"
       name="change-password"
-      class=".overrides.PasswordAccountPanelView"
+      class=".overrides.PasswordPanel"
       permission="cmf.SetOwnPassword"
+      />
+
+  <browser:page
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      name="personal-preferences"
+      class=".overrides.PersonalPreferencesPanel"
+      permission="cmf.SetOwnProperties"
       />
   
 </configure>
