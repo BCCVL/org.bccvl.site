@@ -74,7 +74,14 @@ def setupVarious(context, logger=None):
     # setup userannotation storage
     from org.bccvl.site.userannotation.utility import init_user_annotation
     init_user_annotation()
+
+    # enable self registration
+    from plone.app.controlpanel.security import ISecuritySchema
+    security = ISecuritySchema(portal)
+    security.enable_self_reg = True
     # FIXME: some stuff is missing,... initial setup of site is not correct
+
+
 
 def setupFacets(context, logger=None):
     if logger is None:
@@ -494,7 +501,19 @@ def upgrade_230_240_1(context, logger=None):
     portal = api.portal.get()
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    # install new dependencies
+    qi = getToolByName(portal, 'portal_quickinstaller')
+    installable = [p['id'] for p in qi.listInstallableProducts()]
+    for product in ['collective.emailconfirmationregistration',
+                    'plone.formwidget.captcha',
+                    'collective.z3cform.norobots']:
+        if product in installable:
+            qi.installProduct(product)
 
+    # enable self registration
+    from plone.app.controlpanel.security import ISecuritySchema
+    security = ISecuritySchema(portal)
+    security.enable_self_reg = True
 
     # setup userannotation storage
     from org.bccvl.site.userannotation.utility import init_user_annotation
