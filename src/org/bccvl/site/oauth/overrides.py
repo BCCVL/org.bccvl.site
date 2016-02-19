@@ -42,6 +42,9 @@ class PasswordPanel(BasePasswordPanel):
     # overriding it here to add additional tabs
     # -> rather monkey patch base class?
 
+    label = u"Change Password"
+    description = u"On this page you can change your BCCVL password."
+
     def prepareObjectTabs(self,
                           default_tab='view',
                           sort_first=['folderContents']):

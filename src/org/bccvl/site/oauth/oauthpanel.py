@@ -14,8 +14,8 @@ class OAuthPreferencePanel(AccountPanelForm):
 
     template = ViewPageTemplateFile('oauthpanel.pt')
 
-    label = u"External Authorisations"
-    description = u"BCCVL is allowed to access the following services."
+    label = u"Linked Accounts"
+    description = u"On this page you can manage authorisations for BCCVL to access external systems."
     enableCSRFProtection = True
 
     def prepareObjectTabs(self,
