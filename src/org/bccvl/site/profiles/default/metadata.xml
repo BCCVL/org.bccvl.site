@@ -15,6 +15,10 @@
       <dependency>profile-plone.app.caching:default</dependency>
       <dependency>profile-plone.app.caching:with-caching-proxy-splitviews</dependency>
       <dependency>profile-eea.facetednavigation:default</dependency>
+
+      <dependency>profile-collective.emailconfirmationregistration:default</dependency>
+      <dependency>profile-plone.formwidget.captcha:default</dependency>
+      <dependency>profile-collective.z3cform.norobots</dependency>
       
     </dependencies>
 </metadata>
