@@ -13,6 +13,7 @@ from .oauth import OAuth1View, OAuth2View
 class OAuthPreferencePanel(AccountPanelForm):
 
     template = ViewPageTemplateFile('oauthpanel.pt')
+    title = u'Linked Accounts'
 
     label = u"Linked Accounts"
     description = u"On this page you can manage authorisations for BCCVL to access external systems."
