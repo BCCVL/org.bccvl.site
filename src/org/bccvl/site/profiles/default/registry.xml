@@ -1,24 +1,11 @@
 <registry>
   <!-- plone.caching settings -->
   <record name="plone.caching.interfaces.ICacheSettings.enabled" interface="plone.caching.interfaces.ICacheSettings" field="enabled">
-    <field type="plone.registry.field.Bool">
-      <default>False</default>
-      <description>If not set, no caching operations will be attempted</description>
-      <title>Globally enabled</title>
-    </field>
+    <!-- globally enable caching -->
     <value>True</value>
   </record>
   <record name="plone.caching.interfaces.ICacheSettings.operationMapping" interface="plone.caching.interfaces.ICacheSettings" field="operationMapping">
-    <field type="plone.registry.field.Dict">
-      <description>Maps rule set names to operation names</description>
-      <key_type type="plone.registry.field.DottedName">
-        <title>Rule set name</title>
-      </key_type>
-      <title>Rule set/operation mapping</title>
-      <value_type type="plone.registry.field.DottedName">
-        <title>Caching operation name</title>
-      </value_type>
-    </field>
+    <!-- Map caching rules to operation names -->
     <value>
       <element key="plone.resource">plone.app.caching.strongCaching</element>
       <element key="plone.stableResource">plone.app.caching.strongCaching</element>
@@ -30,58 +17,28 @@
   </record>
   <!-- plone.cachepurging settings -->
   <record name="plone.cachepurging.interfaces.ICachePurgingSettings.cachingProxies" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="cachingProxies">
-    <field type="plone.registry.field.Tuple">
-      <description>Provide the URLs of each proxy to which PURGE requests shoudl be sent.</description>
-      <title>Caching proxies</title>
-      <value_type type="plone.registry.field.URI"/>
-    </field>
+    <!-- caching proxy url to use for purge requests -->
     <value>
       <element>http://localhost:8101</element>
     </value>
   </record>
   <record name="plone.cachepurging.interfaces.ICachePurgingSettings.enabled" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="enabled">
-    <field type="plone.registry.field.Bool">
-      <default>True</default>
-      <description>If disabled, no purging will take place</description>
-      <title>Enable purging</title>
-    </field>
+    <!-- enable purging -->
     <value>True</value>
   </record>
   <record name="plone.cachepurging.interfaces.ICachePurgingSettings.virtualHosting" interface="plone.cachepurging.interfaces.ICachePurgingSettings" field="virtualHosting">
-    <field type="plone.registry.field.Bool">
-      <default>False</default>
-      <description>This option is only relevant if you are using virtual hosting with Zope's VirtualHostMonster. This relies on special tokens (VirtualHostBase and VirtualHostRoot) in the URL to instruct Zope about the types of URLs that the user sees. If virtual host URLs are in use and this option is set, PURGE requests will be sent to the caching proxy with the virtual hosting tokens in place. This makes sense if there is a web server in front of your caching proxy performing the rewrites necessary to translate a user-facing URL into a virtual hosting URL, so that the requests the caching proxy sees have the rewrite information in them. Conversely, if the rewrite is done in or behind the caching proxy, you want to disable this option, so that the PURGE requests use URLs that match those seen by the caching proxy as they come from the client.</description>
-      <title>Send PURGE requests with virtual hosting paths</title>
-    </field>
+    <!-- send purge with virtual hosting urls ... virtual host rewrite happens before cache -->
     <value>True</value>
   </record>
   <!-- plone.app.caching settings -->
   <record name="plone.app.caching.interfaces.IPloneCacheSettings.contentTypeRulesetMapping" interface="plone.app.caching.interfaces.IPloneCacheSettings" field="contentTypeRulesetMapping">
-    <field type="plone.registry.field.Dict">
-      <description>Maps content type names to ruleset names</description>
-      <key_type type="plone.registry.field.ASCIILine">
-        <title>Content type name</title>
-      </key_type>
-      <title>Content type/ruleset mapping</title>
-      <value_type type="plone.registry.field.DottedName">
-        <title>Ruleset name</title>
-      </value_type>
-    </field>
+    <!-- map content type names to caching rules -->
     <value>
       <element key="Folder">plone.content.folderView</element>
     </value>
   </record>
   <record name="plone.app.caching.interfaces.IPloneCacheSettings.templateRulesetMapping" interface="plone.app.caching.interfaces.IPloneCacheSettings" field="templateRulesetMapping">
-    <field type="plone.registry.field.Dict">
-      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Maps skin layer page template names to ruleset names</description>
-      <key_type type="plone.registry.field.ASCIILine">
-        <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Page template name</title>
-      </key_type>
-      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Page template/ruleset mapping</title>
-      <value_type type="plone.registry.field.DottedName">
-        <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.caching" ns0:translate="">Ruleset name</title>
-      </value_type>
-    </field>
+    <!-- map skin layer page template names to caching rules -->
     <value>
       <element key="accessibility-info">plone.content.itemView</element>
       <element key="image_view_fullscreen">plone.content.itemView</element>
@@ -100,30 +57,17 @@
   </record>
   <!-- plone.app.discussion settings -->
   <record name="plone.app.discussion.interfaces.IDiscussionSettings.captcha" interface="plone.app.discussion.interfaces.IDiscussionSettings" field="captcha">
-    <field type="plone.registry.field.Choice">
-      <default>disabled</default>
-      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.discussion" ns0:translate="help_captcha">Use this setting to enable or disable Captcha validation for comments. Install plone.formwidget.captcha, plone.formwidget.recaptcha, collective.akismet, or collective.z3cform.norobots if there are no options available.</description>
-      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone.app.discussion" ns0:translate="label_captcha">Captcha</title>
-      <vocabulary>plone.app.discussion.vocabularies.CaptchaVocabulary</vocabulary>
-    </field>
+    <!-- enable captcha in discussions (used by emailregistration) -->
     <value>captcha</value>
   </record>
   <!-- jQuery UI settings -->
   <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_tooltip" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_tooltip">
-    <field type="plone.registry.field.Bool">
-      <default>False</default>
-      <required>False</required>
-      <title>Tooltip</title>
-    </field>
+    <!-- enable jquery ui tooltip plugin -->
     <value>True</value>
   </record>
   <!-- eea.facetednavigation settings -->
   <record name="eea.facetednavigation.interfaces.IEEASettings.disable_diazo_rules_ajax" interface="eea.facetednavigation.interfaces.IEEASettings" field="disable_diazo_rules_ajax">
-    <field type="plone.registry.field.Bool">
-      <default>False</default>
-      <required>False</required>
-      <title>Disable diazo rules on ajax requests</title>
-    </field>
+    <!-- disable diazo for ajax requests -->
     <value>True</value>
   </record>
 
