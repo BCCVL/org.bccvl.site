@@ -41,6 +41,7 @@
         for="plone.app.contenttypes.interfaces.IDocument"
         permission="zope2.View"
         template="frontpage.pt"
+        class=".frontpage.FrontPage"
         menu="plone_displayviews"
         title="Front Page View"
         />
