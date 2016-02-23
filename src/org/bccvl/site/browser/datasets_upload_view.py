@@ -297,6 +297,8 @@ class DatasetsUploadView(BrowserView):
     #-> use defaultform, extend updateFields to select only wanted fileds?
     #-> use standard form, create fields manually
 
+    title = u"Upload Dataset"
+
     subforms = None
 
     def update(self):

@@ -10,6 +10,8 @@ class UserDataPanel(BaseUserDataPanel):
     # overriding it here to add additional tabs
     # -> rather monkey patch base class?
 
+    title = u"Personal Information"
+
     def prepareObjectTabs(self,
                           default_tab='view',
                           sort_first=['folderContents']):
@@ -41,6 +43,8 @@ class UserDataPanel(BaseUserDataPanel):
 class PasswordPanel(BasePasswordPanel):
     # overriding it here to add additional tabs
     # -> rather monkey patch base class?
+
+    title = u"Password"
 
     label = u"Change Password"
     description = u"On this page you can change your BCCVL password."
@@ -76,6 +80,8 @@ class PasswordPanel(BasePasswordPanel):
 class PersonalPreferencesPanel(BasePersonalPreferencesPanel):
     # overriding it here to add additional tabs
     # -> rather monkey patch base class?
+
+    title = u"Personal Preferences"
 
     def prepareObjectTabs(self,
                           default_tab='view',

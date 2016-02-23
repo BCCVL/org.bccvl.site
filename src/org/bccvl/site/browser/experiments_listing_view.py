@@ -82,6 +82,8 @@ class ExperimentTools(BrowserView):
 @implementer(IFolderContentsView)
 class ExperimentsListingView(FolderView):
 
+    title = u"Experiment List"
+
     def __init__(self, context, request):
         # update limit_display if it is not already set
         limit_display = getattr(request, 'limit_display', None)

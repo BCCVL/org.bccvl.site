@@ -13,6 +13,8 @@ class DatasetsImportView(BrowserView):
     render the dataset import template
     """
 
+    title = u"Discover Dataset"
+
     def parseRequest(self):
         params = {'action': None}
         if 'search' in self.request:
