@@ -18,7 +18,7 @@
 
       <dependency>profile-collective.emailconfirmationregistration:default</dependency>
       <dependency>profile-plone.formwidget.captcha:default</dependency>
-      <dependency>profile-collective.z3cform.norobots</dependency>
+      <dependency>profile-collective.z3cform.norobots:default</dependency>
       
     </dependencies>
 </metadata>
