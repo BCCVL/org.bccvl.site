@@ -17,16 +17,24 @@
       title="BCCVL Site setup handlers"
       description="BCCVL site installation setup"
       handler="org.bccvl.site.setuphandlers.setupVarious">
-    <depends name="content"/>
+    <depends name="org.bccvl.site.content"/>
   </genericsetup:importStep>
 
+  <genericsetup:importStep
+      name="org.bccvl.site.tools"
+      title="BCCVL Site Tools setup handlers"
+      description="BCCVL site tools setup"
+      handler="org.bccvl.site.setuphandlers.setupTools">
+    <depends name="content"/>
+  </genericsetup:importStep>
+  
   <genericsetup:importStep
       name="org.bccvl.site.content"
       title="Import BCCVL content from filesystem."
       description="Import BCCVL content from filesystem with BCCVL dataimport
                    transmogrifier pipeline"
       handler="org.bccvl.site.exportimport.dataimport">
-    <depends name="org.bccvl.site"/>
+    <depends name="org.bccvl.site.tools"/>
   </genericsetup:importStep>
 
   <genericsetup:importStep

@@ -16,6 +16,24 @@ PROFILE_ID = 'profile-org.bccvl.site:default'
 PROFILE = 'org.bccvl.site'
 
 
+def setupTools(context, logger=None):
+    if logger is None:
+        logger = LOG
+    logger.info('BCCVL site tools handler')
+    # only run for this product
+    if context.readDataFile('org.bccvl.site.marker.txt') is None:
+        return
+    portal = context.getSite()
+
+    # setup job catalog
+    from org.bccvl.site.job.catalog import setup_job_catalog
+    setup_job_catalog(portal)
+
+    # setup userannotation storage
+    from org.bccvl.site.userannotation.utility import init_user_annotation
+    init_user_annotation()
+
+
 def setupVarious(context, logger=None):
     if logger is None:
         logger = LOG
@@ -66,14 +84,6 @@ def setupVarious(context, logger=None):
             gtool.editGroup(**group)
         else:
             gtool.addGroup(**group)
-
-    # setup job catalog
-    from org.bccvl.site.job.catalog import setup_job_catalog
-    setup_job_catalog(portal)
-
-    # setup userannotation storage
-    from org.bccvl.site.userannotation.utility import init_user_annotation
-    init_user_annotation()
 
     # enable self registration
     from plone.app.controlpanel.security import ISecuritySchema
