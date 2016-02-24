@@ -82,19 +82,6 @@ class ISDMExperiment(IExperiment):
         required=False,
     )
 
-    species_pseudo_absence_points = Bool(
-        title=u"Use pseudo absence points instead of dataset.",
-        description=u"Enable generation of random pseudo absence "
-                    u"points across area defined in environmental data",
-        default=False,
-        required=False)
-
-    species_number_pseudo_absence_points = Int(
-        title=u"Number of points",
-        description=u"The number of random pseudo absence points to generate",
-        default=10000,
-        required=False)
-
     directives.widget('environmental_datasets',
                 DatasetDictFieldWidget,
                 multiple='multiple',

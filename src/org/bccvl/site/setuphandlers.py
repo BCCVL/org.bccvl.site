@@ -1,15 +1,12 @@
 from Products.CMFCore.utils import getToolByName
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.context import SnapshotImportContext
-from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
-from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from eea.facetednavigation.layout.interfaces import IFacetedLayout
 from plone import api
 from plone.uuid.interfaces import IUUID
 from plone.app.uuid.utils import uuidToObject
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getUtility, getMultiAdapter
-from zope.interface import alsoProvides
 from org.bccvl.site import defaults
 import logging
 
@@ -38,6 +35,20 @@ def setupVarious(context, logger=None):
     # set default front-page
     portal.setDefaultPage('front-page')
 
+    # Setup cookie settings
+    sess = portal.acl_users.session
+    sess.manage_changeProperties(
+        mod_auth_tkt=True,
+    )
+    # set cookie secret from celery configuration
+    from org.bccvl.tasks.celery import app
+    cookie_cfg = app.conf.get('bccvl', {}).get('cookie', {})
+    if cookie_cfg.get('secret', None):
+        sess._shared_secret = cookie_cfg.get('secret').encode('utf-8')
+        sess.manage_changeProperties(
+            secure=cookie_cfg.get('secure', True)
+        )
+
     # setup default groups
     groups = [
         {'id': 'Knowledgebase Contributor',
@@ -60,7 +71,17 @@ def setupVarious(context, logger=None):
     from org.bccvl.site.job.catalog import setup_job_catalog
     setup_job_catalog(portal)
 
+    # setup userannotation storage
+    from org.bccvl.site.userannotation.utility import init_user_annotation
+    init_user_annotation()
+
+    # enable self registration
+    from plone.app.controlpanel.security import ISecuritySchema
+    security = ISecuritySchema(portal)
+    security.enable_self_reg = True
     # FIXME: some stuff is missing,... initial setup of site is not correct
+
+
 
 def setupFacets(context, logger=None):
     if logger is None:
@@ -411,6 +432,7 @@ def upgrade_220_230_1(context, logger=None):
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
     pc = api.portal.get_tool('portal_catalog')
 
    # search all experiments and update job object with infos from experiment
@@ -444,3 +466,74 @@ def upgrade_220_230_1(context, logger=None):
             if hasattr(pstats, 'file'):
                 job.rusage = json.loads(pstats.file.data)
                 del result['pstats.json']
+
+    # Setup cookie settings
+    sess = portal.acl_users.session
+    sess.manage_changeProperties(
+        mod_auth_tkt=True,
+        secure=True
+    )
+
+    # update facet configurations
+    from org.bccvl.site.faceted.interfaces import IFacetConfigUtility
+    from org.bccvl.site.faceted.tool import import_facet_config
+    fct = getUtility(IFacetConfigUtility)
+    for cfgobj in fct.types():
+        LOG.info("Import facet config for %s", cfgobj.id)
+        import_facet_config(cfgobj)
+
+    # set cookie secret from celery configuration
+    from org.bccvl.tasks.celery import app
+    cookie_cfg = app.conf.get('bccvl', {}).get('cookie', {})
+    if cookie_cfg.get('secret', None):
+        sess._shared_secret = cookie_cfg.get('secret').encode('utf-8')
+        sess = portal.acl_users.session
+        sess.manage_changeProperties(
+            mod_auth_tkt=True,
+            secure=cookie_cfg.get('secure', True)
+        )
+
+
+def upgrade_230_240_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    # install new dependencies
+    qi = getToolByName(portal, 'portal_quickinstaller')
+    installable = [p['id'] for p in qi.listInstallableProducts()]
+    for product in ['collective.emailconfirmationregistration',
+                    'plone.formwidget.captcha',
+                    'collective.z3cform.norobots']:
+        if product in installable:
+            qi.installProduct(product)
+
+    # enable self registration
+    from plone.app.controlpanel.security import ISecuritySchema
+    security = ISecuritySchema(portal)
+    security.enable_self_reg = True
+
+    # setup userannotation storage
+    from org.bccvl.site.userannotation.utility import init_user_annotation
+    from org.bccvl.site.userannotation.interfaces import IUserAnnotationsUtility
+    init_user_annotation()
+    # migrate current properties into userannotations
+    pm = api.portal.get_tool('portal_membership')
+    pmd = api.portal.get_tool('portal_memberdata')
+    custom_props = [p for p in pmd.propertyIds() if '_oauth_' in p]
+    ut = getUtility(IUserAnnotationsUtility)
+    for member in pm.listMembers():
+        member_annots = ut.getAnnotations(member)
+        for prop in custom_props:
+            if not member.hasProperty(prop):
+                continue
+            value = member.getProperty(prop)
+            if not value:
+                continue
+            member_annots[prop] = value
+            member.setMemberProperties({prop: ''})
+    # remove current properties
+    pmd.manage_delProperties(custom_props)

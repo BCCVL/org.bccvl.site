@@ -19,33 +19,11 @@ def configureCelery():
     CELERY_CONFIG = {
         "BROKER_URL": "memory://",
         'CELERY_RESULT_BACKEND': 'cache+memory://',
-        "CELERY_IGNORE_RESULT":  True,
-        "CELERY_ACCEPT_CONTENT":  ["json", "msgpack", "yaml"],
         "CELERY_IMPORTS":  [
             "org.bccvl.tasks.datamover",
             "org.bccvl.tasks.plone",
             "org.bccvl.tasks.compute",
         ],
-        "CELERY_ROUTES": [
-            {"org.bccvl.tasks.plone.set_progress": {"queue": "plone", "routing_key": "plone"}},
-            {"org.bccvl.tasks.plone.import_ala": {"queue": "plone", "routing_key": "plone"}},
-            {"org.bccvl.tasks.plone.import_cleanup": {"queue": "plone", "routing_key": "plone"}},
-            {"org.bccvl.tasks.plone.import_file_metadata": {"queue": "plone", "routing_key": "plone"}},
-            {"org.bccvl.tasks.plone.import_result": {"queue": "plone", "routing_key": "plone"}},
-            {"org.bccvl.tasks.datamover.move": {"queue": "datamover", "routing_key": "datamover"}},
-            {"org.bccvl.tasks.datamover.pull_occurrences_from_ala": {"queue": "datamover", "routing_key": "datamover"}},
-            {"org.bccvl.tasks.datamover.update_metadata": {"queue": "datamover", "routing_key": "datamover"}},
-            {"org.bccvl.tasks.export_services.export_result": {"queue": "datamover", "routing_key": "datamover"}},
-            {"org.bccvl.tasks.compute.r_task": {"queue": "worker", "routing_key": "worker"}},
-            {"org.bccvl.tasks.compute.perl_task": {"queue": "worker", "routing_key": "worker"}},
-            {"org.bccvl.tasks.compute.demo_task": {"queue": "worker", "routing_key": "worker"}}
-        ],
-        "CELERY_TASK_SERIALIZER": "json",
-        "CELERY_QUEUES": {
-            "worker": {"routing_key": "worker"},
-            "datamover": {"routing_key": "datamover"},
-            "plone": {"routing_key": "plone"}
-        },
         # Things we don't want during testing
         'CELERYD_HIJACK_ROOT_LOGGER': False,
         'CELERY_SEND_TASK_ERROR_EMAILS': False,

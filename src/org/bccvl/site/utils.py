@@ -92,7 +92,7 @@ def get_results_dir(result, request):
         )
     else:
         # if swift is not setup we use local storage
-        results_dir = 'scp://{uid}@{ip}{path}/'.format(
+        results_dir = 'scp://{uid}@{ip}:{port}{path}/'.format(
             uid=pwd.getpwuid(os.getuid()).pw_name,
             # FIXME: hostname from request is not good enough...
             #        need to get ip or host from plone_worker that does actual import
@@ -100,6 +100,7 @@ def get_results_dir(result, request):
             #        (is ok for testing)
             #ip=get_public_ip(),
             ip=get_hostname(request),
+            port=os.environ.get('SSH_PORT', 22),
             path=tempfile.mkdtemp(prefix='result_import_')
         )
     return results_dir
@@ -126,4 +127,7 @@ def build_ala_import_task(lsid, dataset, request):
     }
 
     results_dir = get_results_dir(dataset, request)
-    return datamover.pull_occurrences_from_ala.si(lsid, results_dir, context)
+    if dataset.dataSource == 'gbif':
+        return datamover.pull_occurrences_from_gbif.si(lsid, results_dir, context)
+    else:
+        return datamover.pull_occurrences_from_ala.si(lsid, results_dir, context)

@@ -1,7 +1,5 @@
-This email has been sent to the BCCVL for support.
+Thank you for your support email. We are currently looking into why your experiment failed and endeavour to get back to you as soon as possible.
 
-Please look into why the experiment failed at {experiment_url}.
-
-from
-Name: {username}
-Email: {user_email}
+Experiment link: {experiment_url}
+User name: {username}
+User email: {user_email}

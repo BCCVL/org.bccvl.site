@@ -13,6 +13,8 @@ class DatasetsImportView(BrowserView):
     render the dataset import template
     """
 
+    title = u"Discover Dataset"
+
     def parseRequest(self):
         params = {'action': None}
         if 'search' in self.request:
@@ -23,7 +25,7 @@ class DatasetsImportView(BrowserView):
                      'searchOccurrence_source',
                      'lsid', 'taxon', 'common'):
             if name in self.request:
-                params[name] = self.request.get(name)
+                params[name] = self.request.get(name).decode('utf-8')
         return params
 
     def searchResults(self):
@@ -107,6 +109,7 @@ class DatasetsImportView(BrowserView):
             # create dataset and start import job
             ret = view(lsid=self.params['lsid'],
                        taxon=self.params['taxon'],
+                       dataSrc=self.params['searchOccurrence_source'],
                        common=self.params.get('common'))
             # TODO: check ret for errors?
             # TODO: redirect to dataset or listing view?

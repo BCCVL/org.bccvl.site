@@ -216,7 +216,8 @@ class TestDatasetImport(unittest.TestCase):
             'import': 'Import',
             'lsid': testdata['taxonID'],
             'taxon': testdata['scientificName'],
-            'common': testdata['vernacularName']
+            'common': testdata['vernacularName'],
+            'searchOccurrence_source': 'ala',
         })
         # call view:
         view()

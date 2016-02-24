@@ -10,6 +10,8 @@ from zope.schema.interfaces import IVocabularyFactory
 
 class DatasetsCollectionListView(BrowserView):
 
+    title = u"Collections"
+
     def __init__(self, context, request):
         # TODO: update this to new workings of collection facet (now that we have a custom portal_type)
         super(DatasetsCollectionListView, self).__init__(context, request)

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.9.4.dev'
+version = '1.11.0.dev'
 
 setup(
     name='org.bccvl.site',
@@ -40,6 +40,10 @@ setup(
         'collective.googleanalytics',
         'collective.onlogin',
         'collective.indexing',
+        'collective.emailconfirmationregistration',
+        'plone.formwidget.captcha',
+        'plone.formwidget.recaptcha',
+        'collective.z3cform.norobots',
         #'collective.deletepermission', careful it interfers with delete buttons when not activated
         'borg.localrole',
         'plone.app.contenttypes',

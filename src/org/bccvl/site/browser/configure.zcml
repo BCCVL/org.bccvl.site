@@ -27,6 +27,9 @@
     <utility
         factory=".ws.ALAService"/>
 
+    <utility
+        factory=".ws.GBIFService"/>
+
     <!-- maybe register for
          plone.dexterity.interfaces.IDexterityContent
          plone.dexterity.interfaces.IDexterityItem
@@ -38,6 +41,7 @@
         for="plone.app.contenttypes.interfaces.IDocument"
         permission="zope2.View"
         template="frontpage.pt"
+        class=".frontpage.FrontPage"
         menu="plone_displayviews"
         title="Front Page View"
         />

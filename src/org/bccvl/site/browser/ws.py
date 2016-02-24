@@ -36,6 +36,28 @@ class IALAService(Interface):
         ALA's search service
         """
 
+class IGBIFService(Interface):
+    """
+    A component to talk to GBIF's web services
+
+    see: http://www.gbif.org/developer/summary
+    """
+
+    def autojson(q, datasetKey=None, rank=None, callback=None):
+        """
+        GBIFs autocomplete service
+        """
+
+    def searchjson(name, datasetKey=None, start=None, pageSize=None, callback=None):
+        """
+        GBIFs's search service
+        """
+
+    def speciesjson(genusKey, datasetKey=None, start=None, pageSize=None, callback=None):
+        """
+        GBIFs's species search service for a specified genus 
+        """
+
 
 @implementer(IALAService)
 class ALAService(object):
@@ -68,3 +90,40 @@ class ALAService(object):
                ('callback', callback)) if p[1]]
         # TODO: maybe do some error catching here?
         return urlopen(self.baseurl + 'search.json?' + urlencode(qs, True))
+
+@implementer(IGBIFService)
+class GBIFService(object):
+
+    baseurl = u'http://api.gbif.org/v1/'
+
+    def __init__(self):
+        pass
+
+    def autojson(self, q, datasetKey=None, rank=None, callback=None):
+        qs = [p for p in
+              (('q', q),
+               ('datasetKey', datasetKey),
+               ('rank', rank),
+               ('callback', callback)) if p[1]]
+        # TODO: maybe do some error catching here?
+        url = self.baseurl + 'species/suggest?' + urlencode(qs)
+        return urlopen(self.baseurl + 'species/suggest?' + urlencode(qs))
+
+    def searchjson(self, name, datasetKey=None, start=None, pageSize=None, callback=None):
+        qs = [p for p in
+              (('name', name),
+               ('datasetKey', datasetKey),
+               ('offset', start),
+               ('limit', pageSize),
+               ('callback', callback)) if p[1]]
+        # TODO: maybe do some error catching here?
+        return urlopen(self.baseurl + 'species?' + urlencode(qs, True))
+
+    def speciesjson(self, genusKey, datasetKey=None, start=None, pageSize=None, callback=None):
+        qs = [p for p in
+              (('datasetKey', datasetKey),
+               ('offset', start),
+               ('limit', pageSize),
+               ('callback', callback)) if p[1]]
+        # TODO: maybe do some error catching here?
+        return urlopen(self.baseurl + 'species/' + genusKey + '/children?' + urlencode(qs, True))

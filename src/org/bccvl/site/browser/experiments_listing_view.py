@@ -53,11 +53,12 @@ class ExperimentTools(BrowserView):
             itemob = itemob.getObject()
         css_map = {
             None: 'success',
-            'QUEUED': 'info',
-            'RUNNING': 'info',
+            'QUEUED': 'warning',
+            'RUNNING': 'warning',
             'COMPLETED': 'success',
             'FAILED': 'error',
-            'REMOVED': 'removed'
+            'REMOVED': 'removed',
+            'FINISHED': 'info'
         }
         # check job_state and return either success, error or block
         job_state = IExperimentJobTracker(itemob).state
@@ -80,6 +81,8 @@ class ExperimentTools(BrowserView):
 
 @implementer(IFolderContentsView)
 class ExperimentsListingView(FolderView):
+
+    title = u"Experiment List"
 
     def __init__(self, context, request):
         # update limit_display if it is not already set

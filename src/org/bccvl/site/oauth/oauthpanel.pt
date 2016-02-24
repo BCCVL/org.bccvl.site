@@ -1,117 +1,82 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n:domain="plone">
+      i18n:domain="plone"
+      metal:use-macro="context/main_template/macros/master">
 
-  <head>
-    <title>OAuth user settings</title>
-  </head>
+  <metal:block fill-slot="content">
 
-  <body>
-    <div class="cell width-full position-0"
-         tal:define="navigation_root_url context/@@plone_portal_state/navigation_root_url;"
-         metal:fill-slot="content">
-      <div id="edit-bar">
-        <h5 class="hiddenStructure"
-            i18n:translate="heading_views">Views</h5>
-        <ul class="contentViews"
-            id="content-views"
-            tal:define="view_name view/__name__"
-            i18n:domain="plone">
+    <div tal:define="view_actions view/prepareObjectTabs;"
+         id="edit-bar">
+      <h5 class="hiddenStructure"  
+          tal:condition="view_actions"
+          i18n:translate="heading_views">Views</h5>
 
-          <li id="contentview-user_data-personal-information"
-              tal:define="link view/getPersonalInfoLink;
-                          selected python:view_name=='personal-information'"
-              tal:condition="link|nothing"
-              tal:attributes="class python:selected and 'selected' or 'plain'">
+      <ul class="contentViews"
+          id="content-views"
+          i18n:domain="plone">
+
+        <tal:views repeat="action view_actions">
+          <li tal:define="selected action/selected|nothing;"
+              tal:attributes="id string:contentview-${action/id};
+                              class python:selected and 'selected' or 'plain'">
             <a href=""
-               tal:attributes="href string:${navigation_root_url}/${link}"
-               i18n:translate="title_personal_information_form">
-              Personal Information
+               tal:content="action/title"
+               tal:attributes="href action/url;"
+               i18n:translate="">
+              View name
             </a>
           </li>
-
-          <li id="contentview-user_data-oauth-preferences"
-              tal:define="link view/getOAuthPrefsLink;
-                          selected python:view_name=='oauth-preferences';"
-              tal:condition="link|nothing"
-              tal:attributes="class python:selected and 'selected' or 'plain'">
-            <a href=""
-               tal:attributes="href string:${navigation_root_url}/${link}"
-                       i18n:translate="">
-              OAuth Preferences
-            </a>
-          </li>
-          
-          <li id="contentview-user_data-change-password"
-              tal:define="link view/getPasswordLink;
-                          selected python:view_name=='change-password';"
-              tal:condition="link|nothing"
-              tal:attributes="class python:selected and 'selected' or 'plain'">
-            <a href=""
-               tal:attributes="href string:${navigation_root_url}/${link}"
-               i18n:translate="label_password">
-              Password
-            </a>
-          </li>
-        </ul>
-        <div class="contentActions">&nbsp;</div>
-      </div>
-
-      <div metal:use-macro="context/global_statusmessage/macros/portal_message">
-        Portal status message
-      </div>        
-
-      <div id="content">
+        </tal:views>
         
-        <h1 class="documentFirstHeading"
-            i18n:translate=""
-            tal:condition="view/label"
-            tal:content="view/label"
-            metal:define-slot="heading">
-          Do something
-        </h1>
-        
-        <div class="documentDescription" i18n:translate=""
-             tal:condition="view/description"
-             tal:content="view/description">
-          Description
-        </div>
-        
-        <div id="content-core">
-          
-          <fieldset>
-            <legend>BCCVL has access to the following services:</legend>
-            <p>BCCVL has access to the following services:</p>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Oauth provider</th>
-                  <th>State</th>
-                  <th>Authorise</th>
-                  <th>Revoke</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr tal:repeat="oauth view/services">
-                  <td tal:content="oauth/config/title"></td>
-                  <td tal:content="oauth/validate"></td>
-                  <td>
-                    <a href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/authorize">Authorise</a>
-                  </td>
-                  <td>
-                    <a href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/cleartoken">Revoke</a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            
-          </fieldset>
-        </div>
-      </div>        
+      </ul>
     </div>
-  </body>
+
+    <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+      Portal status message
+    </div>
+
+    <div id="content">
+      <h1 class="documentFirstHeading" tal:content="view/label | nothing" />
+      <div class="documentDescription" i18n:translate=""
+           tal:condition="view/description"
+           tal:content="view/description">
+        Description
+      </div>
+      
+      <div id="content-core">
+        <fieldset
+            tal:define="navigation_root_url context/@@plone_portal_state/navigation_root_url;">
+          <legend>BCCVL has access to the following services:</legend>
+          <p>BCCVL has access to the following services:</p>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Oauth provider</th>
+                <th>State</th>
+                <th>Authorise</th>
+                <th>Revoke</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr tal:repeat="oauth view/services">
+                <td tal:content="oauth/config/title"></td>
+                <td tal:content="oauth/validate"></td>
+                <td>
+                  <a href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/authorize">Authorise</a>
+                </td>
+                <td>
+                  <a href="#" tal:attributes="href string:${navigation_root_url}/oauth/${oauth/config/id}/cleartoken">Revoke</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+    </div>
+    
+  </metal:block>
+  
 </html>
+
