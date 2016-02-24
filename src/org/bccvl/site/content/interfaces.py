@@ -46,6 +46,10 @@ class IRemoteDataset(IDataset):
     )
 
 
+class IDatasetCollection(IDataset):
+    """A collection of datasets"""
+
+
 class IExperiment(Interface):
     """Base Experiment Class"""
 

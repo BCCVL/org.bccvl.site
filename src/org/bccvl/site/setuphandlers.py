@@ -510,6 +510,7 @@ def upgrade_230_240_1(context, logger=None):
     # Run GS steps
     portal = api.portal.get()
     setup = api.portal.get_tool('portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     # install new dependencies

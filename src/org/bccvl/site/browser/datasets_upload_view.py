@@ -18,6 +18,7 @@ from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.content.dataset import (IBlobDataset,
                                             ISpeciesDataset,
+                                            ISpeciesCollection,
                                             ILayerDataset,
                                             ITraitsDataset)
 from org.bccvl.tasks.celery import app
@@ -50,6 +51,7 @@ class BCCVLUploadForm(DefaultAddForm):
         #       the full path of the object. We need the path to apply
         #       the transmogrifier chain.
         #fti = getUtility(IDexterityFTI, name=self.portal_type)
+        import ipdb; ipdb.set_trace()
         container = aq_inner(self.context)
         try:
             # traverse to subfolder if possible
@@ -201,6 +203,25 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
     categories = ['occurrence']
     subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
 
+
+class MultiSpeciesOccurrenceAddForm(BCCVLUploadForm):
+
+    title = u"Upload Multiple Species Occurence Data"
+    description = (
+        u"<p>Upload occurrences data for multiple species</p>"
+        u"<p>A multi species occurrence dataset is expected to be in CSV format."
+        u"Your longitude and latitude must be in decimal degrees."
+        u"The species name is expected to be in a column named 'species'."
+        u"The BCCVL will only try to interpret columns with labels "
+        u"'species', 'lon' and 'lat', so ensure your headings match these labels.</p>"
+    )
+    fields = Fields(IBlobDataset, IDublinCore, ISpeciesCollection).select(
+        'file', 'title', 'description', 'rights')
+    datagenre = 'DataGenreSpeciesCollection'
+    categories = ['occurrence']
+    subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
+
+
 class ClimateCurrentAddForm(BCCVLUploadForm):
 
     title = u"Upload Current Climate Data"
@@ -309,6 +330,7 @@ class DatasetsUploadView(BrowserView):
         for form_prefix, form_class in (('speciesabsence', SpeciesAbsenceAddForm),
                                         ('speciesabundance', SpeciesAbundanceAddForm),
                                         ('speciesoccurrence', SpeciesOccurrenceAddForm),
+                                        ('multispeciesoccurrence', MultiSpeciesOccurrenceAddForm),
                                         ('climatecurrent', ClimateCurrentAddForm),
                                         ('environmental', EnvironmentalAddForm),
                                         ('climatefuture', ClimateFutureAddForm),
