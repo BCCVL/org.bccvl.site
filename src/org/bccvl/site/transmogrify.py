@@ -9,6 +9,7 @@ from urlparse import urlsplit
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
+from plone.uuid.interfaces import IUUID
 from rdflib import Graph, Namespace, Literal
 from rdflib.namespace import RDF, DCTERMS, XSD
 from rdflib.resource import Resource
@@ -482,6 +483,73 @@ class ProvenanceImporter(object):
             provdata.data = graph.serialize(format="turtle")
 
             yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class PartOfImporter(object):
+    """If an item has a field '_partof', it will add itself
+    as part to the targeted item.
+    """
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.transmogrifier = transmogrifier
+        self.name = name
+        self.options = options
+        self.previous = previous
+        self.context = transmogrifier.context
+
+        # keys for sections further down the chain
+        self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
+        self.partofkey = options.get('partof-key',
+                                     '_partof').strip()
+
+    def __iter__(self):
+        """missing docstring."""
+        import ipdb; ipdb.set_trace()
+        for item in self.previous:
+            # check if we have a dataset
+
+            pathkey = self.pathkey(*item.keys())[0]
+            # no path .. can't do anything
+            if not pathkey:
+                yield item
+                continue
+
+            path = item[pathkey]
+            # Skip the Plone site object itself
+            if not path:
+                yield item
+                continue
+
+            obj = self.context.unrestrictedTraverse(
+                path.encode().lstrip('/'), None)
+
+            # path doesn't exist
+            if obj is None:
+                yield item
+                continue
+
+            collpath = item.get(self.partofkey, {}).get('path')
+            if not collpath:
+                # no path found
+                yield item
+                continue
+
+            # TODO: shouldn't allow absolute path here?
+            collobj = self.context.unrestrictedTraverse(
+                collpath.encode(), None)
+
+            # path doesn't exist
+            if collobj is None:
+                yield item
+                continue
+
+            # we have a collection and an item,
+            # let's add this item as part of the collection
+            collobj.parts = collobj.parts + [IUUID(collobj)]
+            yield item
+
 
 
 # '_files': {u'_field_file_bkgd.csv':

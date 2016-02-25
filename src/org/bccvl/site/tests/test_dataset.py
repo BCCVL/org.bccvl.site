@@ -572,7 +572,7 @@ class TestDatasetUpload(unittest.TestCase):
             tmd = IBCCVLMetadata(tds)
             self.assertEqual(tmd['rows'], rows)
 
-        self.assertEqual(ds.relations, 4)
+        self.assertEqual(len(ds.parts), 4)
 
 
 
