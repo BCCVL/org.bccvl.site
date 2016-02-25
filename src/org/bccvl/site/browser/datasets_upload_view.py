@@ -16,11 +16,14 @@ from zope.schema import Bool
 
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IBCCVLMetadata
-from org.bccvl.site.content.dataset import (IBlobDataset,
+from org.bccvl.site.content.interfaces import IBlobDataset
+from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
+from org.bccvl.site.content.dataset import (
                                             ISpeciesDataset,
                                             ISpeciesCollection,
                                             ILayerDataset,
                                             ITraitsDataset)
+from org.bccvl.site.utils import get_results_dir
 from org.bccvl.tasks.celery import app
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.tasks.plone import after_commit_task
@@ -51,7 +54,6 @@ class BCCVLUploadForm(DefaultAddForm):
         #       the full path of the object. We need the path to apply
         #       the transmogrifier chain.
         #fti = getUtility(IDexterityFTI, name=self.portal_type)
-        import ipdb; ipdb.set_trace()
         container = aq_inner(self.context)
         try:
             # traverse to subfolder if possible
@@ -99,6 +101,41 @@ class BCCVLUploadForm(DefaultAddForm):
         job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
         job.type = new_object.portal_type
         jt.set_progress('PENDING', u'Metadata update pending')
+
+        # species extract task
+        if IMultiSpeciesDataset.providedBy(new_object):
+            # kick off csv split import tasks
+            import_task = app.signature(
+                "org.bccvl.tasks.datamover.import_multi_species_csv",
+                kwargs={
+                    'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
+                    'results_dir': get_results_dir(container, self.request),
+                    'import_context': {
+                        'context': '/'.join(container.getPhysicalPath()),
+                        'user': {
+                            'id': member.getUserName(),
+                            'email': member.getProperty('email'),
+                            'fullname': member.getProperty('fullname')
+                        }
+                    },
+                    'context': {
+                        'context': context_path,
+                        'user': {
+                            'id': member.getUserName(),
+                            'email': member.getProperty('email'),
+                            'fullname': member.getProperty('fullname')
+                        }
+                    }
+                },
+                options={'immutable': True}
+            );
+            after_commit_task(import_task)
+            # create job tracking object
+            jt = IJobTracker(new_object)
+            job = jt.new_job('TODO: generate id', 'generate taskname: import_multi_species_csv')
+            job.type = new_object.portal_type
+            jt.set_progress('PENDING', u'Multi species import pending')
+
         # We have to reindex after updating the object
         new_object.reindexObject()
 
@@ -215,7 +252,7 @@ class MultiSpeciesOccurrenceAddForm(BCCVLUploadForm):
         u"The BCCVL will only try to interpret columns with labels "
         u"'species', 'lon' and 'lat', so ensure your headings match these labels.</p>"
     )
-    fields = Fields(IBlobDataset, IDublinCore, ISpeciesCollection).select(
+    fields = Fields(IMultiSpeciesDataset, IDublinCore, ISpeciesCollection).select(
         'file', 'title', 'description', 'rights')
     datagenre = 'DataGenreSpeciesCollection'
     categories = ['occurrence']
@@ -325,16 +362,17 @@ class DatasetsUploadView(BrowserView):
     def update(self):
         self.subforms = []
         ttool = getToolByName(self.context, 'portal_types')
-        fti = ttool.getTypeInfo('org.bccvl.content.dataset')
 
-        for form_prefix, form_class in (('speciesabsence', SpeciesAbsenceAddForm),
-                                        ('speciesabundance', SpeciesAbundanceAddForm),
-                                        ('speciesoccurrence', SpeciesOccurrenceAddForm),
-                                        ('multispeciesoccurrence', MultiSpeciesOccurrenceAddForm),
-                                        ('climatecurrent', ClimateCurrentAddForm),
-                                        ('environmental', EnvironmentalAddForm),
-                                        ('climatefuture', ClimateFutureAddForm),
-                                        ('speciestrait', SpeciesTraitAddForm)):
+        for form_prefix, form_class, portal_type in (
+                ('speciesabsence', SpeciesAbsenceAddForm, 'org.bccvl.content.dataset'),
+                ('speciesabundance', SpeciesAbundanceAddForm, 'org.bccvl.content.dataset'),
+                ('speciesoccurrence', SpeciesOccurrenceAddForm, 'org.bccvl.content.dataset'),
+                ('multispeciesoccurrence', MultiSpeciesOccurrenceAddForm, 'org.bccvl.content.multispeciesdataset'),
+                ('climatecurrent', ClimateCurrentAddForm, 'org.bccvl.content.dataset'),
+                ('environmental', EnvironmentalAddForm, 'org.bccvl.content.dataset'),
+                ('climatefuture', ClimateFutureAddForm, 'org.bccvl.content.dataset'),
+                ('speciestrait', SpeciesTraitAddForm, 'org.bccvl.content.dataset')):
+            fti = ttool.getTypeInfo(portal_type)
             form = form_class(aq_inner(self.context),
                               self.request, fti)
             form.__name__ = "{0}form".format(form_prefix)

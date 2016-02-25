@@ -3,7 +3,8 @@
   "title": "Datasets",
   "_transitions": ["show_internally", "publish_internally"],
   "_permissions": {
-    "Add portal content": {"acquire": true, "roles": ["Manager", "Member"]},
-    "org.bccvl: Add Dataset": {"acquire": true, "roles": ["Manager", "Member"]}
+      "Add portal content": {"acquire": true, "roles": ["Manager", "Member"]},
+      "org.bccvl: Add Dataset": {"acquire": true, "roles": ["Manager", "Member"]},
+      "org.bccvl: Add Dataset Collection": {"acquire": true, "roles": ["Manager", "Member"]}      
   }
 }
