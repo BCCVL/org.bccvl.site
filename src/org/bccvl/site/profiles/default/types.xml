@@ -12,6 +12,8 @@
   <object name="org.bccvl.content.collection" meta_type="Dexterity FTI"/>  
   <object name="org.bccvl.content.dataset" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.remotedataset" meta_type="Dexterity FTI"/>
+  <object name="org.bccvl.content.datasetcollection" meta_type="Dexterity FTI"/>
+  <object name="org.bccvl.content.multispeciesdataset" meta_type="Dexterity FTI"/>    
   <object name="org.bccvl.tool.facetconfigtool" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.tool.facetconfig" meta_type="Dexterity FTI"/>  
   <object name="Folder" meta_type="Dexterity FTI"/>

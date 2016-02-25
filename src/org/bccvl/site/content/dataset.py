@@ -5,6 +5,7 @@ from zope import schema
 from zope.interface import implementer
 from plone.app.contenttypes.interfaces import IFile
 from org.bccvl.site.content.interfaces import IBlobDataset
+from org.bccvl.site.content.interfaces import IDatasetCollection
 from org.bccvl.site import MessageFactory as _
 
 
@@ -27,6 +28,12 @@ class Dataset(Item):
         #       calling setFormat causes infinite recursion
         #else:
         #    self.setFormat(value)
+
+
+@implementer(IDatasetCollection)
+class DatasetCollection(Item):
+
+    pass
 
 
 class ISpeciesDataset(model.Schema):
@@ -56,6 +63,16 @@ class ISpeciesDataset(model.Schema):
         required=False,
         title=u'Common Name',
         description=u'A common or vernacular name.',
+    )
+
+
+class ISpeciesCollection(model.Schema):
+    """
+    a schema to drive the forms for species collections
+    """
+    genre = schema.Choice(
+        title=_(u'Data Genre'),
+        vocabulary=u'genre_source'
     )
 
 
