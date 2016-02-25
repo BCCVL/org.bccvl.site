@@ -574,6 +574,81 @@ class TestDatasetUpload(unittest.TestCase):
 
         self.assertEqual(len(ds.parts), 4)
 
+    @mock.patch('org.bccvl.movelib.move')
+    def test_upload_multi_csv_mac(self, mock_move=None):
+        testcsv = resource_string(__name__, 'mock_data/multi_occurrence.csv')
+        view = self.getview()
+        from ZPublisher.HTTPRequest import FileUpload
+        from cgi import FieldStorage
+        from StringIO import StringIO
+        env = {'REQUEST_METHOD': 'PUT'}
+        headers = {'content-type': 'text/csv',
+                   'content-length': str(testcsv),
+                   'content-disposition': 'attachment; filename=test.csv'}
+        fileupload = FileUpload(FieldStorage(fp=StringIO(testcsv),
+                                             environ=env, headers=headers))
+        view.request.form.update({
+            'multispeciesoccurrence.buttons.save': u'Save',
+            'multispeciesoccurrence.widgets.file': fileupload,
+            'multispeciesoccurrence.widgets.title': u'test species title',
+            'multispeciesoccurrence.widgets.description': u'some test.csv file',
+            'multispeciesoccurrence.widgets.legalcheckbox': [u'selected'],
+            'multispeciesoccurrence.widgets.legalcheckbox-empty-marker': u'1',
+            'multispeciesoccurrence.widgets.rights': u'test rights',
+        })
+        _ = view()
+        self.assertEqual(self.portal.REQUEST.response.status, 302)
+        self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
+                         'http://nohost/plone/datasets')
+        ds = self.portal.datasets.species.user['test.csv']
+        self.assertEqual(ds.rights, u'test rights')
+        self.assertEqual(ds.file.data, testcsv)
+        md = IBCCVLMetadata(ds)
+        self.assertEqual(md['genre'], 'DataGenreSpeciesCollection')
+
+        jt = IJobTracker(ds)
+        self.assertEqual(jt.state, 'PENDING')
+
+        # patch movelib.move
+        def move_occurrence_data(*args, **kw):
+            # try to move test.csv from dataset
+            src, dst = (urlsplit(x['url']) for x in args)
+            if src.scheme == 'http' and dst.scheme == 'file':
+                # copy test.csv to dst
+
+                shutil.copyfileobj(resource_stream(__name__, 'mock_data/multi_occurrence_mac.csv'),
+                                   open(dst.path, 'w'))
+            elif src.scheme == 'file' and dst.scheme == 'scp':
+                # copy result back
+                shutil.copyfile(src.path, dst.path)
+            else:
+                raise Exception('Data move failed')
+
+        mock_move.side_effect = move_occurrence_data
+        # triger background process
+        transaction.commit()
+        # 6 move should have happened
+        self.assertEqual(mock_move.call_count, 6)
+        self.assertEqual(mock_move.call_args_list[0][0][0]['url'],
+                         'http://nohost/plone/datasets/species/user/test.csv/@@download/file/test.csv')
+        self.assertEqual(mock_move.call_args_list[1][0][0]['url'],
+                         'http://nohost/plone/datasets/species/user/test.csv/@@download/file/test.csv')
+        # TODO: should test other call orguments as well
+        # job state should be complete
+        self.assertEqual(jt.state, 'COMPLETED')
+        # metadata should be up to date
+        self.assertEqual(md['rows'], 999)
+        # check other datasets:
+        for name, rows in (('abbreviata.csv', 65),
+                           ('acinacea.csv', 596),
+                           ('acanthoclada.csv', 322),
+                           ('acanthaster.csv', 16)):
+            self.assertIn(name, self.portal.datasets.species.user)
+            tds = self.portal.datasets.species.user[name]
+            tmd = IBCCVLMetadata(tds)
+            self.assertEqual(tmd['rows'], rows)
+
+        self.assertEqual(len(ds.parts), 4)
 
 
 
