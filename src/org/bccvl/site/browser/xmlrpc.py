@@ -11,7 +11,7 @@ from plone.dexterity.utils import createContentInContainer
 from plone.registry.interfaces import IRegistry
 from zope import contenttype
 from zope.component import getUtility, queryUtility
-from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces import NotFound, BadRequest
 from zope.schema.vocabulary import getVocabularyRegistry
 from zope.schema.interfaces import IContextSourceBinder
 
@@ -367,7 +367,12 @@ class DataMover(BrowserView):
         # TODO: check permisions?
         # 1. create new dataset with taxon, lsid and common name set
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ala']
+        if dataSrc == 'ala':
+            dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ala']
+        elif dataSrc == 'gbif':
+            dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['gbif']
+        else:
+            raise BadRequest('Invalid data source {0}'.format(dataSrc))
 
         title = [taxon]
         if common:

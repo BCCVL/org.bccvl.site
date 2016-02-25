@@ -250,7 +250,6 @@ class DatasetTools(BrowserView):
                 chain((
                     SimpleTerm('user', 'user', u'My Datasets'),
                     SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
-                    # SimpleTerm('ala', 'ala', u'Imported from ALA'),
                     SimpleTerm('shared', 'shared', 'Shared')),
                       (SimpleTerm(item.getPhysicalPath(), '-'.join((group.getId(), item.getId())), item.Title())
                        for group in dsfolder.values()
@@ -272,7 +271,6 @@ class DatasetTools(BrowserView):
                   'label': genre.title
                 } for genre in (SimpleTerm('user', 'user', u'My Datasets'),
                                 SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
-                                # SimpleTerm('ala', 'ala', u'Imported from ALA'),
                                 SimpleTerm('shared', 'shared', 'Shared'))]
         }
         # yield collections
