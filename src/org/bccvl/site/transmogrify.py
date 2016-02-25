@@ -529,7 +529,11 @@ class PartOfImporter(object):
                 yield item
                 continue
 
-            collpath = item.get(self.partofkey, {}).get('path')
+            partof = item.get(self.partofkey)
+            if not partof:
+                yield item
+                continue
+            collpath = partof.get('path')
             if not collpath:
                 # no path found
                 yield item
