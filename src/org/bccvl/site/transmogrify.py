@@ -506,7 +506,6 @@ class PartOfImporter(object):
 
     def __iter__(self):
         """missing docstring."""
-        import ipdb; ipdb.set_trace()
         for item in self.previous:
             # check if we have a dataset
 
