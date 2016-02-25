@@ -70,7 +70,6 @@ class IMultiSpeciesDataset(IDatasetCollection):
     )
 
 
-
 class IExperiment(Interface):
     """Base Experiment Class"""
 
