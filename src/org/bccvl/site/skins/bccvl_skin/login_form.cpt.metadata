@@ -1,5 +1,5 @@
 [default]
-title=Sign in
+title=Login
 border=None
 
 [validators]

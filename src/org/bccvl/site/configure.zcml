@@ -205,6 +205,11 @@
       />
 
   <utility
+      component=".transmogrify.PartOfImporter"
+      name="org.bccvl.site.transmogrify.partofimporter"
+      />
+
+  <utility
       component=".vocabularies.sdm_functions_source"
       name="sdm_functions_source"
       />

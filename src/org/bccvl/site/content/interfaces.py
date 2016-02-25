@@ -46,6 +46,30 @@ class IRemoteDataset(IDataset):
     )
 
 
+class IDatasetCollection(IDataset):
+    """A collection of datasets"""
+
+    # TODO: do I really want to use plone.app.relationfield here?
+    parts = List(
+        title=_(u"Parts"),
+        description=u"",
+        required=False,
+        value_type=TextLine(),  # should we rather use ASCIILine for uuids?
+        default=[]
+    )
+
+
+class IMultiSpeciesDataset(IDatasetCollection):
+    """A species dataset based on a single file"""
+
+    model.primary('file')
+    file = NamedBlobFile(
+        title=_(u"File"),
+        description=_(u"Data content"),
+        required=True
+    )
+
+
 class IExperiment(Interface):
     """Base Experiment Class"""
 

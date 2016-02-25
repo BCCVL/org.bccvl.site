@@ -34,16 +34,7 @@ def configureCelery():
     }
 
     from org.bccvl.tasks import celery
-    # import ipdb; ipdb.set_trace()
     celery.app.config_from_object(CELERY_CONFIG)
-
-    # worker = celery.app.WorkController(celery.app, pool_cls='solo',
-    #                                    concurrency=1,
-    #                                    log_level=logging.DEBUG)
-    # t = Thread(target=worker.start)
-    # t.daemon = True
-    # t.start()
-    # return worker
 
 
 def getFile(filename):
@@ -58,7 +49,7 @@ class BCCVLLayer(PloneSandboxLayer):
 
     def setUp(self):
         # TODO: rename to startCelery
-        self.worker = configureCelery()
+        configureCelery()
         super(BCCVLLayer, self).setUp()
 
     def setUpZope(self, app, configurationContext):
@@ -72,7 +63,6 @@ class BCCVLLayer(PloneSandboxLayer):
         pwf.setDefaultChain('simple_publication_workflow')
         # apply configuration profile
         self.applyProfile(portal, 'org.bccvl.site:default')
-
         app = portal.getPhysicalRoot()
         z2.login(app['acl_users'], SITE_OWNER_NAME)
         self.addTestContent(portal)
@@ -80,7 +70,6 @@ class BCCVLLayer(PloneSandboxLayer):
         login(portal, TEST_USER_NAME)
 
     def tearDown(self):
-        # self.worker.stop()
         super(BCCVLLayer, self).tearDown()
 
     def tearDownZope(self, app):
