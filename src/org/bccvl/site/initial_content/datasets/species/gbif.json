@@ -1,0 +1,9 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "Species data from GBIF",
+    "description": "The Global Biodiversity Information Facility (GBIF) is an international open data infrastructure, funded by governments.",
+    "attribution": [],
+    "external_description": "See <a href=\"http://www.gbif.org\">http://www.gbif.org</a>",
+    "categories": ["biological"],
+    "_transitions": ["show_internally", "publish_internally"]
+}

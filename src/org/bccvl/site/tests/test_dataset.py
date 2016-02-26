@@ -281,7 +281,7 @@ class TestDatasetImport(unittest.TestCase):
 
 class TestDatasetUpload(unittest.TestCase):
 
-    layer = BCCVL_INTEGRATION_TESTING
+    layer = BCCVL_FUNCTIONAL_TESTING
 
     def getview(self):
         from plone.app.z3cform.interfaces import IPloneFormLayer
@@ -302,7 +302,7 @@ class TestDatasetUpload(unittest.TestCase):
         from StringIO import StringIO
         env = {'REQUEST_METHOD': 'PUT'}
         headers = {'content-type': 'text/csv',
-                   'content-length': str(testcsv),
+                   'content-length': str(len(testcsv)),
                    'content-disposition': 'attachment; filename=test.csv'}
         fileupload = FileUpload(FieldStorage(fp=StringIO(testcsv),
                                              environ=env, headers=headers))
@@ -322,7 +322,7 @@ class TestDatasetUpload(unittest.TestCase):
         _ = view()
         self.assertEqual(self.portal.REQUEST.response.status, 302)
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
-                         'http://nohost/plone/datasets')
+                         'http://{0}:{1}/plone/datasets'.format(self.layer.get('host'), self.layer.get('port')))
         # dataset should exist now
         ds = self.portal.datasets.species.user['test.csv']
         self.assertEqual(ds.rights, u'test rights')
@@ -349,7 +349,7 @@ class TestDatasetUpload(unittest.TestCase):
         # triger background process
         transaction.commit()
         # one move should have happened
-        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://nohost/plone/datasets/species/user/test.csv/@@download/file/test.csv')
+        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
         # job state should be complete
         self.assertEqual(jt.state, 'COMPLETED')
         # metadata should be up to date
@@ -383,7 +383,7 @@ class TestDatasetUpload(unittest.TestCase):
         _ = view()
         self.assertEqual(self.portal.REQUEST.response.status, 302)
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
-                         'http://nohost/plone/datasets')
+                         'http://{0}:{1}/plone/datasets'.format(self.layer.get('host'), self.layer.get('port')))
         ds = self.portal.datasets.climate.user['spc_obl_merc.tif']
         self.assertEqual(ds.rights, u'test rights')
         self.assertEqual(ds.file.data, data)
@@ -407,7 +407,7 @@ class TestDatasetUpload(unittest.TestCase):
         # triger background process
         transaction.commit()
         # one move should have happened
-        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://nohost/plone/datasets/climate/user/spc_obl_merc.tif/@@download/file/spc_obl_merc.tif')
+        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://{0}:{1}/plone/datasets/climate/user/spc_obl_merc.tif/@@download/file/spc_obl_merc.tif'.format(self.layer.get('host'), self.layer.get('port')))
         # job state should be complete
         self.assertEqual(jt.state, 'COMPLETED')
 
@@ -450,7 +450,7 @@ class TestDatasetUpload(unittest.TestCase):
         _ = view()
         self.assertEqual(self.portal.REQUEST.response.status, 302)
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
-                         'http://nohost/plone/datasets')
+                         'http://{0}:{1}/plone/datasets'.format(self.layer.get('host'), self.layer.get('port')))
         ds = self.portal.datasets.climate.user['spc_obl_merc.zip']
         self.assertEqual(ds.rights, u'test rights')
         self.assertEqual(ds.file.data, data)
@@ -476,7 +476,7 @@ class TestDatasetUpload(unittest.TestCase):
         # triger background process
         transaction.commit()
         # one move should have happened
-        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://nohost/plone/datasets/climate/user/spc_obl_merc.zip/@@download/file/spc_obl_merc.zip')
+        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://{0}:{1}/plone/datasets/climate/user/spc_obl_merc.zip/@@download/file/spc_obl_merc.zip'.format(self.layer.get('host'), self.layer.get('port')))
         # job state should be complete
         self.assertEqual(jt.state, 'COMPLETED')
 
@@ -507,7 +507,7 @@ class TestDatasetUpload(unittest.TestCase):
         from StringIO import StringIO
         env = {'REQUEST_METHOD': 'PUT'}
         headers = {'content-type': 'text/csv',
-                   'content-length': str(testcsv),
+                   'content-length': str(len(testcsv)),
                    'content-disposition': 'attachment; filename=test.csv'}
         fileupload = FileUpload(FieldStorage(fp=StringIO(testcsv),
                                              environ=env, headers=headers))
@@ -523,7 +523,7 @@ class TestDatasetUpload(unittest.TestCase):
         _ = view()
         self.assertEqual(self.portal.REQUEST.response.status, 302)
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
-                         'http://nohost/plone/datasets')
+                         'http://{0}:{1}/plone/datasets'.format(self.layer.get('host'), self.layer.get('port')))
         ds = self.portal.datasets.species.user['test.csv']
         self.assertEqual(ds.rights, u'test rights')
         self.assertEqual(ds.file.data, testcsv)
@@ -554,9 +554,9 @@ class TestDatasetUpload(unittest.TestCase):
         # 6 move should have happened
         self.assertEqual(mock_move.call_count, 6)
         self.assertEqual(mock_move.call_args_list[0][0][0]['url'],
-                         'http://nohost/plone/datasets/species/user/test.csv/@@download/file/test.csv')
+                         'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
         self.assertEqual(mock_move.call_args_list[1][0][0]['url'],
-                         'http://nohost/plone/datasets/species/user/test.csv/@@download/file/test.csv')
+                         'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
         # TODO: should test other call orguments as well
         # job state should be complete
         self.assertEqual(jt.state, 'COMPLETED')

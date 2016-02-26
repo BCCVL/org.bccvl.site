@@ -69,9 +69,6 @@ class BCCVLLayer(PloneSandboxLayer):
         # run all tests as our new test user
         login(portal, TEST_USER_NAME)
 
-    def tearDown(self):
-        super(BCCVLLayer, self).tearDown()
-
     def tearDownZope(self, app):
         z2.uninstallProduct(app, 'Products.DateRecurringIndex')
 
