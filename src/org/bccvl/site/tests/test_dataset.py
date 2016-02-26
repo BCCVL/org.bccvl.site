@@ -573,6 +573,7 @@ class TestDatasetUpload(unittest.TestCase):
             self.assertEqual(tmd['rows'], rows)
 
         self.assertEqual(len(ds.parts), 4)
+        self.assertEqual(len(ds.parts), len(set(ds.parts)))
 
     @mock.patch('org.bccvl.movelib.move')
     def test_upload_multi_csv_mac(self, mock_move=None):

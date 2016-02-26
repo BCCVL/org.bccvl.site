@@ -550,7 +550,7 @@ class PartOfImporter(object):
 
             # we have a collection and an item,
             # let's add this item as part of the collection
-            collobj.parts = collobj.parts + [IUUID(collobj)]
+            collobj.parts = collobj.parts + [IUUID(obj)]
             yield item
 
 
