@@ -3,6 +3,7 @@
   <object name="org.bccvl.content.user" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.group" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.sdmexperiment" meta_type="Dexterity FTI"/>
+  <object name="org.bccvl.content.msdmexperiment" meta_type="Dexterity FTI"/>  
   <object name="org.bccvl.content.projectionexperiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.biodiverseexperiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.ensemble" meta_type="Dexterity FTI"/>
