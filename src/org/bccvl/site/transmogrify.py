@@ -3,12 +3,17 @@ import json
 import logging
 import os
 import os.path
+import posixpath
 import re
 from urlparse import urlsplit
+
+from Acquisition import aq_base
 
 from collective.transmogrifier.interfaces import ISectionBlueprint
 from collective.transmogrifier.interfaces import ISection
 from collective.transmogrifier.utils import defaultMatcher
+from collective.transmogrifier.utils import traverse
+from plone.dexterity.utils import createContentInContainer
 from plone.uuid.interfaces import IUUID
 from rdflib import Graph, Namespace, Literal
 from rdflib.namespace import RDF, DCTERMS, XSD
@@ -553,6 +558,61 @@ class PartOfImporter(object):
             collobj.parts = collobj.parts + [IUUID(obj)]
             yield item
 
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class Constructor(object):
+    """Copy of collective.transmogrifier constructor blueprint, which
+    optionally supports updateing / force create new object even if id
+    already exists"""
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.previous = previous
+        self.context = transmogrifier.context
+
+        self.typekey = defaultMatcher(options, 'type-key', name, 'type',
+                                      ('portal_type', 'Type'))
+        self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
+        self.update = options.get('update', 'true').lower() in ("yes", "true", "t", "1")
+        self.required = bool(options.get('required'))
+
+    def __iter__(self):
+        for item in self.previous:
+            keys = item.keys()
+            typekey = self.typekey(*keys)[0]
+            pathkey = self.pathkey(*keys)[0]
+
+            if not (typekey and pathkey):
+                LOG.warn('Not enough info for item: %s' % item)
+                yield item; continue
+
+            type_, path = item[typekey], item[pathkey]
+
+            path = path.encode('ASCII')
+            container, id = posixpath.split(path.strip('/'))
+            context = traverse(self.context, container, None)
+            if context is None:
+                error = 'Container %s does not exist for item %s' % (
+                    container, path)
+                if self.required:
+                    raise KeyError(error)
+                LOG.warn(error)
+                yield item
+                continue
+
+
+            if self.update and getattr(aq_base(context), id, None) is not None:
+                # item exists and update flag has been set
+                yield item
+                continue
+
+            # item does not exist or update flag is false, so we create a new object in any case
+            obj = createContentInContainer(context, type_, id=id)
+
+            if obj.getId() != id:
+                item[pathkey] = posixpath.join(container, obj.getId())
+
+            yield item
 
 
 # '_files': {u'_field_file_bkgd.csv':
