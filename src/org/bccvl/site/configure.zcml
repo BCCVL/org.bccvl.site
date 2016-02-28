@@ -210,6 +210,11 @@
       />
 
   <utility
+      component=".transmogrify.Constructor"
+      name="org.bccvl.site.transmogrify.constructor"
+      />
+
+  <utility
       component=".vocabularies.sdm_functions_source"
       name="sdm_functions_source"
       />
