@@ -26,7 +26,7 @@
       <a href="#"
          tal:define="selected python: 'selected' if current_view == 'datasets_import_view' else ''"
          tal:attributes="href string:${context/absolute_url}/datasets_import_view;
-                         class selected">Import Species Dataset</a>
+                         class selected">Get Species Dataset</a>
     </li>
     <li class="formTab">
       <a href="#"
