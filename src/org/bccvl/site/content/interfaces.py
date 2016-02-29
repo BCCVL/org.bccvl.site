@@ -136,30 +136,20 @@ class IMSDMExperiment(IExperiment):
         required=True,
     )
 
-    directives.widget('species_occurrence_dataset',
+    directives.widget('species_occurrence_collections',
                 DatasetDictFieldWidget,
                 multiple='multiple',
-                genre=['DataGenreSpeciesOccurrence'],
+                genre=['DataGenreSpeciesCollection'],
                 errmsg=u"Please select at least 1 occurrence dataset.",
                 vizclass=u'bccvl-occurrence-viz')
-    species_occurrence_dataset = List(
-        title=u'Species Occurrence Datasets',
-        value_type=TextLine(),
+    species_occurrence_collections = Dict(
+        title=u'Species Occurrence Collections',
+        key_type=TextLine(),
+        value_type=List(value_type=TextLine()),
         default=None,
         required=True,
-        min_length=2,
+        min_length=1,
         max_length=5,
-    )
-
-    directives.widget('species_absence_dataset',
-                DatasetFieldWidget,
-                genre=['DataGenreSpeciesAbsence'],
-                errmsg=u"Please select at least 1 emmission scenario.",
-                vizclass=u'bccvl-absence-viz')
-    species_absence_dataset = TextLine(
-        title=u'Species Absence Datasets',
-        default=None,
-        required=False,
     )
 
     directives.widget('environmental_datasets',
