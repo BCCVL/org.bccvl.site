@@ -70,6 +70,9 @@ class ExperimentTools(BrowserView):
             details = projection_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.sdmexperiment':
             details = sdm_listing_details(expbrain)
+        elif expbrain.portal_type == 'org.bccvl.content.msdmexperiment':
+            # FIXME: ... need msdm listing details here
+            details = msdm_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
             details = biodiverse_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.ensemble':
@@ -126,7 +129,6 @@ def sdm_listing_details(expbrain):
     # TODO: this is ripe for optimising so it doesn't run every time
     # experiments are listed
     details = {}
-    environmental_layers = defaultdict(list)
     exp = expbrain.getObject()
     if exp.environmental_datasets:
         details.update({
@@ -138,6 +140,26 @@ def sdm_listing_details(expbrain):
                 exp.species_occurrence_dataset),
             'species_absence': get_title_from_uuid(
                 exp.species_absence_dataset),
+            'environmental_layers': ({
+                'title': get_title_from_uuid(dataset),
+                'layers': sorted(layers)
+                } for dataset, layers in exp.environmental_datasets.items()
+            ),
+        })
+    return details
+
+
+def msdm_listing_details(expbrain):
+    # TODO: this is ripe for optimising so it doesn't run every time
+    # experiments are listed
+    details = {}
+    exp = expbrain.getObject()
+    if exp.environmental_datasets:
+        details.update({
+            'type': 'SDM',
+            'functions': get_title_from_uuid(exp.function),
+            'species_occurrence': ', '.join(get_title_from_uuid(ds) for ds in exp.species_occurrence_collections),
+            'species_absence': '',
             'environmental_layers': ({
                 'title': get_title_from_uuid(dataset),
                 'layers': sorted(layers)
