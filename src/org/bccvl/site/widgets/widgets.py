@@ -208,7 +208,7 @@ class DatasetDictWidget(HTMLFormElement, Widget):
             if not part:
                 continue
             subitem = {
-                'id': part.getId,
+                'id': subdsid,
                 'title': part.Title,
                 'selected': not selectedsubitems or subdsid in selectedsubitems
             }
