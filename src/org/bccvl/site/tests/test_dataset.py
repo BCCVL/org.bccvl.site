@@ -497,7 +497,6 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(layermd['width'], 200)
         self.assertEqual(layermd['srs'], None)
 
-
     @mock.patch('org.bccvl.movelib.move')
     def test_upload_multi_csv(self, mock_move=None):
         testcsv = resource_string(__name__, 'mock_data/multi_occurrence.csv')
@@ -577,7 +576,7 @@ class TestDatasetUpload(unittest.TestCase):
 
     @mock.patch('org.bccvl.movelib.move')
     def test_upload_multi_csv_mac(self, mock_move=None):
-        testcsv = resource_string(__name__, 'mock_data/multi_occurrence.csv')
+        testcsv = resource_string(__name__, 'mock_data/multi_occurrence_mac.csv')
         view = self.getview()
         from ZPublisher.HTTPRequest import FileUpload
         from cgi import FieldStorage
@@ -600,7 +599,7 @@ class TestDatasetUpload(unittest.TestCase):
         _ = view()
         self.assertEqual(self.portal.REQUEST.response.status, 302)
         self.assertEqual(self.portal.REQUEST.response.getHeader('Location'),
-                         'http://nohost/plone/datasets')
+                         'http://{0}:{1}/plone/datasets'.format(self.layer.get('host'), self.layer.get('port')))
         ds = self.portal.datasets.species.user['test.csv']
         self.assertEqual(ds.rights, u'test rights')
         self.assertEqual(ds.file.data, testcsv)
@@ -631,9 +630,9 @@ class TestDatasetUpload(unittest.TestCase):
         # 6 move should have happened
         self.assertEqual(mock_move.call_count, 6)
         self.assertEqual(mock_move.call_args_list[0][0][0]['url'],
-                         'http://nohost/plone/datasets/species/user/test.csv/@@download/file/test.csv')
+                         'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
         self.assertEqual(mock_move.call_args_list[1][0][0]['url'],
-                         'http://nohost/plone/datasets/species/user/test.csv/@@download/file/test.csv')
+                         'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
         # TODO: should test other call orguments as well
         # job state should be complete
         self.assertEqual(jt.state, 'COMPLETED')
@@ -648,9 +647,8 @@ class TestDatasetUpload(unittest.TestCase):
             tds = self.portal.datasets.species.user[name]
             tmd = IBCCVLMetadata(tds)
             self.assertEqual(tmd['rows'], rows)
-
         self.assertEqual(len(ds.parts), 4)
-
+        self.assertEqual(len(ds.parts), len(set(ds.parts)))
 
 
 # TODO: test upload raster file with RAT
