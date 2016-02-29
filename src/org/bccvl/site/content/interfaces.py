@@ -149,7 +149,7 @@ class IMSDMExperiment(IExperiment):
     species_occurrence_collections = Dict(
         title=u'Species Occurrence Collections',
         key_type=TextLine(),
-        value_type=List(value_type=TextLine()),
+        value_type=Set(value_type=TextLine()),
         default=None,
         required=True,
         min_length=1,
