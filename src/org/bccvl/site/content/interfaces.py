@@ -10,6 +10,7 @@ from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
 # FIXME: remove form hints here and put them into special form schemata?
 from org.bccvl.site.widgets.widgets import FunctionsFieldWidget
+from org.bccvl.site.widgets.widgets import FunctionsRadioFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetDictFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
@@ -76,7 +77,9 @@ class IExperiment(Interface):
 
 class ISDMExperiment(IExperiment):
 
-    directives.widget('functions', FunctionsFieldWidget)
+    directives.widget('functions',
+                      FunctionsFieldWidget,
+                      multiple='multiple')
     functions = List(
         title=u'Algorithm',
         value_type=Choice(vocabulary='sdm_functions_source'),
@@ -126,12 +129,13 @@ class ISDMExperiment(IExperiment):
         required=False,
     )
 
+
 class IMSDMExperiment(IExperiment):
 
-    directives.widget('functions', FunctionsFieldWidget)
-    functions = List(
+    directives.widget('function', FunctionsRadioFieldWidget)
+    function = Choice(
         title=u'Algorithm',
-        value_type=Choice(vocabulary='sdm_functions_source'),
+        vocabulary='sdm_functions_source',
         default=None,
         required=True,
     )
@@ -171,6 +175,7 @@ class IMSDMExperiment(IExperiment):
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
     )
+
 
 class IProjectionExperiment(IExperiment):
 
