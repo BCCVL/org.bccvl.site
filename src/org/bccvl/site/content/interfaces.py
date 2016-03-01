@@ -109,6 +109,13 @@ class ISDMExperiment(IExperiment):
         required=False,
     )
 
+    scale_down = Bool(
+        title=u'Scale to highest resolution',
+        description=u'When ticked, environmental datasets will be scaled to the same resolution as the layer with the highest resolution. If unticked, the lowest resolution will be used',
+        default=True,
+        required=True
+    )
+
     directives.widget('environmental_datasets',
                 DatasetDictFieldWidget,
                 multiple='multiple',

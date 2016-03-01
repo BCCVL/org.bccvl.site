@@ -112,12 +112,13 @@ class ExperimentSDMAddTest(unittest.TestCase):
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
 
-    def test_mixed_resolution(self):
+    def test_mixed_resolution_highest(self):
         current_1k_uuid = unicode(self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.create': 'Create',
             # select 1k dataset as well
+            'form.widgets.scale_down-empty-marker': 1,
             'form.widgets.environmental_datasets.item.2': current_1k_uuid,
             'form.widgets.environmental_datasets.item.2.item': [u'B01'],
             'form.widgets.environmental_datasets.count': '3',
@@ -126,6 +127,25 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # resolution should be set to the lowest of selected datasets
         expmd = IBCCVLMetadata(self.experiments['my-experiment'])
         self.assertEqual(expmd['resolution'], 'Resolution30s')
+
+    def test_mixed_resolution_lowest(self):
+        current_1k_uuid = unicode(self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
+        form = self.form.get_form()
+        # remove default value for scale_down (set by get_form)
+        del form.request.form['form.widgets.scale_down']
+        form.request.form.update({
+            'form.buttons.create': 'Create',
+            # select 1k dataset as well
+            #'form.widgets.scale_down': ['selected'],
+            'form.widgets.scale_down-empty-marker': 1,
+            'form.widgets.environmental_datasets.item.2': current_1k_uuid,
+            'form.widgets.environmental_datasets.item.2.item': [u'B01'],
+            'form.widgets.environmental_datasets.count': '3',
+        })
+        form.update()
+        # resolution should be set to the lowest of selected datasets
+        expmd = IBCCVLMetadata(self.experiments['my-experiment'])
+        self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
 class ExperimentProjectionAddTest(unittest.TestCase):

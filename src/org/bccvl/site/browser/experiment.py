@@ -316,12 +316,22 @@ class SDMAdd(ParamGroupMixin, Add):
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
         res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
-        resolution_idx = 99 # Arbitrary choice of upper index limit
-        for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
-            idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
-            if idx < resolution_idx:
-                resolution_idx = idx
-        data['resolution'] = res_vocab._terms[resolution_idx].value
+        if data.get('scale_down', False):
+            # ... find highest resolution
+            resolution_idx = 99 # Arbitrary choice of upper index limit
+            for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+                if idx < resolution_idx:
+                    resolution_idx = idx
+            data['resolution'] = res_vocab._terms[resolution_idx].value
+        else:
+            # ... find lowest resolution
+            resolution_idx = -1
+            for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+                if idx > resolution_idx:
+                    resolution_idx = idx
+            data['resolution'] = res_vocab._terms[resolution_idx].value
 
 
 class MSDMAdd(ParamGroupMixin, Add):

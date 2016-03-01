@@ -289,6 +289,7 @@ class SDMJobTracker(MultiJobTracker):
                     'species_occurrence_dataset': self.context.species_occurrence_dataset,
                     'species_absence_dataset': self.context.species_absence_dataset,
                     'environmental_datasets': self.context.environmental_datasets,
+                    'scale_down': self.context.scale_down,
                     'modelling_region': self.context.modelling_region,
                 }
                 # add toolkit params:
