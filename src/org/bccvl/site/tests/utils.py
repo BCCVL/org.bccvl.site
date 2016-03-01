@@ -150,7 +150,7 @@ class ProjectionExperimentHelper(object):
         # configure local variables on instance
         self.portal = portal
         self.sdmexp = sdmexp
-        self.sdmmodel = sdmexp.values()[0]['model.RData']
+        self.sdmmodel = sdmexp.values()[0]['model-rdata']
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
         # get some dataset shortcuts
         self.datasets = self.portal[defaults.DATASETS_FOLDER_ID]
