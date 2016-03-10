@@ -14,8 +14,8 @@ class OAuthPreferencePanel(AccountPanelForm):
 
     template = ViewPageTemplateFile('oauthpanel.pt')
 
-    label = u"OAuth User Settings"
-    description = u"BCCVL is allowed to access the following services."
+    label = u"User Sharing Settings"
+    description = u"The BCCVL links to the below third party repository services. this feature enables you to share your experiments and datasets with collaborators at the click of a button. Note: You can revoke access to these services at any time."
     enableCSRFProtection = True
 
     def prepareObjectTabs(self,
@@ -38,7 +38,7 @@ class OAuthPreferencePanel(AccountPanelForm):
         # TODO: insert before id:user_data-change-password
         if _check_allowed(self.context, self.request, 'oauth-preferences'):
             tabs.append({
-                'title': u'OAuth Preferences',
+                'title': u'User Sharing Settings',
                 'url': navigation_root_url + '/@@oauth-preferences',
                 'selected': (self.__name__ == 'oauth-preferences'),
                 'id': 'user_data-oauth-preferences',
