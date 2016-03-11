@@ -32,7 +32,7 @@ class UserDataPanel(BaseUserDataPanel):
         # TODO: insert before id:user_data-change-password
         if _check_allowed(self.context, self.request, 'oauth-preferences'):
             tabs.append({
-                'title': u'External Authorisation',
+                'title': u'External Authorisations',
                 'url': navigation_root_url + '/@@oauth-preferences',
                 'selected': (self.__name__ == 'oauth-preferences'),
                 'id': 'user_data-oauth-preferences',
@@ -69,7 +69,7 @@ class PasswordPanel(BasePasswordPanel):
         # TODO: insert before id:user_data-change-password
         if _check_allowed(self.context, self.request, 'oauth-preferences'):
             tabs.append({
-                'title': u'External Authorisation',
+                'title': u'External Authorisations',
                 'url': navigation_root_url + '/@@oauth-preferences',
                 'selected': (self.__name__ == 'oauth-preferences'),
                 'id': 'user_data-oauth-preferences',
@@ -103,7 +103,7 @@ class PersonalPreferencesPanel(BasePersonalPreferencesPanel):
         # TODO: insert before id:user_data-change-password
         if _check_allowed(self.context, self.request, 'oauth-preferences'):
             tabs.append({
-                'title': u'External Authorisation',
+                'title': u'External Authorisations',
                 'url': navigation_root_url + '/@@oauth-preferences',
                 'selected': (self.__name__ == 'oauth-preferences'),
                 'id': 'user_data-oauth-preferences',
