@@ -13,10 +13,10 @@ from .oauth import OAuth1View, OAuth2View
 class OAuthPreferencePanel(AccountPanelForm):
 
     template = ViewPageTemplateFile('oauthpanel.pt')
-    title = u'Linked Accounts'
+    title = u'External Authorisations'
 
-    label = u"Linked Accounts"
-    description = u"On this page you can manage authorisations for BCCVL to access external systems."
+    label = u"External Authorisations"
+    description = u"The BCCVL links to the below third party repository services. this feature enables you to share your experiments and datasets with collaborators at the click of a button. Note: You can revoke access to these services at any time."
     enableCSRFProtection = True
 
     def prepareObjectTabs(self,
