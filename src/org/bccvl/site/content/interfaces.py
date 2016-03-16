@@ -23,6 +23,14 @@ class IDataset(model.Schema):
 
     # TODO: need behavior to add metadata details?
 
+    directives.mode(downloadable=HIDDEN_MODE)
+    downloadable = Bool(
+        title=_(u"Download allowed"),
+        description=_(u"If set, then users are allowed to directly download this dataset."),
+        required=True,
+        default=True
+    )
+
 
 class IBlobDataset(IDataset):
 
