@@ -9,7 +9,7 @@ from plone import api
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
 from plone.uuid.interfaces import IUUID
-from zope.component import adapter, queryUtility
+from zope.component import adapter, queryUtility, getMultiAdapter
 from zope.interface import implementer
 
 from org.bccvl.site import defaults
@@ -41,6 +41,7 @@ def DatasetDownloadInfo(context):
         # TODO: context.format should look at file.contentType
         contenttype = context.file.contentType
     # generate downloaurl
+    downloadview = getMultiAdapter((context, context.REQUEST), name="download")
     downloadurl = '{}/@@download/file/{}'.format(
         context.absolute_url(),
         filename
@@ -49,12 +50,14 @@ def DatasetDownloadInfo(context):
         'url': downloadurl,
         'filename': filename,
         'contenttype': contenttype or 'application/octet-stream',
+        'available': downloadview.check_allowed()
     }
 
 
 @implementer(IDownloadInfo)
 @adapter(IRemoteDataset)
 def RemoteDatasetDownloadInfo(context):
+    downloadview = getMultiAdapter((context, context.REQUEST), name="download")
     url = urlsplit(context.remoteUrl)
     filename = os.path.basename(url.path)
     return {
@@ -62,7 +65,8 @@ def RemoteDatasetDownloadInfo(context):
             context.absolute_url(),
             filename),
         'filename': os.path.basename(url.path),
-        'contenttype': context.format or 'application/octet-stream'
+        'contenttype': context.format or 'application/octet-stream',
+        'available': downloadview.check_allowed()
     }
 
 
