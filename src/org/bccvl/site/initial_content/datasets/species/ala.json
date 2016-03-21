@@ -3,7 +3,7 @@
     "title": "Species data from ALA",
     "description": "ALA collects information about all the known species in Australia aggregated from a wide range of data providers including museums, herbaria, community groups, government departments, individuals and universities.",
     "attribution": [
-        "Refer to <a href=\"http://www.ala.org.au/about-the-atlas/terms-of-use/citing-the-atlas/\">http://www.ala.org.au/about-the-atlas/terms-of-use/citing-the-atlas/</a>"
+        "Refer to <a href=\"http://www.ala.org.au/about-the-atlas/terms-of-use/citing-the-atlas/\">http://www.ala.org.au/about-the-atlas/terms-of-use/citing-the-atlas/</a><p>A citation file can be found within the dataset download ZIP file</p>"
     ],
     "external_description": "See <a href=\"http://www.ala.org.au\">http://www.ala.org.au</a>",
     "categories": ["biological"],
