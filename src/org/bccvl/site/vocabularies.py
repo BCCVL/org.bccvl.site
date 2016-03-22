@@ -169,7 +169,6 @@ def experiment_type_source(context):
     return experiment_type_vocabulary
 
 
-
 @implementer(IVocabularyFactory)
 class RegistryVocabularyFactory(object):
 
