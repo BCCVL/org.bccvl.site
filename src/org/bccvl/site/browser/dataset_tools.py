@@ -90,9 +90,11 @@ class DatasetTools(BrowserView):
                 return action
         return {}
 
-    def metadata(self, itemobj=None):
-        if itemobj is None:
+    def metadata(self, itemobj=None, uuid=None):
+        if itemobj is None and uuid is None:
             itemobj = self.context
+        if uuid:
+            itemobj = uuidToObject(uuid)
         return getdsmetadata(itemobj)
 
     # FIXME: make sure self.metadata is cached somehow and requseted only once per request
