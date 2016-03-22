@@ -4,7 +4,7 @@ from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.app.contentlisting.interfaces import IContentListingObject
 from plone import api
-from org.bccvl.site.content.interfaces import ISDMExperiment, IProjectionExperiment
+from org.bccvl.site.content.interfaces import ISDMExperiment, IMSDMExperiment, IProjectionExperiment
 from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.browser.interfaces import IDatasetTools
@@ -90,9 +90,11 @@ class DatasetTools(BrowserView):
                 return action
         return {}
 
-    def metadata(self, itemobj=None):
-        if itemobj is None:
+    def metadata(self, itemobj=None, uuid=None):
+        if itemobj is None and uuid is None:
             itemobj = self.context
+        if uuid:
+            itemobj = uuidToObject(uuid)
         return getdsmetadata(itemobj)
 
     # FIXME: make sure self.metadata is cached somehow and requseted only once per request
@@ -303,6 +305,12 @@ class DatasetTools(BrowserView):
             # TODO: once available include pesudo absences from result
             for dsuuid in (context.species_occurrence_dataset,
                            context.species_absence_dataset):
+                brain = uuidToCatalogBrain(dsuuid)
+                if brain:
+                    yield brain
+        elif IMSDMExperiment.providedBy(context):
+            # muilt species sdm inputs
+            for dsuuid in (context.species_occurrence_collections):
                 brain = uuidToCatalogBrain(dsuuid)
                 if brain:
                     yield brain

@@ -89,8 +89,8 @@ def setupVarious(context, logger=None):
     from plone.app.controlpanel.security import ISecuritySchema
     security = ISecuritySchema(portal)
     security.enable_self_reg = True
+    security.enable_user_pwd_choice = True
     # FIXME: some stuff is missing,... initial setup of site is not correct
-
 
 
 def setupFacets(context, logger=None):
@@ -527,6 +527,7 @@ def upgrade_230_240_1(context, logger=None):
     from plone.app.controlpanel.security import ISecuritySchema
     security = ISecuritySchema(portal)
     security.enable_self_reg = True
+    security.enable_user_pwd_choice = True
 
     # setup userannotation storage
     from org.bccvl.site.userannotation.utility import init_user_annotation

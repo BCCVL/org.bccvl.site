@@ -146,6 +146,9 @@ class DMService(BaseService):
             elif obj.portal_type == 'org.bccvl.content.remotedataset':
                 filename = os.path.basename(obj.remoteUrl)
                 obj_url = '{}/@@download/{}'.format(obj_url, filename)
+            elif obj.portal_type == 'org.bccvl.content.multispeciesdataset':
+                filename = obj.file.filename
+                obj_url = '{}/@@download/file/{}'.format(obj_url, filename)
             else:
                 raise Exception("Wrong content type")
 
