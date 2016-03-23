@@ -103,18 +103,33 @@ def setupFacets(context, logger=None):
         return
     portal = context.getSite()
 
+    from org.bccvl.site.faceted.interfaces import IFacetConfigUtility
+    from org.bccvl.site.faceted.tool import import_facet_config
+
+    def _setup_facets(content, config, layout=None):
+        # enable faceting
+        subtyper = getMultiAdapter((content, content.REQUEST),
+                                   name=u'faceted_subtyper')
+        subtyper.enable()
+        # update default layout if requested
+        if layout:
+            IFacetedLayout(content).update_layout(layout)
+        # load facet config
+        widgets = getMultiAdapter((content, content.REQUEST),
+                                  name=config)
+        xml = widgets()
+        environ = SnapshotImportContext(content, 'utf-8')
+        importer = getMultiAdapter((content, environ), IBody)
+        importer.body = xml
+
     # setup datasets search facets
     datasets = portal[defaults.DATASETS_FOLDER_ID]
-    subtyper = getMultiAdapter((datasets, datasets.REQUEST),
-                               name=u'faceted_subtyper')
-    subtyper.enable()
-    IFacetedLayout(datasets).update_layout('faceted-table-items')
-    widgets = getMultiAdapter((datasets, datasets.REQUEST),
-                              name='datasets_default.xml')
-    xml = widgets()
-    environ = SnapshotImportContext(datasets, 'utf-8')
-    importer = getMultiAdapter((datasets, environ), IBody)
-    importer.body = xml
+    _setup_facets(datasets, 'datasets_default.xml', 'faceted-table-items')
+
+    # go through all facet setups in portal_facetconfig and update them as well
+    facet_tool = getUtility(IFacetConfigUtility)
+    for obj in facet_tool.types(proxy=False):
+        import_facet_config(obj)
 
 
 def upgrade_180_181_1(context, logger=None):
@@ -514,6 +529,7 @@ def upgrade_230_240_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
     # install new dependencies
     qi = getToolByName(portal, 'portal_quickinstaller')
     installable = [p['id'] for p in qi.listInstallableProducts()]
