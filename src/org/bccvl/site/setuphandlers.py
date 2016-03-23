@@ -90,7 +90,32 @@ def setupVarious(context, logger=None):
     security = ISecuritySchema(portal)
     security.enable_self_reg = True
     security.enable_user_pwd_choice = True
+
+    # setup html filtering
+    from plone.app.controlpanel.filter import IFilterSchema
+    filters = IFilterSchema(portal)
+    # remove some nasty tags:
+    current_tags = filters.nasty_tags
+    for tag in ('embed', 'object'):
+        if tag in current_tags:
+            current_tags.remove(tag)
+    filters.nasty_tags = current_tags
+    # remove some stripped tags:
+    current_tags = filters.stripped_tags
+    for tag in ('button', 'object', 'param'):
+        if tag in current_tags:
+            current_tags.remove(tag)
+    filters.stripped_tags = current_tags
+    # add custom allowed tags
+    current_tags = filters.custom_tags
+    for tag in ('embed', ):
+        if tag not in current_tags:
+            current_tags.append(tag)
+    filters.custom_tags = current_tags
+
     # FIXME: some stuff is missing,... initial setup of site is not correct
+
+
 
 
 def setupFacets(context, logger=None):
@@ -566,3 +591,31 @@ def upgrade_230_240_1(context, logger=None):
             member.setMemberProperties({prop: ''})
     # remove current properties
     pmd.manage_delProperties(custom_props)
+
+    # setup html filtering
+    from plone.app.controlpanel.filter import IFilterSchema
+    filters = IFilterSchema(portal)
+    # remove some nasty tags:
+    current_tags = filters.nasty_tags
+    for tag in ('embed', 'object'):
+        if tag in current_tags:
+            current_tags.remove(tag)
+    filters.nasty_tags = current_tags
+    # remove some stripped tags:
+    current_tags = filters.stripped_tags
+    for tag in ('button', 'object', 'param'):
+        if tag in current_tags:
+            current_tags.remove(tag)
+    filters.stripped_tags = current_tags
+    # add custom allowed tags
+    current_tags = filters.custom_tags
+    for tag in ('embed', ):
+        if tag not in current_tags:
+            current_tags.append(tag)
+    filters.custom_tags = current_tags
+
+
+    # TODO: go through all datasets and set 'redistributable' flag
+
+    # TODO:
+    #       add scale_down flag to existing SDM experiments (FALSE default?)
