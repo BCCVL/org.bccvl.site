@@ -112,6 +112,20 @@ def setupVarious(context, logger=None):
         if tag not in current_tags:
             current_tags.append(tag)
     filters.custom_tags = current_tags
+    # add custom allowed styles
+    current_styles = filters.style_whitelist
+    for style in ('border-radius', 'padding', 'margin-top', 'margin-bottom', 'background', 'color'):
+        if style not in current_styles:
+            current_styles.append(style)
+    filters.style_whitelist = current_styles
+
+    # configure TinyMCE plugins (can't be done zia tinymce.xml
+    tinymce = getToolByName(portal, 'portal_tinymce')
+    current_plugins = tinymce.plugins
+    if 'media' in current_plugins:
+        # disable media plugin which get's in the way all the time
+        current_plugins.remove('media')
+    tinymce.plugins = current_plugins
 
     # FIXME: some stuff is missing,... initial setup of site is not correct
 
@@ -552,9 +566,11 @@ def upgrade_230_240_1(context, logger=None):
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
-    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
     # install new dependencies
     qi = getToolByName(portal, 'portal_quickinstaller')
     installable = [p['id'] for p in qi.listInstallableProducts()]
@@ -613,6 +629,19 @@ def upgrade_230_240_1(context, logger=None):
         if tag not in current_tags:
             current_tags.append(tag)
     filters.custom_tags = current_tags
+    # add custom allowed styles
+    current_styles = filters.style_whitelist
+    for style in ('border-radius', 'padding', 'margin-top', 'margin-bottom', 'background', 'color'):
+        if style not in current_styles:
+            current_styles.append(style)
+    filters.style_whitelist = current_styles
+
+    # configure TinyMCE plugins (can't be done zia tinymce.xml
+    tinymce = getToolByName(portal, 'portal_tinymce')
+    current_plugins = tinymce.plugins
+    if 'media' in current_plugins:
+        current_plugins.remove('media')
+    tinymce.plugins = current_plugins
 
 
     # TODO: go through all datasets and set 'redistributable' flag
