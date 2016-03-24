@@ -12,10 +12,9 @@
 
   <metal:block fill-slot="content-core"> <!-- body (header, main) -->
 
-
     <div id="parent-fieldname-text"
-      tal:condition="context/text"
-      tal:content="structure python:context.text.raw"/>
+         tal:condition="context/text"
+         tal:content="structure python:context.text.raw"/>
     <!-- .output_relative_to(view.context)" / -->
 
     <div id="notifications">
