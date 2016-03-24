@@ -44,8 +44,12 @@ class ExperimentParamGroup(AutoFields, Group):
         #        prefix
         # self.updateFieldsFromSchemata()
         #
+        # stupid autoform thinks self.groups should be a list and not a tuple :(
+        self.groups = list(self.groups)
         # use  processFields instead
         processFields(self, self.schema, prefix=self.toolkit) #, permissionChecks=have_user)
+        # revert back to tuple
+        self.groups = tuple(self.groups)
 
         super(ExperimentParamGroup, self).update()
 
