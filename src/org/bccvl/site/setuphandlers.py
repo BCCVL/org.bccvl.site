@@ -565,6 +565,7 @@ def upgrade_230_240_1(context, logger=None):
     portal = api.portal.get()
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
