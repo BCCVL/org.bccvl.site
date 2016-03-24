@@ -568,6 +568,7 @@ def upgrade_230_240_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'actions')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
+    setup.runImportStepFromProfile(PROFILE_ID, 'viewlets')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
