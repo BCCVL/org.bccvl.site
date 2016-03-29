@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<object>
+  <hidden manager="plone.portalheader" skinname="Plone Default">
+    <viewlet name="plone.searchbox"/>
+  </hidden>
+  <hidden manager="plone.portalheader" skinname="Sunburst Theme">
+    <viewlet name="plone.searchbox"/>
+ </hidden>  
+</object>
