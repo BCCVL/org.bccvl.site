@@ -108,7 +108,7 @@ class SiteSetupTest(unittest.TestCase):
                            defaults.DATASETS_SPECIES_FOLDER_ID)), 'intranet_workflow', 'internally_published'),
                 ('/'.join((defaults.DATASETS_FOLDER_ID,
                            defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID)), 'intranet_workflow', 'internally_published'),
-                ('front-page', 'simple_publication_workflow', 'published')):
+                ('front-page', 'intranet_workflow', 'external')):
             content = portal.restrictedTraverse(id)
             wf_tool = getToolByName(portal, 'portal_workflow')
             chain = wf_tool.getChainFor(content)
