@@ -18,9 +18,13 @@ def logged_in_handler(event):
 
     came_from = request.get('came_from', None)
     site_url = getSite().absolute_url()
-    if came_from and came_from != site_url:
-        # do nothing continue normal login redirect behaviour
-        return
+    if came_from:
+        if came_from.endswith('/'):
+            # get rid of trailing slash for comparison
+            came_from = came_from.rstrip('/')
+        if came_from != site_url:
+            # do nothing continue normal login redirect behaviour
+            return
 
     # check if came_from is not empty, then clear it up, otherwise further
     # Plone scripts will override our redirect
