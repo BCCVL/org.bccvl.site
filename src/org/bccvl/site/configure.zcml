@@ -290,6 +290,11 @@
       component=".vocabularies.data_collections_source"
       name="data_collections_source"
       />
+
+  <subscriber
+        for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
+        handler=".subscribers.logged_in_handler"
+        />
   
   <transmogrifier:registerConfig
       name="exportknowledgebase"
