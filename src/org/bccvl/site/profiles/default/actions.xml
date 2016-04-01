@@ -23,6 +23,18 @@
       <property name="visible">True</property>
     </object>
     <object name="datasets_sub" meta_type="CMF Action Category">
+      <object name="browse" meta_type="CMF Action" i18n:domain="plone">
+        <property name="title" i18n:translate="">Search Datasets</property>
+        <property name="description" i18n:translate=""></property>
+        <property name="url_expr">string:${portal/datasets/absolute_url}</property>
+        <property name="link_target"></property>
+        <property name="icon_expr"></property>
+        <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'datasets')</property>
+        <property name="permissions">
+          <element value="View"/>
+        </property>
+        <property name="visible">True</property>
+      </object>
       <object name="collections" meta_type="CMF Action" i18n:domain="plone">
         <property name="title" i18n:translate="">Browse Collections</property>
         <property name="description" i18n:translate=""></property>
@@ -35,10 +47,22 @@
         </property>
         <property name="visible">True</property>
       </object>
-      <object name="browse" meta_type="CMF Action" i18n:domain="plone">
-        <property name="title" i18n:translate="">Search Datasets</property>
+      <object name="import" meta_type="CMF Action" i18n:domain="plone">
+        <property name="title" i18n:translate="">Get Species Data</property>
         <property name="description" i18n:translate=""></property>
-        <property name="url_expr">string:${portal/datasets/absolute_url}</property>
+        <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_import_view</property>
+        <property name="link_target"></property>
+        <property name="icon_expr"></property>
+        <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'datasets')</property>
+        <property name="permissions">
+          <element value="View"/>
+        </property>
+        <property name="visible">True</property>
+      </object>
+      <object name="upload" meta_type="CMF Action" i18n:domain="plone">
+        <property name="title" i18n:translate="">Upload Dataset</property>
+        <property name="description" i18n:translate=""></property>
+        <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_upload_view</property>
         <property name="link_target"></property>
         <property name="icon_expr"></property>
         <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'datasets')</property>
