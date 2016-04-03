@@ -647,7 +647,6 @@ class TestDatasetUpload(unittest.TestCase):
             tds = self.portal.datasets.species.user[name]
             tmd = IBCCVLMetadata(tds)
             self.assertEqual(tmd['rows'], rows)
-
         self.assertEqual(len(ds.parts), 4)
         self.assertEqual(len(ds.parts), len(set(ds.parts)))
 

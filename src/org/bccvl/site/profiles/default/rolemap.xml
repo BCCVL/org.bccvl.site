@@ -36,6 +36,9 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <permission name="Allow sendto" acquire="False">
+      <role name="Manager"/>
+    </permission>
     <!-- see Products/CMFEditions/profiles/default/rolemap.xml
          for history permissions -->
     <!-- see plone/app/contenttypes/profiles/default/rolemap.xml

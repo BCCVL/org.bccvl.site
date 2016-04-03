@@ -10,10 +10,12 @@
                   portal_state context/@@plone_portal_state;
                   root_url portal_state/navigation_root_url;">
 
-  <metal:block fill-slot="content"> <!-- body (header, main) -->
+  <metal:block fill-slot="content-core"> <!-- body (header, main) -->
 
-    <metal:block use-macro="context/main_template/macros/content">
-    </metal:block>
+    <div id="parent-fieldname-text"
+         tal:condition="context/text"
+         tal:content="structure python:context.text.raw"/>
+    <!-- .output_relative_to(view.context)" / -->
 
     <div id="notifications">
       <div tal:content="structure provider:bccvl.news"></div>

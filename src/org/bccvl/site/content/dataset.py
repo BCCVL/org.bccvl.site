@@ -33,7 +33,22 @@ class Dataset(Item):
 @implementer(IDatasetCollection)
 class DatasetCollection(Item):
 
-    pass
+    @property
+    def format(self):
+        if self.file is not None:
+            return self.file.contentType
+        # TODO: is this a good fallback?
+        #       that one is used in RFC822 marshaller
+        return self.content_type()
+
+    @format.setter
+    def format(self, value):
+        if self.file is not None:
+            self.file.contentType = value
+        # TODO: really do nothing otherwise?
+        #       calling setFormat causes infinite recursion
+        #else:
+        #    self.setFormat(value)
 
 
 class ISpeciesDataset(model.Schema):

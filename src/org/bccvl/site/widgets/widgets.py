@@ -11,6 +11,7 @@ from zope.i18n import translate
 from .interfaces import (IDatasetWidget,
                          IDatasetDictWidget,
                          IFunctionsWidget,
+                         IFunctionsRadioWidget,
                          IExperimentSDMWidget,
                          IFutureDatasetsWidget,
                          IExperimentResultWidget,
@@ -24,6 +25,58 @@ from collections import OrderedDict
 
 
 LOG = logging.getLogger(__name__)
+
+
+@implementer_only(IFunctionsRadioWidget)
+class FunctionsRadioWidget(HTMLInputWidget, SequenceWidget):
+    """
+    This is an updated standard RadioWidget with proper handling of
+    item list generation. It derives from IRadioWidget as well to allow
+    re-use of the standard check box widget templates.
+    (Having this extra class allows to use special templates for functions field)
+    """
+
+    klass = u'radio-widget'
+    css = u'radio'
+
+    def isChecked(self, term):
+        return term.token in self.value
+
+    def update(self):
+        super(FunctionsRadioWidget, self).update()
+        addFieldClass(self)
+
+    def items(self):
+        # TODO: check if we should cache the return list
+        if self.terms is None:  # update() not yet called
+            return ()
+        vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        items = OrderedDict((cat.value,[]) for cat in vocab)
+        for count, term in enumerate(self.terms):
+            alg = term.brain.getObject()
+            # skip algorithm without category
+            if alg.algorithm_category is None or alg.algorithm_category not in items:
+                continue
+            itemList = items[alg.algorithm_category]
+            checked = self.isChecked(term)
+            id = '%s-%i' % (self.id, count)
+            if ITitledTokenizedTerm.providedBy(term):
+                label = translate(term.title, context=self.request, default=term.title)
+            else:
+                label = util.toUnicode(term.value)
+
+            itemList.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
+                   'label':label, 'checked': checked,
+                   'subject': term.brain.Subject,
+                   'description': term.brain.Description,
+                   'category': vocab.getTerm(alg.algorithm_category),
+                   'pos': len(itemList) })
+        return items.values()
+
+
+@implementer(IFieldWidget)
+def FunctionsRadioFieldWidget(field, request):
+    return FieldWidget(field, FunctionsRadioWidget(request))
 
 
 @implementer_only(IFunctionsWidget)
@@ -141,12 +194,23 @@ class DatasetDictWidget(HTMLFormElement, Widget):
         # return a generator of selectable items within dataset
         md = IBCCVLMetadata(dsbrain.getObject())
         layer_vocab = self.dstools.layer_vocab
-        selectedlayers = self.value.get(dsbrain.UID) or ()
+        selectedsubitems = self.value.get(dsbrain.UID) or ()
         for layer in sorted(md.get('layers', ())):
             subitem = {
                 'id': layer,
                 'title': layer_vocab.getTerm(layer).title,
-                'selected': not selectedlayers or layer in selectedlayers,
+                'selected': not selectedsubitems or layer in selectedsubitems,
+            }
+            yield subitem
+        for subdsid in sorted(getattr(dsbrain.getObject(), 'parts', ())):
+            part = uuidToCatalogBrain(subdsid)
+            # TODO: should we just ignore it?
+            if not part:
+                continue
+            subitem = {
+                'id': subdsid,
+                'title': part.Title,
+                'selected': not selectedsubitems or subdsid in selectedsubitems
             }
             yield subitem
 

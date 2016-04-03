@@ -1,8 +1,12 @@
-from zope.interface import Interface
-from z3c.form.interfaces import IWidget, ICheckBoxWidget
+from z3c.form.interfaces import IWidget, ICheckBoxWidget, IRadioWidget
 
 
 class IFunctionsWidget(ICheckBoxWidget):
+
+    pass
+
+
+class IFunctionsRadioWidget(IRadioWidget):
 
     pass
 
@@ -11,9 +15,11 @@ class IDatasetWidget(IWidget):
 
     pass
 
+
 class IDatasetDictWidget(IWidget):
 
     pass
+
 
 class IExperimentSDMWidget(IWidget):
 
