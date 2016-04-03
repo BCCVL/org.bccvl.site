@@ -1,0 +1,10 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "Climatic Research Unit (CRU) climate data",
+    "description": "Global bioclimatic variable spatial layers.",
+    "rights": "Open Government Licence for Public Sector Information (UK)",
+    "external_description": "See <a href=\"http://www.ceda.ac.uk/\">http://www.ceda.ac.uk/</a>",
+    "attribution": ["University of East Anglia Climatic Research Unit; Harris, I.(.; Jones, P.D. (2015): CRU TS3.23: Climatic Research Unit (CRU) Time-Series (TS) Version 3.23 of High Resolution Gridded Data of Month-by-month Variation in Climate (Jan. 1901- Dec. 2014). Centre for Environmental Data Analysis, 09 November 2015. doi:10.5285/4c7fdfa6-f176-4c58-acee-683d5e9d2ed5."],
+    "categories": ["climate"],
+    "_transitions": ["show_internally", "publish_internally"]
+}

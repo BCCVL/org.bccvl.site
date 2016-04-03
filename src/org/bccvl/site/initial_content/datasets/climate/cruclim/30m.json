@@ -1,0 +1,5 @@
+{
+  "_type": "Folder",
+  "title": "CRU climate 50km",
+  "_transitions": ["show_internally", "publish_internally"]
+}

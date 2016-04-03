@@ -11,6 +11,7 @@ from Products.CMFCore.interfaces import ITypeInformation
 from zope.component import getUtility
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.interfaces import IExperimentJobTracker
+from org.bccvl.site.job.interfaces import IJobUtility
 from ..content.interfaces import (
     IExperiment,
     IDataset,
@@ -35,11 +36,6 @@ class StatisticsView(BrowserView):
             review_state='published',
         )
 
-        self._jobs = _search(
-            path=experiments_path,
-            object_provides=IFolder.__identifier__,
-        )
-
         datasets_path = dict(query='/'.join(self.context.datasets.getPhysicalPath()))
         self._datasets_added = _search(
             path=datasets_path,
@@ -61,6 +57,16 @@ class StatisticsView(BrowserView):
             path=experiments_path,
             object_provides=IDataset.__identifier__,
         )
+
+        EXP_TYPES = ['org.bccvl.content.sdmexperiment',
+                 'org.bccvl.content.projectionexperiment',
+                 'org.bccvl.content.biodiverseexperiment',
+                 'org.bccvl.content.ensemble',
+                 'org.bccvl.content.speciestraitsexperiment'
+        ]
+        self._jobtool = getUtility(IJobUtility)
+        self._jobs = self._jobtool.query(type=EXP_TYPES)
+ 
 
         self._users = api.user.get_users()
         emails = (u.getProperty('email') for u in self._users)
@@ -147,7 +153,7 @@ class StatisticsView(BrowserView):
                 runtime[x.portal_type]['success'] += 1
             else:
                 runtime[x.portal_type]['failed'] += 1
-
+                
         for i in runtime.keys():
             if runtime[i]['count']:
                 runtime[i]['runtime'] /= runtime[i]['count']
@@ -159,37 +165,45 @@ class StatisticsView(BrowserView):
     def algorithm_average_runtimes(self):
         stats = {}
 
-        for x in self._experiments:
-            if x.portal_type not in ['org.bccvl.content.sdmexperiment', 'org.bccvl.content.speciestraitsexperiment']:
+        for x in self._jobs:
+            job = self._jobtool.get_job_by_id(x.id)
+
+            if job is None or job.state == 'RUNNING' or job.type not in ['org.bccvl.content.sdmexperiment', 'org.bccvl.content.speciestraitsexperiment']:
                 continue
-            # Get the runtime each algorithm for each experiement type from the result file
+            # Get the runtime each algorithm for each experiement type.
             # An algorithm is mutually exclusive for SDM or Species Traits experiement.
-            exp = x._unrestrictedGetObject()
-            for v in exp.values():
-                jt = IJobTracker(v)
-                success = jt.state in (None, 'COMPLETED')
+            success = job.state in (None, 'COMPLETED')
+            algid = job.function
 
-                algid = v.job_params.get('function') or v.job_params.get('algorithm')
-                # Initialise statistic variables for each algorithm
-                if not algid:
-                    continue
+            # Initialise statistic variables for each algorithm
+            if not algid:
+                continue
 
-                if not stats.has_key(algid):
-                    stats[algid] = {'runtime' : 0.0, 'count' : 0, 'mean' : 0.0, 'success' : 0, 'failed' : 0}
+            if not stats.has_key(algid):
+                stats[algid] = {'runtime' : 0.0, 'count' : 0, 'mean' : 0.0, 'success' : 0, 'failed' : 0, 'nodata_count' : 0, 'nodata_success' : 0, 'nodata_failed' : 0}
 
-                job = jt.get_job()
-                if hasattr(job, 'rusage') and job.rusage is not None:
-                    runtime = job.rusage['rusage'].get('ru_utime', -1.0) + job.rusage['rusage'].get('ru_stime', -1.0)
-                    if runtime >= 0.0:
-                        stats[algid]['runtime'] += runtime
-                        stats[algid]['count'] += 1
-                        stats[algid]['mean'] = stats[algid]['runtime']/stats[algid]['count']
-                        if success:
-                            stats[algid]['success'] += 1
-                        else:
-                            stats[algid]['failed'] += 1
+            runtime = -1.0
+            if hasattr(job, 'rusage') and job.rusage is not None:
+                runtime = job.rusage['rusage'].get('ru_utime', -1.0) + job.rusage['rusage'].get('ru_stime', -1.0)
+            if runtime >= 0.0:
+                stats[algid]['runtime'] += runtime
+                stats[algid]['count'] += 1
+                if success:
+                    stats[algid]['success'] += 1
+                else:
+                    stats[algid]['failed'] += 1
+            else:
+                stats[algid]['nodata_count'] += 1
+                if success:
+                    stats[algid]['nodata_success'] += 1
+                else:
+                    stats[algid]['nodata_failed'] += 1
+
         for i in stats.keys():
-            stats[i]['mean'] = "%.1f" %(stats[i]['mean'])
+            stats[i]['mean'] = "%.1f" %(stats[i]['runtime']/stats[i]['count'])
+            stats[i]['count'] += stats[i]['nodata_count']
+            stats[i]['success'] += stats[i]['nodata_success'] 
+            stats[i]['failed'] += stats[i]['nodata_failed']
         return stats
 
     def algorithm_types(self):

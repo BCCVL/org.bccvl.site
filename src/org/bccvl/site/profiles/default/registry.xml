@@ -110,8 +110,8 @@
       <element>
         <element key="value">B04</element>
         <element key="title">B04 - Temperature Seasonality (standard deviation *100)</element>
-        <element key="unit">degrees C</element>
-        <element key="unitfull">degrees celsius</element>
+        <element key="unit">degrees C * 100</element>
+        <element key="unitfull">degrees celsius * 100</element>
         <element key="legend">standard_deviation</element>
         <element key="type">climate</element>
         <element key="tooltip">Temperature seasonality is a measure of temperature change over the course of the year. The larger the value, the greater the variability of temperature.</element>
