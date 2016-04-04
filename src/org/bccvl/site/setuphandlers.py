@@ -89,7 +89,46 @@ def setupVarious(context, logger=None):
     from plone.app.controlpanel.security import ISecuritySchema
     security = ISecuritySchema(portal)
     security.enable_self_reg = True
+    security.enable_user_pwd_choice = True
+
+    # setup html filtering
+    from plone.app.controlpanel.filter import IFilterSchema
+    filters = IFilterSchema(portal)
+    # remove some nasty tags:
+    current_tags = filters.nasty_tags
+    for tag in ('embed', 'object'):
+        if tag in current_tags:
+            current_tags.remove(tag)
+    filters.nasty_tags = current_tags
+    # remove some stripped tags:
+    current_tags = filters.stripped_tags
+    for tag in ('button', 'object', 'param'):
+        if tag in current_tags:
+            current_tags.remove(tag)
+    filters.stripped_tags = current_tags
+    # add custom allowed tags
+    current_tags = filters.custom_tags
+    for tag in ('embed', ):
+        if tag not in current_tags:
+            current_tags.append(tag)
+    filters.custom_tags = current_tags
+    # add custom allowed styles
+    current_styles = filters.style_whitelist
+    for style in ('border-radius', 'padding', 'margin-top', 'margin-bottom', 'background', 'color'):
+        if style not in current_styles:
+            current_styles.append(style)
+    filters.style_whitelist = current_styles
+
+    # configure TinyMCE plugins (can't be done zia tinymce.xml
+    tinymce = getToolByName(portal, 'portal_tinymce')
+    current_plugins = tinymce.plugins
+    if 'media' in current_plugins:
+        # disable media plugin which get's in the way all the time
+        current_plugins.remove('media')
+    tinymce.plugins = current_plugins
+
     # FIXME: some stuff is missing,... initial setup of site is not correct
+
 
 
 
@@ -103,18 +142,33 @@ def setupFacets(context, logger=None):
         return
     portal = context.getSite()
 
+    from org.bccvl.site.faceted.interfaces import IFacetConfigUtility
+    from org.bccvl.site.faceted.tool import import_facet_config
+
+    def _setup_facets(content, config, layout=None):
+        # enable faceting
+        subtyper = getMultiAdapter((content, content.REQUEST),
+                                   name=u'faceted_subtyper')
+        subtyper.enable()
+        # update default layout if requested
+        if layout:
+            IFacetedLayout(content).update_layout(layout)
+        # load facet config
+        widgets = getMultiAdapter((content, content.REQUEST),
+                                  name=config)
+        xml = widgets()
+        environ = SnapshotImportContext(content, 'utf-8')
+        importer = getMultiAdapter((content, environ), IBody)
+        importer.body = xml
+
     # setup datasets search facets
     datasets = portal[defaults.DATASETS_FOLDER_ID]
-    subtyper = getMultiAdapter((datasets, datasets.REQUEST),
-                               name=u'faceted_subtyper')
-    subtyper.enable()
-    IFacetedLayout(datasets).update_layout('faceted-table-items')
-    widgets = getMultiAdapter((datasets, datasets.REQUEST),
-                              name='datasets_default.xml')
-    xml = widgets()
-    environ = SnapshotImportContext(datasets, 'utf-8')
-    importer = getMultiAdapter((datasets, environ), IBody)
-    importer.body = xml
+    _setup_facets(datasets, 'datasets_default.xml', 'faceted-table-items')
+
+    # go through all facet setups in portal_facetconfig and update them as well
+    facet_tool = getUtility(IFacetConfigUtility)
+    for obj in facet_tool.types(proxy=False):
+        import_facet_config(obj)
 
 
 def upgrade_180_181_1(context, logger=None):
@@ -511,9 +565,14 @@ def upgrade_230_240_1(context, logger=None):
     portal = api.portal.get()
     setup = api.portal.get_tool('portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
-    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'workflow')
+    setup.runImportStepFromProfile(PROFILE_ID, 'viewlets')
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
     # install new dependencies
     qi = getToolByName(portal, 'portal_quickinstaller')
     installable = [p['id'] for p in qi.listInstallableProducts()]
@@ -527,6 +586,7 @@ def upgrade_230_240_1(context, logger=None):
     from plone.app.controlpanel.security import ISecuritySchema
     security = ISecuritySchema(portal)
     security.enable_self_reg = True
+    security.enable_user_pwd_choice = True
 
     # setup userannotation storage
     from org.bccvl.site.userannotation.utility import init_user_annotation
@@ -549,3 +609,44 @@ def upgrade_230_240_1(context, logger=None):
             member.setMemberProperties({prop: ''})
     # remove current properties
     pmd.manage_delProperties(custom_props)
+
+    # setup html filtering
+    from plone.app.controlpanel.filter import IFilterSchema
+    filters = IFilterSchema(portal)
+    # remove some nasty tags:
+    current_tags = filters.nasty_tags
+    for tag in ('embed', 'object'):
+        if tag in current_tags:
+            current_tags.remove(tag)
+    filters.nasty_tags = current_tags
+    # remove some stripped tags:
+    current_tags = filters.stripped_tags
+    for tag in ('button', 'object', 'param'):
+        if tag in current_tags:
+            current_tags.remove(tag)
+    filters.stripped_tags = current_tags
+    # add custom allowed tags
+    current_tags = filters.custom_tags
+    for tag in ('embed', ):
+        if tag not in current_tags:
+            current_tags.append(tag)
+    filters.custom_tags = current_tags
+    # add custom allowed styles
+    current_styles = filters.style_whitelist
+    for style in ('border-radius', 'padding', 'margin-top', 'margin-bottom', 'background', 'color'):
+        if style not in current_styles:
+            current_styles.append(style)
+    filters.style_whitelist = current_styles
+
+    # configure TinyMCE plugins (can't be done zia tinymce.xml
+    tinymce = getToolByName(portal, 'portal_tinymce')
+    current_plugins = tinymce.plugins
+    if 'media' in current_plugins:
+        current_plugins.remove('media')
+    tinymce.plugins = current_plugins
+
+
+    # TODO: go through all datasets and set 'redistributable' flag
+
+    # TODO:
+    #       add scale_down flag to existing SDM experiments (FALSE default?)

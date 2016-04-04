@@ -1,40 +1,47 @@
 <rolemap>
-    <roles>
-      <role name="Knowledgebase Editor"/>
-      <role name="Knowledgebase Contributor"/>
+  <roles>
+    <role name="Knowledgebase Editor"/>
+    <role name="Knowledgebase Contributor"/>
+    <role name="BCCVL Report Viewer"/>
+  </roles>
+  <permissions>
+    <permission name="org.bccvl: Add Experiment" acquire="False">
+      <role name="Manager" />
+    </permission>
+    <permission name="org.bccvl: Add Function" acquire="False">
+      <role name="Manager" />
+    </permission>
+    <permission name="org.bccvl: Add Dataset" acquire="False">
+      <role name="Manager" />
+      <role name="Owner" />
+    </permission>
+    <permission name="org.bccvl: Add Dataset Collection" acquire="False">
+      <role name="Manager" />
+      <role name="Owner" />
+    </permission>
+    <permission name="Sharing page: Delegate Contributor role" acquire="False">
+      <role name="Manager"/>
+      <role name="Site Administrator"/>
+    </permission>
+    <permission name="Sharing page: Delegate Editor role" acquire="False">
+      <role name="Manager"/>
+      <role name="Site Administrator"/>
+      <role name="Editor"/>
+    </permission>
+    <permission name="org.bccvl: View Statistics" acquire="True">
       <role name="BCCVL Report Viewer"/>
-    </roles>
-    <permissions>
-        <permission name="org.bccvl: Add Experiment" acquire="False">
-            <role name="Manager" />
-        </permission>
-        <permission name="org.bccvl: Add Function" acquire="False">
-            <role name="Manager" />
-        </permission>
-        <permission name="org.bccvl: Add Dataset" acquire="False">
-            <role name="Manager" />
-            <role name="Owner" />
-        </permission>
-        <permission name="org.bccvl: Add Dataset Collection" acquire="False">
-            <role name="Manager" />
-            <role name="Owner" />
-        </permission>
-        <permission name="Sharing page: Delegate Contributor role" acquire="False">
-            <role name="Manager"/>
-            <role name="Site Administrator"/>
-        </permission>
-        <permission name="Sharing page: Delegate Editor role" acquire="False">
-            <role name="Manager"/>
-            <role name="Site Administrator"/>
-            <role name="Editor"/>
-        </permission>
-        <permission name="org.bccvl: View Statistics" acquire="True">
-            <role name="BCCVL Report Viewer"/>
-            <role name="Manager"/>
-        </permission>
-        <!-- see Products/CMFEditions/profiles/default/rolemap.xml
-             for history permissions -->
-        <!-- see plone/app/contenttypes/profiles/default/rolemap.xml
-             for content specific add permissions -->
-    </permissions>
+      <role name="Manager"/>
+    </permission>
+    <permission name="org.bccvl: Download Dataset" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Allow sendto" acquire="False">
+      <role name="Manager"/>
+    </permission>
+    <!-- see Products/CMFEditions/profiles/default/rolemap.xml
+         for history permissions -->
+    <!-- see plone/app/contenttypes/profiles/default/rolemap.xml
+         for content specific add permissions -->
+  </permissions>
 </rolemap>

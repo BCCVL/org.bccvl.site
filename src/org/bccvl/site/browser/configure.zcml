@@ -79,5 +79,28 @@
         class=".metsview.ProvView"
         permission="zope2.View"
         />
+
+    <browser:pages
+        for="*"
+        class=".tinymce.TinyMCECustomBrowserView"
+        layer="plone.theme.interfaces.IDefaultPloneLayer"        
+        permission="zope2.View">
+        <browser:page attribute="jsonLinkableFolderListing" name="tinymce-jsonlinkablefolderlisting" />
+        <browser:page attribute="jsonImageFolderListing" name="tinymce-jsonimagefolderlisting" />
+        <browser:page attribute="jsonLinkableSearch" name="tinymce-jsonlinkablesearch" />
+        <browser:page attribute="jsonImageSearch" name="tinymce-jsonimagesearch" />
+        <browser:page attribute="jsonDetails" name="tinymce-jsondetails" />
+        <browser:page attribute="jsonConfiguration" name="tinymce-jsonconfiguration" />
+        <browser:page attribute="upload" name="tinymce-upload" />
+    </browser:pages>
+    
+    <browser:pages
+        for="*"
+        class=".tinymce.TinyMCECustomBrowserView"
+        layer="plone.theme.interfaces.IDefaultPloneLayer"        
+        permission="cmf.ModifyPortalContent">
+        <browser:page attribute="save" name="tinymce-save" />
+        <browser:page attribute="setDescription" name="tinymce-setDescription" />
+    </browser:pages>
     
 </configure>

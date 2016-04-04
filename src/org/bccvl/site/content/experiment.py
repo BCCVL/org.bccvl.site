@@ -2,12 +2,18 @@ from plone.dexterity.content import Container
 from zope.interface import implementer
 # BBB: backwards compatible import
 from .interfaces import (
-    ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
+    ISDMExperiment, IMSDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment)
 
 
 @implementer(ISDMExperiment)
 class SDMExperiment(Container):
+
+    pass
+
+
+@implementer(IMSDMExperiment)
+class MSDMExperiment(Container):
 
     pass
 

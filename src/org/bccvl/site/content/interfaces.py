@@ -10,6 +10,7 @@ from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
 # FIXME: remove form hints here and put them into special form schemata?
 from org.bccvl.site.widgets.widgets import FunctionsFieldWidget
+from org.bccvl.site.widgets.widgets import FunctionsRadioFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetFieldWidget
 from org.bccvl.site.widgets.widgets import DatasetDictFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
@@ -22,6 +23,14 @@ class IDataset(model.Schema):
     """Interface all datasets inherit from"""
 
     # TODO: need behavior to add metadata details?
+
+    directives.mode(downloadable=HIDDEN_MODE)
+    downloadable = Bool(
+        title=_(u"Download allowed"),
+        description=_(u"If set, then users are allowed to directly download this dataset."),
+        required=True,
+        default=True
+    )
 
 
 class IBlobDataset(IDataset):
@@ -76,7 +85,9 @@ class IExperiment(Interface):
 
 class ISDMExperiment(IExperiment):
 
-    directives.widget('functions', FunctionsFieldWidget)
+    directives.widget('functions',
+                      FunctionsFieldWidget,
+                      multiple='multiple')
     functions = List(
         title=u'Algorithm',
         value_type=Choice(vocabulary='sdm_functions_source'),
@@ -111,6 +122,53 @@ class ISDMExperiment(IExperiment):
         description=u'When ticked, environmental datasets will be scaled to the same resolution as the layer with the highest resolution. If unticked, the lowest resolution will be used',
         default=True,
         required=True
+    )
+
+    directives.widget('environmental_datasets',
+                DatasetDictFieldWidget,
+                multiple='multiple',
+                genre=['DataGenreCC', 'DataGenreE'],
+                filters=['text', 'source', 'layer', 'resolution'],
+                errmsg=u"Please select at least 1 layer.")
+    environmental_datasets = Dict(
+        title=u'Climate & Environmental Datasets',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        required=True,
+    )
+
+    directives.mode(modelling_region=HIDDEN_MODE)
+    modelling_region = Text(
+        title=u"Modelling Region",
+        description=u"GEOJson describing the geographic region which is used to generate the model.",
+        required=False,
+    )
+
+
+class IMSDMExperiment(IExperiment):
+
+    directives.widget('function', FunctionsRadioFieldWidget)
+    function = Choice(
+        title=u'Algorithm',
+        vocabulary='sdm_functions_source',
+        default=None,
+        required=True,
+    )
+
+    directives.widget('species_occurrence_collections',
+                DatasetDictFieldWidget,
+                multiple='multiple',
+                genre=['DataGenreSpeciesCollection'],
+                errmsg=u"Please select at least 1 occurrence dataset.",
+                vizclass=u'bccvl-occurrence-viz')
+    species_occurrence_collections = Dict(
+        title=u'Species Occurrence Collections',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        default=None,
+        required=True,
+        min_length=1,
+        max_length=5,
     )
 
     directives.widget('environmental_datasets',
