@@ -88,7 +88,7 @@ class RemoteDatasetDownload(BrowserView):
         # check if current user ticket has required token
         # TODO: maybe use local roles? http://docs.plone.org/develop/plone/security/dynamic_roles.html
         # assumes, that the cookie name is __ac and that it has already been verified by PAS
-        ticket = binascii.b2a_base64(self.request.get('__ac', '')).strip()
+        ticket = binascii.a2b_base64(self.request.get('__ac', '')).strip()
         try:
             (digest, userid, tokens, user_data, timestamp) = splitTicket(ticket)
             if 'org.bccvl.DownloadDataset' in tokens:
@@ -142,7 +142,7 @@ class DatasetDownload(Download):
         # check if current user ticket has required token
         # TODO: maybe use local roles? http://docs.plone.org/develop/plone/security/dynamic_roles.html
         # assumes, that the cookie name is __ac and that it has already been verified by PAS
-        ticket = binascii.b2a_base64(self.request.get('__ac', '')).strip()
+        ticket = binascii.a2b_base64(self.request.get('__ac', '')).strip()
         try:
             (digest, userid, tokens, user_data, timestamp) = splitTicket(ticket)
             if 'org.bccvl.DownloadDataset' in tokens:
