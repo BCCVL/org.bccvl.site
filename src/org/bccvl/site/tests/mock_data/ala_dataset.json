@@ -1,22 +1,22 @@
 {
   "files": [
     {
-      "url": "${tmpdir}/ala_occurrence.csv", 
-      "dataset_type": "occurrence", 
+      "url": "${tmpdir}/ala_occurrence.zip",
+      "dataset_type": "occurrence",
       "size": 1522
-    }, 
+    },
     {
-      "url": "${tmpdir}/ala_metadata.json", 
-      "dataset_type": "attribution", 
+      "url": "${tmpdir}/ala_metadata.json",
+      "dataset_type": "attribution",
       "size": 17361
     }
-  ], 
+  ],
   "provenance": {
-    "url": "http://biocache.ala.org.au/ws/occurrences/index/download?qa=zeroCoordinates,badlyFormedBasisOfRecord,detectedOutlier,decimalLatLongCalculationFromEastingNorthingFailed,missingBasisOfRecord,decimalLatLongCalculationFromVerbatimFailed,coordinatesCentreOfCountry,geospatialIssue,coordinatesOutOfRange,speciesOutsideExpertRange,userVerified,processingError,decimalLatLongConverionFailed,coordinatesCentreOfStateProvince,habitatMismatch&q=lsid:urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5&fields=decimalLongitude,decimalLatitude,coordinateUncertaintyInMeters.p,eventDate.p,year.p,month.p&reasonTypeId=4", 
-    "source": "ALA", 
+    "url": "http://biocache.ala.org.au/ws/occurrences/index/download?qa=zeroCoordinates,badlyFormedBasisOfRecord,detectedOutlier,decimalLatLongCalculationFromEastingNorthingFailed,missingBasisOfRecord,decimalLatLongCalculationFromVerbatimFailed,coordinatesCentreOfCountry,geospatialIssue,coordinatesOutOfRange,speciesOutsideExpertRange,userVerified,processingError,decimalLatLongConverionFailed,coordinatesCentreOfStateProvince,habitatMismatch&q=lsid:urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5&fields=decimalLongitude,decimalLatitude,coordinateUncertaintyInMeters.p,eventDate.p,year.p,month.p&reasonTypeId=4",
+    "source": "ALA",
     "source_date": "27/11/2015"
-  }, 
-  "num_occurrences": 29, 
-  "description": "Observed occurrences for Black Banded Winged Pearl Shell (Pteria penguin), imported from ALA on 27/11/2015", 
+  },
+  "num_occurrences": 29,
+  "description": "Observed occurrences for Black Banded Winged Pearl Shell (Pteria penguin), imported from ALA on 27/11/2015",
   "title": "Black Banded Winged Pearl Shell (Pteria penguin) occurrences"
 }

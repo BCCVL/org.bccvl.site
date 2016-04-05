@@ -238,7 +238,7 @@ class TestDatasetImport(unittest.TestCase):
             src, dst = (urlsplit(x['url']) for x in args)
             if src.scheme == 'ala':
                 # first call fetch ala data
-                for name in ('ala_metadata.json', 'ala_dataset.json', 'ala_occurrence.csv'):
+                for name in ('ala_metadata.json', 'ala_dataset.json', 'ala_occurrence.zip'):
                     open(os.path.join(dst.path, name), 'w').write(Template(resource_string(__name__, 'mock_data/{}'.format(name))).safe_substitute(tmpdir=dst.path))
             if dst.scheme == 'scp':
                 # 2nd call upload to plone

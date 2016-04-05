@@ -263,8 +263,9 @@ class FileMetadataToBCCVL(object):
                 # multi layer metadata has archive filenames as keys in filemd (for main file)
                 # if it is a multi layer file check layers (files)
                 # go through all files in the dictionary and generate "layer/file" metadata
-                for filename, layermd in filemd.items():    
-                    if filename == '_bccvlmetadata.json' or filename == 'rows':
+                for filename, layermd in filemd.items():
+                    # FIXME: because we are copying occurrence file metadata up to zip level, we have these extra weird keys in the main dict
+                    if filename == '_bccvlmetadata.json' or filename in ('rows', 'bounds', 'headers'):
                         # ignore json metadata and the rows field associated with occurrence dataset
                         continue
                     if not layermd.get('metadata'):
