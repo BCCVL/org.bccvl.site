@@ -56,10 +56,12 @@ class SDMExperimentHelper(object):
         # go through all widgets on the form  and update the request with default values
         data = {}
         for widget in chain(
+                # form fields
                 form.widgets.values(),
-                # skip standard plone groups
-                #chain.from_iterable(g.widgets.values() for g in form.groups),
-                chain.from_iterable(g.widgets.values() for g in form.param_groups)):
+                # param group fields
+                chain.from_iterable(g.widgets.values() for g in form.param_groups),
+                # param group fieldset fields
+                chain.from_iterable(sg.widgets.values() for g in form.param_groups for sg in g.groups)):
             data[widget.name] = widget.value
         data.update({
             'form.widgets.IDublinCore.title': u"My Experiment",
@@ -430,10 +432,12 @@ class SpeciesTraitsExperimentHelper(object):
         # go through all widgets on the form  and update the request with default values
         data = {}
         for widget in chain(
+                # form fields
                 form.widgets.values(),
-                # skip standard plone groups
-                #chain.from_iterable(g.widgets.values() for g in form.groups),
-                chain.from_iterable(g.widgets.values() for g in form.param_groups)):
+                # param group fields
+                chain.from_iterable(g.widgets.values() for g in form.param_groups),
+                # param group fieldset fields
+                chain.from_iterable(sg.widgets.values() for g in form.param_groups for sg in g.groups)):
             data[widget.name] = widget.value
         data.update({
             'form.widgets.IDublinCore.title': u"My ST Experiment",
