@@ -31,12 +31,21 @@ LOG = logging.getLogger(__name__)
 #        validate param_groups fields
 class ExperimentParamGroup(AutoFields, Group):
 
+    parameters = None
+
     def getContent(self):
-        if not hasattr(self.context, 'parameters'):
-            return {}
-        if not self.toolkit in self.context.parameters:
-            return {}
-        return self.context.parameters[self.toolkit]
+        if hasattr(self.context, 'parameters'):
+            # TODO: do better check here?
+            # add form context should not have any parameters field
+            # edit form should have
+            self.parameters = self.context.parameters
+        if self.parameters is None:
+            # TODO: check assumption here
+            # assume that we have an add form and need a fresh dict?
+            self.parameters = {}
+        if not self.toolkit in self.parameters:
+            self.parameters[self.toolkit] = {}
+        return self.parameters[self.toolkit]
 
     def update(self):
         # FIXME: stupid autoform thinks if the schema is in schema
@@ -142,9 +151,8 @@ class ParamGroupMixin(object):
         new_params = {}
         for group in self.param_groups:
             if self.is_toolkit_selected(group.toolkit, data[self.func_select_field]):
-                content = group.getContent()
-                param_changed = applyChanges(group, content, data)
-                new_params[group.toolkit] = content
+                group.applyChanges(data)
+                new_params[group.toolkit] = group.getContent()
         self.context.parameters = new_params
 
         return changed
@@ -299,9 +307,8 @@ class SDMAdd(ParamGroupMixin, Add):
         new_params = {}
         for group in self.param_groups:
             if group.toolkit in data['functions']:
-                content = group.getContent()
-                applyChanges(group, content, data)
-                new_params[group.toolkit] = content
+                group.applyChanges(data)
+                new_params[group.toolkit] = group.getContent()
         newob.parameters = new_params
         IBCCVLMetadata(newob)['resolution'] = data['resolution']
         return newob
@@ -360,9 +367,8 @@ class MSDMAdd(ParamGroupMixin, Add):
         new_params = {}
         for group in self.param_groups:
             if group.toolkit == data['function']:
-                content = group.getContent()
-                applyChanges(group, content, data)
-                new_params[group.toolkit] = content
+                group.applyChanges(data)
+                new_params[group.toolkit] = group.getContent()
         newob.parameters = new_params
         IBCCVLMetadata(newob)['resolution'] = data['resolution']
         return newob
@@ -554,9 +560,8 @@ class SpeciesTraitsAdd(ParamGroupMixin, Add):
         new_params = {}
         for group in self.param_groups:
             if group.toolkit == data['algorithm']:
-                content = group.getContent()
-                applyChanges(group, content, data)
-                new_params[group.toolkit] = content
+                group.applyChanges(data)
+                new_params[group.toolkit] = group.getContent()
         newob.parameters = new_params
         return newob
 
