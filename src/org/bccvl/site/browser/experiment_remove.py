@@ -1,10 +1,10 @@
-
-from z3c.form import field, button, form
-#from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
-from Products.CMFCore import permissions
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore import permissions
+from Products.statusmessages.interfaces import IStatusMessage
+from z3c.form import field, button, form
 from zope.component import getMultiAdapter
+
 from org.bccvl.site import defaults
 
 
@@ -34,8 +34,17 @@ class ExperimentRemoveView(form.Form):
         # this view should never come up if this is the case, so the check if merely a security / sanity check in
         # case someone guesses the delete url and tries to run it. In that case the view will just silently ignore the delete.
         if not experiment_tools.check_if_used():
-            excontainer.manage_delObjects([self.context.getId()])
-        self.request.response.redirect(nexturl)
+           excontainer.manage_delObjects([self.context.getId()])
+
+        # leave a message for the user
+        IStatusMessage(self.request).add(u"Experiment '{}' has been removed.".format(self.context.title))
+
+        # In case this is an ajax request, we return a 204 redirect
+        if self.request.get('ajax_load') == '1':
+            self.request.response.redirect(nexturl, 204)
+        else:
+            # Browser form submit ... return 302
+            self.request.response.redirect(nexturl)
 
     @button.buttonAndHandler(u'Cancel')
     def handle_cancel(self, action):
@@ -44,6 +53,10 @@ class ExperimentRemoveView(form.Form):
         self.request.response.redirect(nexturl)
 
     def render(self):
+        if self.request.response.getStatus() in (204,):
+            # short cut ajax redirect
+            return u''
+
         if self.index:
             return self.index()
         return super(ExperimentRemoveView, self).render()
