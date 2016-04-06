@@ -767,7 +767,7 @@ class BiodiverseJobTracker(MultiJobTracker):
             # species metadata
             md = IBCCVLMetadata(ds)
             dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
-            if md['species']['taxonID']:
+            if md['species'].get('taxonID'):
                 dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
