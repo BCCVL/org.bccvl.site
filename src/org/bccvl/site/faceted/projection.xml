@@ -68,6 +68,7 @@
    <property name="default">
     <element value="org.bccvl.content.projectionexperiment"/>
     <element value="org.bccvl.content.sdmexperiment"/>
+    <element value="org.bccvl.content.msdmexperiment"/>    
    </property>
   </criterion>
  </criteria>
