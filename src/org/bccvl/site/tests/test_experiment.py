@@ -131,12 +131,10 @@ class ExperimentSDMAddTest(unittest.TestCase):
     def test_mixed_resolution_lowest(self):
         current_1k_uuid = unicode(self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
         form = self.form.get_form()
-        # remove default value for scale_down (set by get_form)
-        del form.request.form['form.widgets.scale_down']
         form.request.form.update({
             'form.buttons.create': 'Create',
             # select 1k dataset as well
-            #'form.widgets.scale_down': ['selected'],
+            'form.widgets.scale_down': False,
             'form.widgets.scale_down-empty-marker': 1,
             'form.widgets.environmental_datasets.item.2': current_1k_uuid,
             'form.widgets.environmental_datasets.item.2.item': [u'B01'],

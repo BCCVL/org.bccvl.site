@@ -117,6 +117,8 @@ class ISDMExperiment(IExperiment):
         required=False,
     )
 
+    directives.widget('scale_down',
+                      RadioFieldWidget)
     scale_down = Bool(
         title=u'Scale to highest resolution',
         description=u'When ticked, environmental datasets will be scaled to the same resolution as the layer with the highest resolution. If unticked, the lowest resolution will be used',
