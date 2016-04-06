@@ -134,7 +134,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         form.request.form.update({
             'form.buttons.create': 'Create',
             # select 1k dataset as well
-            'form.widgets.scale_down': False,
+            'form.widgets.scale_down': 'false',
             'form.widgets.scale_down-empty-marker': 1,
             'form.widgets.environmental_datasets.item.2': current_1k_uuid,
             'form.widgets.environmental_datasets.item.2.item': [u'B01'],
