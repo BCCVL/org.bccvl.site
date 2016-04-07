@@ -39,3 +39,8 @@ class IFutureDatasetsWidget(IWidget):
 class IExperimentResultProjectionWidget(IWidget):
 
     pass
+
+
+class IBoolRadioWidget(IRadioWidget):
+
+    pass

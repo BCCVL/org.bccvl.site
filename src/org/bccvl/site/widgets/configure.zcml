@@ -115,5 +115,13 @@
         layer="z3c.form.interfaces.IFormLayer"
         template="functionsradio_input.pt"
         />
+
+    <z3c:widgetTemplate
+        mode="input"
+        widget="org.bccvl.site.widgets.interfaces.IBoolRadioWidget"
+        layer="z3c.form.interfaces.IFormLayer"
+        template="boolradio_input.pt"
+        />
+
     
 </configure>

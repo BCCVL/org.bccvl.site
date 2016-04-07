@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+<tal:loop tal:repeat="item view/items">
+  <label class="radio" for=""
+         tal:attributes="for item/id">
+    <input tal:replace="structure python:view.renderForValue(item['value'])"
+    />
+    <tal:replace tal:replace="item/label">Label</tal:replace>
+  </label>
+</tal:loop>
+<input name="field-empty-marker" type="hidden" value="1"
+       tal:attributes="name string:${view/name}-empty-marker" />
+</html>
