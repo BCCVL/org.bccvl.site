@@ -77,31 +77,6 @@ class BCCVLUploadForm(DefaultAddForm):
         # run transmogrify md extraction here
         context_path = '/'.join(new_object.getPhysicalPath())
         member = api.user.get_current()
-        # FIXME works only for local files
-        update_task = app.signature(
-            "org.bccvl.tasks.datamover.update_metadata",
-            kwargs={
-                'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
-                'filename': new_object.file.filename,
-                'contenttype': new_object.file.contentType,
-                'context': {
-                    'context': context_path,
-                    'user': {
-                        'id': member.getUserName(),
-                        'email': member.getProperty('email'),
-                        'fullname': member.getProperty('fullname')
-                    }
-                }
-            },
-            options={'immutable': True});
-        # queue job submission
-        after_commit_task(update_task)
-        # create job tracking object
-        jt = IJobTracker(new_object)
-        job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
-        job.type = new_object.portal_type
-        jt.set_progress('PENDING', u'Metadata update pending')
-
         # species extract task
         if IMultiSpeciesDataset.providedBy(new_object):
             # kick off csv split import tasks
@@ -135,6 +110,32 @@ class BCCVLUploadForm(DefaultAddForm):
             job = jt.new_job('TODO: generate id', 'generate taskname: import_multi_species_csv')
             job.type = new_object.portal_type
             jt.set_progress('PENDING', u'Multi species import pending')
+        else:
+            # single species upload
+            update_task = app.signature(
+                "org.bccvl.tasks.datamover.update_metadata",
+                kwargs={
+                    'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
+                    'filename': new_object.file.filename,
+                    'contenttype': new_object.file.contentType,
+                    'context': {
+                        'context': context_path,
+                        'user': {
+                            'id': member.getUserName(),
+                            'email': member.getProperty('email'),
+                            'fullname': member.getProperty('fullname')
+                        }
+                    }
+                },
+                options={'immutable': True});
+            # queue job submission
+            after_commit_task(update_task)
+            # create job tracking object
+            jt = IJobTracker(new_object)
+            job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
+            job.type = new_object.portal_type
+            jt.set_progress('PENDING', u'Metadata update pending')
+
 
         # We have to reindex after updating the object
         new_object.reindexObject()
