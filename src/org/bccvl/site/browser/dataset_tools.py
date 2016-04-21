@@ -97,6 +97,15 @@ class DatasetTools(BrowserView):
             itemobj = uuidToObject(uuid)
         return getdsmetadata(itemobj)
 
+    def species_metadata_for_result(self, result):
+        job_params = result.job_params
+        if 'species_occurrence_dataset' in job_params:
+            # It's an SDM .... just get metadata
+            return self.metadata(uuid=job_params['species_occurrence_dataset'])
+        if 'species_distribution_models' in job_params:
+            # It's a projection result
+            return self.metadata(uuid=job_params['species_distribution_models'])
+
     # FIXME: make sure self.metadata is cached somehow and requseted only once per request
     # TODO: use more suitable serialisation (pure json doesn't have CRS)
     def bbox(self, itemobj=None):
