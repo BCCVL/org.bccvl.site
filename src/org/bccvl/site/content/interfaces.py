@@ -17,6 +17,7 @@ from org.bccvl.site.widgets.widgets import ExperimentSDMFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultFieldWidget
 from org.bccvl.site.widgets.widgets import FutureDatasetsFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultProjectionFieldWidget
+from org.bccvl.site.widgets.widgets import BoolRadioFieldWidget
 
 
 class IDataset(model.Schema):
@@ -118,10 +119,12 @@ class ISDMExperiment(IExperiment):
     )
 
     directives.widget('scale_down',
-                      RadioFieldWidget)
+                      BoolRadioFieldWidget,
+                      true_label=u"Scale to highest resolution",
+                      false_label=u"Scale to lowest resolution")
     scale_down = Bool(
-        title=u'Scale to highest resolution',
-        description=u'When ticked, environmental datasets will be scaled to the same resolution as the layer with the highest resolution. If unticked, the lowest resolution will be used',
+        title=u'Select common resolution',
+        description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
         default=True,
         required=True
     )
@@ -171,6 +174,17 @@ class IMSDMExperiment(IExperiment):
         required=True,
         min_length=1,
         max_length=5,
+    )
+
+    directives.widget('scale_down',
+                      BoolRadioFieldWidget,
+                      true_label=u"Scale to highest resolution",
+                      false_label=u"Scale to lowest resolution")
+    scale_down = Bool(
+        title=u'Select common resolution',
+        description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
+        default=True,
+        required=True
     )
 
     directives.widget('environmental_datasets',

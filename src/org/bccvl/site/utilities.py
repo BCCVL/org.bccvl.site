@@ -467,6 +467,7 @@ class MSDMJobTracker(MultiJobTracker):
                         'function': func.getId(),
                         'species_occurrence_dataset': occur_ds,
                         'environmental_datasets': self.context.environmental_datasets,
+                        'scale_down': self.context.scale_down,
                         'modelling_region': self.context.modelling_region,
                     }
                     # add toolkit params:

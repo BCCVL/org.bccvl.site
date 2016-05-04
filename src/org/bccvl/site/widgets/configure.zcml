@@ -1,5 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"    
     xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="org.bccvl">
 
@@ -115,5 +116,21 @@
         layer="z3c.form.interfaces.IFormLayer"
         template="functionsradio_input.pt"
         />
+
+    <z3c:widgetTemplate
+        mode="input"
+        widget="org.bccvl.site.widgets.interfaces.IBoolRadioWidget"
+        layer="z3c.form.interfaces.IFormLayer"
+        template="boolradio_input.pt"
+        />
+
+    <browser:page
+        name="ploneform-render-widget"
+        for="z3c.form.interfaces.IRadioWidget"
+        layer="plone.app.z3cform.interfaces.IPloneFormLayer"
+        class="plone.app.z3cform.templates.RenderWidget"
+        template="radio_widget.pt"
+        permission="zope.Public"
+        />    
     
 </configure>

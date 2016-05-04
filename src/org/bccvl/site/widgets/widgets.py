@@ -7,6 +7,8 @@ from z3c.form.interfaces import (IFieldWidget, NO_VALUE)
 from z3c.form.widget import FieldWidget, Widget, SequenceWidget
 from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
                                      addFieldClass)
+from z3c.form.browser.radio import RadioWidget
+from z3c.form.term import BoolTerms
 from zope.i18n import translate
 from .interfaces import (IDatasetWidget,
                          IDatasetDictWidget,
@@ -15,7 +17,8 @@ from .interfaces import (IDatasetWidget,
                          IExperimentSDMWidget,
                          IFutureDatasetsWidget,
                          IExperimentResultWidget,
-                         IExperimentResultProjectionWidget)
+                         IExperimentResultProjectionWidget,
+                         IBoolRadioWidget)
 from plone.app.uuid.utils import uuidToCatalogBrain
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
@@ -573,3 +576,31 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
 @implementer(IFieldWidget)
 def ExperimentResultProjectionFieldWidget(field, request):
     return FieldWidget(field, ExperimentResultProjectionWidget(request))
+
+
+class CustomBoolTerms(BoolTerms):
+    """Custom BoolTerms implementation that fetches labels for true/false from widget"""
+
+    def __init__(self, context, request, form, field, widget):
+        self.trueLabel = widget.true_label
+        self.falseLabel = widget.false_label
+        super(CustomBoolTerms, self).__init__(context, request, form, field, widget)
+
+
+@implementer(IBoolRadioWidget)
+class BoolRadioWidget(RadioWidget):
+    """Input type radio widget with configurable labels for bool fields."""
+
+    true_label = None
+    false_label = None
+
+    def updateTerms(self):
+        if self.terms is None:
+            self.terms = CustomBoolTerms(self.context, self.request,
+                                         self.form, self.field, self)
+        return self.terms
+
+
+@implementer(IFieldWidget)
+def BoolRadioFieldWidget(field, request):
+    return FieldWidget(field, BoolRadioWidget(request))
