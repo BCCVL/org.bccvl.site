@@ -262,7 +262,7 @@ def speciestraits_listing_details(expbrain):
     # FIXME: implement this
     details = {}
     details.update({
-        'type': 'SECIES TRAITS',
+        'type': 'SPECIES TRAITS',
         'functions': '',
         'species_occurrence': '',
         'species_absence': '',
