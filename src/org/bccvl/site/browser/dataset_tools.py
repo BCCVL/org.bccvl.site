@@ -95,6 +95,8 @@ class DatasetTools(BrowserView):
             itemobj = self.context
         if uuid:
             itemobj = uuidToObject(uuid)
+        if itemobj is None:
+            return None
         return getdsmetadata(itemobj)
 
     def species_metadata_for_result(self, result):
