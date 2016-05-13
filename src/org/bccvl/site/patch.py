@@ -103,7 +103,7 @@ def createTicket(secret, userid, tokens=(), user_data='', ip='0.0.0.0', timestam
     else:
         # a sha256 digest is the same length as an md5 hexdigest
         # TODO: this should be fixed in plone.session....
-        #       the digest length should not be fixed and sha256 should also use hexdigest
+        #       the digest length should not be fixed and sha256 should also use hexdigest, ... if we patch this here, we have to patch splitTicket and validateTicket as well?
         digest = hmac.new(secret, data1+data2, hashlib.sha256).digest()
 
     # digest + timestamp as an eight character hexadecimal + userid + !

@@ -551,10 +551,8 @@ class TestDatasetUpload(unittest.TestCase):
         # triger background process
         transaction.commit()
         # 6 move should have happened
-        self.assertEqual(mock_move.call_count, 6)
+        self.assertEqual(mock_move.call_count, 5)
         self.assertEqual(mock_move.call_args_list[0][0][0]['url'],
-                         'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
-        self.assertEqual(mock_move.call_args_list[1][0][0]['url'],
                          'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
         # TODO: should test other call orguments as well
         # job state should be complete
@@ -628,10 +626,8 @@ class TestDatasetUpload(unittest.TestCase):
         # triger background process
         transaction.commit()
         # 6 move should have happened
-        self.assertEqual(mock_move.call_count, 6)
+        self.assertEqual(mock_move.call_count, 5)
         self.assertEqual(mock_move.call_args_list[0][0][0]['url'],
-                         'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
-        self.assertEqual(mock_move.call_args_list[1][0][0]['url'],
                          'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
         # TODO: should test other call orguments as well
         # job state should be complete
