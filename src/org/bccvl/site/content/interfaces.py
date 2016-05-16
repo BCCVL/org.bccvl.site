@@ -125,7 +125,7 @@ class ISDMExperiment(IExperiment):
     scale_down = Bool(
         title=u'Select common resolution',
         description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
-        default=True,
+        default=False,
         required=True
     )
 
@@ -183,7 +183,7 @@ class IMSDMExperiment(IExperiment):
     scale_down = Bool(
         title=u'Select common resolution',
         description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
-        default=True,
+        default=False,
         required=True
     )
 
