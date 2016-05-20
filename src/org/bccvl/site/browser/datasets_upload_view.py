@@ -81,7 +81,7 @@ class BCCVLUploadForm(DefaultAddForm):
         if IMultiSpeciesDataset.providedBy(new_object):
             # kick off csv split import tasks
             import_task = app.signature(
-                "org.bccvl.tasks.datamover.import_multi_species_csv",
+                "org.bccvl.tasks.datamover.tasks.import_multi_species_csv",
                 kwargs={
                     'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
                     'results_dir': get_results_dir(container, self.request),
@@ -113,7 +113,7 @@ class BCCVLUploadForm(DefaultAddForm):
         else:
             # single species upload
             update_task = app.signature(
-                "org.bccvl.tasks.datamover.update_metadata",
+                "org.bccvl.tasks.datamover.tasks.update_metadata",
                 kwargs={
                     'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
                     'filename': new_object.file.filename,
