@@ -1419,6 +1419,16 @@
         <element key="arcsec">300</element>
       </element>
       <element>
+        <element key="value">Resolution6m</element>
+        <element key="title">6' (~12km)</element>
+        <element key="arcsec">360</element>
+      </element>
+      <element>
+        <element key="value">Resolution9m</element>
+        <element key="title">9' (~18km)</element>
+        <element key="arcsec">540</element>
+      </element>
+      <element>
         <element key="value">Resolution10m</element>
         <element key="title">10' (~20km)</element>
         <element key="arcsec">600</element>
