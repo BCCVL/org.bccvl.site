@@ -1,0 +1,5 @@
+{
+  "_type": "Folder",
+  "title": "CLIMOND climate 10 arc minutes",
+  "_transitions": ["show_internally", "publish_internally"]
+}
