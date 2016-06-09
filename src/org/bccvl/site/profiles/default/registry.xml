@@ -1404,6 +1404,11 @@
         <element key="arcsec">30</element>
       </element>
       <element>
+        <element key="value">Resolution36s</element>
+        <element key="title">36" (~1km)</element>
+        <element key="arcsec">36</element>
+      </element>
+      <element>
         <element key="value">Resolution2_5m</element>
         <element key="title">2.5' (~5km)</element>
         <element key="arcsec">150</element>
