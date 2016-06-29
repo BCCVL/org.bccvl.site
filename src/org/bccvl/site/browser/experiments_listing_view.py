@@ -156,7 +156,7 @@ def msdm_listing_details(expbrain):
     exp = expbrain.getObject()
     if exp.environmental_datasets:
         details.update({
-            'type': 'SDM',
+            'type': 'MSDM',
             'functions': get_title_from_uuid(exp.function),
             'species_occurrence': ', '.join(get_title_from_uuid(ds) for ds in exp.species_occurrence_collections),
             'species_absence': '',
