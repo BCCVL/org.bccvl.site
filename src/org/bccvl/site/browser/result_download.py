@@ -51,9 +51,9 @@ class ResultDownloadView(BrowserView):
             # iterate over files and add to zip
             for brain in brains:
                 content = brain.getObject()
-                # If data is stored locally:
-                arcname = '/'.join((zfilename, 'data', content.file.filename))
                 if IBlobDataset.providedBy(content):
+                    # If data is stored locally:
+                    arcname = '/'.join((zfilename, 'data', content.file.filename))
                     # ob.file should be a NamedFile ... need to get fs name for that
                     blobfile = content.file.openDetached()
 
@@ -62,9 +62,11 @@ class ResultDownloadView(BrowserView):
 
                 elif IRemoteDataset.providedBy(content):
                     # TODO: duplicate code from
-                    remoteUrl = getattr(self.context, 'remoteUrl', None)
+                    remoteUrl = getattr(content, 'remoteUrl', None)
                     if remoteUrl is None:
                         raise NotFound(self, 'remoteUrl', self.request)
+                    # get arcname from remoteUrl
+                    arcname = '/'.join((zfilename, 'data', os.path.basename(remoteUrl)))
                     # FIXME: should check dataset downloaiable flag here,
                     #       but assumption is, that this function can only be called on an experiment result folder....
                     # TODO: duplicate code in browser/dataset.py:RemoteDatasetDownload.__call__
