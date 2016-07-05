@@ -1,0 +1,5 @@
+{
+  "_type": "Folder",
+  "title": "TASCLIM climate 6 arcminute",
+  "_transitions": ["show_internally", "publish_internally"]
+}

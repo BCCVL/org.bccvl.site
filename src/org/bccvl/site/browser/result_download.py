@@ -1,14 +1,17 @@
 from Products.Five import BrowserView
 from org.bccvl.site.interfaces import IProvenanceData
-from org.bccvl.site.content.interfaces import IBlobDataset
+from org.bccvl.site.content.interfaces import IBlobDataset, IRemoteDataset
 from Products.CMFCore.utils import getToolByName
 from ZPublisher.Iterators import filestream_iterator
 from org.bccvl.site.api.dataset import getdsmetadata
-from zope.component import getMultiAdapter
+from org.bccvl.site.swift.interfaces import ISwiftUtility
+from zope.component import getMultiAdapter, getUtility
+from zope.publisher.interfaces import NotFound
 import os
 import os.path
 import tempfile
 import zipfile
+from urllib import urlretrieve
 
 
 class tmpfile_stream_iterator(filestream_iterator):
@@ -27,11 +30,13 @@ class ResultDownloadView(BrowserView):
 
     def __call__(self):
 
+        # FIXME: This is a rather lengthy process, and should probably be turned into a background task... (maybe as part of a datamanager service?)
 
         # 1. find all IBlobDataset/ IRemotedDataset/ IDataset objects within context
         pc = getToolByName(self.context, 'portal_catalog')
         brains = pc.searchResults(path='/'.join(self.context.getPhysicalPath()),
-                                  object_provides=IBlobDataset.__identifier__)
+                                  object_provides=[IBlobDataset.__identifier__,
+                                                   IRemoteDataset.__identifier__])
         fname = None
         try:
             # create tmp file
@@ -46,12 +51,40 @@ class ResultDownloadView(BrowserView):
             # iterate over files and add to zip
             for brain in brains:
                 content = brain.getObject()
-                # ob.file should be a NamedFile ... need to get fs name for that
-                blobfile = content.file.openDetached()
-                arcname = '/'.join((zfilename, 'data', content.file.filename))
-                zfile.write(blobfile.name, arcname)
-                blobfile.close()
+                if IBlobDataset.providedBy(content):
+                    # If data is stored locally:
+                    arcname = '/'.join((zfilename, 'data', content.file.filename))
+                    # ob.file should be a NamedFile ... need to get fs name for that
+                    blobfile = content.file.openDetached()
 
+                    zfile.write(blobfile.name, arcname)
+                    blobfile.close()
+
+                elif IRemoteDataset.providedBy(content):
+                    # TODO: duplicate code from
+                    remoteUrl = getattr(content, 'remoteUrl', None)
+                    if remoteUrl is None:
+                        raise NotFound(self, 'remoteUrl', self.request)
+                    # get arcname from remoteUrl
+                    arcname = '/'.join((zfilename, 'data', os.path.basename(remoteUrl)))
+                    # FIXME: should check dataset downloaiable flag here,
+                    #       but assumption is, that this function can only be called on an experiment result folder....
+                    # TODO: duplicate code in browser/dataset.py:RemoteDatasetDownload.__call__
+                    # TODO: may not work in general... it always uses swift as remote url
+                    tool = getUtility(ISwiftUtility)
+                    try:
+                        url = tool.generate_temp_url(url=remoteUrl)
+                    except:
+                        url = remoteUrl
+                    # url is now the location from which we can fetch the file
+                    temp_file, _ = urlretrieve(url)
+                    zfile.write(temp_file, arcname)
+                    os.remove(temp_file)
+                else:
+                    # unknown type of Dataset
+                    # just skip it
+                    # TODO: Log warning or debug?
+                    continue
                 metadata[arcname] = getdsmetadata(content)
             # all files are in ....
             # TODO: add experiment result metadata

@@ -154,7 +154,7 @@ class DMService(BaseService):
 
             from org.bccvl.tasks.celery import app
             update_task = app.signature(
-                "org.bccvl.tasks.datamover.update_metadata",
+                "org.bccvl.tasks.datamover.tasks.update_metadata",
                 kwargs={
                     'url': obj_url,
                     'filename': filename,

@@ -1,0 +1,5 @@
+{
+  "_type": "Folder",
+  "title": "NaRCLIM 9 arc seconds",
+  "_transitions": ["show_internally", "publish_internally"]
+}

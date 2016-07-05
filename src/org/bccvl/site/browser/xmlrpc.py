@@ -303,7 +303,6 @@ class GBIFProxy(BrowserView):
         if len(ret) != 0:
             # we have a content-length so let the publisher stream it
             return ret
-        import ipdb; ipdb.set_trace()
         # we don't have content-length and stupid publisher want's one
         # for stream, so let's stream it ourselves.
         while True:

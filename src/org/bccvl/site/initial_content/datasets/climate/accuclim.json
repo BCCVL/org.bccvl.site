@@ -1,0 +1,10 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "ACCUclim climate data",
+    "description": "Global bioclimatic variable spatial layers.",
+    "rights": "CC BY Attribution 3.0 AU",
+    "external_description": "TBA - Most likely Tropical Data Hub w/ exposure via MediaFlux WebDev",
+    "attribution": ["Storlie, C.J., Phillips, B.L., VanDerWal, J.J., and Williams, S.E. (2013) Improved spatial estimates of climate predict patchier species distributions. Diversity and Distributions, 19 (9). pp. 1106-1113."],
+    "categories": ["climate"],
+    "_transitions": ["show_internally", "publish_internally"]
+}
