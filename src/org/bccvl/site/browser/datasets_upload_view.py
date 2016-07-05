@@ -289,8 +289,6 @@ class EnvironmentalAddForm(BCCVLUploadForm):
         u"<p>BCCVL can only deal with raster data in GeoTIFF format."
         u" Valid files are either single GeoTiff files or a number of"
         u" GeoTiff packaged within a zip file.</p>"
-        u"<p>It is easy to convert your csv files to GeoTIFF format,"
-        u"follow the instructions here <a href=\"https://github.com/NICTA/nationalmap/wiki/csv-geo-au\" target=\"_blank\">https://github.com/NICTA/nationalmap/wiki/csv-geo-au</a>."
         u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
