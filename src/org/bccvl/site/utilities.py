@@ -21,7 +21,7 @@ from org.bccvl.site.content.interfaces import (
 from org.bccvl.site.interfaces import IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.utils import build_ala_import_task
-from org.bccvl.tasks.plone import after_commit_task
+from org.bccvl.tasks.plone.utils import after_commit_task
 
 
 LOG = logging.getLogger(__name__)

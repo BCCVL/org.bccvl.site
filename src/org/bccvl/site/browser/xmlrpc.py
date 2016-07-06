@@ -432,9 +432,6 @@ class ExportResult(BrowserView):
         # TODO: validate serviceid
 
         # start export job
-        context_path = '/'.join(self.context.getPhysicalPath())
-        member = api.user.get_current()
-
         # collect list of files to export:
         urllist = []
         for content in self.context.values():
@@ -449,7 +446,7 @@ class ExportResult(BrowserView):
         urllist.append('{}/prov.ttl'.format(self.context.absolute_url()))
 
         from org.bccvl.tasks.celery import app
-        from org.bccvl.tasks.plone import after_commit_task
+        from org.bccvl.tasks.plone.utils import after_commit_task, create_task_context
         # FIXME: Do mapping from serviceid to service type? based on interface
         #        background task will need serviceid and type, but it may resolve
         #        servicetype via API with serviceid
@@ -459,14 +456,7 @@ class ExportResult(BrowserView):
                 'siteurl': api.portal.get().absolute_url(),
                 'fileurls': urllist,
                 'serviceid': serviceid,
-                'context': {
-                    'context': context_path,
-                    'user': {
-                        'id': member.getUserName(),
-                        'email': member.getProperty('email'),
-                        'fullname': member.getProperty('fullname')
-                    }
-                }
+                'context': create_task_context(self.context)
             },
             options={'immutable': True});
 

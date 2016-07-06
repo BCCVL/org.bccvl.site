@@ -26,7 +26,7 @@ from org.bccvl.site.content.dataset import (
 from org.bccvl.site.utils import get_results_dir
 from org.bccvl.tasks.celery import app
 from org.bccvl.site.job.interfaces import IJobTracker
-from org.bccvl.tasks.plone import after_commit_task
+from org.bccvl.tasks.plone.utils import after_commit_task, create_task_context
 
 
 LOG = logging.getLogger(__name__)
@@ -75,8 +75,6 @@ class BCCVLUploadForm(DefaultAddForm):
         # start background import process (just a metadata update)
 
         # run transmogrify md extraction here
-        context_path = '/'.join(new_object.getPhysicalPath())
-        member = api.user.get_current()
         # species extract task
         if IMultiSpeciesDataset.providedBy(new_object):
             # kick off csv split import tasks
@@ -85,22 +83,8 @@ class BCCVLUploadForm(DefaultAddForm):
                 kwargs={
                     'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
                     'results_dir': get_results_dir(container, self.request),
-                    'import_context': {
-                        'context': '/'.join(container.getPhysicalPath()),
-                        'user': {
-                            'id': member.getUserName(),
-                            'email': member.getProperty('email'),
-                            'fullname': member.getProperty('fullname')
-                        }
-                    },
-                    'context': {
-                        'context': context_path,
-                        'user': {
-                            'id': member.getUserName(),
-                            'email': member.getProperty('email'),
-                            'fullname': member.getProperty('fullname')
-                        }
-                    }
+                    'import_context': create_task_context(container),
+                    'context': create_task_context(new_object)
                 },
                 options={'immutable': True}
             );
@@ -118,14 +102,7 @@ class BCCVLUploadForm(DefaultAddForm):
                     'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
                     'filename': new_object.file.filename,
                     'contenttype': new_object.file.contentType,
-                    'context': {
-                        'context': context_path,
-                        'user': {
-                            'id': member.getUserName(),
-                            'email': member.getProperty('email'),
-                            'fullname': member.getProperty('fullname')
-                        }
-                    }
+                    'context': create_task_context(new_object)
                 },
                 options={'immutable': True});
             # queue job submission

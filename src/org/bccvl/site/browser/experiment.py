@@ -1,28 +1,33 @@
 from collections import OrderedDict
+from decimal import Decimal
 from itertools import chain
-from z3c.form import button
-from z3c.form.form import extends, applyChanges
-from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
-from zope.schema.interfaces import RequiredMissing
-from org.bccvl.site.interfaces import IBCCVLMetadata
-from org.bccvl.site.interfaces import IExperimentJobTracker
+import logging
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
-from plone.dexterity.browser import add, edit, view
-from org.bccvl.site import MessageFactory as _
-from zope.interface import Invalid
-from plone.z3cform.fieldsets.group import Group
+from plone import api
+from plone.app.uuid.utils import uuidToCatalogBrain, uuidToObject
 from plone.autoform.base import AutoFields
 from plone.autoform.utils import processFields
+from plone.dexterity.browser import add, edit, view
 from plone.supermodel import loadString
-from z3c.form.interfaces import DISPLAY_MODE
-from z3c.form.error import MultipleErrors
+from plone.z3cform.fieldsets.group import Group
+from z3c.form import button
+from z3c.form.form import extends  # , applyChanges  #, MultipleErrors
+from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE, DISPLAY_MODE
 from zope.component import getMultiAdapter
-from plone.app.uuid.utils import uuidToCatalogBrain, uuidToObject
-from decimal import Decimal
-from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
-import logging
+from zope.interface import Invalid
+from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.interfaces import RequiredMissing
+
+from org.bccvl.site import MessageFactory as _
+from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IExperimentJobTracker
+from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.tasks.plone.jobs import submit_experiment
+from org.bccvl.tasks.plone.utils import after_commit_task, create_task_context
+
 
 LOG = logging.getLogger(__name__)
 
@@ -187,9 +192,21 @@ class View(edit.DefaultEditForm):
             self.status = self.formErrorsMessage
             return
 
-        msgtype, msg = IExperimentJobTracker(self.context).start_job(self.request)
-        if msgtype is not None:
-            IStatusMessage(self.request).add(msg, type=msgtype)
+        # auto start job here
+        context = create_task_context(self.context)
+        context['experiment'] = {
+            'title': self.context.title,
+            'url': self.context.absolute_url()
+        }
+        after_commit_task(submit_experiment, context=context)
+        jt = IJobTracker(self.context)
+        job = jt.new_job('TODO: generate id',
+                         'generate taskname: submit_experiment')
+        job.type = self.context.portal_type
+        jt.set_progress('PENDING'
+                        u'submit experiment pending ')
+        # TODO: need some job state here, so that user knows we are submitting jobs (currently depends on result folder job states)
+        IStatusMessage(self.request).add('Job submitted {0}'.format(self.context.title), type='info')
         self.request.response.redirect(self.context.absolute_url())
 
 
@@ -258,10 +275,14 @@ class Add(add.DefaultAddForm):
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"),
                                                       "info")
         # auto start job here
-        jt = IExperimentJobTracker(obj)
-        msgtype, msg = jt.start_job(self.request)
-        if msgtype is not None:
-            IStatusMessage(self.request).add(msg, type=msgtype)
+        context = create_task_context(obj)
+        context['experiment'] = {
+            'title': obj.title,
+            'url': obj.absolute_url()
+        }
+        after_commit_task(submit_experiment, context=context)
+        # TODO: need some job state here, so that user knows we are submitting jobs (currently depends on result folder job states)
+        IStatusMessage(self.request).add('Job submitted {0}'.format(obj.title), type='info')
 
     @button.buttonAndHandler(_('Create'), name='create')
     def handleCreate(self, action):

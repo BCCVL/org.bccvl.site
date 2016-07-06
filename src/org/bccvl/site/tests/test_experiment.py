@@ -96,7 +96,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # start experiment
         jt = IExperimentJobTracker(self.experiments['my-experiment'])
         self.assertEqual(jt.state, u'QUEUED')
-        #error
+        #error when submitting a 2nd time, without finishing background tasks
         state = jt.start_job(form.request)
         self.assertEqual(state[0], 'error')
         # setup mock_run_script
@@ -107,6 +107,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # TODO: after commit tasks cause site to disappear and the
         # following code will fail, bceause without site we can't find
         # a catalog without whchi we can't finde the toolkit by uuid
+        # submit 2nd time after background tasks are completed
         jt.start_job(form.request)
         self.assertEqual(jt.state, u'RUNNING')
         transaction.commit()

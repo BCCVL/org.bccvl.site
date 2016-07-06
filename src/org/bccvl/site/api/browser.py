@@ -127,13 +127,7 @@ class DMService(BaseService):
 
             # get username
             member = ploneapi.user.get_current()
-            if member.getId():
-                user = {
-                    'id': member.getUserName(),
-                    'email': member.getProperty('email'),
-                    'fullname': member.getProperty('fullname')
-                }
-            else:
+            if not member.getId():
                 raise Exception("Invalid user")
 
             # build download url
@@ -153,20 +147,17 @@ class DMService(BaseService):
                 raise Exception("Wrong content type")
 
             from org.bccvl.tasks.celery import app
+            from org.bccvl.tasks.plone.utils import after_commit_task, create_task_context
             update_task = app.signature(
                 "org.bccvl.tasks.datamover.tasks.update_metadata",
                 kwargs={
                     'url': obj_url,
                     'filename': filename,
                     'contenttype': obj.format,
-                    'context': {
-                        'context': '/'.join(obj.getPhysicalPath()),
-                        'user': user,
-                    }
+                    'context': create_task_context(obj, member)
                 },
                 options={'immutable': True});
 
-            from org.bccvl.tasks.plone import after_commit_task
             from org.bccvl.site.job.interfaces import IJobTracker
             after_commit_task(update_task)
             # track background job state
@@ -378,22 +369,12 @@ class ExperimentService(BaseService):
         job.function = func.getId()
         job.type = 'org.bccvl.content.sdmexperiment'
         jobtool.reindex_job(job)
-        # create job context object
-        member = ploneapi.user.get_current()
-        context = {
-            # we use the site object as context
-            'context': '/'.join(portal.getPhysicalPath()),
-            'jobid': job.id,
-            'user': {
-                'id': member.getUserName(),
-                'email': member.getProperty('email'),
-                'fullname': member.getProperty('fullname')
-            },
-        }
-
         # all set to go build task chain now
         from org.bccvl.tasks.compute import demo_task
-        from org.bccvl.tasks.plone import after_commit_task
+        from org.bccvl.tasks.plone.utils import after_commit_task, create_task_context
+        # create job context object
+        context = create_task_context(portal)
+        context['jobid'] = job.id
         after_commit_task(demo_task, jobdesc, context)
         # let's hope everything works, return result
 
