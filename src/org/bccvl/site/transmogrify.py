@@ -372,6 +372,34 @@ class FileMetadataToBCCVL(object):
                     layermd['datatype'] = 'categorical'
                 elif data_type.lower() == 'discrete':
                     layermd['datatype'] = 'discrete'
+        else:
+            # For other type than geotiff i.e. geofabric
+            bounds = jsonmd.get('bounding_box', {})
+            if bounds:
+                layermd['bounds'] = bounds
+            layermd['srs'] = jsonmd.get('srs', 'EPSG:4283')
+
+            layermd['datatype'] = 'continuous'
+            data_type = jsonmd.get('data_type', None)
+
+            # Assume Continous data type by default
+            layermd['datatype'] = 'continuous'
+            if data_type:
+                if data_type.lower() == 'categorical':
+                    layermd['datatype'] = 'categorical'
+                elif data_type.lower() == 'discrete':
+                    layermd['datatype'] = 'discrete'
+
+            # Get the min and max for each layer
+            for layer, info in filemd.items():
+                layermd['layer'] = layer
+                layermd['min'] = info['min']
+                layermd['max'] = info['max']
+        
+                layermd['filename'] = layer
+                bccvlmd.setdefault('layers', {})[layermd.get('layer', layer)] = dict(layermd)
+            return
+
 
             # TODO: bbox: which units do we want bbox?
             #       lat/long?, whatever coordinates layer uses?
