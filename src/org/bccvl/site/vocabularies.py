@@ -387,6 +387,7 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
         (SimpleTerm('vegetation', 'vegetation', u'Vegetation'), {}),
         (SimpleTerm('landcover', 'landcover', u'Land Cover'), {}),
         (SimpleTerm('landuse', 'landuse', u'Land Use'), {}),
+        (SimpleTerm('productivity', 'productivity', u'Net Primary Productivity'), {}),
         ])
     )
 ]))

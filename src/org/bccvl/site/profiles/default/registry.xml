@@ -2004,6 +2004,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2013,6 +2014,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of  “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2022,6 +2024,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2031,6 +2034,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2040,6 +2044,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2049,6 +2054,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2058,6 +2064,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2067,6 +2074,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2076,6 +2084,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2085,6 +2094,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2094,6 +2104,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2103,6 +2114,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
@@ -2112,6 +2124,7 @@
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
         <element key="type">vegetation</element>
+        <element key="type">productivity</element>
         <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
       </element>
       <element>
