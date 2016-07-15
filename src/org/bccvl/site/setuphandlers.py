@@ -646,7 +646,18 @@ def upgrade_230_240_1(context, logger=None):
     tinymce.plugins = current_plugins
 
 
-    # TODO: go through all datasets and set 'redistributable' flag
-
-    # TODO:
-    #       add scale_down flag to existing SDM experiments (FALSE default?)
+def upgrade_240_250_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    # update permissions on actions
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    # update vocabularies
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    # update initial site content and r scripts
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    # update facet settings
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+    # TODO: update theme (reimport it?)
