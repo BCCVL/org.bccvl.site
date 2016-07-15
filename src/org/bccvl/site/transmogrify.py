@@ -372,7 +372,7 @@ class FileMetadataToBCCVL(object):
                     layermd['datatype'] = 'categorical'
                 elif data_type.lower() == 'discrete':
                     layermd['datatype'] = 'discrete'
-        else:
+        elif bccvlmd.get('dblayers'):
             # For other type than geotiff i.e. geofabric
             bounds = jsonmd.get('bounding_box', {})
             if bounds:
@@ -390,14 +390,17 @@ class FileMetadataToBCCVL(object):
                 elif data_type.lower() == 'discrete':
                     layermd['datatype'] = 'discrete'
 
-            # Get the min and max for each layer
+            # Get the min and max for each layer, and vocabulary as well.
             for layer, info in filemd.items():
-                layermd['layer'] = layer
+                # TODO: Get full layername and vocabulary from dblayers
+                dblayerinfo = bccvlmd.get('dblayers').get(layer)
+                if dblayerinfo:
+                    layermd['layer'] = dblayerinfo.get('layer')
                 layermd['min'] = info['min']
                 layermd['max'] = info['max']
         
                 layermd['filename'] = layer
-                bccvlmd.setdefault('layers', {})[layermd.get('layer', layer)] = dict(layermd)
+                bccvlmd.setdefault('layers', {})[layer] = dict(layermd)
             return
 
 

@@ -1557,6 +1557,15 @@
         <element key="tooltip">Average growth index seasonality value calculated for microtherm plants.</element>   
       </element>
       <element>
+        <element key="value">rainerosivityfactor</element>
+        <element key="title">Average rainfall erosivity R factor</element>
+        <element key="unit">MJ mm ha-1 h-1 yr-1</element>
+        <element key="unitfull">megajoule-millimetre per hectare per hour per year</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of the rainfall erosivity R-factor of all grid cells upstream of the center of the stream segment pour-point cell.</element>   
+      </element>
+      <element>
         <element key="value">areatotal</element>
         <element key="title">Area</element>
         <element key="unit">km^2</element>
@@ -2315,6 +2324,60 @@
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Flow diversions factor (max of GDFDF and NWIFDF)</element>   
+      </element>
+      <element>
+        <element key="value">sdif</element>
+        <element key="title">sdif</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">nwief</element>
+        <element key="title">nwief</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">gdef</element>
+        <element key="title">gdef</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">sdef</element>
+        <element key="title">sdef</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">sdimf</element>
+        <element key="title">sdimf</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">sdfdf</element>
+        <element key="title">sdfdf</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
       </element>
       <element>
         <element key="value">barfreelengmin</element>
