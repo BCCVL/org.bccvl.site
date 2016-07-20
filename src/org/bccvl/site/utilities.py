@@ -1205,6 +1205,9 @@ class ALAJobTracker(MultiJobTracker):
 
         return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
 
+    def is_active(self):
+        return self.state not in (None, 'COMPLETED', 'FAILED', 'REMOVED')
+
     @property
     def state(self):
         jt = IJobTracker(self.context, None)
