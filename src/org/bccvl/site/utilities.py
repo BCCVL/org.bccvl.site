@@ -128,19 +128,20 @@ class MultiJobTracker(object):
     @property
     def states(self):
         states = []
-        for item in self.context.values():
+        items = [it for it in self.context.values()]
+        for item in [self.context] + items:
             jt = IJobTracker(item, None)
             if jt is None:
                 continue
             state = jt.state
             if state:
                 states.append((item.getId(), state))
+
         return states
 
     def is_active(self):
-        return (self.state not in
-                (None, 'COMPLETED', 'FAILED', 'REMOVED'))
-
+        # The first job is the overall experiment job.
+        return (len(self.states) > 1) and (self.state not in (None, 'COMPLETED', 'FAILED', 'REMOVED'))
 
 # TODO: should this be named adapter as well in case there are multiple
 #       different jobs for experiments

@@ -203,6 +203,7 @@ class View(edit.DefaultEditForm):
         job = jt.new_job('TODO: generate id',
                          'generate taskname: submit_experiment')
         job.type = self.context.portal_type
+        jt.state = 'PENDING'
         jt.set_progress('PENDING'
                         u'submit experiment pending ')
         # TODO: need some job state here, so that user knows we are submitting jobs (currently depends on result folder job states)
@@ -281,6 +282,15 @@ class Add(add.DefaultAddForm):
             'url': obj.absolute_url()
         }
         after_commit_task(submit_experiment, context=context)
+
+        # Create a submission job tracker for the experiment
+        jt = IJobTracker(obj) 
+        job = jt.new_job('TODO: generate id',
+                 'generate taskname: submit_experiment')
+        job.type = self.context.portal_type
+        jt.state = 'PENDING'
+        jt.set_progress('PENDING', u'submit experiment pending ')
+
         # TODO: need some job state here, so that user knows we are submitting jobs (currently depends on result folder job states)
         IStatusMessage(self.request).add('Job submitted {0}'.format(obj.title), type='info')
 

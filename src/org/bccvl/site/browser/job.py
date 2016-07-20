@@ -22,12 +22,12 @@ class StartJobView(BrowserView):
                 'title': self.context.title,
                 'url': self.context.absolute_url()
             }
-            import ipdb; ipdb.set_trace()
             after_commit_task(submit_experiment, context=context)
             job = jt.new_job('TODO: generate id',
                              'generate taskname: submit_experiment')
             job.type = self.context.portal_type
-            jt.set_progress('PENDING'
+            jt.state = 'PENDING'
+            jt.set_progress('PENDING',
                             u'submit experiment pending ')
             IStatusMessage(self.request).add('Job submitted {0}'.format(self.context.title), type='info')
         self.request.response.redirect(self.context.absolute_url())
