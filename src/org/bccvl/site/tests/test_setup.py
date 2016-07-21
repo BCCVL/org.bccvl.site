@@ -100,7 +100,7 @@ class SiteSetupTest(unittest.TestCase):
         portal = self.layer['portal']
         for id, wf_name, state in (
                 (defaults.KNOWLEDGEBASE_FOLDER_ID, 'intranet_workflow', 'external'),
-                (defaults.DATASETS_FOLDER_ID, 'intranet_workflow', 'internally_published'),
+                (defaults.DATASETS_FOLDER_ID, 'intranet_workflow', 'external'),
                 (defaults.EXPERIMENTS_FOLDER_ID, 'intranet_workflow', 'internally_published'),
                 ('/'.join((defaults.DATASETS_FOLDER_ID,
                            defaults.DATASETS_CLIMATE_FOLDER_ID)), 'intranet_workflow', 'internally_published'),
