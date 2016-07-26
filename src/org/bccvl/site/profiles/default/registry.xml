@@ -1206,6 +1206,15 @@
         <element key="tooltip">GPP is the amount of carbon fixed during photosynthesis by all producers in an ecosystem.</element>
       </element>
       <element>
+        <element key="value">GPPcov</element>
+        <element key="title">Coefficient of Variance</element>
+        <element key="unit"> </element>
+        <element key="unitfull">unitless</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">GPP is the amount of carbon fixed during photosynthesis by all producers in an ecosystem.</element>
+      </element>
+      <element>
         <element key="value">FPAR01</element>
         <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Jan)</element>
         <element key="unit">%</element>
@@ -1331,12 +1340,21 @@
         <element key="type">vegetation</element>
         <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
-            <element>
+      <element>
         <element key="value">FPARmax</element>
         <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Max)</element>
         <element key="unit">%</element>
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
+      </element>
+      <element>
+        <element key="value">FPARcov</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Coefficient of Variance)</element>
+        <element key="unit"> </element>
+        <element key="unitfull">unitless</element>
+        <element key="legend">default</element>
         <element key="type">vegetation</element>
         <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
