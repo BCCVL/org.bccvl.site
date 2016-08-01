@@ -100,18 +100,18 @@
       </element>
       <element>
         <element key="value">B03</element>
-        <element key="title">B03 - Isothermality (BIO2/BIO7) (* 100)</element>
-        <element key="unit">%</element>
-        <element key="unitfull">percentage</element>
-        <element key="legend">percentage</element>
+        <element key="title">B03 - Isothermality (BIO2/BIO7)</element>
+        <element key="unit"> </element>
+        <element key="unitfull">unitless</element>
+        <element key="legend">default</element>
         <element key="type">climate</element>
         <element key="tooltip">Isothermality quantifies how large the day-to-night temperatures oscillate relative to the summer- to-winter (annual) oscillations. An isothermal value of 100 indicates the diurnal temperature range is equiva- lent to the annual temperature range, while anything less than 100 indicates a smaller level of temperature variability within an average month relative to the year. A species distribution may be influenced by larger or smaller temperature fluctuations within a month relative to the year and this predictor is useful for ascertaining such information.</element>
       </element>
       <element>
         <element key="value">B04</element>
-        <element key="title">B04 - Temperature Seasonality (standard deviation *100)</element>
-        <element key="unit">degrees C * 100</element>
-        <element key="unitfull">degrees celsius * 100</element>
+        <element key="title">B04 - Temperature Seasonality (standard deviation)</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">standard_deviation</element>
         <element key="type">climate</element>
         <element key="tooltip">Temperature seasonality is a measure of temperature change over the course of the year. The larger the value, the greater the variability of temperature.</element>
