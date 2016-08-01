@@ -121,7 +121,9 @@ Vocabulary endpoint:
       'token': 'mpi-esm-lr'},
      {'title': 'Meteorological Research Institute Global Climate Model, version 3.0 (MRI-CGMC3)',
       'token': 'mri-cgcm3'},
-     {'title': 'Norwegian Earth System Model (NorESM1-M)', 'token': 'noresm1-m'}]
+     {'title': 'Norwegian Earth System Model (NorESM1-M)', 'token': 'noresm1-m'},
+     {'title': "Mean of 5 GCM's: ECHAM5, GFDL-CM2.0, GFDL-CM2.1, MICRO3.2_MEDRES & UKMO-HadCM",
+      'token': 'gcm-mean-5'}]
 
    >>> pprint(proxy.getVocabulary('emsc_source'))
     [{'title': 'RCP3PD', 'token': 'RCP3PD'},

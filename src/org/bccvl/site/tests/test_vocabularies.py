@@ -47,7 +47,7 @@ class GCMSourceTest(unittest.TestCase):
         self.assertIn(u'cccma-cgcm31', source)
         term = source.getTerm(u'cccma-cgcm31')
         self.assertEqual(term.value, u'cccma-cgcm31')
-        self.assertEqual(len(source), 37)
+        self.assertEqual(len(source), 38)
 
 
 class EMSCSourceTest(unittest.TestCase):
