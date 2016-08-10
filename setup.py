@@ -52,7 +52,6 @@ setup(
         'collective.transmogrifier',
         'collective.jsonmigrator',
         'transmogrify.dexterity',
-        'quintagroup.transmogrifier',
         'org.bccvl.compute',
         'org.bccvl.tasks',
         'requests-oauthlib',
@@ -84,4 +83,4 @@ setup(
     [z3c.autoinclude.plugin]
     target = plone
     """,
-    )
+)
