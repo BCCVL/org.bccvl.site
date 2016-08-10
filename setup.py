@@ -48,7 +48,6 @@ setup(
         'borg.localrole',
         'plone.app.contenttypes',
         'decorator',
-        'collective.setuphelpers',
         'plone.app.contentlisting',
         'collective.transmogrifier',
         'collective.jsonmigrator',

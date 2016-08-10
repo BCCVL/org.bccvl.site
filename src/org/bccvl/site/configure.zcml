@@ -297,20 +297,6 @@
         />
   
   <transmogrifier:registerConfig
-      name="exportknowledgebase"
-      title="Export Knowledgebase pipeline configuration"
-      description="This exports BCCVL Knowledge base section."
-      configuration="exportknowledgebase.cfg"
-      />
-
-  <transmogrifier:registerConfig
-      name="importknowledgebase"
-      title="Import Knowledgebase pipeline configuration"
-      description="This imports BCCVL Knowledge base section."
-      configuration="importknowledgbase.cfg"
-      />
-
-  <transmogrifier:registerConfig
       name="org.bccvl.site.dataimport"
       title="Import data"
       description="Import data structure"
