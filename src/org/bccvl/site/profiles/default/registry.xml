@@ -100,18 +100,18 @@
       </element>
       <element>
         <element key="value">B03</element>
-        <element key="title">B03 - Isothermality (BIO2/BIO7) (* 100)</element>
-        <element key="unit">%</element>
-        <element key="unitfull">percentage</element>
-        <element key="legend">percentage</element>
+        <element key="title">B03 - Isothermality (BIO2/BIO7)</element>
+        <element key="unit"> </element>
+        <element key="unitfull">unitless</element>
+        <element key="legend">default</element>
         <element key="type">climate</element>
         <element key="tooltip">Isothermality quantifies how large the day-to-night temperatures oscillate relative to the summer- to-winter (annual) oscillations. An isothermal value of 100 indicates the diurnal temperature range is equiva- lent to the annual temperature range, while anything less than 100 indicates a smaller level of temperature variability within an average month relative to the year. A species distribution may be influenced by larger or smaller temperature fluctuations within a month relative to the year and this predictor is useful for ascertaining such information.</element>
       </element>
       <element>
         <element key="value">B04</element>
-        <element key="title">B04 - Temperature Seasonality (standard deviation *100)</element>
-        <element key="unit">degrees C * 100</element>
-        <element key="unitfull">degrees celsius * 100</element>
+        <element key="title">B04 - Temperature Seasonality (standard deviation)</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
         <element key="legend">standard_deviation</element>
         <element key="type">climate</element>
         <element key="tooltip">Temperature seasonality is a measure of temperature change over the course of the year. The larger the value, the greater the variability of temperature.</element>
@@ -251,6 +251,150 @@
         <element key="type">climate</element>
         <element key="tooltip">This index provides total precipitation during the coldest three months of the year, which can be useful for examining how such environmental factors may affect species seasonal distributions.</element>
       </element>
+      <element>
+        <element key="value">B20</element>
+        <element key="title">B20 - Annual Mean Radiation</element>
+        <element key="unit">W/m^2/d</element>
+        <element key="unitfull">watts per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the annual mean solar radiation.</element>
+      </element>
+      <element>
+        <element key="value">B21</element>
+        <element key="title">B21 - Highest Weekly Radiation</element>
+        <element key="unit">W/m^2/d</element>
+        <element key="unitfull">watts per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the highest weekly solar radiation.</element>
+      </element>
+      <element>
+        <element key="value">B22</element>
+        <element key="title">B22 - Lowest Weekly Radiation</element>
+        <element key="unit">W/m^2/d</element>
+        <element key="unitfull">watts per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the lowest weekly solar radiation.</element>
+      </element>
+      <element>
+        <element key="value">B23</element>
+        <element key="title">B23 - Radiation Seasonality (Coefficient of Variation)</element>
+        <element key="unit"> </element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the Radiation Seasonality (Coefficient of Variation).</element>
+      </element>
+      <element>
+        <element key="value">B24</element>
+        <element key="title">B24 - Radiation of Wettest Quarter</element>
+        <element key="unit">W/m^2/d</element>
+        <element key="unitfull">watts per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the solar radiation of wettest quarter.</element>
+      </element>
+      <element>
+        <element key="value">B25</element>
+        <element key="title">B25 - Radiation of Driest Quarter</element>
+        <element key="unit">W/m^2/d</element>
+        <element key="unitfull">watts per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the solar radiation of driest quarter.</element>
+      </element>
+      <element>
+        <element key="value">B26</element>
+        <element key="title">B26 - Radiation of Warmest Quarter</element>
+        <element key="unit">W/m^2/d</element>
+        <element key="unitfull">watts per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the solar radiation of warmest quarter.</element>
+      </element>
+      <element>
+        <element key="value">B27</element>
+        <element key="title">B27 - Radiation of Coldest Quarter</element>
+        <element key="unit">W/m^2/d</element>
+        <element key="unitfull">watts per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the solar radiation of coldest quarter.</element>
+      </element>
+      <element>
+        <element key="value">B28</element>
+        <element key="title">B28 - Annual Mean Moisture Index</element>
+        <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the annual mean moisture index.</element>
+      </element>
+      <element>
+        <element key="value">B29</element>
+        <element key="title">B29 - Highest Weekly Moisture Index</element>
+        <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the highest weekly moisture index.</element>
+      </element>
+      <element>
+        <element key="value">B30</element>
+        <element key="title">B30 - Lowest Weekly Moisture Index</element>
+        <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the lowest weekly moisture index.</element>
+      </element>
+      <element>
+        <element key="value">B31</element>
+        <element key="title">B31 - Moisture Index Seasonality (Coefficient of Variation)</element>
+        <element key="unit"> </element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the moisture index seasonality (coefficient of variation).</element>
+      </element>
+      <element>
+        <element key="value">B32</element>
+        <element key="title">B32 - Mean Moisture Index of the Wettest Quarter</element>
+        <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the annual mean moisture index of the wettest quarter.</element>
+      </element>
+      <element>
+        <element key="value">B33</element>
+        <element key="title">B33 - Mean Moisture Index of the Driest Quarter</element>
+        <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the annual mean moisture index of the driest quarter.</element>
+      </element>
+      <element>
+        <element key="value">B34</element>
+        <element key="title">B34 - Mean Moisture Index of the Warmest Quarter</element>
+        <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the annual mean moisture index of the warmest quarter.</element>
+      </element>
+      <element>
+        <element key="value">B35</element>
+        <element key="title">B35 - Mean Moisture Index of the Coldest Quarter</element>
+        <element key="unit">mm/d</element>
+        <element key="unitfull">millimetres per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">This is the annual mean moisture index of the coldest quarter.</element>
+      </element>      
       <element>
         <element key="value">clay30</element>
         <element key="title">Clay content percentage 0-30 cm</element>
@@ -1206,6 +1350,15 @@
         <element key="tooltip">GPP is the amount of carbon fixed during photosynthesis by all producers in an ecosystem.</element>
       </element>
       <element>
+        <element key="value">GPPcov</element>
+        <element key="title">Coefficient of Variance</element>
+        <element key="unit"> </element>
+        <element key="unitfull">unitless</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">GPP is the amount of carbon fixed during photosynthesis by all producers in an ecosystem.</element>
+      </element>
+      <element>
         <element key="value">FPAR01</element>
         <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Jan)</element>
         <element key="unit">%</element>
@@ -1331,12 +1484,21 @@
         <element key="type">vegetation</element>
         <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
-            <element>
+      <element>
         <element key="value">FPARmax</element>
         <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Max)</element>
         <element key="unit">%</element>
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
+      </element>
+      <element>
+        <element key="value">FPARcov</element>
+        <element key="title">Fraction of Photosynthetically Active Radiation (fPAR) (Coefficient of Variance)</element>
+        <element key="unit"> </element>
+        <element key="unitfull">unitless</element>
+        <element key="legend">default</element>
         <element key="type">vegetation</element>
         <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>

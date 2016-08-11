@@ -9,10 +9,12 @@ from plone.registry.interfaces import IRegistry
 from plone.supermodel import loadString
 from plone.uuid.interfaces import IUUID
 
-from zope.component import getUtility
+from zope.component import getUtility, queryUtility
 from zope.interface import implementer
 from zope.publisher.interfaces import NotFound, BadRequest
 from zope.schema import getFields
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import getVocabularyRegistry
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
@@ -486,3 +488,38 @@ class SiteService(BaseService):
                 'success': False,
                 'message': u'Fail to send your email to BCCVL support. Exception {}'.format(e)
             }
+
+    @returnwrapper
+    @apimethod(
+        properties={
+            'uuid': {
+                'type': 'string',
+                'title': 'Vocabulary Name',
+                'description': 'The name for a registered vocabulary',
+            }
+        }
+    )
+    def vocabulary(self, name=None):
+        # TODO: check if there are vocabularies that need to be protected
+        vocab = ()
+        try:
+            # TODO: getUtility(IVocabularyFactory???)
+            vr = getVocabularyRegistry()
+            vocab = vr.get(self.context, name)
+        except:
+            # eat all exceptions
+            pass
+        if not vocab:
+            # try IContextSourceBinder
+            vocab = queryUtility(IContextSourceBinder, name=name)
+            if vocab is None:
+                return []
+            vocab = vocab(self.context)
+        result = []
+        for term in vocab:
+            data = {'token': term.token,
+                    'title': term.title}
+            if hasattr(term, 'data'):
+                data.update(term.data)
+            result.append(data)
+        return result
