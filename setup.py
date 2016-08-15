@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.12.0.dev'
+version = '1.14.0.dev0'
 
 setup(
     name='org.bccvl.site',
@@ -48,12 +48,10 @@ setup(
         'borg.localrole',
         'plone.app.contenttypes',
         'decorator',
-        'collective.setuphelpers',
         'plone.app.contentlisting',
         'collective.transmogrifier',
         'collective.jsonmigrator',
         'transmogrify.dexterity',
-        'quintagroup.transmogrifier',
         'org.bccvl.compute',
         'org.bccvl.tasks',
         'requests-oauthlib',
@@ -85,4 +83,4 @@ setup(
     [z3c.autoinclude.plugin]
     target = plone
     """,
-    )
+)

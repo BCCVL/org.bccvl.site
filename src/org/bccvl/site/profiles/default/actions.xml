@@ -53,9 +53,9 @@
         <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_import_view</property>
         <property name="link_target"></property>
         <property name="icon_expr"></property>
-        <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'datasets')</property>
+        <property name="available_expr">python:portal.portal_membership.checkPermission('org.bccvl: Add Dataset', portal, 'datasets')</property>
         <property name="permissions">
-          <element value="View"/>
+          <element value="org.bccvl: Add Dataset"/>
         </property>
         <property name="visible">True</property>
       </object>
@@ -65,9 +65,9 @@
         <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_upload_view</property>
         <property name="link_target"></property>
         <property name="icon_expr"></property>
-        <property name="available_expr">python:portal.portal_membership.checkPermission('View', portal, 'datasets')</property>
+        <property name="available_expr">python:portal.portal_membership.checkPermission('org.bccvl: Add Dataset', portal, 'datasets')</property>
         <property name="permissions">
-          <element value="View"/>
+          <element value="org.bccvl: Add Dataset"/>
         </property>
         <property name="visible">True</property>
       </object>
@@ -110,23 +110,36 @@
     </object>
   </object>
   <object name="user" meta_type="CMF Action Category">
-    <object name="dashboard" meta_type="CMF Action" i18n:domain="plone">
+    <object name="dashboard" meta_type="CMF Action" i18n:domain="plone" insert-before="*">
+      <property name="title" i18n:translate="">Dashboard</property>
+      <property name="url_expr">string:${portal_url}/dashboard</property>
       <property name="visible">True</property>
       <property name="icon_class" type="string">fa fa-bell-o</property>
+      <property name="available_expr">python:member is not None</property>
+      <property name="permissions">
+        <element value="Portlets: Manage own portlets"/>
+      </property>
     </object>
-    <object name="details" meta_type="CMF Action" i18n:domain="plone">
+    <object name="details" meta_type="CMF Action" i18n:domain="plone" insert-after="dashboard">
+      <property name="title" i18n:translate="">Details</property>
+      <property name="url_expr">string:${globals_view/navigationRootUrl}/@@personal-information</property>
       <property name="icon_class" type="string">fa fa-info</property>      
       <property name="visible">True</property>
+      <property name="available_expr">python:member is not None</property>
+      <property name="permissions">
+        <element value="View"/>
+      </property>
     </object>
-    <object name="oauthprefs" meta_type="CMF Action" i18n:domain="bccvl">
-      <property name="icon_class" type="string">fa fa-user-secret"</property>
-      <property name="visible">False</property>
-    </object>
-    <object name="preferences" meta_type="CMF Action" i18n:domain="plone">
+    <object name="preferences" meta_type="CMF Action" i18n:domain="plone" insert-after="details">
+      <property name="title">Preferences</property>
       <property name="icon_class" type="string">fa fa-wrench</property>
+      <property name="url_expr" type="string">python: member is not None</property>
+      <property name="permissions">
+        <element value="View"/>
+      </property>
       <property name="visible">False</property>
     </object>
-    <object name="stats" meta_type="CMF Action" i18n:domain="bccvl" insert-before="plone_setup">
+    <object name="stats" meta_type="CMF Action" i18n:domain="bccvl" insert-after="preferences">
       <property name="title">View Site Statistics</property>
       <property name="description">Show various statitistics about the site used for reporting</property>
       <property name="icon_class" type="string">fa fa-bar-chart-o</property>
@@ -136,24 +149,34 @@
       </property>
       <property name="visible">True</property>
     </object>
-    <object name="plone_setup" meta_type="CMF Action" i18n:domain="plone">
+    <object name="plone_setup" meta_type="CMF Action" i18n:domain="plone" insert-after="stats">
       <property name="icon_class" type="string">fa fa-eye</property>
     </object>
-    <object name="login" meta_type="CMF Action" i18n:domain="plone">
+    <object name="login" meta_type="CMF Action" i18n:domain="plone" insert-after="plone_setup">
       <property name="icon_class" type="string">fa fa-sign-in</property>
     </object>
-    <object name="join" meta_type="CMF Action" i18n:domain="plone">
+    <object name="join" meta_type="CMF Action" i18n:domain="plone" insert-after="login">
       <property name="icon_class" type="string">fa fa-thumbs-o-up</property>
     </object>
-    <object name="undo" meta_type="CMF Action" i18n:domain="plone">
+    <object name="undo" meta_type="CMF Action" i18n:domain="plone" insert-after="join">
       <property name="icon_class" type="string">fa fa-undo</property>      
       <property name="visible">False</property>
     </object>
-    <object name="review-comments" meta_type="CMF Action" i18n:domain="plone">
+    <object name="review-comments" meta_type="CMF Action" i18n:domain="plone" insert-after="undo">
       <property name="icon_class" type="string">fa fa-comments-o</property>
     </object>
-    <object name="logout" meta_type="CMF Action" i18n:domain="plone">
+    <object name="logout" meta_type="CMF Action" i18n:domain="plone" insert-after="review-comments">
       <property name="icon_class" type="string">fa fa-sign-out</property>            
+    </object>
+    <object name="oauthprefs" meta_type="CMF Action" i18n:domain="bccvl" insert-after="logout">
+      <property name="title" i18n:translate="">Share</property>
+      <property name="description" i18n:translate=""></property>
+      <property name="icon_class" type="string">fa fa-user-secret"</property>
+      <property name="available_expr">python:member is not None</property>
+      <property name="permissions">
+        <element value="View"/>
+      </property>
+      <property name="visible">False</property>
     </object>
   </object>
 </object>
