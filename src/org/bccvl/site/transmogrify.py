@@ -81,7 +81,8 @@ class ContextSource(object):
                 remoteurl = content.remoteUrl
             item.update({
                 'remoteUrl': remoteurl,
-                # FIXME: hack to pass on content type to FileMetadataToBCCVL blueprint
+                # FIXME: hack to pass on content type to FileMetadataToBCCVL
+                # blueprint
                 '_files': {
                     remoteurl: {
                         'contenttype': mimetype,
@@ -89,7 +90,8 @@ class ContextSource(object):
                 },
                 '_filemetadata': {
                     # key relates to 'remoteUrl'
-                    remoteurl: import_item.get('filemetadata', {}) or {},  # make sure it's not none
+                    # make sure it's not none
+                    remoteurl: import_item.get('filemetadata', {}) or {},
                 }
             })
         else:
@@ -113,11 +115,13 @@ class ContextSource(object):
                     },
                 })
             else:
-                # FIXME: this is an ugly hack to get the FileMetadataToBCCVL step working for metadata updates
+                # FIXME: this is an ugly hack to get the FileMetadataToBCCVL
+                # step working for metadata updates
                 item['remoteUrl'] = name
             item['_filemetadata'] = {
                 # key relates to 'file':'file'
-                name: import_item.get('filemetadata', {}) or {},  # make sure it's not none
+                # make sure it's not none
+                name: import_item.get('filemetadata', {}) or {},
             }
         return item
 
@@ -208,7 +212,8 @@ class FileMetadataToBCCVL(object):
                 #       the name for _filemetadata dictionary
                 _files = item.get('_files', {}).get(item.get('remoteUrl'), {})
                 fileid = item.get('remoteUrl')
-                contenttype = _files.get('contenttype') # 'application/octet-stream')
+                # 'application/octet-stream')
+                contenttype = _files.get('contenttype')
             elif 'file' in item:
                 fileid = item.get('file', {}).get('file')
                 contenttype = item.get('file', {}).get('contenttype')
@@ -262,22 +267,31 @@ class FileMetadataToBCCVL(object):
                 jsonmd = filemd.get('_bccvlmetadata.json', {})
                 # multi layer metadata has archive filenames as keys in filemd (for main file)
                 # if it is a multi layer file check layers (files)
-                # go through all files in the dictionary and generate "layer/file" metadata
+                # go through all files in the dictionary and generate
+                # "layer/file" metadata
                 for filename, layermd in filemd.items():
-                    # FIXME: because we are copying occurrence file metadata up to zip level, we have these extra weird keys in the main dict
+                    # FIXME: because we are copying occurrence file metadata up
+                    # to zip level, we have these extra weird keys in the main
+                    # dict
                     if filename == '_bccvlmetadata.json' or filename in ('rows', 'bounds', 'headers'):
-                        # ignore json metadata and the rows field associated with occurrence dataset
+                        # ignore json metadata and the rows field associated
+                        # with occurrence dataset
                         continue
                     if not layermd.get('metadata'):
-                        # might happen for metadata json file, or aux.xml files, ...
+                        # might happen for metadata json file, or aux.xml
+                        # files, ...
                         continue
-                    self._update_layer_metadata(bccvlmd, layermd['metadata'], filename, jsonmd)
-                    # FIXME: extract some of json metadata? like acknowledgement, etc...
+                    self._update_layer_metadata(
+                        bccvlmd, layermd['metadata'], filename, jsonmd)
+                    # FIXME: extract some of json metadata? like
+                    # acknowledgement, etc...
             elif content.format not in ('text/csv', ):
                 # TODO: we should have a better check here whether to extract layer metadata for a single file dataset
-                # FIXME: hack to get correct key into _layermd dictionary in case we have a remote file
+                # FIXME: hack to get correct key into _layermd dictionary in
+                # case we have a remote file
                 fileid = os.path.basename(fileid)
-                self._update_layer_metadata(bccvlmd, filemd, fileid, item.get('_layermd', {}))
+                self._update_layer_metadata(
+                    bccvlmd, filemd, fileid, item.get('_layermd', {}))
 
             # continue pipeline
             yield item
@@ -296,13 +310,15 @@ class FileMetadataToBCCVL(object):
         # species:
         if filemd.get('species'):
             # check if 'species' is a list ... if it is the csv had multiple species names in it
-            # issue a warning and pick a random species name (in case there is non set already)
+            # issue a warning and pick a random species name (in case there is
+            # non set already)
             bccvlmd.setdefault('species', {})
             if not bccvlmd['species'].get('scientificName'):
                 speciesmd = filemd['species']
                 # TODO: currently the file metadata extractor creates a list of species names
                 #       in case there are multiple species names in the csv file we should
-                #       create multiple datasets (possibly grouped?) or suppert datasets for multiple species
+                # create multiple datasets (possibly grouped?) or suppert
+                # datasets for multiple species
                 if isinstance(speciesmd, list):
                     speciesmd = speciesmd[0]
                 bccvlmd['species']['scientificname'] = speciesmd
@@ -320,10 +336,14 @@ class FileMetadataToBCCVL(object):
         if bandmd:
             # TODO: assumes there is only one band
             bandmd = bandmd[0]
-            min_ = bandmd.get('STATISTICS_MINIMUM') if bandmd.get('min') is None else bandmd.get('min')
-            max_ = bandmd.get('STATISTICS_MAXIMUM') if bandmd.get('max') is None else bandmd.get('max')
-            mean_ = bandmd.get('STATISTICS_MEAN') if bandmd.get('mean') is None else bandmd.get('mean')
-            stddev_ = bandmd.get('STATISTICS_STDDEV') if bandmd.get('stddev') is None else bandmd.get('stddev')
+            min_ = bandmd.get('STATISTICS_MINIMUM') if bandmd.get(
+                'min') is None else bandmd.get('min')
+            max_ = bandmd.get('STATISTICS_MAXIMUM') if bandmd.get(
+                'max') is None else bandmd.get('max')
+            mean_ = bandmd.get('STATISTICS_MEAN') if bandmd.get(
+                'mean') is None else bandmd.get('mean')
+            stddev_ = bandmd.get('STATISTICS_STDDEV') if bandmd.get(
+                'stddev') is None else bandmd.get('stddev')
             width, height = bandmd.get('size', (None, None))
             if min_ is not None:
                 layermd['min'] = min_
@@ -398,20 +418,21 @@ class FileMetadataToBCCVL(object):
                     layermd['layer'] = dblayerinfo.get('layer')
                 layermd['min'] = info['min']
                 layermd['max'] = info['max']
-        
+
                 layermd['filename'] = layer
                 bccvlmd.setdefault('layers', {})[layer] = dict(layermd)
             return
-
 
             # TODO: bbox: which units do we want bbox?
             #       lat/long?, whatever coordinates layer uses?
             # End Layer
             #############################
         if layermd:
-            # TODO: check if filename really matches fileid? (or is this just item['_files'] id?)
+            # TODO: check if filename really matches fileid? (or is this just
+            # item['_files'] id?)
             layermd['filename'] = fileid
-            bccvlmd.setdefault('layers', {})[layermd.get('layer', fileid)] = layermd
+            bccvlmd.setdefault('layers', {})[
+                layermd.get('layer', fileid)] = layermd
 
 
 @provider(ISectionBlueprint)
@@ -512,7 +533,7 @@ class ProvenanceImporter(object):
             # TODO: extend activity metadata with execution environment data
             #       (logfile import?, pstats import) .. and script + params.json file
             # ALA import url
-            pd = item.get('_ala_provenance',{})
+            pd = item.get('_ala_provenance', {})
             if pd:
                 entity.add(BCCVL['download_url'], Literal(pd['url']))
 
@@ -605,7 +626,8 @@ class Constructor(object):
         self.typekey = defaultMatcher(options, 'type-key', name, 'type',
                                       ('portal_type', 'Type'))
         self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
-        self.update = options.get('update', 'true').lower() in ("yes", "true", "t", "1")
+        self.update = options.get('update', 'true').lower() in (
+            "yes", "true", "t", "1")
         self.required = bool(options.get('required'))
 
     def __iter__(self):
@@ -616,7 +638,8 @@ class Constructor(object):
 
             if not (typekey and pathkey):
                 LOG.warn('Not enough info for item: %s' % item)
-                yield item; continue
+                yield item
+                continue
 
             type_, path = item[typekey], item[pathkey]
 
@@ -632,13 +655,13 @@ class Constructor(object):
                 yield item
                 continue
 
-
             if self.update and getattr(aq_base(context), id, None) is not None:
                 # item exists and update flag has been set
                 yield item
                 continue
 
-            # item does not exist or update flag is false, so we create a new object in any case
+            # item does not exist or update flag is false, so we create a new
+            # object in any case
             obj = createContentInContainer(context, type_, id=id)
 
             if obj.getId() != id:
