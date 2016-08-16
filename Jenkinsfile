@@ -1,2 +1,2 @@
 
-build job: '/BCCVL Image/feature%2Faekos_import', wait: false
+build job: "/BCCVL Image/${env.BRANCH_NAME}", wait: false
