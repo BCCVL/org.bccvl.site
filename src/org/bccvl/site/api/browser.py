@@ -286,6 +286,7 @@ class ExperimentService(BaseService):
             }
         })
     def demosdm(self, lsid):
+        # Run SDM on a species given by lsid (from ALA), followed by a Climate Change projection.
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             raise BadRequest('Request must be POST')
         # Swift params
@@ -297,21 +298,41 @@ class ExperimentService(BaseService):
         # we have an lsid,.... we can't really verify but at least some data is here
         # find rest of parameters
         # FIXME: hardcoded path to environmental datasets
+
+        # Get the future climate for climate change projection
         portal = ploneapi.portal.get()
         dspath = '/'.join([defaults.DATASETS_FOLDER_ID,
                            defaults.DATASETS_CLIMATE_FOLDER_ID,
-                           'australia', 'australia_5km',
+                           'australia', 'australia_1km',
+                           'RCP85_ukmo-hadgem1_2085.zip'])
+        ds = portal.restrictedTraverse(dspath)
+        dsuuid = IUUID(ds)
+        dlinfo = IDownloadInfo(ds)
+        dsmd = IBCCVLMetadata(ds)
+        futureclimatelist = []
+        for layer in ('B05', 'B06', 'B13', 'B14'):
+            futureclimatelist.append({
+                'uuid': dsuuid,
+                'filename': dlinfo['filename'],
+                'downloadurl': dlinfo['url'],
+                'layer': layer,
+                'type': dsmd['layers'][layer]['datatype'],
+                'zippath': dsmd['layers'][layer]['filename']
+            })
+        # Climate change projection name
+        cc_projection_name = os.path.splitext(dlinfo['filename'])[0]
+
+        # Get the current climate for SDM
+        dspath = '/'.join([defaults.DATASETS_FOLDER_ID,
+                           defaults.DATASETS_CLIMATE_FOLDER_ID,
+                           'australia', 'australia_1km',
                            'current.zip'])
         ds = portal.restrictedTraverse(dspath)
         dsuuid = IUUID(ds)
-        # FIXME: we don't use a IJobTracker here for now
-        # get toolkit and
-        func = portal[defaults.TOOLKITS_FOLDER_ID]['demosdm']
-        # build job_params:
         dlinfo = IDownloadInfo(ds)
         dsmd = IBCCVLMetadata(ds)
         envlist = []
-        for layer in ('B01', 'B04', 'B05', 'B06', 'B12', 'B15', 'B16', 'B17'):
+        for layer in ('B05', 'B06', 'B13', 'B14'):
             envlist.append({
                 'uuid': dsuuid,
                 'filename': dlinfo['filename'],
@@ -321,6 +342,10 @@ class ExperimentService(BaseService):
                 'zippath': dsmd['layers'][layer]['filename']
             })
 
+        # FIXME: we don't use a IJobTracker here for now
+        # get toolkit and
+        func = portal[defaults.TOOLKITS_FOLDER_ID]['demosdm']
+        # build job_params:
         job_params = {
             'resolution': IBCCVLMetadata(ds)['resolution'],
             'function': func.getId(),
@@ -330,6 +355,8 @@ class ExperimentService(BaseService):
                 'downloadurl': 'ala://ala?lsid={}'.format(lsid),
             },
             'environmental_datasets': envlist,
+            'future_climate_datasets': futureclimatelist,
+            'cc_projection_name': cc_projection_name
         }
         # add toolkit parameters: (all default values)
         # get toolkit schema
@@ -361,7 +388,8 @@ class ExperimentService(BaseService):
             },
             'files': (
                 'species_occurrence_dataset',
-                'environmental_datasets'
+                'environmental_datasets',
+                'future_climate_datasets'
             )
         }
         # put everything together
