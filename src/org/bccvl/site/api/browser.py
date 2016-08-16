@@ -326,7 +326,7 @@ class ExperimentService(BaseService):
         dspath = '/'.join([defaults.DATASETS_FOLDER_ID,
                            defaults.DATASETS_CLIMATE_FOLDER_ID,
                            'australia', 'australia_1km',
-                           'current.zip'])
+                           'current.76to05.zip'])
         ds = portal.restrictedTraverse(dspath)
         dsuuid = IUUID(ds)
         dlinfo = IDownloadInfo(ds)
@@ -350,7 +350,7 @@ class ExperimentService(BaseService):
             'resolution': IBCCVLMetadata(ds)['resolution'],
             'function': func.getId(),
             'species_occurrence_dataset': {
-                'uuid': lsid,
+                'uuid': 'ala_occurrence_dataset',
                 'species': u'demoSDM',
                 'downloadurl': 'ala://ala?lsid={}'.format(lsid),
             },
@@ -375,9 +375,9 @@ class ExperimentService(BaseService):
             resource_string('org.bccvl.compute', 'rscripts/bccvl.R'),
             resource_string('org.bccvl.compute', 'rscripts/eval.R'),
             func.script])
-        # where to store results
+        # where to store results. Replace '/' with '-'.
         result = {
-            'results_dir': 'swift+{}/demosdm/{}/'.format(swiftsettings.storage_url, lsid),
+            'results_dir': 'swift+{}/demosdm/{}/'.format(swiftsettings.storage_url, lsid.replace('/', '-')),
             'outputs': json.loads(func.output)
         }
         # worker hints:
@@ -429,8 +429,8 @@ class ExperimentService(BaseService):
 
         swift_url = '{}/demosdm'.format(swiftsettings.storage_url)
         return {
-            'state': '{}/{}/state.json'.format(swift_url, lsid),
-            'result': '{}/{}/projection.png'.format(swift_url, lsid),
+            'state': os.path.join(result['results_dir'], 'state.json'),
+            'result': os.path.join(result['results_dir'], 'proj_metadata.json'),
             'jobid': job.id
         }
 

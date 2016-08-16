@@ -48,12 +48,10 @@ setup(
         'borg.localrole',
         'plone.app.contenttypes',
         'decorator',
-        'collective.setuphelpers',
         'plone.app.contentlisting',
         'collective.transmogrifier',
         'collective.jsonmigrator',
         'transmogrify.dexterity',
-        'quintagroup.transmogrifier',
         'org.bccvl.compute',
         'org.bccvl.tasks',
         'requests-oauthlib',
@@ -85,4 +83,4 @@ setup(
     [z3c.autoinclude.plugin]
     target = plone
     """,
-    )
+)
