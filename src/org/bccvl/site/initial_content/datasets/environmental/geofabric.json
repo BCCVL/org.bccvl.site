@@ -1,0 +1,11 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "Australian Hydrological Geospatial Fabric (Geofabric)",
+    "description": "The Australian Hydrological Geospatial Fabric (Geofabric) is a specialised Geographic Information System (GIS). It registers the spatial relationships between important hydrological features such as rivers, water bodies, aquifers and monitoring points. This dataset also includes the National Environmantal Stream Attributes. The Environmental Attributes Database is a set of lookup tables supplying attributes describing the natural and anthropogenic characteristics of the stream and catchment environment that was developed by the Australian National University (ANU) in 2011 and updated in 2012. The data is supplied as part of the supplementary Geofabric products which is associated with the 9 second DEM derived streams and the National",
+    "rights": "CC-BY Share Alike Attribution 3.0 and Creative Commons Attribution 4.0 International Licence",
+    "attribution": [
+    ],
+    "external_description": "See <a href=\"http://www.bom.gov.au/water/geofabric/\">http://www.bom.gov.au/water/geofabric/</a> and <a href=\"http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_75066\">http://http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_75066</a>.",
+    "categories": ["environmental"],
+    "_transitions": ["show_internally", "publish_internally"]
+}
