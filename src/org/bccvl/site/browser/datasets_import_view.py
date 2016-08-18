@@ -1,10 +1,12 @@
-from Products.Five import BrowserView
-from urllib import urlencode
 import json
-from zope.component import getUtility
-from org.bccvl.site.browser.ws import IALAService
+from urllib import urlencode
+
 from Products.CMFCore.utils import getToolByName
-from Products.statusmessages.interfaces import IStatusMessage
+from Products.Five import BrowserView
+
+from zope.component import getUtility
+
+from org.bccvl.site.browser.ws import IALAService
 from org.bccvl.site import defaults
 
 
@@ -41,18 +43,19 @@ class DatasetsImportView(BrowserView):
             # TODO yield result with error
             return
 
-        if not 'searchResults' in result:
+        if 'searchResults' not in result:
             return
-        if not 'results' in result['searchResults']:
+        if 'results' not in result['searchResults']:
             return
         for item in result['searchResults']['results']:
-            search_words = self.params['searchOccurrence_query'].lower().split();
+            search_words = self.params[
+                'searchOccurrence_query'].lower().split()
             result = {
                 'title': item['name'],
                 'friendlyName': item['name'],
                 'description': [],
                 'actions': {},
-                }
+            }
             if 'commonNameSingle' in item:
                 result['title'] = '{} <i class="taxonomy">{}</i>'.format(
                     item['commonNameSingle'], result['title'])
@@ -81,7 +84,8 @@ class DatasetsImportView(BrowserView):
             # get actions
             if item.get('guid'):
                 # TODO: uri path encode guid
-                result['actions']['viz'] = 'http://bie.ala.org.au/species/' + item['guid']
+                result['actions'][
+                    'viz'] = 'http://bie.ala.org.au/species/' + item['guid']
                 params = urlencode({
                     'lsid': item['guid'],
                     'taxon': item['name'],
@@ -89,12 +93,16 @@ class DatasetsImportView(BrowserView):
                     'import': 'Import'})
                 # TODO: need a way to generate ajax url?
                 # TODO: can I use view name/id here?
-                result['actions']['alaimport'] = self.context.absolute_url() +  "/datasets_import_view?" +  params
+                result['actions']['alaimport'] = self.context.absolute_url(
+                ) + "/datasets_import_view?" + params
             yield result
 
     def __call__(self):
         # FIXME: write test: create dataset in correct location and
         #        test permissions to 'dv' view
+        # FIXME: don't use parameter name lsid here, something more generic
+        #        would be better, as only ala provides lsid and all other
+        #        services use something else
         # TODO: implement non js-search, and import here
         #       -> reuse DataMover api endpoint
         self.params = self.parseRequest()
@@ -107,11 +115,11 @@ class DatasetsImportView(BrowserView):
                           defaults.DATASETS_SPECIES_FOLDER_ID,
                           'ala', 'dv', 'pullOccurrenceFromALA')))
             # create dataset and start import job
-            ret = view(lsid=self.params['lsid'],
-                       taxon=self.params['taxon'],
-                       dataSrc=self.params['searchOccurrence_source'],
-                       common=self.params.get('common'))
-            # TODO: check ret for errors?
+            view(lsid=self.params.get('lsid', None),
+                 taxon=self.params.get('taxon', None),
+                 dataSrc=self.params.get('searchOccurrence_source'),
+                 common=self.params.get('common', None))
+            # TODO: check return value for errors?
             # TODO: redirect to dataset or listing view?
             # everything went fine until here .. so let's redirect
             nexturl = portal[defaults.DATASETS_FOLDER_ID].absolute_url()

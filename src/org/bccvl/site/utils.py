@@ -34,7 +34,8 @@ def get_public_ip():
     ip = os.environ.get('EXT_IP', None)
     if ip:
         return ip
-    # otherwise we connect to some host, and check which local ip the socket uses
+    # otherwise we connect to some host, and check which local ip the socket
+    # uses
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('google.com', 80))
@@ -73,7 +74,7 @@ def get_hostname(request):
         return None
 
     # separate to domain name and port sections
-    host=host.split(":")[0].lower()
+    host = host.split(":")[0].lower()
 
     return host
 
@@ -98,7 +99,7 @@ def get_results_dir(result, request):
             #        need to get ip or host from plone_worker that does actual import
             #        store in registry?
             #        (is ok for testing)
-            #ip=get_public_ip(),
+            # ip=get_public_ip(),
             ip=get_hostname(request),
             port=os.environ.get('SSH_PORT', 22),
             path=tempfile.mkdtemp(prefix='result_import_')
