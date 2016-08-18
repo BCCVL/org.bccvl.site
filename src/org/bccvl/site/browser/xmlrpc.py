@@ -376,9 +376,14 @@ class DataMover(BrowserView):
         # 1. create new dataset with taxon, lsid and common name set
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         if dataSrc == 'ala':
-            dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ala']
+            dscontainer = portal[defaults.DATASETS_FOLDER_ID][
+                defaults.DATASETS_SPECIES_FOLDER_ID]['ala']
         elif dataSrc == 'gbif':
-            dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['gbif']
+            dscontainer = portal[defaults.DATASETS_FOLDER_ID][
+                defaults.DATASETS_SPECIES_FOLDER_ID]['gbif']
+        elif dataSrc == 'aekos':
+            dscontainer = portal[defaults.DATASETS_FOLDER_ID][
+                defaults.DATASETS_SPECIES_FOLDER_ID]['aekos']
         else:
             raise BadRequest('Invalid data source {0}'.format(dataSrc))
 
