@@ -18,9 +18,11 @@ from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment, IMSDMExperiment)
-from org.bccvl.site.interfaces import IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker
+from org.bccvl.site.interfaces import (
+    IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker)
 from org.bccvl.site.job.interfaces import IJobTracker
-from org.bccvl.site.utils import build_ala_import_task
+from org.bccvl.site.utils import (
+    build_ala_import_task, build_traits_import_task)
 from org.bccvl.tasks.plone import after_commit_task
 
 
@@ -1212,27 +1214,42 @@ class ALAJobTracker(MultiJobTracker):
         md = IBCCVLMetadata(self.context)
         # TODO: this assumes we have an lsid in the metadata
         #       should check for it
-        lsid = md['species']['taxonID']
+        if md['genre'] == 'DataGenreTraits':
+            traits_import_task = build_traits_import_task(
+                self.context, self.context.REQUEST)
+            after_commit_task(traits_import_task)
+            # FIXME: we don't have a backend task id here as it will be started
+            #        after commit, when we shouldn't write anything to the db
+            #        maybe add another callback to set task_id?
+            jt = IJobTracker(self.context)
+            job = jt.new_job('TODO: generate id',
+                             'generate taskname: traits_import')
+            job.type = self.context.portal_type
+            # job reindex happens in next call
+            jt.set_progress('PENDING', u'Data import pending')
+        else:
+            lsid = md['species']['taxonID']
 
-        # ala_import will be submitted after commit, so we won't get a
-        # result here
-        # FIXME: hacky way to get to request
-        ala_import_task = build_ala_import_task(
-            lsid, self.context, self.context.REQUEST)
-        # TODO: add title, and url for dataset? (like with experiments?)
-        # update provenance
-        self._createProvenance(self.context)
-        after_commit_task(ala_import_task)
+            # ala_import will be submitted after commit, so we won't get a
+            # result here
+            # FIXME: hacky way to get to request
+            ala_import_task = build_ala_import_task(
+                lsid, self.context, self.context.REQUEST)
+            # TODO: add title, and url for dataset? (like with experiments?)
+            # update provenance
+            self._createProvenance(self.context)
+            after_commit_task(ala_import_task)
 
-        # FIXME: we don't have a backend task id here as it will be started
-        #        after commit, when we shouldn't write anything to the db
-        #        maybe add another callback to set task_id?
-        jt = IJobTracker(self.context)
-        job = jt.new_job('TODO: generate id', 'generate taskname: ala_import')
-        job.type = self.context.portal_type
-        job.lsid = lsid
-        # job reindex happens in next call
-        jt.set_progress('PENDING', u'ALA import pending')
+            # FIXME: we don't have a backend task id here as it will be started
+            #        after commit, when we shouldn't write anything to the db
+            #        maybe add another callback to set task_id?
+            jt = IJobTracker(self.context)
+            job = jt.new_job('TODO: generate id',
+                             'generate taskname: ala_import')
+            job.type = self.context.portal_type
+            job.lsid = lsid
+            # job reindex happens in next call
+            jt.set_progress('PENDING', u'Data import pending')
 
         return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
 
