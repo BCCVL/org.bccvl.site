@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import urllib
 from pkg_resources import resource_string
 
 from AccessControl import Unauthorized
@@ -495,7 +496,7 @@ class ExperimentService(BaseService):
             func.script])
         # where to store results. Replace '/' with '-'.
         result = {
-            'results_dir': 'swift+{}/demosdm/{}/'.format(swiftsettings.storage_url, lsid.replace('/', '-')),
+            'results_dir': 'swift+{}/demosdm/{}/'.format(swiftsettings.storage_url, urllib.quote_plus(lsid)),
             'outputs': json.loads(func.output)
         }
         # worker hints:
