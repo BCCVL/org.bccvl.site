@@ -1,0 +1,11 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "Species data from AEKOS",
+    "description": "AEKOS (Advanced Ecological Knowledge and Observation System) is an online repository for ecological data collected in Australia. Currently, the AEKOS dataset in the BCCVL includes data for 12 plant traits for over 8000 species.",
+    "attribution": [
+        "Refer to <a href=\"http://www.ecoinformatics.org.au/licensing_and_attributions\">http://www.ecoinformatics.org.au/licensing_and_attributions</a> for licensing and attribution.</p>"
+    ],
+    "external_description": "See <a href=\"http://www.aekos.org.au\">http://www.aekos.org.au</a>",
+    "categories": ["biological"],
+    "_transitions": ["show_internally", "publish_internally"]
+}

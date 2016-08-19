@@ -149,5 +149,18 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="250"
+      destination="260"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 260"
+        description="AEKOS integration"
+        handler=".setuphandlers.upgrade_250_260_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
   
 </configure>

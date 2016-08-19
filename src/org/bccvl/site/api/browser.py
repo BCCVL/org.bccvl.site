@@ -4,8 +4,12 @@ import logging
 import urllib
 from pkg_resources import resource_string
 
+from AccessControl import Unauthorized
+from Products.CMFCore.interfaces import ISiteRoot
+
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToCatalogBrain
+from plone.dexterity.utils import createContentInContainer
 from plone.registry.interfaces import IRegistry
 from plone.supermodel import loadString
 from plone.uuid.interfaces import IUUID
@@ -16,14 +20,17 @@ from zope.publisher.interfaces import NotFound, BadRequest
 from zope.schema import getFields
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import getVocabularyRegistry
+from zope.security import checkPermission
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
 from org.bccvl.site.api.base import BaseAPITraverser, BaseService
 from org.bccvl.site.api.decorators import api, apimethod, returnwrapper
-from org.bccvl.site.api.interfaces import IAPIService, IDMService, IJobService, IExperimentService, ISiteService
-from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
-from org.bccvl.site.job.interfaces import IJobUtility
+from org.bccvl.site.api.interfaces import (
+    IAPIService, IDMService, IJobService, IExperimentService, ISiteService)
+from org.bccvl.site.interfaces import (
+    IBCCVLMetadata, IDownloadInfo, IExperimentJobTracker)
+from org.bccvl.site.job.interfaces import IJobUtility, IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 import pkg_resources
 from email.mime.text import MIMEText
@@ -35,7 +42,8 @@ LOG = logging.getLogger(__name__)
 
 class APITraverser(BaseAPITraverser):
 
-    __name__ = "API"  # entry point needs name, as we can't use browser:view registration
+    # entry point needs name, as we can't use browser:view registration
+    __name__ = "API"
 
     title = u'BCCVL APIs'
     description = u'BCCVL API endpoint'
@@ -167,20 +175,135 @@ class DMService(BaseService):
                         'user': user,
                     }
                 },
-                options={'immutable': True});
+                options={'immutable': True})
 
             from org.bccvl.tasks.plone import after_commit_task
-            from org.bccvl.site.job.interfaces import IJobTracker
             after_commit_task(update_task)
             # track background job state
             jt = IJobTracker(obj)
-            job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
+            job = jt.new_job('TODO: generate id',
+                             'generate taskname: update_metadata')
             job.type = obj.portal_type
             jt.set_progress('PENDING', 'Metadata update pending')
             return job.id
         except Exception as e:
             LOG.error('Caught exception %s', e)
         raise NotFound(self, 'update_metadata', self.request)
+
+    @returnwrapper
+    @apimethod(
+        method='POST',
+        encType="application/x-www-form-urlencoded",
+        properties={
+            'source': {
+                'type': 'string',
+                'title': 'data source',
+            },
+            'species': {
+                'type': 'list',
+                'title': 'List of source specific species identifiers.',
+            },
+            'traits': {
+                'type': 'list',
+                'title': 'List of source specific trait identifiers.',
+            },
+            'environ': {
+                'type': 'list',
+                'title': 'List of source specific environment variables.',
+            }
+        })
+    def import_trait_data(self, source=None, species=None,
+                          traits=None, environ=None):
+        context = None
+        # get import context
+        if ISiteRoot.providedBy(self.context):
+            # we have been called at site root... let's traverse to default
+            # import location
+            context = self.context.restrictedTraverse(
+                "/".join((defaults.DATASETS_FOLDER_ID,
+                          defaults.DATASETS_SPECIES_FOLDER_ID,
+                          'aekos')))
+        else:
+            # custom context.... let's use in
+            context = self.context
+        # do user check first
+        member = ploneapi.user.get_current()
+        if member.getId():
+            user = {
+                'id': member.getUserName(),
+                'email': member.getProperty('email'),
+                'fullname': member.getProperty('fullname')
+            }
+        else:
+            # We need at least a valid user
+            raise Unauthorized("Invalid user")
+        # check permission
+        if not checkPermission('org.bccvl.AddDataset', context):
+            raise Unauthorized("User not allowed in this context")
+        # check parameters
+        if not source or source not in ('aekos'):
+            raise BadRequest("source parameter bust be 'aekos'")
+        if not species or not isinstance(species, (basestring, list)):
+            raise BadRequest("Missing or invalid species parameter")
+        elif isinstance(species, basestring):
+            species = [species]
+        if not traits and not environ:
+            raise BadRequest("At least on of traits or environ has to be set")
+        if not traits:
+            traits = []
+        elif isinstance(traits, basestring):
+            traits = [traits]
+        if not environ:
+            environ = []
+        elif isinstance(environ, basestring):
+            environ = [environ]
+
+        # all good so far
+        # pull dataset from aekos
+        title = ' '.join(species)
+        # determine dataset type
+        portal_type = 'org.bccvl.content.dataset'
+        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+        if swiftsettings.storage_url:
+            portal_type = 'org.bccvl.content.remotedataset'
+        # create content
+        ds = createContentInContainer(context, portal_type, title=title)
+        ds.dataSource = source
+        ds.description = u' '.join([
+            title, ','.join(traits), ','.join(environ),
+            u' imported from {}'.format(source.upper())])
+        md = IBCCVLMetadata(ds)
+        md['genre'] = 'DataGenreTraits'
+        md['species'] = [{
+            'scientificName': spec,
+            'taxonID': spec} for spec in species]
+        md['traits'] = traits
+        md['environ'] = environ
+        # FIXME: IStatusMessage should not be in API call
+        from Products.statusmessages.interfaces import IStatusMessage
+        IStatusMessage(self.request).add('New Dataset created',
+                                         type='info')
+        # start import job
+        jt = IExperimentJobTracker(ds)
+        status, message = jt.start_job()
+        # reindex ojebct to make sure everything is up to date
+        ds.reindexObject()
+        # FIXME: IStatutsMessage should not be in API call
+        IStatusMessage(self.request).add(message, type=status)
+
+        # FIXME: API should not return a redirect
+        #        201: new resource created ... location may point to resource
+        from Products.CMFCore.utils import getToolByName
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        nexturl = portal[defaults.DATASETS_FOLDER_ID].absolute_url()
+        self.request.response.setStatus(201)
+        self.request.response.setHeader('Location', nexturl)
+        # FIXME: should return a nice json representation of success or error
+        return {
+            'status': status,
+            'message': message,
+            'jobid': IJobTracker(ds).get_job().id
+        }
 
 
 @api
@@ -241,9 +364,11 @@ class JobService(BaseService):
                 'title': 'Query',
                 'descirption': 'query parameters as keywords'
             }
-    })
+        })
     def query(self):
-        # FIXME: add owner check here -> probably easiest to make userid query parameter part of jobtool query function?  ; could also look inteo allowed_roles in catalog?
+        # FIXME: add owner check here -> probably easiest to make userid query
+        # parameter part of jobtool query function?  ; could also look inteo
+        # allowed_roles in catalog?
         query = self.request.form
         if not query:
             raise BadRequest('No query parameters supplied')
@@ -287,7 +412,8 @@ class ExperimentService(BaseService):
             }
         })
     def demosdm(self, lsid):
-        # Run SDM on a species given by lsid (from ALA), followed by a Climate Change projection.
+        # Run SDM on a species given by lsid (from ALA), followed by a Climate
+        # Change projection.
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             raise BadRequest('Request must be POST')
         # Swift params
@@ -438,7 +564,6 @@ class ExperimentService(BaseService):
     # TODO: check security
 
 
-
 @api
 @implementer(ISiteService)
 class SiteService(BaseService):
@@ -493,20 +618,25 @@ class SiteService(BaseService):
             else:
                 raise Exception("Invalid user")
 
-            portal_email =  ploneapi.portal.get().getProperty('email_from_address')
+            portal_email = ploneapi.portal.get().getProperty('email_from_address')
             email_to = [portal_email, user['email']]
             subject = "Help: BCCVL experiment failed"
-            body = pkg_resources.resource_string("org.bccvl.site.api", "help_email.txt")
-            body = body.format(experiment_url=url, username=user['fullname'], user_email=user['email'])
+            body = pkg_resources.resource_string(
+                "org.bccvl.site.api", "help_email.txt")
+            body = body.format(experiment_url=url, username=user[
+                'fullname'], user_email=user['email'])
 
-            htmlbody = pkg_resources.resource_string("org.bccvl.site.api", "help_email.html")
-            htmlbody = htmlbody.format(experiment_url=url, username=user['fullname'], user_email=user['email'])
+            htmlbody = pkg_resources.resource_string(
+                "org.bccvl.site.api", "help_email.html")
+            htmlbody = htmlbody.format(experiment_url=url, username=user[
+                'fullname'], user_email=user['email'])
 
             msg = MIMEMultipart('alternative')
             msg.attach(MIMEText(body, 'plain'))
             msg.attach(MIMEText(htmlbody, 'html'))
 
-            ploneapi.portal.send_email(recipient=email_to, sender=portal_email, subject=subject, body=msg.as_string())
+            ploneapi.portal.send_email(
+                recipient=email_to, sender=portal_email, subject=subject, body=msg.as_string())
             return {
                 'success': True,
                 'message': u'Your email has been sent'
