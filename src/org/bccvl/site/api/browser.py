@@ -502,9 +502,9 @@ class ExperimentService(BaseService):
             resource_string('org.bccvl.compute', 'rscripts/bccvl.R'),
             resource_string('org.bccvl.compute', 'rscripts/eval.R'),
             func.script])
-        # where to store results. Replace '/' with '-'.
+        # where to store results.
         result = {
-            'results_dir': 'swift+{}/demosdm/{}/'.format(swiftsettings.storage_url, urllib.quote_plus(lsid)),
+            'results_dir': 'swift+{}/wordpress/{}/'.format(swiftsettings.storage_url, urllib.quote_plus(lsid)),
             'outputs': json.loads(func.output)
         }
         # worker hints:
@@ -554,7 +554,6 @@ class ExperimentService(BaseService):
         after_commit_task(demo_task, jobdesc, context)
         # let's hope everything works, return result
 
-        swift_url = '{}/demosdm'.format(swiftsettings.storage_url)
         return {
             'state': os.path.join(result['results_dir'], 'state.json'),
             'result': os.path.join(result['results_dir'], 'proj_metadata.json'),
