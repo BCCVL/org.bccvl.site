@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <metadata>
-    <version>240</version>
+    <version>250</version>
     <dependencies>
       <dependency>profile-Products.CMFPlacefulWorkflow:base</dependency>
       <!-- <dependency>profile-Products.AutoUserMakerPASPlugin:default</dependency> -->

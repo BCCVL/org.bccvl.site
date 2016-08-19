@@ -14,6 +14,7 @@ import logging
 LOG = logging.getLogger(__name__)
 PROFILE_ID = 'profile-org.bccvl.site:default'
 PROFILE = 'org.bccvl.site'
+THEME_PROFILE_ID = 'profile-org.bccvl.theme:default'
 
 
 def setupTools(context, logger=None):
@@ -130,8 +131,6 @@ def setupVarious(context, logger=None):
     # FIXME: some stuff is missing,... initial setup of site is not correct
 
 
-
-
 def setupFacets(context, logger=None):
     if logger is None:
         logger = LOG
@@ -172,7 +171,8 @@ def setupFacets(context, logger=None):
 
 
 def upgrade_180_181_1(context, logger=None):
-    # context is either the portal (called from setupVarious) or portal_setup when run via genericsetup
+    # context is either the portal (called from setupVarious) or portal_setup
+    # when run via genericsetup
     if logger is None:
         # Called as upgrade step: define our own logger.
         logger = LOG
@@ -325,8 +325,8 @@ def upgrade_200_210_1(context, logger=None):
     registry = getUtility(IRegistry)
     for key in list(registry.records.keys()):
         if (key.startswith('plone.app.folderui')
-            or key.startswith('dexterity.membrane')
-            or key.startswith('collective.embedly')):
+                or key.startswith('dexterity.membrane')
+                or key.startswith('collective.embedly')):
             del registry.records[key]
 
     setup = api.portal.get_tool('portal_setup')
@@ -352,9 +352,10 @@ def upgrade_200_210_1(context, logger=None):
         for result in brain.getObject().values():
             if 'function' in result.job_params:
                 continue
-            #Add algorithm to job_params if missing algorithm
+            # Add algorithm to job_params if missing algorithm
             try:
-                sdmds = uuidToObject(result.job_params['species_distribution_models'])
+                sdmds = uuidToObject(
+                    result.job_params['species_distribution_models'])
                 algorithm = sdmds.__parent__.job_params['function']
                 if algorithm:
                     result.job_params['function'] = algorithm
@@ -405,7 +406,7 @@ def upgrade_200_210_1(context, logger=None):
                  'org.bccvl.content.biodiverseexperiment',
                  'org.bccvl.content.ensemble',
                  'org.bccvl.content.speciestraitsexperiment'
-    ]
+                 ]
     for brain in pc.searchResults(portal_type=EXP_TYPES):
         # go through all results
         for result in brain.getObject().values():
@@ -435,7 +436,8 @@ def upgrade_200_210_1(context, logger=None):
             job.type = brain.portal_type
             job.function = result.job_paramsi.get('function')
             if job.function:
-                job.toolkit = IUUID(portal[defaults.TOOLKITS_FOLDER_ID][job.function])
+                job.toolkit = IUUID(
+                    portal[defaults.TOOLKITS_FOLDER_ID][job.function])
 
             jobtool.reindex_job(job)
             del annots['org.bccvl.state']
@@ -448,7 +450,8 @@ def upgrade_200_210_1(context, logger=None):
         # md['layers'][ds.file.filename] ... there should be only one key
         keys = md['layers'].keys()
         if len(keys) != 1:
-            LOG.warning('Found multiple layer keys; do not know what to do: %s', ds.absolute_url())
+            LOG.warning(
+                'Found multiple layer keys; do not know what to do: %s', ds.absolute_url())
             continue
         layermd = md['layers'][keys[0]]
         if 'layer' in layermd:
@@ -507,7 +510,7 @@ def upgrade_220_230_1(context, logger=None):
                  'org.bccvl.content.biodiverseexperiment',
                  'org.bccvl.content.ensemble',
                  'org.bccvl.content.speciestraitsexperiment'
-    ]
+                 ]
 
     from org.bccvl.site.job.interfaces import IJobTracker
     import json
@@ -646,7 +649,35 @@ def upgrade_230_240_1(context, logger=None):
     tinymce.plugins = current_plugins
 
 
-    # TODO: go through all datasets and set 'redistributable' flag
+def upgrade_240_250_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    # update permissions on actions
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    # update vocabularies
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    # update initial site content and r scripts
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    # update facet settings
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+    # update theme (reimport it?)
+    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'plone.app.theming')
 
-    # TODO:
-    #       add scale_down flag to existing SDM experiments (FALSE default?)
+
+def upgrade_250_260_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    # update permissions on actions
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
+    # update vocabularies
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    # update initial site content and r scripts
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    # update facet settings
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')

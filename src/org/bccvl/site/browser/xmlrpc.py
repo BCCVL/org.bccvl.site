@@ -19,7 +19,8 @@ from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
 from org.bccvl.site.browser.ws import IALAService, IGBIFService
 from org.bccvl.site.content.interfaces import IDataset
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
+from org.bccvl.site.interfaces import (
+    IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo)
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.site.utils import decimal_encoder
@@ -28,8 +29,10 @@ from org.bccvl.site.utils import decimal_encoder
 LOG = logging.getLogger(__name__)
 
 # self passed in as *args
+
+
 @decorator  # well behaved decorator that preserves signature so that
-            # apply can inspect it
+# apply can inspect it
 def returnwrapper(f, *args, **kw):
     # see http://code.google.com/p/mimeparse/
     # self.request.get['HTTP_ACCEPT']
@@ -62,9 +65,12 @@ def returnwrapper(f, *args, **kw):
     # request.setBody ... would need to replace response instance of
     # request.response. (see ZPublisher.xmlprc.response, which wraps a
     # default Response)
-    # FIXME: this is a bad workaround for - this method sholud be wrapped around tools and then be exposed as BrowserView ... ont as tool and BrowserView
+    # FIXME: this is a bad workaround for - this method sholud be wrapped
+    #        around tools and then be exposed as BrowserView ... ont as
+    #        tool and BrowserView
     #        we call these wrapped functions internally, from templates and
-    #        as ajax calls and xmlrpc calls, and expect different return encoding.
+    #        as ajax calls and xmlrpc calls, and expect different return
+    #        encoding.
     #        ajax: json
     #        xmlrpc: xml, done by publisher
     #        everything else: python
@@ -118,7 +124,8 @@ class DataSetManager(BrowserView):
             try:
                 rat = json.loads(unicode(rat))
             except Exception as e:
-                LOG.warning("Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
+                LOG.warning(
+                    "Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
                 rat = None
         return rat
 
@@ -266,15 +273,17 @@ class UrlLibResponseIterator(object):
     def __len__(self):
         return self.length
 
+
 class GBIFProxy(BrowserView):
-#@returnwrapper ... returning file here ... returnwrapper not handling it properly
+    # @returnwrapper ... returning file here ... returnwrapper not handling it properly
+
     def autojson(self, q, callback=None):
         # TODO: do parameter checking and maybe set defaults so that
         # js side doesn't have to do it
         gbif = getUtility(IGBIFService)
         return self._doResponse(gbif.autojson(q, None, None, callback))
 
-    #@returnwrapper ... returning file here ... returnwrapper not handling it properly
+    # @returnwrapper ... returning file here ... returnwrapper not handling it properly
     def searchjson(self, name, start=0, pageSize=None, callback=None):
         # TODO: do parameter checking and maybe set defaults so that
         #       js side doesn't have to do it
@@ -284,7 +293,6 @@ class GBIFProxy(BrowserView):
     def speciesjson(self, genusKey, start=0, pageSize=None, callback=None):
         gbif = getUtility(IGBIFService)
         return self._doResponse(gbif.speciesjson(genusKey, None, start, pageSize, callback))
-
 
     def _doResponse(self, resp):
         # TODO: add headers like:
@@ -312,9 +320,10 @@ class GBIFProxy(BrowserView):
             except StopIteration:
                 break
 
+
 class ALAProxy(BrowserView):
 
-    #@returnwrapper ... returning file here ... returnwrapper not handling it properly
+    # @returnwrapper ... returning file here ... returnwrapper not handling it properly
     def autojson(self, q, geoOnly=None, idxType=None, limit=None,
                  callback=None):
         # TODO: do parameter checking and maybe set defaults so that
@@ -323,7 +332,7 @@ class ALAProxy(BrowserView):
         return self._doResponse(ala.autojson(q, geoOnly, idxType, limit,
                                              callback))
 
-    #@returnwrapper ... returning file here ... returnwrapper not handling it properly
+    # @returnwrapper ... returning file here ... returnwrapper not handling it properly
     def searchjson(self, q, fq=None, start=None, pageSize=None,
                    sort=None, dir=None, callback=None):
         # TODO: do parameter checking and maybe set defaults so that
@@ -367,9 +376,14 @@ class DataMover(BrowserView):
         # 1. create new dataset with taxon, lsid and common name set
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         if dataSrc == 'ala':
-            dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['ala']
+            dscontainer = portal[defaults.DATASETS_FOLDER_ID][
+                defaults.DATASETS_SPECIES_FOLDER_ID]['ala']
         elif dataSrc == 'gbif':
-            dscontainer = portal[defaults.DATASETS_FOLDER_ID][defaults.DATASETS_SPECIES_FOLDER_ID]['gbif']
+            dscontainer = portal[defaults.DATASETS_FOLDER_ID][
+                defaults.DATASETS_SPECIES_FOLDER_ID]['gbif']
+        elif dataSrc == 'aekos':
+            dscontainer = portal[defaults.DATASETS_FOLDER_ID][
+                defaults.DATASETS_SPECIES_FOLDER_ID]['aekos']
         else:
             raise BadRequest('Invalid data source {0}'.format(dataSrc))
 
@@ -391,7 +405,8 @@ class DataMover(BrowserView):
                                       title=u' '.join(title))
         ds.dataSource = dataSrc    # Either ALA or GBIF as source
         # TODO: add number of occurences to description
-        ds.description = u' '.join(title) + u' imported from ' + unicode(dataSrc.upper())
+        ds.description = u' '.join(
+            title) + u' imported from ' + unicode(dataSrc.upper())
         md = IBCCVLMetadata(ds)
         # TODO: provenance ... import url?
         # FIXME: verify input parameters before adding to graph
@@ -458,7 +473,7 @@ class ExportResult(BrowserView):
                 'serviceid': serviceid,
                 'context': create_task_context(self.context)
             },
-            options={'immutable': True});
+            options={'immutable': True})
 
         # queue job submission
         after_commit_task(export_task)
@@ -467,13 +482,15 @@ class ExportResult(BrowserView):
         # self.set_progress('PENDING', u'Result export pending')
 
         status = 'info'
-        message = u'Export request for "{}" succesfully submitted! Please check the service and any associated email accounts to confirm the data\'s availability'.format(self.context.title)
+        message = u'Export request for "{}" succesfully submitted! Please check the service and any associated email accounts to confirm the data\'s availability'.format(
+            self.context.title)
 
         IStatusMessage(self.request).add(message, type=status)
         nexturl = self.request.get('HTTP-REFERER')
         if not nexturl:
             # this method should only be called on a result folder
-            # we should be able to safely redirect back to the pacent experiment
+            # we should be able to safely redirect back to the pacent
+            # experiment
             nexturl = self.context.__parent__.absolute_url()
         self.request.response.redirect(nexturl, 307)
         return (status, message)

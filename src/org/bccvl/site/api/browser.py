@@ -3,24 +3,33 @@ import json
 import logging
 from pkg_resources import resource_string
 
+from AccessControl import Unauthorized
+from Products.CMFCore.interfaces import ISiteRoot
+
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToCatalogBrain
+from plone.dexterity.utils import createContentInContainer
 from plone.registry.interfaces import IRegistry
 from plone.supermodel import loadString
 from plone.uuid.interfaces import IUUID
 
-from zope.component import getUtility
+from zope.component import getUtility, queryUtility
 from zope.interface import implementer
 from zope.publisher.interfaces import NotFound, BadRequest
 from zope.schema import getFields
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import getVocabularyRegistry
+from zope.security import checkPermission
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
 from org.bccvl.site.api.base import BaseAPITraverser, BaseService
 from org.bccvl.site.api.decorators import api, apimethod, returnwrapper
-from org.bccvl.site.api.interfaces import IAPIService, IDMService, IJobService, IExperimentService, ISiteService
-from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
-from org.bccvl.site.job.interfaces import IJobUtility
+from org.bccvl.site.api.interfaces import (
+    IAPIService, IDMService, IJobService, IExperimentService, ISiteService)
+from org.bccvl.site.interfaces import (
+    IBCCVLMetadata, IDownloadInfo, IExperimentJobTracker)
+from org.bccvl.site.job.interfaces import IJobUtility, IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 import pkg_resources
 from email.mime.text import MIMEText
@@ -32,7 +41,8 @@ LOG = logging.getLogger(__name__)
 
 class APITraverser(BaseAPITraverser):
 
-    __name__ = "API"  # entry point needs name, as we can't use browser:view registration
+    # entry point needs name, as we can't use browser:view registration
+    __name__ = "API"
 
     title = u'BCCVL APIs'
     description = u'BCCVL API endpoint'
@@ -156,19 +166,135 @@ class DMService(BaseService):
                     'contenttype': obj.format,
                     'context': create_task_context(obj, member)
                 },
-                options={'immutable': True});
+                options={'immutable': True})
 
-            from org.bccvl.site.job.interfaces import IJobTracker
+            from org.bccvl.tasks.plone.utils import after_commit_task
             after_commit_task(update_task)
             # track background job state
             jt = IJobTracker(obj)
-            job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
+            job = jt.new_job('TODO: generate id',
+                             'generate taskname: update_metadata')
             job.type = obj.portal_type
             jt.set_progress('PENDING', 'Metadata update pending')
             return job.id
         except Exception as e:
             LOG.error('Caught exception %s', e)
         raise NotFound(self, 'update_metadata', self.request)
+
+    @returnwrapper
+    @apimethod(
+        method='POST',
+        encType="application/x-www-form-urlencoded",
+        properties={
+            'source': {
+                'type': 'string',
+                'title': 'data source',
+            },
+            'species': {
+                'type': 'list',
+                'title': 'List of source specific species identifiers.',
+            },
+            'traits': {
+                'type': 'list',
+                'title': 'List of source specific trait identifiers.',
+            },
+            'environ': {
+                'type': 'list',
+                'title': 'List of source specific environment variables.',
+            }
+        })
+    def import_trait_data(self, source=None, species=None,
+                          traits=None, environ=None):
+        context = None
+        # get import context
+        if ISiteRoot.providedBy(self.context):
+            # we have been called at site root... let's traverse to default
+            # import location
+            context = self.context.restrictedTraverse(
+                "/".join((defaults.DATASETS_FOLDER_ID,
+                          defaults.DATASETS_SPECIES_FOLDER_ID,
+                          'aekos')))
+        else:
+            # custom context.... let's use in
+            context = self.context
+        # do user check first
+        member = ploneapi.user.get_current()
+        if member.getId():
+            user = {
+                'id': member.getUserName(),
+                'email': member.getProperty('email'),
+                'fullname': member.getProperty('fullname')
+            }
+        else:
+            # We need at least a valid user
+            raise Unauthorized("Invalid user")
+        # check permission
+        if not checkPermission('org.bccvl.AddDataset', context):
+            raise Unauthorized("User not allowed in this context")
+        # check parameters
+        if not source or source not in ('aekos'):
+            raise BadRequest("source parameter bust be 'aekos'")
+        if not species or not isinstance(species, (basestring, list)):
+            raise BadRequest("Missing or invalid species parameter")
+        elif isinstance(species, basestring):
+            species = [species]
+        if not traits and not environ:
+            raise BadRequest("At least on of traits or environ has to be set")
+        if not traits:
+            traits = []
+        elif isinstance(traits, basestring):
+            traits = [traits]
+        if not environ:
+            environ = []
+        elif isinstance(environ, basestring):
+            environ = [environ]
+
+        # all good so far
+        # pull dataset from aekos
+        title = ' '.join(species)
+        # determine dataset type
+        portal_type = 'org.bccvl.content.dataset'
+        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+        if swiftsettings.storage_url:
+            portal_type = 'org.bccvl.content.remotedataset'
+        # create content
+        ds = createContentInContainer(context, portal_type, title=title)
+        ds.dataSource = source
+        ds.description = u' '.join([
+            title, ','.join(traits), ','.join(environ),
+            u' imported from {}'.format(source.upper())])
+        md = IBCCVLMetadata(ds)
+        md['genre'] = 'DataGenreTraits'
+        md['species'] = [{
+            'scientificName': spec,
+            'taxonID': spec} for spec in species]
+        md['traits'] = traits
+        md['environ'] = environ
+        # FIXME: IStatusMessage should not be in API call
+        from Products.statusmessages.interfaces import IStatusMessage
+        IStatusMessage(self.request).add('New Dataset created',
+                                         type='info')
+        # start import job
+        jt = IExperimentJobTracker(ds)
+        status, message = jt.start_job()
+        # reindex ojebct to make sure everything is up to date
+        ds.reindexObject()
+        # FIXME: IStatutsMessage should not be in API call
+        IStatusMessage(self.request).add(message, type=status)
+
+        # FIXME: API should not return a redirect
+        #        201: new resource created ... location may point to resource
+        from Products.CMFCore.utils import getToolByName
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        nexturl = portal[defaults.DATASETS_FOLDER_ID].absolute_url()
+        self.request.response.setStatus(201)
+        self.request.response.setHeader('Location', nexturl)
+        # FIXME: should return a nice json representation of success or error
+        return {
+            'status': status,
+            'message': message,
+            'jobid': IJobTracker(ds).get_job().id
+        }
 
 
 @api
@@ -229,9 +355,11 @@ class JobService(BaseService):
                 'title': 'Query',
                 'descirption': 'query parameters as keywords'
             }
-    })
+        })
     def query(self):
-        # FIXME: add owner check here -> probably easiest to make userid query parameter part of jobtool query function?  ; could also look inteo allowed_roles in catalog?
+        # FIXME: add owner check here -> probably easiest to make userid query
+        # parameter part of jobtool query function?  ; could also look inteo
+        # allowed_roles in catalog?
         query = self.request.form
         if not query:
             raise BadRequest('No query parameters supplied')
@@ -275,6 +403,8 @@ class ExperimentService(BaseService):
             }
         })
     def demosdm(self, lsid):
+        # Run SDM on a species given by lsid (from ALA), followed by a Climate
+        # Change projection.
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             raise BadRequest('Request must be POST')
         # Swift params
@@ -286,21 +416,41 @@ class ExperimentService(BaseService):
         # we have an lsid,.... we can't really verify but at least some data is here
         # find rest of parameters
         # FIXME: hardcoded path to environmental datasets
+
+        # Get the future climate for climate change projection
         portal = ploneapi.portal.get()
         dspath = '/'.join([defaults.DATASETS_FOLDER_ID,
                            defaults.DATASETS_CLIMATE_FOLDER_ID,
-                           'australia', 'australia_5km',
-                           'current.zip'])
+                           'australia', 'australia_1km',
+                           'RCP85_ukmo-hadgem1_2085.zip'])
         ds = portal.restrictedTraverse(dspath)
         dsuuid = IUUID(ds)
-        # FIXME: we don't use a IJobTracker here for now
-        # get toolkit and
-        func = portal[defaults.TOOLKITS_FOLDER_ID]['demosdm']
-        # build job_params:
+        dlinfo = IDownloadInfo(ds)
+        dsmd = IBCCVLMetadata(ds)
+        futureclimatelist = []
+        for layer in ('B05', 'B06', 'B13', 'B14'):
+            futureclimatelist.append({
+                'uuid': dsuuid,
+                'filename': dlinfo['filename'],
+                'downloadurl': dlinfo['url'],
+                'layer': layer,
+                'type': dsmd['layers'][layer]['datatype'],
+                'zippath': dsmd['layers'][layer]['filename']
+            })
+        # Climate change projection name
+        cc_projection_name = os.path.splitext(dlinfo['filename'])[0]
+
+        # Get the current climate for SDM
+        dspath = '/'.join([defaults.DATASETS_FOLDER_ID,
+                           defaults.DATASETS_CLIMATE_FOLDER_ID,
+                           'australia', 'australia_1km',
+                           'current.76to05.zip'])
+        ds = portal.restrictedTraverse(dspath)
+        dsuuid = IUUID(ds)
         dlinfo = IDownloadInfo(ds)
         dsmd = IBCCVLMetadata(ds)
         envlist = []
-        for layer in ('B01', 'B04', 'B05', 'B06', 'B12', 'B15', 'B16', 'B17'):
+        for layer in ('B05', 'B06', 'B13', 'B14'):
             envlist.append({
                 'uuid': dsuuid,
                 'filename': dlinfo['filename'],
@@ -310,15 +460,21 @@ class ExperimentService(BaseService):
                 'zippath': dsmd['layers'][layer]['filename']
             })
 
+        # FIXME: we don't use a IJobTracker here for now
+        # get toolkit and
+        func = portal[defaults.TOOLKITS_FOLDER_ID]['demosdm']
+        # build job_params:
         job_params = {
             'resolution': IBCCVLMetadata(ds)['resolution'],
             'function': func.getId(),
             'species_occurrence_dataset': {
-                'uuid': lsid,
+                'uuid': 'ala_occurrence_dataset',
                 'species': u'demoSDM',
                 'downloadurl': 'ala://ala?lsid={}'.format(lsid),
             },
             'environmental_datasets': envlist,
+            'future_climate_datasets': futureclimatelist,
+            'cc_projection_name': cc_projection_name
         }
         # add toolkit parameters: (all default values)
         # get toolkit schema
@@ -337,9 +493,9 @@ class ExperimentService(BaseService):
             resource_string('org.bccvl.compute', 'rscripts/bccvl.R'),
             resource_string('org.bccvl.compute', 'rscripts/eval.R'),
             func.script])
-        # where to store results
+        # where to store results. Replace '/' with '-'.
         result = {
-            'results_dir': 'swift+{}/demosdm/{}/'.format(swiftsettings.storage_url, lsid),
+            'results_dir': 'swift+{}/demosdm/{}/'.format(swiftsettings.storage_url, lsid.replace('/', '-')),
             'outputs': json.loads(func.output)
         }
         # worker hints:
@@ -350,7 +506,8 @@ class ExperimentService(BaseService):
             },
             'files': (
                 'species_occurrence_dataset',
-                'environmental_datasets'
+                'environmental_datasets',
+                'future_climate_datasets'
             )
         }
         # put everything together
@@ -380,13 +537,12 @@ class ExperimentService(BaseService):
 
         swift_url = '{}/demosdm'.format(swiftsettings.storage_url)
         return {
-            'state': '{}/{}/state.json'.format(swift_url, lsid),
-            'result': '{}/{}/projection.png'.format(swift_url, lsid),
+            'state': os.path.join(result['results_dir'], 'state.json'),
+            'result': os.path.join(result['results_dir'], 'proj_metadata.json'),
             'jobid': job.id
         }
 
     # TODO: check security
-
 
 
 @api
@@ -443,20 +599,25 @@ class SiteService(BaseService):
             else:
                 raise Exception("Invalid user")
 
-            portal_email =  ploneapi.portal.get().getProperty('email_from_address')
+            portal_email = ploneapi.portal.get().getProperty('email_from_address')
             email_to = [portal_email, user['email']]
             subject = "Help: BCCVL experiment failed"
-            body = pkg_resources.resource_string("org.bccvl.site.api", "help_email.txt")
-            body = body.format(experiment_url=url, username=user['fullname'], user_email=user['email'])
+            body = pkg_resources.resource_string(
+                "org.bccvl.site.api", "help_email.txt")
+            body = body.format(experiment_url=url, username=user[
+                'fullname'], user_email=user['email'])
 
-            htmlbody = pkg_resources.resource_string("org.bccvl.site.api", "help_email.html")
-            htmlbody = htmlbody.format(experiment_url=url, username=user['fullname'], user_email=user['email'])
+            htmlbody = pkg_resources.resource_string(
+                "org.bccvl.site.api", "help_email.html")
+            htmlbody = htmlbody.format(experiment_url=url, username=user[
+                'fullname'], user_email=user['email'])
 
             msg = MIMEMultipart('alternative')
             msg.attach(MIMEText(body, 'plain'))
             msg.attach(MIMEText(htmlbody, 'html'))
 
-            ploneapi.portal.send_email(recipient=email_to, sender=portal_email, subject=subject, body=msg.as_string())
+            ploneapi.portal.send_email(
+                recipient=email_to, sender=portal_email, subject=subject, body=msg.as_string())
             return {
                 'success': True,
                 'message': u'Your email has been sent'
@@ -467,3 +628,38 @@ class SiteService(BaseService):
                 'success': False,
                 'message': u'Fail to send your email to BCCVL support. Exception {}'.format(e)
             }
+
+    @returnwrapper
+    @apimethod(
+        properties={
+            'uuid': {
+                'type': 'string',
+                'title': 'Vocabulary Name',
+                'description': 'The name for a registered vocabulary',
+            }
+        }
+    )
+    def vocabulary(self, name=None):
+        # TODO: check if there are vocabularies that need to be protected
+        vocab = ()
+        try:
+            # TODO: getUtility(IVocabularyFactory???)
+            vr = getVocabularyRegistry()
+            vocab = vr.get(self.context, name)
+        except:
+            # eat all exceptions
+            pass
+        if not vocab:
+            # try IContextSourceBinder
+            vocab = queryUtility(IContextSourceBinder, name=name)
+            if vocab is None:
+                return []
+            vocab = vocab(self.context)
+        result = []
+        for term in vocab:
+            data = {'token': term.token,
+                    'title': term.title}
+            if hasattr(term, 'data'):
+                data.update(term.data)
+            result.append(data)
+        return result

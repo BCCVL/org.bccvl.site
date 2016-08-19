@@ -243,6 +243,7 @@ gcm_vocabulary = SimpleVocabulary([
     SimpleTerm("mpi-esm-lr", "mpi-esm-lr", "Max Planck Institute for Meteorology Earth System Model (lores) (MPI-ESM-LR)"),
     SimpleTerm("mri-cgcm3", "mri-cgcm3", "Meteorological Research Institute Global Climate Model, version 3.0 (MRI-CGMC3)"),
     SimpleTerm("noresm1-m", "noresm1-m", "Norwegian Earth System Model (NorESM1-M)"),
+    SimpleTerm("gcm-mean-5", "gcm-mean-5", "Mean of 5 GCM's: ECHAM5, GFDL-CM2.0, GFDL-CM2.1, MICRO3.2_MEDRES & UKMO-HadCM"),
 ])
 
 
