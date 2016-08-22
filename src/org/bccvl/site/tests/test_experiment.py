@@ -21,7 +21,8 @@ from org.bccvl.site.tests.utils import SpeciesTraitsExperimentHelper
 # - see plone.app.contenttypes browser tests for how to
 
 
-@mock.patch('pwd.getpwuid', return_value=mock.MagicMock(pw_name='bccvl'))
+@mock.patch('pwd.getpwuid', mock.sentinel.pw_ent,
+            return_value=mock.MagicMock(pw_name='bccvl'))
 class ExperimentSDMAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
@@ -154,7 +155,8 @@ class ExperimentSDMAddTest(unittest.TestCase):
         self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
-@mock.patch('pwd.getpwuid', return_value=mock.MagicMock(pw_name='bccvl'))
+@mock.patch('pwd.getpwuid', mock.sentinel.pw_ent,
+            return_value=mock.MagicMock(pw_name='bccvl'))
 class ExperimentProjectionAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
@@ -278,7 +280,8 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
-@mock.patch('pwd.getpwuid', return_value=mock.MagicMock(pw_name='bccvl'))
+@mock.patch('pwd.getpwuid', mock.sentinel.pw_ent,
+            return_value=mock.MagicMock(pw_name='bccvl'))
 class ExperimentBiodiverseAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
@@ -370,7 +373,8 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # TODO: check result metadata
 
 
-@mock.patch('pwd.getpwuid', return_value=mock.MagicMock(pw_name='bccvl'))
+@mock.patch('pwd.getpwuid', mock.sentinel.pw_ent,
+            return_value=mock.MagicMock(pw_name='bccvl'))
 class ExperimentEnsembleAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
@@ -449,7 +453,8 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
         # TODO: check result metadata
 
 
-@mock.patch('pwd.getpwuid', return_value=mock.MagicMock(pw_name='bccvl'))
+@mock.patch('pwd.getpwuid', mock.sentinel.pw_ent,
+            return_value=mock.MagicMock(pw_name='bccvl'))
 class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
