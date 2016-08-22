@@ -162,8 +162,8 @@ class TestDatasetTools(unittest.TestCase):
         self.assertEqual(data, 'Species Occurrence')
 
 
-@mock.patch('pwd.getpwuid', mock.sentinel.pw_ent,
-            return_value=mock.MagicMock(pw_name='bccvl'))
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class TestDatasetImport(unittest.TestCase):
 
     # need functional testing here, because we commit transactions
@@ -292,8 +292,8 @@ class TestDatasetImport(unittest.TestCase):
         self.assertGreater(len(ds.file.data), 0)
 
 
-@mock.patch('pwd.getpwuid', mock.sentinel.pw_ent,
-            return_value=mock.MagicMock(pw_name='bccvl'))
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class TestDatasetUpload(unittest.TestCase):
 
     layer = BCCVL_FUNCTIONAL_TESTING
