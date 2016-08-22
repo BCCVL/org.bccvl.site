@@ -155,8 +155,6 @@ class ExperimentSDMAddTest(unittest.TestCase):
         self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
-@mock.patch('pwd.getpwuid',
-            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class ExperimentProjectionAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
@@ -165,6 +163,8 @@ class ExperimentProjectionAddTest(unittest.TestCase):
     # (rolled back at end)
     # layer = BCCVL_INTEGRATION_TESTING
 
+    @mock.patch('pwd.getpwuid',
+                mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
     @mock.patch('org.bccvl.tasks.compute.run_script')
     def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
@@ -280,8 +280,6 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
-@mock.patch('pwd.getpwuid',
-            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class ExperimentBiodiverseAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
@@ -290,6 +288,8 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
     # (rolled back at end)
     # layer = BCCVL_INTEGRATION_TESTING
 
+    @mock.patch('pwd.getpwuid',
+                mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
     @mock.patch('org.bccvl.tasks.compute.run_script')
     def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
@@ -373,8 +373,6 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # TODO: check result metadata
 
 
-@mock.patch('pwd.getpwuid',
-            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class ExperimentEnsembleAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
@@ -383,6 +381,8 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
     # (rolled back at end)
     # layer = BCCVL_INTEGRATION_TESTING
 
+    @mock.patch('pwd.getpwuid',
+                mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
     @mock.patch('org.bccvl.tasks.compute.run_script')
     def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
