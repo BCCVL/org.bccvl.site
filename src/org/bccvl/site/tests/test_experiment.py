@@ -21,13 +21,15 @@ from org.bccvl.site.tests.utils import SpeciesTraitsExperimentHelper
 # - see plone.app.contenttypes browser tests for how to
 
 
-
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class ExperimentSDMAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
     layer = BCCVL_FUNCTIONAL_TESTING
-    # integration testing gives only a new transaction for each test (rolled back at end)
-    #layer = BCCVL_INTEGRATION_TESTING
+    # integration testing gives only a new transaction for each test
+    # (rolled back at end)
+    # layer = BCCVL_INTEGRATION_TESTING
 
     def setUp(self):
         self.portal = self.layer['portal']
@@ -54,21 +56,24 @@ class ExperimentSDMAddTest(unittest.TestCase):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         form.update()
         self.assertEqual(form.status, u'')
         self.assertEqual(len(form.widgets.errors), 0)
         self.assertIn('my-experiment', self.experiments)
         exp = self.experiments['my-experiment']
-        self.assertEqual(exp.environmental_datasets.keys(), [unicode(self.form.current.UID())])
-        self.assertEqual(exp.environmental_datasets.values(), [set([u'B01', u'B02'])])
+        self.assertEqual(exp.environmental_datasets.keys(),
+                         [unicode(self.form.current.UID())])
+        self.assertEqual(exp.environmental_datasets.values(),
+                         [set([u'B01', u'B02'])])
         # get result container: (there is only one)
         self.assertEqual(len(exp.objectIds()), 1)
         result = exp.objectValues()[0]
         # FIXME: test result.job_params
         self.assertEqual(result.job_params['function'], 'bioclim')
-        self.assertEqual(result.job_params['environmental_datasets'], exp.environmental_datasets)
+        self.assertEqual(result.job_params[
+                         'environmental_datasets'], exp.environmental_datasets)
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
@@ -82,7 +87,8 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # and we should have a result as well
         self.assertGreaterEqual(len(result.keys()), 1)
         # TODO: assrt two result folders,....
-        # TODO: check mix of jt.state (in multistate scenario with queued, running etc. mixed)
+        # TODO: check mix of jt.state (in multistate scenario with queued,
+        # running etc. mixed)
 
     @mock.patch('org.bccvl.tasks.compute.run_script')
     def test_run_experiment_twice(self, mock_run_script):
@@ -90,13 +96,13 @@ class ExperimentSDMAddTest(unittest.TestCase):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         form.update()
         # start experiment
         jt = IExperimentJobTracker(self.experiments['my-experiment'])
         self.assertEqual(jt.state, u'QUEUED')
-        #error
+        # error
         state = jt.start_job(form.request)
         self.assertEqual(state[0], 'error')
         # setup mock_run_script
@@ -113,7 +119,8 @@ class ExperimentSDMAddTest(unittest.TestCase):
         self.assertEqual(jt.state, u'COMPLETED')
 
     def test_mixed_resolution_highest(self):
-        current_1k_uuid = unicode(self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
+        current_1k_uuid = unicode(
+            self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.create': 'Create',
@@ -130,7 +137,8 @@ class ExperimentSDMAddTest(unittest.TestCase):
         self.assertEqual(expmd['resolution'], 'Resolution30s')
 
     def test_mixed_resolution_lowest(self):
-        current_1k_uuid = unicode(self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
+        current_1k_uuid = unicode(
+            self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current_1k'].UID())
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.create': 'Create',
@@ -147,13 +155,18 @@ class ExperimentSDMAddTest(unittest.TestCase):
         self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class ExperimentProjectionAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
     layer = BCCVL_FUNCTIONAL_TESTING
-    # integration testing gives only a new transaction for each test (rolled back at end)
-    #layer = BCCVL_INTEGRATION_TESTING
+    # integration testing gives only a new transaction for each test
+    # (rolled back at end)
+    # layer = BCCVL_INTEGRATION_TESTING
 
+    @mock.patch('pwd.getpwuid',
+                mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
     @mock.patch('org.bccvl.tasks.compute.run_script')
     def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
@@ -164,7 +177,7 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         sdmform = formhelper.get_form()
         sdmform.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         sdmform.update()
         # setup mock_run_script
@@ -175,7 +188,8 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.form = ProjectionExperimentHelper(self.portal, sdmexp)
         # TODO: setup shortcuts suitable for CC
         #   need 2 future datasets with different resolutions
-        #   need 2 raster datasets for input, to check fallback of non-future layer
+        # need 2 raster datasets for input, to check fallback of non-future
+        # layer
 
     def test_add_experiment_missing_input(self):
         form = self.form.get_form()
@@ -196,7 +210,7 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         form.update()
         self.assertEqual(form.status, u'')
@@ -204,10 +218,11 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.assertIn('my-cc-experiment', self.experiments)
         exp = self.experiments['my-cc-experiment']
         # TODO: update asserts
-        self.assertEqual(exp.future_climate_datasets, [unicode(self.form.future.UID())])
+        self.assertEqual(exp.future_climate_datasets, [
+                         unicode(self.form.future.UID())])
         # FIXME: submitting with an empty model list doesn't cause form to fail
         self.assertEqual(exp.species_distribution_models,
-                         { self.form.sdmexp.UID(): [self.form.sdmmodel.UID()] })
+                         {self.form.sdmexp.UID(): [self.form.sdmmodel.UID()]})
 
         # get result container: (there is only one)
         self.assertEqual(len(exp.objectIds()), 1)
@@ -216,7 +231,9 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         self.assertEqual(result.job_params['future_climate_datasets'],
                          {exp.future_climate_datasets[0]: set([u'B01',
                                                                u'B02'])})
-        self.assertEqual(result.job_params['species_distribution_models'], exp.species_distribution_models.values()[0][0])  # only one experiment so only first model
+        # only one experiment so we only need to check first model
+        self.assertEqual(result.job_params['species_distribution_models'],
+                         exp.species_distribution_models.values()[0][0])
         self.assertEqual(result.job_params['resolution'], u'Resolution30m')
         self.assertEqual(result.job_params['emsc'], u'RCP3PD')
         self.assertEqual(result.job_params['gcm'], u'cccma-cgcm31')
@@ -237,7 +254,8 @@ class ExperimentProjectionAddTest(unittest.TestCase):
 
     @mock.patch('org.bccvl.tasks.compute.run_script')
     def test_mixed_resolution(self, mock_run_script):
-        future_1k_uuid = unicode(self.datasets[defaults.DATASETS_CLIMATE_FOLDER_ID]['future_1k'].UID())
+        future_1k_uuid = unicode(
+            self.datasets[defaults.DATASETS_CLIMATE_FOLDER_ID]['future_1k'].UID())
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
@@ -253,20 +271,29 @@ class ExperimentProjectionAddTest(unittest.TestCase):
         result = exp.values()[0]
         expmd = IBCCVLMetadata(exp)
         # We should have the missing layers filled by sdm env layer datasets
-        self.assertEqual(result.job_params['future_climate_datasets'],
-                         {future_1k_uuid: set([u'B01']),
-                          self.form.sdmexp.environmental_datasets.keys()[0]: set([u'B02'])})
+        self.assertEqual(
+            result.job_params['future_climate_datasets'],
+            {
+                future_1k_uuid: set([u'B01']),
+                self.form.sdmexp.environmental_datasets.keys()[0]: set([u'B02'])
+            }
+        )
         # resolution should be set to the lowest of selected datasets
         self.assertEqual(expmd['resolution'], 'Resolution2_5m')
 
 
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class ExperimentBiodiverseAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
     layer = BCCVL_FUNCTIONAL_TESTING
-    # integration testing gives only a new transaction for each test (rolled back at end)
-    #layer = BCCVL_INTEGRATION_TESTING
+    # integration testing gives only a new transaction for each test
+    # (rolled back at end)
+    # layer = BCCVL_INTEGRATION_TESTING
 
+    @mock.patch('pwd.getpwuid',
+                mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
     @mock.patch('org.bccvl.tasks.compute.run_script')
     def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
@@ -276,7 +303,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         sdmform = formhelper.get_form()
         sdmform.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         sdmform.update()
         # setup mock_run_script
@@ -313,7 +340,7 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         form.update()
         self.assertEqual(form.status, u'')
@@ -350,13 +377,18 @@ class ExperimentBiodiverseAddTest(unittest.TestCase):
         # TODO: check result metadata
 
 
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class ExperimentEnsembleAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
     layer = BCCVL_FUNCTIONAL_TESTING
-    # integration testing gives only a new transaction for each test (rolled back at end)
-    #layer = BCCVL_INTEGRATION_TESTING
+    # integration testing gives only a new transaction for each test
+    # (rolled back at end)
+    # layer = BCCVL_INTEGRATION_TESTING
 
+    @mock.patch('pwd.getpwuid',
+                mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
     @mock.patch('org.bccvl.tasks.compute.run_script')
     def setUp(self, mock_run_script):
         self.portal = self.layer['portal']
@@ -366,7 +398,7 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
         sdmform = formhelper.get_form()
         sdmform.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         sdmform.update()
         # setup mock_run_script
@@ -395,7 +427,7 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         form.update()
         self.assertEqual(form.status, u'')
@@ -427,12 +459,15 @@ class ExperimentEnsembleAddTest(unittest.TestCase):
         # TODO: check result metadata
 
 
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
 
     # Use functional layer for now to get a new demostorage layer for each test
     layer = BCCVL_FUNCTIONAL_TESTING
-    # integration testing gives only a new transaction for each test (rolled back at end)
-    #layer = BCCVL_INTEGRATION_TESTING
+    # integration testing gives only a new transaction for each test
+    # (rolled back at end)
+    # layer = BCCVL_INTEGRATION_TESTING
 
     def setUp(self):
         self.portal = self.layer['portal']
@@ -458,7 +493,7 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         form = self.form.get_form()
         form.request.form.update({
             'form.buttons.save': 'Create and start',
-            })
+        })
         # update form with updated request
         form.update()
         self.assertEqual(form.status, u'')
@@ -474,8 +509,10 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         self.assertEqual(len(exp.objectIds()), 1)
         result = exp.objectValues()[0]
         # FIXME: test result.job_params
-        self.assertEqual(result.job_params['algorithm'], self.form.algorithm.getId())
-        self.assertEqual(result.job_params['data_table'], unicode(self.form.traitsds.UID()))
+        self.assertEqual(result.job_params[
+                         'algorithm'], self.form.algorithm.getId())
+        self.assertEqual(result.job_params['data_table'], unicode(
+            self.form.traitsds.UID()))
         # no result files yet
         self.assertEqual(len(result.keys()), 0)
         # test job state
@@ -496,4 +533,5 @@ class ExperimentSDMViewTest(unittest.TestCase):
     pass
 
     # shall I have test data or run an experiment?
-    #   e.g. create something programmatically with invokeFactory just for this test
+    # e.g. create something programmatically with invokeFactory just for this
+    # test

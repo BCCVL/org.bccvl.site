@@ -84,9 +84,10 @@ class DatasetSetupTest(unittest.TestCase):
                               'ABT', 'occurrence.csv')
         md = IBCCVLMetadata(ds)
         self.assertEqual(md.get('rows'), 3)
-        self.assertEqual(md.get('bounds'), {'bottom': 1, 'left': 1, 'top': 3, 'right': 3})
+        self.assertEqual(md.get('bounds'), {
+                         'bottom': 1, 'left': 1, 'top': 3, 'right': 3})
         self.assertEqual(md.get('headers'), ['Name', 'lon', 'lat'])
-        self.assertIn('species', md) # check if species attribute exists
+        self.assertIn('species', md)  # check if species attribute exists
 
 
 class TestDatasetTools(unittest.TestCase):
@@ -96,7 +97,8 @@ class TestDatasetTools(unittest.TestCase):
     def getview(self):
         self.portal = self.layer['portal']
         datasets = self.portal[defaults.DATASETS_FOLDER_ID]
-        self.dataset = datasets[defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']['occurrence.csv']
+        self.dataset = datasets[defaults.DATASETS_SPECIES_FOLDER_ID][
+            'ABT']['occurrence.csv']
         view = getMultiAdapter((self.portal, self.portal.REQUEST),
                                name='dataset_tools')
         return view
@@ -139,7 +141,8 @@ class TestDatasetTools(unittest.TestCase):
     def test_job_state(self):
         view = self.getview()
         pc = self.portal.portal_catalog
-        brain = pc.searchResults(path='/'.join(self.dataset.getPhysicalPath()))[0]
+        brain = pc.searchResults(
+            path='/'.join(self.dataset.getPhysicalPath()))[0]
         from plone.app.contentlisting.interfaces import IContentListingObject
         ds = IContentListingObject(brain)
         data = view.job_state(ds)
@@ -159,6 +162,8 @@ class TestDatasetTools(unittest.TestCase):
         self.assertEqual(data, 'Species Occurrence')
 
 
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class TestDatasetImport(unittest.TestCase):
 
     # need functional testing here, because we commit transactions
@@ -190,9 +195,11 @@ class TestDatasetImport(unittest.TestCase):
         })
         # FIXME: that's not how we should call the view
         view.params = view.parseRequest()
-        mock_urlopen.return_value = resource_stream(__name__, 'mock_data/ala_search.json')
+        mock_urlopen.return_value = resource_stream(
+            __name__, 'mock_data/ala_search.json')
         result = list(view.searchResults())
-        mock_urlopen.assert_called_with(u'http://bie.ala.org.au/ws/search.json?q=Koala&fq=rank%3Aspecies')
+        mock_urlopen.assert_called_with(
+            u'http://bie.ala.org.au/ws/search.json?q=Koala&fq=rank%3Aspecies')
 
         self.assertGreater(len(result), 0)
         for item in result:
@@ -211,7 +218,7 @@ class TestDatasetImport(unittest.TestCase):
             'scientificName': 'Pteria penguin',
             'vernacularName': 'Black Banded Winged Pearl Shell'
         }
-        view =  self.getview()
+        view = self.getview()
         view.request.form.update({
             'import': 'Import',
             'lsid': testdata['taxonID'],
@@ -234,12 +241,14 @@ class TestDatasetImport(unittest.TestCase):
         jt = IJobTracker(ds)
         self.assertEqual(jt.state, 'PENDING')
         # prepare mock side effect
+
         def move_ala_data(*args, **kw):
             src, dst = (urlsplit(x['url']) for x in args)
             if src.scheme == 'ala':
                 # first call fetch ala data
                 for name in ('ala_metadata.json', 'ala_dataset.json', 'ala_occurrence.zip'):
-                    open(os.path.join(dst.path, name), 'w').write(Template(resource_string(__name__, 'mock_data/{}'.format(name))).safe_substitute(tmpdir=dst.path))
+                    open(os.path.join(dst.path, name), 'w').write(Template(resource_string(
+                        __name__, 'mock_data/{}'.format(name))).safe_substitute(tmpdir=dst.path))
             if dst.scheme == 'scp':
                 # 2nd call upload to plone
                 shutil.copyfile(src.path, dst.path)
@@ -248,8 +257,10 @@ class TestDatasetImport(unittest.TestCase):
         # commit transaction to start job
         transaction.commit()
         # verify call
-        self.assertEqual(mock_move.call_args_list[0][0][0]['url'], 'ala://ala?lsid=urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5')
-        # celery should run in eager mode so our job state should be up to date as well
+        self.assertEqual(mock_move.call_args_list[0][0][0][
+                         'url'], 'ala://ala?lsid=urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5')
+        # celery should run in eager mode so our job state should be up to date
+        # as well
         self.assertEqual(jt.state, 'COMPLETED')
         # expand testdata with additional metadata fetched from ala
         testdata.update({
@@ -271,14 +282,18 @@ class TestDatasetImport(unittest.TestCase):
         self.assertEqual(md['species'], testdata)
         self.assertEqual(md['genre'], 'DataGenreSpeciesOccurrence')
         self.assertEqual(md['rows'], 29)
-        self.assertEqual(md['headers'], ['species', 'lon', 'lat', 'uncertainty', 'date', 'year', 'month'])
-        self.assertEqual(md['bounds'], {'top': 14.35, 'right': 177.41, 'left': 48.218334197998, 'bottom': -28.911835})
+        self.assertEqual(md['headers'], ['species', 'lon',
+                                         'lat', 'uncertainty', 'date', 'year', 'month'])
+        self.assertEqual(md['bounds'], {
+                         'top': 14.35, 'right': 177.41, 'left': 48.218334197998, 'bottom': -28.911835})
         # check that there is a file as well
         self.assertIsNotNone(ds.file)
         self.assertIsNotNone(ds.file.data)
         self.assertGreater(len(ds.file.data), 0)
 
 
+@mock.patch('pwd.getpwuid',
+            mock.MagicMock(return_value=mock.MagicMock(pw_name='bccvl')))
 class TestDatasetUpload(unittest.TestCase):
 
     layer = BCCVL_FUNCTIONAL_TESTING
@@ -349,7 +364,8 @@ class TestDatasetUpload(unittest.TestCase):
         # triger background process
         transaction.commit()
         # one move should have happened
-        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
+        self.assertEqual(mock_move.call_args[0][0][
+                         'url'], 'http://{0}:{1}/plone/datasets/species/user/test.csv/@@download/file/test.csv'.format(self.layer.get('host'), self.layer.get('port')))
         # job state should be complete
         self.assertEqual(jt.state, 'COMPLETED')
         # metadata should be up to date
@@ -407,7 +423,8 @@ class TestDatasetUpload(unittest.TestCase):
         # triger background process
         transaction.commit()
         # one move should have happened
-        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://{0}:{1}/plone/datasets/climate/user/spc_obl_merc.tif/@@download/file/spc_obl_merc.tif'.format(self.layer.get('host'), self.layer.get('port')))
+        self.assertEqual(mock_move.call_args[0][0][
+                         'url'], 'http://{0}:{1}/plone/datasets/climate/user/spc_obl_merc.tif/@@download/file/spc_obl_merc.tif'.format(self.layer.get('host'), self.layer.get('port')))
         # job state should be complete
         self.assertEqual(jt.state, 'COMPLETED')
 
@@ -476,12 +493,14 @@ class TestDatasetUpload(unittest.TestCase):
         # triger background process
         transaction.commit()
         # one move should have happened
-        self.assertEqual(mock_move.call_args[0][0]['url'], 'http://{0}:{1}/plone/datasets/climate/user/spc_obl_merc.zip/@@download/file/spc_obl_merc.zip'.format(self.layer.get('host'), self.layer.get('port')))
+        self.assertEqual(mock_move.call_args[0][0][
+                         'url'], 'http://{0}:{1}/plone/datasets/climate/user/spc_obl_merc.zip/@@download/file/spc_obl_merc.zip'.format(self.layer.get('host'), self.layer.get('port')))
         # job state should be complete
         self.assertEqual(jt.state, 'COMPLETED')
 
         layermd = md['layers']['spc_obl_merc/data/spc_obl_merc_1.tif']
-        self.assertEqual(layermd['filename'], 'spc_obl_merc/data/spc_obl_merc_1.tif')
+        self.assertEqual(layermd['filename'],
+                         'spc_obl_merc/data/spc_obl_merc_1.tif')
         self.assertEqual(layermd['min'], 19.0)
         self.assertEqual(layermd['max'], 128.0)
         self.assertEqual(layermd['datatype'], 'continuous')
@@ -489,7 +508,8 @@ class TestDatasetUpload(unittest.TestCase):
         self.assertEqual(layermd['width'], 200)
         self.assertEqual(layermd['srs'], None)
         layermd = md['layers']['spc_obl_merc/data/spc_obl_merc_2.tif']
-        self.assertEqual(layermd['filename'], 'spc_obl_merc/data/spc_obl_merc_2.tif')
+        self.assertEqual(layermd['filename'],
+                         'spc_obl_merc/data/spc_obl_merc_2.tif')
         self.assertEqual(layermd['min'], 19.0)
         self.assertEqual(layermd['max'], 128.0)
         self.assertEqual(layermd['datatype'], 'continuous')
@@ -574,7 +594,8 @@ class TestDatasetUpload(unittest.TestCase):
 
     @mock.patch('org.bccvl.movelib.move')
     def test_upload_multi_csv_mac(self, mock_move=None):
-        testcsv = resource_string(__name__, 'mock_data/multi_occurrence_mac.csv')
+        testcsv = resource_string(
+            __name__, 'mock_data/multi_occurrence_mac.csv')
         view = self.getview()
         from ZPublisher.HTTPRequest import FileUpload
         from cgi import FieldStorage
