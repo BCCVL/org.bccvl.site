@@ -490,8 +490,6 @@ class ExperimentService(BaseService):
             self.record_error('Request must be POST', 400)
             raise BadRequest('Request must be POST')
         # parse request body
-        import ipdb
-        ipdb.set_trace()
         params = json.load(self.request.BODYFILE)
         # validate input
         # TODO: should validate type as well..... (e.g. string has to be
