@@ -4,15 +4,48 @@ import json
 from decorator import decorator
 from zope import contenttype
 from zope.annotation.interfaces import IAnnotations
+from zope.publisher.browser import BrowserView
+from zope.publisher.interfaces.browser import IBrowserRequest
 
 from org.bccvl.site.utils import decimal_encoder
+
+
+class IJSONRequest(IBrowserRequest):
+    """
+    Marker interface for request
+    """
+
+    pass
+
+
+class JSONErrorView(BrowserView):
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        self.request.response['CONTENT-TYPE'] = 'application/json'
+        if self.__parent__.errors:
+            return json.dumps({
+                'errors': [
+                    self.__parent__.errors
+                ]
+            })
+        else:
+            # assume standard exception
+            return json.dumps({
+                'errors': [{
+                    'title': self.context.message
+                }]
+            })
 
 
 def apimethod(name=None, title=None,
               description=None,
               method=None,  # TODO: allow more than one method
               encType=None,  # TODO: need multiple encType,
-              #protos=None,
+              # protos=None,
               properties=None):
     """Add metadata to a function.
 
@@ -53,7 +86,8 @@ def api(cls):
     decorator, and makes them publishable
 
     """
-    # make sure we have a new dict on the class (avoid changing base class __methods__
+    # make sure we have a new dict on the class (avoid changing base class
+    # __methods__
     cls.__methods__ = {}
     for name, func in inspect.getmembers(cls, inspect.ismethod):
         if not getattr(func, '__schema__', None):
@@ -75,23 +109,30 @@ def api(cls):
 # self passed in as *args
 @decorator
 def returnwrapper(f, *args, **kw):
-    # see http://code.google.com/p/mimeparse/
-    # self.request.get['HTTP_ACCEPT']
-    # self.request.get['CONTENT_TYPE']
-    # self.request.get['method'']
-    # ... decide on what type of call it is ... json?(POST),
-    #     xmlrpc?(POST), url-call? (GET)
+    """
+    A function wrapped with this will either return text/xml or application/json.
 
-    # in case of post extract parameters and pass in?
-    # jsonrpc:
-    #    content-type: application/json-rpc (or application/json,
-    #    application/jsonrequest) accept: application/json-rpc (or
-    #    --""--)
+
+    """
+    # TODO: do some generic form validation in here:
+    #       see http://code.google.com/p/mimeparse/
+    #       self.request.get['HTTP_ACCEPT']
+    #       self.request.get['CONTENT_TYPE']
+    #       self.request.get['method'']
+    #       in case of post extract parameters and pass in?
+    #       jsonrpc:
+    #            content-type: application/json-rpc (or application/json,
+    #            application/jsonrequest) accept: application/json-rpc (or
+    #            --""--)
+    #       jsonapi? application/vnd.api+json?
 
     isxmlrpc = False
     view = args[0]
     try:
-        # TODO: could I ask the the request somehow? (ZPublisher should have created some IXMLRPCRequest?
+        # TODO: could I ask the the request somehow? (ZPublisher should have
+        # created some IXMLRPCRequest?
+        # NOTE: parsing may fail esp. for GET requests where there is no
+        #       content
         ct = contenttype.parse.parse(view.request['CONTENT_TYPE'])
         if ct[0:2] == ('text', 'xml'):
             # we have xmlrpc
@@ -101,7 +142,48 @@ def returnwrapper(f, *args, **kw):
         # TODO: log this ?
         pass
 
-    ret = f(*args, **kw)
+    try:
+        if not isxmlrpc:
+            # TODO: apply JSONAPIRequest marker to request, so that error templates
+            #       can be looked up?
+            from zope.interface import alsoProvides
+            from .decorators import IJSONRequest
+            alsoProvides(view.request, IJSONRequest)
+
+        # Can't really parse here, as the zope engine expects that all parameters
+        #     required by the wrapped method are passed in the request (and zope
+        #     can only parse form / url parameters)
+        # if ct[0:2] == ('application', 'json'):
+        #     # TODO: assumes that content type is only set on request methods
+        #     #       that allow body content
+        #     # TODO: check content length?
+        #     # TODO: could do json schema validation here
+        #     input = json.load(view.request.BODYFILE)
+        #     # if isinstance(input, list):
+        #     #     args = input
+        #     # elif isinstance(input, dict):
+        #     #     kw = input
+        #     # else:
+        #     #     # TODO: is this valid?
+        #     #     args = [input]
+        #     args = [input]
+
+        ret = f(*args, **kw)
+    except Exception as e:
+        if isxmlrpc:
+            # let zope handle it
+            raise
+        # TODO: special handlings for:
+        #    unauthorized -> json
+        #    others?
+
+        # view.request.response.setStatus(e.__class__)
+        # view.request.response['CONTENT-TYPE'] = 'application/json'
+        # return '{"errors": "test error"}'
+
+        # view.request.response._error_format = 'application/json'
+        # view.request.response.setBody('{"error": "test error"}')
+        raise
     # return ACCEPT encoding here or IStreamIterator, that encodes
     # stuff on the fly could handle response encoding via
     # request.setBody ... would need to replace response instance of
@@ -120,7 +202,8 @@ def returnwrapper(f, *args, **kw):
         ret = json.dumps(ret, default=decimal_encoder)
         annots = IAnnotations(view.request)
         if 'json.schema' in annots:
-            ctype = 'application/json; profile={}'.format(annots['json.schema'])
+            ctype = 'application/json; profile={}'.format(
+                annots['json.schema'])
         else:
             ctype = 'application/json'
         view.request.response['CONTENT-TYPE'] = ctype

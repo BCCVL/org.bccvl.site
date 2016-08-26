@@ -4,6 +4,16 @@
     i18n_domain="org.bccvl.site"
     >
 
+
+  <!-- JSON Error View -->
+  <adapter
+      name="index.html"
+      for="* .decorators.IJSONRequest"
+      provides="zope.publisher.interfaces.IPublishTraverse"      
+      factory=".decorators.JSONErrorView"
+      permission="zope2.View"
+      />
+  
  <!-- TODO: add class security for adapters? -->
 
   

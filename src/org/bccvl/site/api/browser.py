@@ -403,6 +403,195 @@ class ExperimentService(BaseService):
     @returnwrapper
     @apimethod(
         method='POST',
+        encType='application/json',
+        properties={
+            'title': {
+                'type': 'string',
+                'title': 'Experiment title',
+                'description': 'A title for this experiment',
+            },
+            'description': {
+                'type': 'string',
+                'title': 'Description',
+                'description': 'A short description for this experiment',
+            },
+            'occurrence_data': {
+                'title': 'Occurrence Data',
+                'type': 'object',
+                'description': 'Occurrence data to use',
+                'properties': {
+                    'source': {
+                        'title': 'Occurrence data source',
+                        'description': 'Source from where to fetch the occurrence data',
+                        'type': 'string',
+                        'enum': ['ala', 'bccvl', 'gbif', 'aekos']
+                    },
+                    'id': {
+                        'title': 'Dataset id',
+                        'description': 'Dataset id specific for data source',
+                    }
+                }
+            },
+            'abbsence_data': {
+                'title': 'Occurrence Data',
+                'type': 'object',
+                'description': 'Occurrence data to use',
+                'properties': {
+                    'source': {
+                        'title': 'Abasence data source',
+                        'description': 'Source from where to fetch the absence data',
+                        'type': 'string',
+                        'enum': ['bccvl']
+                    },
+                    'id': {
+                        'title': 'Dataset id',
+                        'description': 'Dataset id specific for data source',
+                    }
+                }
+            },
+            'scale_down': {
+                'type': 'booloan',
+                'title': 'Common resolution',
+                'description': 'Scale to highest (true) or lowest (false) resolution',
+            },
+            'environmental_data': {
+                'title': 'Climate & Environmental data',
+                'description': 'Selected climate and environmental data',
+                'type': 'object',
+                'patternProperties': {
+                    '.+': {
+                        'title': 'Dataset',
+                        'description': "key is a dataset id, and value should be alist of layer id's availaible within this dataset",
+                        'type': 'array',
+                        'items': {'type': 'string'}
+                    }
+                }
+            },
+            'modelling_region': {
+                'title': 'Modelling Region',
+                'description': "A region to constrain the modelling area to. The value is expected to be a GeoJSON object of type 'feature'",
+                'type': 'object'
+            },
+            'algorithms': {
+                'title': 'Algorithms',
+                'description': 'Algorithms to use.',
+                'type': 'object',
+                'patternProperties': {
+                    '.+': {
+                        'title': 'Algorithm',
+                        'description': 'The algorithm id. Properties for each algorithm describe the algorithm parameters.',
+                        'type': 'object'
+                    }
+                }
+            }
+        })
+    def submit_sdm(self):
+        if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
+            self.record_error('Request must be POST', 400)
+            raise BadRequest('Request must be POST')
+        # parse request body
+        import ipdb
+        ipdb.set_trace()
+        params = json.load(self.request.BODYFILE)
+        # validate input
+        # TODO: should validate type as well..... (e.g. string has to be
+        # string)
+        # TODO: validate dataset and layer id's existence if possible
+        props = {}
+        if not params.get('title', None):
+            self.record_error('Bad Request', 400, 'Missing parameter title',
+                              {'parameter': 'title'})
+        else:
+            props['title'] = params['title']
+        props['description'] = params.get('description', '')
+        if not params.get('occurrence_data', None):
+            self.record_error('Bad Request', 400, 'Missing parameter occurrence_data',
+                              {'parameter': 'occurrence_data'})
+        else:
+            # FIXME:  should properly support source / id
+            #         for now only bccvl source is supported
+            props['species_occurrence_dataset'] = params[
+                'occurrence_data']['id']
+        # FIXME: should properly support source/id for onw only bccvl source is
+        # supported
+        props['species_abesnce_dataset'] = params.get(
+            'absence_data', {}).get('id', None)
+        props['scale_down'] = params.get('scale_down', False)
+        if not params.get('environmental_data', None):
+            self.record_error('Bad Request', 400,
+                              'Missing parameter environmental_data',
+                              {'parameter': 'environmental_data'})
+        else:
+            props['environmental_datasets'] = params['environmental_data']
+        # FIXME: it is supposed to be a string
+        props['modelling_region'] = params.get('modelling_region', None)
+        if not params.get('algorithms', None):
+            self.record_error('Bad Request', 400,
+                              'Missing parameter algorithms',
+                              {'parameter': 'algorithms'})
+        else:
+            portal = ploneapi.portal.get()
+            props['functions'] = {}
+            # FIXME: make sure we get the default values from our func object
+            for algo, algo_params in params['algorithms'].items():
+                if algo_params is None:
+                    algo_params = {}
+                toolkit = portal[defaults.FUNCTIONS_FOLDER_ID][algo]
+                toolkit_model = loadString(toolkit.schema)
+                toolkit_schema = toolkit_model.schema
+
+                func_props = {}
+
+                for field_name in toolkit_schema.names():
+                    field = toolkit_schema.get(field_name)
+                    value = algo_params.get(field_name, field.missing_value)
+                    if value == field.missing_value:
+                        func_props[field_name] = field.default
+                    else:
+                        func_props[field_name] = value
+
+                props['functions'][IUUID(toolkit)] = func_props
+
+        if self.errors:
+            raise BadRequest("Validation Failed")
+
+        # create experiment with data as form would do
+        # TODO: make sure self.context is 'experiments' folder?
+        from plone.dexterity.utils import createContent, addContentToContainer
+        experiment = createContent("org.bccvl.content.sdmexperiment", **props)
+        experiment = addContentToContainer(self.context, experiment)
+        # TODO: check if props and algo params have been applied properly
+        experiment.parameters = dict(props['functions'])
+        # TODO: need to get resolution from somewhere
+        IBCCVLMetadata(experiment)['resolution'] = 'Resolution30m'
+
+        # submit newly created experiment
+        # TODO: handle background job submit .... at this stage we wouldn't
+        #       know the model run job ids
+        # TODO: handle submit errors and other errors that may happen above?
+        #       generic exceptions could behandled in returnwrapper
+        retval = {
+            'experiment': {
+                'url': experiment.absolute_url(),
+                'uuid': IUUID(experiment)
+            },
+            'jobs': [],
+        }
+        jt = IExperimentJobTracker(experiment)
+        msgtype, msg = jt.start_job(self.request)
+        if msgtype is not None:
+            retval['message'] = {
+                'type': msgtype,
+                'message': msg
+            }
+        for result in experiment.values():
+            jt = IJobTracker(result)
+            retval['jobs'].append(jt.get_job().id)
+        return retval
+
+    @returnwrapper
+    @apimethod(
+        method='POST',
         encType='application/x-www-form-urlencoded',
         properties={
             'lsid': {

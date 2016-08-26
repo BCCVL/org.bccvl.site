@@ -26,7 +26,8 @@ class BaseAPITraverser(BrowserView):
         self.parent = parent
 
     def lookup_service(self, name):
-        service = getMultiAdapter((self.context, self.request, self), self.service_iface, name)
+        service = getMultiAdapter((self.context, self.request, self),
+                                  self.service_iface, name)
         locate(service, self, name)
         return service
 
@@ -38,7 +39,8 @@ class BaseAPITraverser(BrowserView):
             service_list = []
             # return list of services
             sm = getSiteManager()
-            services = dict(sm.adapters.lookupAll(map(providedBy, (self.context, self.request, self)), self.service_iface))
+            services = dict(sm.adapters.lookupAll(
+                map(providedBy, (self.context, self.request, self)), self.service_iface))
             for name in services.keys():
                 service_list.append(self.lookup_service(name))
             return service_list
@@ -58,14 +60,14 @@ class BaseAPITraverser(BrowserView):
             #'id': self.__name__ + '/schema',
             'type': 'object',
             'links': [
-                { 'rel': 'self',
-                  'href': url, #'{id}',
-                },
-                { 'rel': 'up',
-                  'href': purl,
-                  'title': self.__parent__.title,
-                  'description': self.__parent__.description
-                }
+                {'rel': 'self',
+                 'href': url,  # '{id}',
+                 },
+                {'rel': 'up',
+                 'href': purl,
+                 'title': self.__parent__.title,
+                 'description': self.__parent__.description
+                 }
             ]
         }
         # add links to sub services
@@ -78,7 +80,8 @@ class BaseAPITraverser(BrowserView):
                 "method": service.method
                 #schema, encType
             })
-        #self.request.response['CONTENT-TYPE'] = 'application/json; profile=http://json-schema.org/draft-04/hyper-schema#'
+        # self.request.response['CONTENT-TYPE'] = 'application/json;
+        # profile=http://json-schema.org/draft-04/hyper-schema#'
         return schema
 
     def publishTraverse(self, request, name):
@@ -112,10 +115,22 @@ class BaseService(BrowserView):
     title = None
     description = None
     __methods__ = None
+    errors = None
 
     def __init__(self, context, request, parent):
         super(BaseService, self).__init__(context, request)
         self.parent = parent
+        self.errors = []
+
+    def record_error(self, title, status=None, detail=None, source=None):
+        error = {'title': title}
+        if status:
+            error['status'] = status
+        if detail:
+            error['detail'] = detail
+        if source:
+            error['source'] = source
+        self.errors.append(error)
 
     def get_methods(self, name=None):
         if name == None:
@@ -135,14 +150,14 @@ class BaseService(BrowserView):
             #'id': self.__name__ + '/schema',
             'type': 'object',
             'links': [
-                { 'rel': 'self',
-                  'href': url, #'{id}',
-                },
-                { 'rel': 'up',
-                  'href': purl,
-                  'title': self.__parent__.title,
-                  'description': self.__parent__.description
-                }
+                {'rel': 'self',
+                 'href': url,  # '{id}',
+                 },
+                {'rel': 'up',
+                 'href': purl,
+                 'title': self.__parent__.title,
+                 'description': self.__parent__.description
+                 }
             ]
         }
         # add method infos:
@@ -157,7 +172,8 @@ class BaseService(BrowserView):
                 'encType': method['schema']['encType'],
                 # TODO: target method['schema'] ... return value
             })
-        #self.request.response['CONTENT-TYPE'] = 'application/json; profile=http://json-schema.org/draft-04/hyper-schema#'
+        # self.request.response['CONTENT-TYPE'] = 'application/json;
+        # profile=http://json-schema.org/draft-04/hyper-schema#'
         return schema
 
     def publishTraverse(self, request, name):
@@ -174,7 +190,8 @@ class BaseService(BrowserView):
     def __call__(self, *args, **kw):
         # TODO: IAbsoluteURL does not ad @@ for view name
         url = getMultiAdapter((self, self.request), IAbsoluteURL)()
-        IAnnotations(self.request)['json.schema'] = '{}/schema'.format(url)        # self.request.response["access-control-allow-origin"] = "*"
+        # self.request.response["access-control-allow-origin"] = "*"
+        IAnnotations(self.request)['json.schema'] = '{}/schema'.format(url)
         # "access-control-allow-headers": "Content-Type, api_key, Authorization",
         # "access-control-allow-methods": "GET, POST, DELETE, PUT",
         return {
