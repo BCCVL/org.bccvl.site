@@ -37,6 +37,23 @@ class IDMService(Interface):
         """Return all metadata about dataset identified by uuid.
         """
 
+    def search(**kw):
+        """Thin wrapper around portal_catalog to search for datasets
+        """
+
+    # check permissions here can I just publish it or do I have to take care
+    # of ownership?
+    def update_metadata(uuid):
+        """
+        Trigger update metadata for dataset with uuid.
+        """
+
+    def import_trait_data(source=None, species=None,
+                          traits=None, environ=None):
+        """
+        Trigger trait dataset import
+        """
+
 
 class IJobService(Interface):
     """Job service

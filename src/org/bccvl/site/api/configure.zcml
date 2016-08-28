@@ -65,13 +65,13 @@
       name="v1"
       for="* * *"
       provides=".interfaces.IDMService"
-      factory=".browser.DMService"
+      factory=".dm.DMService"
       permission="zope2.View"
       />
-  <class class=".browser.DMService">
+  <class class=".dm.DMService">
     <require
         permission="zope2.View"
-        attributes="metadata update_metadata"
+        attributes="metadata search update_metadata"
         />  
     <require
         permission="zope2.View"
@@ -132,10 +132,10 @@
       name="v1"
       for="* * *"
       provides=".interfaces.IExperimentService"
-      factory=".browser.ExperimentService"
+      factory=".em.ExperimentService"
       permission="zope2.View"
       />
-  <class class=".browser.ExperimentService">
+  <class class=".em.ExperimentService">
     <require
         permission="org.bccvl.AddExperiment"
         attributes="demosdm"

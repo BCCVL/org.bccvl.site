@@ -1,37 +1,19 @@
-import os
-import json
 import logging
-import urllib
-from pkg_resources import resource_string
-
-from AccessControl import Unauthorized
-from Products.CMFCore.interfaces import ISiteRoot
 
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToCatalogBrain
-from plone.dexterity.utils import createContentInContainer
-from plone.registry.interfaces import IRegistry
-from plone.supermodel import loadString
-from plone.uuid.interfaces import IUUID
 
 from zope.component import getUtility, queryUtility
 from zope.interface import implementer
 from zope.publisher.interfaces import NotFound, BadRequest
-from zope.schema import getFields
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import getVocabularyRegistry
-from zope.security import checkPermission
 
-from org.bccvl.site import defaults
-from org.bccvl.site.api import dataset
 from org.bccvl.site.api.base import BaseAPITraverser, BaseService
 from org.bccvl.site.api.decorators import api, apimethod, returnwrapper
 from org.bccvl.site.api.interfaces import (
     IAPIService, IDMService, IJobService, IExperimentService, ISiteService)
-from org.bccvl.site.interfaces import (
-    IBCCVLMetadata, IDownloadInfo, IExperimentJobTracker)
-from org.bccvl.site.job.interfaces import IJobUtility, IJobTracker
-from org.bccvl.site.swift.interfaces import ISwiftSettings
+from org.bccvl.site.job.interfaces import IJobUtility
 import pkg_resources
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
