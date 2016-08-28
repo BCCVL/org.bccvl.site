@@ -81,6 +81,14 @@ class IExperimentService(Interface):
         Return a dictionary with keys 'state', 'result' and 'jobid'
         """
 
+    def submitsdm():
+        """Submit a new experiment.
+        """
+
+    def metadata(uuid):
+        """Fetch metadata about experiment and results.
+        """
+
 
 class ISiteService(Interface):
     """

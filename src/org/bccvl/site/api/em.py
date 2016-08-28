@@ -5,13 +5,14 @@ import urllib
 from pkg_resources import resource_string
 
 from plone import api as ploneapi
+from plone.app.uuid.utils import uuidToObject
 from plone.registry.interfaces import IRegistry
 from plone.supermodel import loadString
 from plone.uuid.interfaces import IUUID
 
 from zope.component import getUtility
 from zope.interface import implementer
-from zope.publisher.interfaces import BadRequest
+from zope.publisher.interfaces import BadRequest, NotFound
 from zope.schema import getFields
 
 from org.bccvl.site import defaults
@@ -121,7 +122,7 @@ class ExperimentService(BaseService):
                 }
             }
         })
-    def submit_sdm(self):
+    def submitsdm(self):
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             self.record_error('Request must be POST', 400)
             raise BadRequest('Request must be POST')
@@ -196,7 +197,7 @@ class ExperimentService(BaseService):
         experiment = addContentToContainer(self.context, experiment)
         # TODO: check if props and algo params have been applied properly
         experiment.parameters = dict(props['functions'])
-        # TODO: need to get resolution from somewhere
+        # FIXME: need to get resolution from somewhere
         IBCCVLMetadata(experiment)['resolution'] = 'Resolution30m'
 
         # submit newly created experiment
@@ -221,6 +222,46 @@ class ExperimentService(BaseService):
         for result in experiment.values():
             jt = IJobTracker(result)
             retval['jobs'].append(jt.get_job().id)
+        return retval
+
+    @returnwrapper
+    @apimethod(
+        method='GET',
+        encType='application/x-www-form-urlencoded',
+        properties={
+            'uuid': {
+                'type': 'string',
+                'title': 'An experiment uuid',
+                'description': 'The uuid for an experiment, to fetch details.'
+            }
+        })
+    def metadata(self, uuid):
+        exp = uuidToObject(uuid)
+        if not exp:
+            self.record_error('Not Found', 404,
+                              'Experiment not found',
+                              {'parameter': 'uuid'})
+            raise NotFound(self, 'metadata', self.request)
+        # we found an experiment ... let's build the result
+        retval = {
+            'id': exp.id,
+            'uuid': IUUID(exp),
+            'title': exp.title,
+            'description': exp.description,
+            'job_state': IExperimentJobTracker(exp).state,
+            'results': []
+        }
+        # add info about parameters?
+        # add info about results
+        for result in exp.values():
+            retval['results'].append({
+                'id': result.id,
+                'uuid': IUUID(result),
+                'title': result.title,
+                'description': result.description,
+                'job_state': IJobTracker(result).state,
+                'params': result.job_params
+            })
         return retval
 
     @returnwrapper
