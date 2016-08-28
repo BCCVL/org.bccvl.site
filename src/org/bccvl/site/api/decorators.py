@@ -202,11 +202,11 @@ def returnwrapper(f, *args, **kw):
         ret = json.dumps(ret, default=decimal_encoder)
         annots = IAnnotations(view.request)
         if 'json.schema' in annots:
-            ctype = 'application/json; profile={}'.format(
+            ctype = 'application/json;profile="{}"'.format(
                 annots['json.schema'])
         else:
             ctype = 'application/json'
         view.request.response['CONTENT-TYPE'] = ctype
-        # FIXME: chaching headers should be more selective
+        # FIXME: caching headers should be more selective
         # prevent caching of ajax results... should be more selective here
     return ret
