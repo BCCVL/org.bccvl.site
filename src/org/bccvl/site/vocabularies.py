@@ -344,7 +344,8 @@ genre_vocabulary = SimpleVocabulary([
     SimpleTerm("DataGenreRAREW_CWE", "DataGenreRAREW_CWE", "Rarity whole - Corrected weighted rarity"),
     SimpleTerm("DataGenreRAREW_RICHNESS", "DataGenreRAREW_RICHNESS", "Rarity whole - Richness used in RAREW_CWE"),
     SimpleTerm("DataGenreRAREW_WE", "DataGenreRAREW_WE", "Rarity whole - weighted rarity"),
-    SimpleTerm("DataGenreBiodiverseModel", "DataGenreBiodiverseModel", "Biodiverse output"),
+    SimpleTerm("DataGenreBiodiverseModel", "DataGenreBiodiverseOutput", "Biodiverse output"),
+    SimpleTerm("DataGenreBiodiverseOutput", "DataGenreBiodiverseModel", "Biodiverse analysis output"),
     SimpleTerm("DataGenreEnsembleResult", "DataGenreEnsembleResult", "Ensembling output"),
     SimpleTerm("JobScript", "JobScript", "Job script"),
 ])
