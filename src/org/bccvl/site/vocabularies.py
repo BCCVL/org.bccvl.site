@@ -155,11 +155,16 @@ traits_functions_source = CatalogVocabularyFactory(
 
 # A vocabulary to assign functions (toolkits) to experiment types
 experiment_type_vocabulary = SimpleVocabulary([
-    SimpleTerm("org.bccvl.content.sdmexperiment", "org.bccvl.content.sdmexperiment", u"Species Distribution Modelling Experiment"),
-    SimpleTerm("org.bccvl.content.projectionexperiment", "org.bccvl.content.projectionexperiment", u"Climate Change Experiment"),
-    SimpleTerm("org.bccvl.content.biodiverseexperiment", "org.bccvl.content.biodiverseexperiment", u"Biodiverse Experiment"),
-    SimpleTerm("org.bccvl.content.speciestraitsexperiment", "org.bccvl.content.speciestraitsexperiment", u"Species Trait Modelling Experiment"),
-    SimpleTerm("org.bccvl.content.ensemble", "org.bccvl.content.ensemble", u"Ensemble Analysis"),
+    SimpleTerm("org.bccvl.content.sdmexperiment", "org.bccvl.content.sdmexperiment",
+               u"Species Distribution Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.projectionexperiment",
+               "org.bccvl.content.projectionexperiment", u"Climate Change Experiment"),
+    SimpleTerm("org.bccvl.content.biodiverseexperiment",
+               "org.bccvl.content.biodiverseexperiment", u"Biodiverse Experiment"),
+    SimpleTerm("org.bccvl.content.speciestraitsexperiment",
+               "org.bccvl.content.speciestraitsexperiment", u"Species Trait Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.ensemble",
+               "org.bccvl.content.ensemble", u"Ensemble Analysis"),
     SimpleTerm(None, "None", u"Unknown")
 ])
 
@@ -206,7 +211,8 @@ crs_source = RegistryVocabularyFactory(
 
 
 gcm_vocabulary = SimpleVocabulary([
-    SimpleTerm("cccma-cgcm31", "cccma-cgcm31", "Coupled Global Climate Model (CGCM3)"),
+    SimpleTerm("cccma-cgcm31", "cccma-cgcm31",
+               "Coupled Global Climate Model (CGCM3)"),
     SimpleTerm("ccsr-miroc32hi", "ccsr-miroc32hi", "MIROC3.2 (hires)"),
     SimpleTerm("ccsr-miroc32med", "ccsr-miroc32med", "MIROC3.2 (medres)"),
     SimpleTerm("cnrm-cm3", "cnrm-cm3", "CNRM-CM3"),
@@ -220,30 +226,44 @@ gcm_vocabulary = SimpleVocabulary([
     SimpleTerm("ipsl-cm4", "ipsl-cm4", "IPSL-CM4"),
     SimpleTerm("mpi-echam5", "mpi-echam5", "ECHAM5/MPI-OM"),
     SimpleTerm("mri-cgcm232a", "mri-cgcm232a", "MRI-CGCM2.3.2"),
-    SimpleTerm("ncar-ccsm30", "ncar-ccsm30", "Community Climate System Model, version 3.0 (CCSM3)"),
+    SimpleTerm("ncar-ccsm30", "ncar-ccsm30",
+               "Community Climate System Model, version 3.0 (CCSM3)"),
     SimpleTerm("ncar-pcm1", "ncar-pcm1", "Parallel Climate Model (PCM)"),
     SimpleTerm("ukmo-hadcm3", "ukmo-hadcm3", "HadCM3"),
-    SimpleTerm("ukmo-hadgem1", "ukmo-hadgem1", "Hadley Centre Global Environmental Model, version 1 (HadGEM1)"),
+    SimpleTerm("ukmo-hadgem1", "ukmo-hadgem1",
+               "Hadley Centre Global Environmental Model, version 1 (HadGEM1)"),
     SimpleTerm("access1-0", "access1-0", "ACCESS1.0"),
-    SimpleTerm("bcc-csm1-1", "bcc-csm1-1", "Beijing Climate Center Climate System Model (BCC_CSM1.1)"),
-    SimpleTerm("ncar-ccsm40", "ncar-ccsm40", "Community Climate System Model, version 4.0 (CCSM4)"),
-    SimpleTerm("cesm1-cam5-1-fv2", "cesm1-cam5-1-fv2", "Community Atmosphere Model, version 5.1 (CAM-5.1)"),
+    SimpleTerm("bcc-csm1-1", "bcc-csm1-1",
+               "Beijing Climate Center Climate System Model (BCC_CSM1.1)"),
+    SimpleTerm("ncar-ccsm40", "ncar-ccsm40",
+               "Community Climate System Model, version 4.0 (CCSM4)"),
+    SimpleTerm("cesm1-cam5-1-fv2", "cesm1-cam5-1-fv2",
+               "Community Atmosphere Model, version 5.1 (CAM-5.1)"),
     SimpleTerm("cnrm-cm5", "cnrm-cm5", "CNRM-CM5"),
     SimpleTerm("gfdl-cm3", "gfdl-cm3", "CM3 - AOGCM"),
-    SimpleTerm("gfdl-esm2g", "gfdl-esm2g", "GFDL Earth System Model, version 2.1 (ESM2G)"),
-    SimpleTerm("giss-e2-r", "giss-e2-r", "ModelE/Russell 2x2.5xL40 (GISS-E2-R)"),
-    SimpleTerm("hadgem2-a0", "hadgem2-a0", "Hadley Global Environment Model 2 - Atmosphere (HadGEM2-A)"),
-    SimpleTerm("hadgem2-cc", "hadgem2-cc", "Hadley Global Environment Model 2 - Carbon Cycle (HadGEM2-CC)"),
-    SimpleTerm("hadgem2-es", "hadgem2-es", "Hadley Global Environment Model 2 - Earth System (HadGEM2-ES)"),
+    SimpleTerm("gfdl-esm2g", "gfdl-esm2g",
+               "GFDL Earth System Model, version 2.1 (ESM2G)"),
+    SimpleTerm("giss-e2-r", "giss-e2-r",
+               "ModelE/Russell 2x2.5xL40 (GISS-E2-R)"),
+    SimpleTerm("hadgem2-a0", "hadgem2-a0",
+               "Hadley Global Environment Model 2 - Atmosphere (HadGEM2-A)"),
+    SimpleTerm("hadgem2-cc", "hadgem2-cc",
+               "Hadley Global Environment Model 2 - Carbon Cycle (HadGEM2-CC)"),
+    SimpleTerm("hadgem2-es", "hadgem2-es",
+               "Hadley Global Environment Model 2 - Earth System (HadGEM2-ES)"),
     SimpleTerm("inmcm4", "inmcm4", "INMCM4.0"),
     SimpleTerm("ipsl-cm5a-lr", "ipsl-cm5a-lr", "IPSL-CM5A (lores)"),
     SimpleTerm("miroc-esm-chem", "miroc-esm-chem", "MIROC-ESM-CHEM"),
     SimpleTerm("miroc-esm", "miroc-esm", "MIROC-ESM"),
     SimpleTerm("miroc5", "miroc5", "MIROC5"),
-    SimpleTerm("mpi-esm-lr", "mpi-esm-lr", "Max Planck Institute for Meteorology Earth System Model (lores) (MPI-ESM-LR)"),
-    SimpleTerm("mri-cgcm3", "mri-cgcm3", "Meteorological Research Institute Global Climate Model, version 3.0 (MRI-CGMC3)"),
-    SimpleTerm("noresm1-m", "noresm1-m", "Norwegian Earth System Model (NorESM1-M)"),
-    SimpleTerm("gcm-mean-5", "gcm-mean-5", "Mean of 5 GCM's: ECHAM5, GFDL-CM2.0, GFDL-CM2.1, MICRO3.2_MEDRES & UKMO-HadCM"),
+    SimpleTerm("mpi-esm-lr", "mpi-esm-lr",
+               "Max Planck Institute for Meteorology Earth System Model (lores) (MPI-ESM-LR)"),
+    SimpleTerm("mri-cgcm3", "mri-cgcm3",
+               "Meteorological Research Institute Global Climate Model, version 3.0 (MRI-CGMC3)"),
+    SimpleTerm("noresm1-m", "noresm1-m",
+               "Norwegian Earth System Model (NorESM1-M)"),
+    SimpleTerm("gcm-mean-5", "gcm-mean-5",
+               "Mean of 5 GCM's: ECHAM5, GFDL-CM2.0, GFDL-CM2.1, MICRO3.2_MEDRES & UKMO-HadCM"),
 ])
 
 
@@ -283,7 +303,7 @@ def datatype_source(context):
 programming_language_vocab = SimpleVocabulary([
     SimpleTerm("R", "R", u'R'),
     SimpleTerm("Perl", "Perl", u'Perl'),
-#    SimpleTerm("Python", "Python", u'Python'),
+    # SimpleTerm("Python", "Python", u'Python'),
 ])
 
 
@@ -298,57 +318,86 @@ def createTerm(value, token, title, data):
     term.data = data
     return term
 
-category_desc = {'profile' : u"These models only use occurrence data, and are based on the characterization of the environmental conditions of locations associated with species presence.",
-                 'machineLearning' : u"These models typically use one part of the dataset to 'learn' and describe the dataset (training) and the other part to to assess the accuracy of the model.",
-                 'statistical' : u"These models estimate the parameters of the predictors, and construct a function that best describes the effect of environmental variables on species occurrence. The suitability of a particular model is often defined by specific model assumptions.",
-                 'geographic' : u"These models use the geographic location of known occurrences of a species to predict the likelihood of presence in other locations, and do not rely on the values of environmental variables."
-}
+category_desc = {'profile': u"These models only use occurrence data, and are based on the characterization of the environmental conditions of locations associated with species presence.",
+                 'machineLearning': u"These models typically use one part of the dataset to 'learn' and describe the dataset (training) and the other part to to assess the accuracy of the model.",
+                 'statistical': u"These models estimate the parameters of the predictors, and construct a function that best describes the effect of environmental variables on species occurrence. The suitability of a particular model is often defined by specific model assumptions.",
+                 'geographic': u"These models use the geographic location of known occurrences of a species to predict the likelihood of presence in other locations, and do not rely on the values of environmental variables."
+                 }
 
 algorithm_category_vocab = SimpleVocabulary([
-    createTerm("profile", "profile", u'Profile Models', {'description' : category_desc['profile']}),
-    createTerm("machineLearning", "machineLearning", u'Machine Learning Models', {'description' : category_desc['machineLearning']}),
-    createTerm("statistical", "statistical", u'Statistical Models', {'description' : category_desc['statistical']}),
-    createTerm("geographic", "geographic", u'Geographic Models', {'description' : category_desc['geographic']}),
+    createTerm("profile", "profile", u'Profile Models', {
+               'description': category_desc['profile']}),
+    createTerm("machineLearning", "machineLearning", u'Machine Learning Models', {
+               'description': category_desc['machineLearning']}),
+    createTerm("statistical", "statistical", u'Statistical Models',
+               {'description': category_desc['statistical']}),
+    createTerm("geographic", "geographic", u'Geographic Models',
+               {'description': category_desc['geographic']}),
 ])
 
 # TODO: maybe a tree vocabulary would be nice here?
+
+
 @provider(IVocabularyFactory)
 def algorithm_category_vocab_factory(context):
     return algorithm_category_vocab
 
 genre_vocabulary = SimpleVocabulary([
-    SimpleTerm("DataGenreSpeciesOccurrence", "DataGenreSpeciesOccurrence", "Species Occurrence"),
-    SimpleTerm("DataGenreSpeciesAbsence", "DataGenreSpeciesAbsence", "Species Absence"),
-    SimpleTerm("DataGenreSpeciesAbundance", "DataGenreSpeciesAbundance", "Species Abundance"),
-    SimpleTerm("DataGenreSpeciesCollection", "DataGenreSpeciesCollection", "Species Occurrence Collection"),
+    SimpleTerm("DataGenreSpeciesOccurrence",
+               "DataGenreSpeciesOccurrence", "Species Occurrence"),
+    SimpleTerm("DataGenreSpeciesAbsence",
+               "DataGenreSpeciesAbsence", "Species Absence"),
+    SimpleTerm("DataGenreSpeciesAbundance",
+               "DataGenreSpeciesAbundance", "Species Abundance"),
+    SimpleTerm("DataGenreSpeciesCollection",
+               "DataGenreSpeciesCollection", "Species Occurrence Collection"),
     SimpleTerm("DataGenreTraits", "DataGenreTraits", "Species Traits"),
     SimpleTerm("DataGenreCC", "DataGenreCC", "Current Climate"),
     SimpleTerm("DataGenreFC", "DataGenreFC", "Future Climate"),
     SimpleTerm("DataGenreE", "DataGenreE", "Environmental"),
-    SimpleTerm("DataGenreSDMEval", "DataGenreSDMEval", "Species Distribution Model Evaluation"),
-    SimpleTerm("DataGenreSDMModel", "DataGenreSDMModel", "Species Distribution Model"),
-    SimpleTerm("DataGenreClampingMask", "DataGenreClampingMask", "Clamping Mask"),
+    SimpleTerm("DataGenreSDMEval", "DataGenreSDMEval",
+               "Species Distribution Model Evaluation"),
+    SimpleTerm("DataGenreSDMModel", "DataGenreSDMModel",
+               "Species Distribution Model"),
+    SimpleTerm("DataGenreClampingMask",
+               "DataGenreClampingMask", "Clamping Mask"),
     SimpleTerm("DataGenreSTModel", "DataGenreSTModel", "Species Traits Model"),
-    SimpleTerm("DataGenreSTResult", "DataGenreSTResult", "Species Traits Result"),
+    SimpleTerm("DataGenreSTResult", "DataGenreSTResult",
+               "Species Traits Result"),
     SimpleTerm("DataGenreFP", "DataGenreFP", "Future Projection"),
     SimpleTerm("DataGenreCP", "DataGenreCP", "Current Projection"),
     SimpleTerm("DataGenreLog", "DataGenreLog", "Output log file"),
-    SimpleTerm("DataGenreBinaryImage", "DataGenreBinaryImage", "Binary input image"),
-    SimpleTerm("DataGenreENDW_CWE", "DataGenreENDW_CWE", "Endemism whole - Corrected Weighted Endemism"),
-    SimpleTerm("DataGenreENDW_WE", "DataGenreENDW_WE", "Endemism whole- Weighted Endemism"),
-    SimpleTerm("DataGenreENDW_RICHNESS", "DataGenreENDW_RICHNESS", "Endemism whole - Richness used in ENDW_CWE"),
-    SimpleTerm("DataGenreENDW_SINGLE", "DataGenreENDW_SINGLE", "Endemism whole - Unweighted by the number of neighbours"),
-    SimpleTerm("DataGenreREDUNDANCY_SET1", "DataGenreREDUNDANCY_SET1", "Redundancy - neighbour set 1"),
-    SimpleTerm("DataGenreREDUNDANCY_SET2", "DataGenreREDUNDANCY_SET2", "Redundancy - neighbour set 2"),
-    SimpleTerm("DataGenreREDUNDANCY_ALL", "DataGenreREDUNDANCY_ALL", "Redundancy - both neighbour sets"),
-    SimpleTerm("DataGenreRAREW_CWE", "DataGenreRAREW_CWE", "Rarity whole - Corrected weighted rarity"),
-    SimpleTerm("DataGenreRAREW_RICHNESS", "DataGenreRAREW_RICHNESS", "Rarity whole - Richness used in RAREW_CWE"),
-    SimpleTerm("DataGenreRAREW_WE", "DataGenreRAREW_WE", "Rarity whole - weighted rarity"),
-    SimpleTerm("DataGenreBiodiverseModel", "DataGenreBiodiverseModel", "Biodiverse output"),
-    SimpleTerm("DataGenreBiodiverseOutput", "DataGenreBiodiverseOutput", "Biodiverse analysis output"),
-    SimpleTerm("DataGenreEnsembleResult", "DataGenreEnsembleResult", "Ensembling output"),
+    SimpleTerm("DataGenreBinaryImage",
+               "DataGenreBinaryImage", "Binary input image"),
+    SimpleTerm("DataGenreENDW_CWE", "DataGenreENDW_CWE",
+               "Endemism whole - Corrected Weighted Endemism"),
+    SimpleTerm("DataGenreENDW_WE", "DataGenreENDW_WE",
+               "Endemism whole- Weighted Endemism"),
+    SimpleTerm("DataGenreENDW_RICHNESS", "DataGenreENDW_RICHNESS",
+               "Endemism whole - Richness used in ENDW_CWE"),
+    SimpleTerm("DataGenreENDW_SINGLE", "DataGenreENDW_SINGLE",
+               "Endemism whole - Unweighted by the number of neighbours"),
+    SimpleTerm("DataGenreREDUNDANCY_SET1", "DataGenreREDUNDANCY_SET1",
+               "Redundancy - neighbour set 1"),
+    SimpleTerm("DataGenreREDUNDANCY_SET2", "DataGenreREDUNDANCY_SET2",
+               "Redundancy - neighbour set 2"),
+    SimpleTerm("DataGenreREDUNDANCY_ALL", "DataGenreREDUNDANCY_ALL",
+               "Redundancy - both neighbour sets"),
+    SimpleTerm("DataGenreRAREW_CWE", "DataGenreRAREW_CWE",
+               "Rarity whole - Corrected weighted rarity"),
+    SimpleTerm("DataGenreRAREW_RICHNESS", "DataGenreRAREW_RICHNESS",
+               "Rarity whole - Richness used in RAREW_CWE"),
+    SimpleTerm("DataGenreRAREW_WE", "DataGenreRAREW_WE",
+               "Rarity whole - weighted rarity"),
+    SimpleTerm("DataGenreBiodiverseModel",
+               "DataGenreBiodiverseModel", "Biodiverse output"),
+    SimpleTerm("DataGenreBiodiverseOutput",
+               "DataGenreBiodiverseOutput", "Biodiverse analysis output"),
+    SimpleTerm("DataGenreEnsembleResult",
+               "DataGenreEnsembleResult", "Ensembling output"),
     SimpleTerm("JobScript", "JobScript", "Job script"),
 ])
+
 
 @provider(IVocabularyFactory)
 def genre_source(context):
@@ -364,6 +413,7 @@ job_state_vocabulary = SimpleVocabulary([
     SimpleTerm('REMOVED', 'REMOVED', u'Removed')
 ])
 
+
 @provider(IVocabularyFactory)
 def job_state_source(context):
     return job_state_vocabulary
@@ -375,13 +425,11 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
         (SimpleTerm('absence', 'absence', u'Absence'), {}),
         (SimpleTerm('abundance', 'abundance', u'Abundance'), {}),
         (SimpleTerm('traits', 'traits', u'Traits'), {}),
-        ])
-    ),
+    ])),
     (SimpleTerm('climate', 'climate', u'Climate'), OrderedDict([
         (SimpleTerm('current', 'current', u'Current'), {}),
         (SimpleTerm('future', 'future', u'Future'), {}),
-        ])
-    ),
+    ])),
     (SimpleTerm('environmental', 'environmental', u'Environmental'), OrderedDict([
         (SimpleTerm('topography', 'topography', u'Topography'), {}),
         (SimpleTerm('hydrology', 'hydrology', u'Hydrology'), {}),
@@ -389,8 +437,7 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
         (SimpleTerm('vegetation', 'vegetation', u'Vegetation'), {}),
         (SimpleTerm('landcover', 'landcover', u'Land Cover'), {}),
         (SimpleTerm('landuse', 'landuse', u'Land Use'), {}),
-        ])
-    )
+    ]))
 ]))
 
 
@@ -403,11 +450,13 @@ def scientific_category_source(context):
 def data_collections_source(context):
     portal_url = getToolByName(context, 'portal_url')
     catalog = getToolByName(context, 'portal_catalog')
-    vocab = getUtility(IVocabularyFactory, 'scientific_category_source')(context)
+    vocab = getUtility(IVocabularyFactory,
+                       'scientific_category_source')(context)
     coll_query = {
         'portal_type': 'org.bccvl.content.collection',
         'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
     }
+
     def generate_collections():
         for term in vocab:
             coll_query['BCCCategory'] = term.value
