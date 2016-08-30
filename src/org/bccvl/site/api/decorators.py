@@ -1,5 +1,9 @@
 import inspect
 import json
+import logging
+import os.path
+import sys
+from urlparse import urlsplit
 
 from decorator import decorator
 from zope import contenttype
@@ -8,6 +12,9 @@ from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserRequest
 
 from org.bccvl.site.utils import decimal_encoder
+
+
+LOG = logging.getLogger(__name__)
 
 
 class IJSONRequest(IBrowserRequest):
@@ -41,69 +48,63 @@ class JSONErrorView(BrowserView):
             })
 
 
-def apimethod(name=None, title=None,
-              description=None,
-              method=None,  # TODO: allow more than one method
-              encType=None,  # TODO: need multiple encType,
-              # protos=None,
-              properties=None):
-    """Add metadata to a function.
-
-    This metadata is used to publish the method and generate a json
-    schema description.
-
-    """
-    # methods: GET, POST, PUT, DELETE, ...
-    # enc_types: application/x-www-form-urlencoded, mulipart/form-data, application/json
-    # protocols: json, xmlrpc, ...
-    def annotate(f):
-        schema = {
-            'id': name or f.__name__,
-            'title': title or name or f.__name__,
-            'description': description or f.__doc__ or '',
-        }
-        if method:
-            schema['method'] = method
-        if encType:
-            schema['encType'] = encType
-
-        argspec = inspect.getargspec(f)
-        if (properties or argspec.args):
-            # TODO: mix properties and argspec together
-            schema['schema'] = {
-                'properties': properties
-            }
-        f.__schema__ = schema
-        return f
-
-    return annotate
-
-
-def api(cls):
+def api(schema):
     """A Class decorator to build a dictionary with all publishable methods.
 
-    Finds all methods which have metadata attached via @apimethod
-    decorator, and makes them publishable
+    Use schema to annotate class. Link relations found in schema, are
+    used to annotate methods on class as api methods, which are published.
 
+    schema can be a dictionary or a string. If it is a string, it will be
+    resolved as file name, and the schema will be read from this file.
     """
-    # make sure we have a new dict on the class (avoid changing base class
-    # __methods__
-    cls.__methods__ = {}
-    for name, func in inspect.getmembers(cls, inspect.ismethod):
-        if not getattr(func, '__schema__', None):
-            continue
-        # FIXME: this code is probably never executed
-        # we have an api func ,... create a metadata
-        schema = func.__schema__
-        for attr, default in (('method', 'GET'),
-                              ('encType', 'application/x-www-form-urlencoded')):
-            if attr not in schema:
-                schema[attr] = getattr(cls, attr, default)
-        cls.__methods__[schema['id']] = {
-            'method': func.__name__,
-            'schema': schema
-        }
-    return cls
+    if isinstance(schema, str):
+        # determine current path ...
+        # @api is supposed to be used on module level
+        #    -> TODO: maybe get current folder from cls in annotate method?
+        path = os.path.dirname(sys._getframe().f_globals['__file__'])
+        # TODO: check if file exists, also would be nice to auto reload schema
+        #       in debug mode
+        schema = json.load(open(os.path.join(path, schema), 'r'))
+    else:
+        schema = {}
+
+    def annotate(cls):
+        # apply schema properties to class
+        for prop in ('title', 'description'):
+            if not getattr(cls, prop):
+                setattr(cls, prop, schema[prop])
+
+        # annotate methods
+        # make sure we have a new dict on the class (avoid changing base class
+        # __methods__
+        cls.__methods__ = {}
+        methods = dict(inspect.getmembers(cls, inspect.ismethod))
+        for link in schema['links']:
+            # rel is used to match up link relations with methods
+            # TODO: assumes there is at least a non pattern string at
+            #       the end of href .... will fail for e.g. href="{id}"
+            # TODO: alternative would be o either map rel to method name
+            #       or add custom property 'method' (which is still supported)
+            methodname = urlsplit(link['href']).path.rpartition('/')[-1]
+            if methodname in methods:
+                # store link information about method
+                if methodname in cls.__methods__:
+                    # we already have a schema assigned...
+                    import ipdb
+                    ipdb.set_trace()
+                # set defaults:
+                link.setdefault('method', 'GET')
+                link.setdefault('encType', 'application/json')
+                # TODO: schema annotation should be a list or similar,
+                #       to support multiple encType and methods
+                # add method to __methods__ dict to enable view lookup
+                cls.__methods__[methodname] = link
+            else:
+                LOG.warn("Method '%s' from schema not defined on class '%s'",
+                         methodname, cls)
+        return cls
+
+    return annotate
 
 
 # self passed in as *args

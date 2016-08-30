@@ -18,7 +18,7 @@ from zope.security import checkPermission
 from org.bccvl.site import defaults
 from org.bccvl.site.api import dataset
 from org.bccvl.site.api.base import BaseService
-from org.bccvl.site.api.decorators import api, apimethod, returnwrapper
+from org.bccvl.site.api.decorators import api, returnwrapper
 from org.bccvl.site.api.interfaces import IDMService
 from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker
 from org.bccvl.site.job.interfaces import IJobTracker
@@ -28,7 +28,7 @@ from org.bccvl.site.swift.interfaces import ISwiftSettings
 LOG = logging.getLogger(__name__)
 
 
-@api
+@api('dm_v1.json')
 @implementer(IDMService)
 class DMService(BaseService):
 
@@ -38,21 +38,6 @@ class DMService(BaseService):
     encType = "application/x-www-form-urlencoded"
 
     @returnwrapper
-    @apimethod(
-        properties={
-            'b_start': {
-            },
-            'b_size': {
-            },
-            'sort_on': {
-            },
-            'sort_order': {
-            },
-            # 'sort_limit': {
-            # },
-            '**kw': {
-            }
-        })
     def search(self, b_start=None, b_size=None, **kw):
         b_start = int(b_start or 0)
         b_size = int(max(b_size or 50, 50))
@@ -103,13 +88,6 @@ class DMService(BaseService):
         return result
 
     @returnwrapper
-    @apimethod(
-        properties={
-            'uuid': {
-                'type': 'string',
-                'title': 'Dataset UUID',
-            }
-        })
     def metadata(self, uuid):
         try:
             brain = uuidToCatalogBrain(uuid)
@@ -120,13 +98,6 @@ class DMService(BaseService):
         raise NotFound(self, 'metadata', self.request)
 
     @returnwrapper
-    @apimethod(
-        properties={
-            'uuid': {
-                'type': 'string',
-                'title': 'Dataset UUID',
-            }
-        })
     def update_metadata(self, uuid=None):
         try:
             if uuid:
@@ -193,27 +164,6 @@ class DMService(BaseService):
         raise NotFound(self, 'update_metadata', self.request)
 
     @returnwrapper
-    @apimethod(
-        method='POST',
-        encType="application/x-www-form-urlencoded",
-        properties={
-            'source': {
-                'type': 'string',
-                'title': 'data source',
-            },
-            'species': {
-                'type': 'list',
-                'title': 'List of source specific species identifiers.',
-            },
-            'traits': {
-                'type': 'list',
-                'title': 'List of source specific trait identifiers.',
-            },
-            'environ': {
-                'type': 'list',
-                'title': 'List of source specific environment variables.',
-            }
-        })
     def import_trait_data(self, source=None, species=None,
                           traits=None, environ=None):
         context = None

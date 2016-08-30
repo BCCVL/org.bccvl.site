@@ -17,7 +17,7 @@ from zope.schema import getFields
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api.base import BaseService
-from org.bccvl.site.api.decorators import api, apimethod, returnwrapper
+from org.bccvl.site.api.decorators import api, returnwrapper
 from org.bccvl.site.api.interfaces import IExperimentService
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IDownloadInfo, IExperimentJobTracker)
@@ -28,7 +28,7 @@ from org.bccvl.site.swift.interfaces import ISwiftSettings
 LOG = logging.getLogger(__name__)
 
 
-@api
+@api('em_v1.json')
 @implementer(IExperimentService)
 class ExperimentService(BaseService):
 
@@ -38,90 +38,6 @@ class ExperimentService(BaseService):
     encType = "application/x-www-form-urlencoded"
 
     @returnwrapper
-    @apimethod(
-        method='POST',
-        encType='application/json',
-        properties={
-            'title': {
-                'type': 'string',
-                'title': 'Experiment title',
-                'description': 'A title for this experiment',
-            },
-            'description': {
-                'type': 'string',
-                'title': 'Description',
-                'description': 'A short description for this experiment',
-            },
-            'occurrence_data': {
-                'title': 'Occurrence Data',
-                'type': 'object',
-                'description': 'Occurrence data to use',
-                'properties': {
-                    'source': {
-                        'title': 'Occurrence data source',
-                        'description': 'Source from where to fetch the occurrence data',
-                        'type': 'string',
-                        'enum': ['ala', 'bccvl', 'gbif', 'aekos']
-                    },
-                    'id': {
-                        'title': 'Dataset id',
-                        'description': 'Dataset id specific for data source',
-                    }
-                }
-            },
-            'abbsence_data': {
-                'title': 'Occurrence Data',
-                'type': 'object',
-                'description': 'Occurrence data to use',
-                'properties': {
-                    'source': {
-                        'title': 'Abasence data source',
-                        'description': 'Source from where to fetch the absence data',
-                        'type': 'string',
-                        'enum': ['bccvl']
-                    },
-                    'id': {
-                        'title': 'Dataset id',
-                        'description': 'Dataset id specific for data source',
-                    }
-                }
-            },
-            'scale_down': {
-                'type': 'booloan',
-                'title': 'Common resolution',
-                'description': 'Scale to highest (true) or lowest (false) resolution',
-            },
-            'environmental_data': {
-                'title': 'Climate & Environmental data',
-                'description': 'Selected climate and environmental data',
-                'type': 'object',
-                'patternProperties': {
-                    '.+': {
-                        'title': 'Dataset',
-                        'description': "key is a dataset id, and value should be alist of layer id's availaible within this dataset",
-                        'type': 'array',
-                        'items': {'type': 'string'}
-                    }
-                }
-            },
-            'modelling_region': {
-                'title': 'Modelling Region',
-                'description': "A region to constrain the modelling area to. The value is expected to be a GeoJSON object of type 'feature'",
-                'type': 'object'
-            },
-            'algorithms': {
-                'title': 'Algorithms',
-                'description': 'Algorithms to use.',
-                'type': 'object',
-                'patternProperties': {
-                    '.+': {
-                        'title': 'Algorithm',
-                        'description': 'The algorithm id. Properties for each algorithm describe the algorithm parameters.',
-                        'type': 'object'
-                    }
-                }
-            }
-        })
     def submitsdm(self):
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             self.record_error('Request must be POST', 400)
@@ -225,16 +141,6 @@ class ExperimentService(BaseService):
         return retval
 
     @returnwrapper
-    @apimethod(
-        method='GET',
-        encType='application/x-www-form-urlencoded',
-        properties={
-            'uuid': {
-                'type': 'string',
-                'title': 'An experiment uuid',
-                'description': 'The uuid for an experiment, to fetch details.'
-            }
-        })
     def metadata(self, uuid):
         exp = uuidToObject(uuid)
         if not exp:
@@ -265,16 +171,6 @@ class ExperimentService(BaseService):
         return retval
 
     @returnwrapper
-    @apimethod(
-        method='POST',
-        encType='application/x-www-form-urlencoded',
-        properties={
-            'lsid': {
-                'type': 'string',
-                'title': 'Species LSID',
-                'description': 'The LSID of a species',
-            }
-        })
     def demosdm(self, lsid):
         # Run SDM on a species given by lsid (from ALA), followed by a Climate
         # Change projection.

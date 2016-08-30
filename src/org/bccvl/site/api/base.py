@@ -73,7 +73,7 @@ class BaseAPITraverser(BrowserView):
         # add links to sub services
         for service in self.get_services():
             schema["links"].append({
-                "rel": self.linkrel,
+                "rel": self.linkrel,  # the service id/title/whatever
                 "href": '{id}/' + service.__name__,
                 "title": service.title,
                 "description": service.description,
@@ -162,16 +162,7 @@ class BaseService(BrowserView):
         }
         # add method infos:
         for method in self.get_methods():
-            schema['links'].append({
-                'rel': 'method',
-                'href': '{id}/' + method['schema']['id'],
-                'title': method['schema']['title'],
-                'description': method['schema']['description'],
-                'method': method['schema']['method'],
-                'schema': method['schema']['schema'],
-                'encType': method['schema']['encType'],
-                # TODO: target method['schema'] ... return value
-            })
+            schema['links'].append(method)
         # self.request.response['CONTENT-TYPE'] = 'application/json;
         # profile=http://json-schema.org/draft-04/hyper-schema#'
         return schema

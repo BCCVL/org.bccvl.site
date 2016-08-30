@@ -10,7 +10,7 @@ from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import getVocabularyRegistry
 
 from org.bccvl.site.api.base import BaseAPITraverser, BaseService
-from org.bccvl.site.api.decorators import api, apimethod, returnwrapper
+from org.bccvl.site.api.decorators import api, returnwrapper
 from org.bccvl.site.api.interfaces import (
     IAPIService, IDMService, IJobService, IExperimentService, ISiteService)
 from org.bccvl.site.job.interfaces import IJobUtility
@@ -73,7 +73,7 @@ class SiteVersionTraverser(BaseAPITraverser):
     linkrel = 'version'
 
 
-@api
+@api('job_v1.json')
 @implementer(IJobService)
 class JobService(BaseService):
 
@@ -83,20 +83,6 @@ class JobService(BaseService):
     encType = "application/x-www-form-urlencoded"
 
     @returnwrapper
-    @apimethod(
-        properties={
-            'uuid': {
-                'type': 'string',
-                'title': 'Object uuid',
-                'description': 'Experiment, result or datasetid for which to query job state',
-                'default': None,
-            },
-            'jobid': {
-                'type': 'string',
-                'title': 'Job id',
-                'default': None
-            },
-        })
     def state(self, jobid=None, uuid=None):
         job = None
         try:
@@ -124,14 +110,6 @@ class JobService(BaseService):
         raise NotFound(self, 'state', self.request)
 
     @returnwrapper
-    @apimethod(
-        properties={
-            '**kw': {
-                'type': 'object',
-                'title': 'Query',
-                'descirption': 'query parameters as keywords'
-            }
-        })
     def query(self):
         # FIXME: add owner check here -> probably easiest to make userid query
         # parameter part of jobtool query function?  ; could also look inteo
@@ -160,7 +138,7 @@ class JobService(BaseService):
     # TODO: check security
 
 
-@api
+@api('site_v1.json')
 @implementer(ISiteService)
 class SiteService(BaseService):
 
@@ -169,16 +147,10 @@ class SiteService(BaseService):
     method = 'GET'
     encType = "application/x-www-form-urlencoded"
 
+    # getindexnames .. for querying(+type?)
+    # getvocabnames
+
     @returnwrapper
-    @apimethod(
-        properties={
-            'uuid': {
-                'type': 'string',
-                'title': 'Object UUID',
-                'description': 'The UUID for a content object',
-            }
-        }
-    )
     def can_access(self, uuid=None):
         if uuid:
             context = uuidToCatalogBrain(uuid)
@@ -190,14 +162,6 @@ class SiteService(BaseService):
             return 'allowed'
 
     @returnwrapper
-    @apimethod(
-        properties={
-            'uuid': {
-                'type': 'string',
-                'title': 'Experiment URL',
-            }
-        }
-    )
     def send_support_email(self, url=None):
         try:
             if url is None:
@@ -245,15 +209,6 @@ class SiteService(BaseService):
             }
 
     @returnwrapper
-    @apimethod(
-        properties={
-            'uuid': {
-                'type': 'string',
-                'title': 'Vocabulary Name',
-                'description': 'The name for a registered vocabulary',
-            }
-        }
-    )
     def vocabulary(self, name=None):
         # TODO: check if there are vocabularies that need to be protected
         vocab = ()
