@@ -10,7 +10,7 @@ from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import getVocabularyRegistry
 
 from org.bccvl.site.api.base import BaseAPITraverser, BaseService
-from org.bccvl.site.api.decorators import api, returnwrapper
+from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import (
     IAPIService, IDMService, IJobService, IExperimentService, ISiteService)
 from org.bccvl.site.job.interfaces import IJobUtility
@@ -82,8 +82,9 @@ class JobService(BaseService):
     method = 'GET'
     encType = "application/x-www-form-urlencoded"
 
-    @returnwrapper
-    def state(self, jobid=None, uuid=None):
+    def state(self):
+        jobid = self.request.form.get('jobid', None)
+        uuid = self.request.form.get('uuid', None)
         job = None
         try:
             jobtool = getUtility(IJobUtility)
@@ -109,7 +110,6 @@ class JobService(BaseService):
         # No job found
         raise NotFound(self, 'state', self.request)
 
-    @returnwrapper
     def query(self):
         # FIXME: add owner check here -> probably easiest to make userid query
         # parameter part of jobtool query function?  ; could also look inteo
@@ -150,8 +150,8 @@ class SiteService(BaseService):
     # getindexnames .. for querying(+type?)
     # getvocabnames
 
-    @returnwrapper
-    def can_access(self, uuid=None):
+    def can_access(self):
+        uuid = self.request.form.get('uuid')
         if uuid:
             context = uuidToCatalogBrain(uuid)
         else:
@@ -161,8 +161,8 @@ class SiteService(BaseService):
         else:
             return 'allowed'
 
-    @returnwrapper
-    def send_support_email(self, url=None):
+    def send_support_email(self):
+        url = self.request.form.get('url')
         try:
             if url is None:
                 raise Exception("URL is not specified")
@@ -208,9 +208,9 @@ class SiteService(BaseService):
                 'message': u'Fail to send your email to BCCVL support. Exception {}'.format(e)
             }
 
-    @returnwrapper
-    def vocabulary(self, name=None):
+    def vocabulary(self):
         # TODO: check if there are vocabularies that need to be protected
+        name = self.request.form.get('name', None)
         vocab = ()
         try:
             # TODO: getUtility(IVocabularyFactory???)

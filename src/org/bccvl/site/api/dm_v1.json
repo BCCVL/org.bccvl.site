@@ -63,7 +63,8 @@
                         "title": "Dataset uuid"
                     }
                 }
-            }
+            },
+            "mediaType": "text/xml"            
         },
         {
             "title": "update_metadata",

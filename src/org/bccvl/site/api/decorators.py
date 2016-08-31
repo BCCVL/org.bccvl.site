@@ -1,15 +1,18 @@
+import functools
 import inspect
 import json
 import logging
 import os.path
 import sys
 from urlparse import urlsplit
+import xmlrpclib
 
-from decorator import decorator
 from zope import contenttype
 from zope.annotation.interfaces import IAnnotations
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.security.interfaces import IUnauthorized
+from zope.security.interfaces import Forbidden
 
 from org.bccvl.site.utils import decimal_encoder
 
@@ -33,17 +36,39 @@ class JSONErrorView(BrowserView):
 
     def __call__(self):
         self.request.response['CONTENT-TYPE'] = 'application/json'
+        if IUnauthorized.providedBy(self.context):
+            # FIXME: here we are hacking the Zope2.App.startup.ZPublisherExceptionHook.__call__
+            #        We should have been called from there. Problem is that it re-raises
+            #        unauthorised exception and therefore makes it impossible to
+            #        override response body.
+            # Returned status code is not entirely correct, but at least body
+            # content is json
+            import sys
+            caller = sys._getframe().f_back
+            # replace exception class with another that is not re-raised
+            caller.f_locals.update({'t': Forbidden})
+            import ctypes
+            # call python to turn locals dict in other frame into fast
+            # variables
+            ctypes.pythonapi.PyFrame_LocalsToFast(
+                ctypes.py_object(caller), ctypes.c_int(0))
         if self.__parent__.errors:
             return json.dumps({
                 'errors': [
                     self.__parent__.errors
                 ]
             })
-        else:
+        elif self.context.message:
             # assume standard exception
             return json.dumps({
                 'errors': [{
                     'title': self.context.message
+                }]
+            })
+        else:
+            return json.dumps({
+                'errors': [{
+                    'title': 'Sorry, I have no meaningful error message available'
                 }]
             })
 
@@ -90,8 +115,9 @@ def api(schema):
                 # store link information about method
                 if methodname in cls.__methods__:
                     # we already have a schema assigned...
-                    import ipdb
-                    ipdb.set_trace()
+                    LOG.warn(
+                        "Method %s.%s already published as API method",
+                        cls, methodname)
                 # set defaults:
                 link.setdefault('method', 'GET')
                 link.setdefault('encType', 'application/json')
@@ -99,6 +125,9 @@ def api(schema):
                 #       to support multiple encType and methods
                 # add method to __methods__ dict to enable view lookup
                 cls.__methods__[methodname] = link
+                # wrap instancemethod as well
+                setattr(cls, methodname, api_method(
+                    getattr(cls, methodname).im_func))
             else:
                 LOG.warn("Method '%s' from schema not defined on class '%s'",
                          methodname, cls)
@@ -107,107 +136,66 @@ def api(schema):
     return annotate
 
 
-# self passed in as *args
-@decorator
-def returnwrapper(f, *args, **kw):
+def api_method(f):
     """
-    A function wrapped with this will either return text/xml or application/json.
-
-
+    A method decorated with this will process a request according to a defined json hyper schema.
     """
     # TODO: do some generic form validation in here:
     #       see http://code.google.com/p/mimeparse/
     #       self.request.get['HTTP_ACCEPT']
     #       self.request.get['CONTENT_TYPE']
     #       self.request.get['method'']
-    #       in case of post extract parameters and pass in?
-    #       jsonrpc:
-    #            content-type: application/json-rpc (or application/json,
-    #            application/jsonrequest) accept: application/json-rpc (or
-    #            --""--)
-    #       jsonapi? application/vnd.api+json?
 
-    isxmlrpc = False
-    view = args[0]
-    try:
-        # TODO: could I ask the the request somehow? (ZPublisher should have
-        # created some IXMLRPCRequest?
-        # NOTE: parsing may fail esp. for GET requests where there is no
-        #       content
-        ct = contenttype.parse.parse(view.request['CONTENT_TYPE'])
-        if ct[0:2] == ('text', 'xml'):
-            # we have xmlrpc
-            isxmlrpc = True
-    except Exception as e:
-        # it's not valid xmlrpc
-        # TODO: log this ?
-        pass
+    @functools.wraps(f)
+    def process_request(*args, **kw):
+        # instance is passed as first argument. this is usually the current
+        # view
+        view = args[0]
+        ct = None
+        # TODO: getting the schema this way is a bit clunky
+        link = view.__methods__[f.__name__]
+        # TODO: extract correct link if multiple encodings are supported
 
-    try:
-        if not isxmlrpc:
-            # TODO: apply JSONAPIRequest marker to request, so that error templates
-            #       can be looked up?
-            from zope.interface import alsoProvides
-            from .decorators import IJSONRequest
-            alsoProvides(view.request, IJSONRequest)
+        # No body on GET, HEAD, DELETE
+        if view.request['method'] not in ('GET', 'HEAD', 'DELET'):
+            # parse body
+            ct = contenttype.parse.parse(view.request['CONTENT_TYPE'])
+            if ct[0:2] == ('application', 'json'):
+                # it's json, let's parse it and attach to request.form
+                # TODO: check request length?
+                data = json.load(view.request.BODYFILE)
+                # TODO: validate against schema?
+                view.request.form.update(data)
+        # all other content types and methods should be handled by Zope
+        # already
 
-        # Can't really parse here, as the zope engine expects that all parameters
-        #     required by the wrapped method are passed in the request (and zope
-        #     can only parse form / url parameters)
-        # if ct[0:2] == ('application', 'json'):
-        #     # TODO: assumes that content type is only set on request methods
-        #     #       that allow body content
-        #     # TODO: check content length?
-        #     # TODO: could do json schema validation here
-        #     input = json.load(view.request.BODYFILE)
-        #     # if isinstance(input, list):
-        #     #     args = input
-        #     # elif isinstance(input, dict):
-        #     #     kw = input
-        #     # else:
-        #     #     # TODO: is this valid?
-        #     #     args = [input]
-        #     args = [input]
+        # validate request method
+        # if possible validate request parameters as well / payload
 
+        # methods are expected to check request or parameters
         ret = f(*args, **kw)
-    except Exception as e:
-        if isxmlrpc:
-            # let zope handle it
-            raise
-        # TODO: special handlings for:
-        #    unauthorized -> json
-        #    others?
 
-        # view.request.response.setStatus(e.__class__)
-        # view.request.response['CONTENT-TYPE'] = 'application/json'
-        # return '{"errors": "test error"}'
+        # get result content type
+        ctype = link.get('mediaType', 'application/json')
+        if ctype == 'application/json':
+            # TODO: maybe add HTTP link header to refer to schema?
+            ret = json.dumps(ret, default=decimal_encoder)
+            annots = IAnnotations(view.request)
+            if 'json.schema' in annots:
+                ctype = "{};profile={}".format(
+                    ctype, annots['json.schema'])
+        elif ctype == 'text/xml':
+            # we do xml-rpc serialisation here
 
-        # view.request.response._error_format = 'application/json'
-        # view.request.response.setBody('{"error": "test error"}')
-        raise
-    # return ACCEPT encoding here or IStreamIterator, that encodes
-    # stuff on the fly could handle response encoding via
-    # request.setBody ... would need to replace response instance of
-    # request.response. (see ZPublisher.xmlprc.response, which wraps a
-    # default Response)
-    # FIXME: this is a bad workaround for - this method sholud be wrapped around tools and then be exposed as BrowserView ... ont as tool and BrowserView
-    #        we call these wrapped functions internally, from templates and
-    #        as ajax calls and xmlrpc calls, and expect different return encoding.
-    #        ajax: json
-    #        xmlrpc: xml, done by publisher
-    #        everything else: python
+            ret = xmlrpclib.dumps(
+                (ret,), methodresponse=True, allow_none=True)
 
-    # if we don't have xmlrpc we serialise to json
-    if not isxmlrpc:
-        # TODO: maybe add HTTP link header to refer to schema?
-        ret = json.dumps(ret, default=decimal_encoder)
-        annots = IAnnotations(view.request)
-        if 'json.schema' in annots:
-            ctype = 'application/json;profile="{}"'.format(
-                annots['json.schema'])
         else:
-            ctype = 'application/json'
+            # this really should not happen and is a programming error
+            raise Exception('Server Error ... unkown return media type')
         view.request.response['CONTENT-TYPE'] = ctype
         # FIXME: caching headers should be more selective
         # prevent caching of ajax results... should be more selective here
-    return ret
+        return ret
+
+    return process_request

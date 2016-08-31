@@ -99,7 +99,7 @@
         },
         {
             "title": "metadata",
-            "description": "Retrieve metadata for an experiment",
+            "description": "Retrieve metadata for an experiment. Returned data is encoding according to xml-rpc specification.",
             "rel": "metadata",
             "href": "{id}/metadata",
             "method": "GET",
@@ -112,7 +112,8 @@
                         "title": "Experiment uuid"
                     }
                 }
-            }
+            },
+            "mediaType": "text/xml"
         },
         {
             "title": "demosdm",

@@ -4,6 +4,8 @@ import logging
 import urllib
 from pkg_resources import resource_string
 
+from Products.CMFCore.interfaces import ISiteRoot
+
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToObject
 from plone.registry.interfaces import IRegistry
@@ -17,7 +19,7 @@ from zope.schema import getFields
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api.base import BaseService
-from org.bccvl.site.api.decorators import api, returnwrapper
+from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import IExperimentService
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IDownloadInfo, IExperimentJobTracker)
@@ -37,13 +39,23 @@ class ExperimentService(BaseService):
     method = 'GET'
     encType = "application/x-www-form-urlencoded"
 
-    @returnwrapper
     def submitsdm(self):
+        # TODO: catch UNAuthorized correctly and return json error
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             self.record_error('Request must be POST', 400)
             raise BadRequest('Request must be POST')
+        # make sure we have the right context
+        if ISiteRoot.providedBy(self.context):
+            # we have been called at site root... let's traverse to default
+            # experiments location
+            context = self.context.restrictedTraverse(
+                defaults.EXPERIMENTS_FOLDER_ID)
+        else:
+            # custom context.... let's use in
+            context = self.context
+
         # parse request body
-        params = json.load(self.request.BODYFILE)
+        params = self.request.form
         # validate input
         # TODO: should validate type as well..... (e.g. string has to be
         # string)
@@ -74,8 +86,11 @@ class ExperimentService(BaseService):
                               {'parameter': 'environmental_data'})
         else:
             props['environmental_datasets'] = params['environmental_data']
-        props['modelling_region'] = json.dumps(
-            params.get('modelling_region', ''))
+        if params.get('modelling_region', ''):
+            props['modelling_region'] = json.dumps(
+                params['modelling_region'])
+        else:
+            props['modelling_region'] = None
         if not params.get('algorithms', None):
             self.record_error('Bad Request', 400,
                               'Missing parameter algorithms',
@@ -110,7 +125,7 @@ class ExperimentService(BaseService):
         # TODO: make sure self.context is 'experiments' folder?
         from plone.dexterity.utils import createContent, addContentToContainer
         experiment = createContent("org.bccvl.content.sdmexperiment", **props)
-        experiment = addContentToContainer(self.context, experiment)
+        experiment = addContentToContainer(context, experiment)
         # TODO: check if props and algo params have been applied properly
         experiment.parameters = dict(props['functions'])
         # FIXME: need to get resolution from somewhere
@@ -140,8 +155,8 @@ class ExperimentService(BaseService):
             retval['jobs'].append(jt.get_job().id)
         return retval
 
-    @returnwrapper
-    def metadata(self, uuid):
+    def metadata(self):
+        uuid = self.request.form.get('uuid')
         exp = uuidToObject(uuid)
         if not exp:
             self.record_error('Not Found', 404,
@@ -170,8 +185,8 @@ class ExperimentService(BaseService):
             })
         return retval
 
-    @returnwrapper
-    def demosdm(self, lsid):
+    def demosdm(self):
+        lsid = self.request.form.get('lsid')
         # Run SDM on a species given by lsid (from ALA), followed by a Climate
         # Change projection.
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':

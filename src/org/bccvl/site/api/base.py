@@ -1,12 +1,12 @@
 from zope.annotation.interfaces import IAnnotations
-from zope.interface import implementer, providedBy
+from zope.interface import implementer, providedBy, alsoProvides
 from zope.component import getSiteManager, getMultiAdapter
 from zope.location import locate
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces import NotFound, IPublishTraverse
 from zope.traversing.browser.interfaces import IAbsoluteURL
 
-from org.bccvl.site.api.decorators import returnwrapper
+from org.bccvl.site.api.decorators import api_method, IJSONRequest
 
 
 @implementer(IPublishTraverse)
@@ -23,6 +23,10 @@ class BaseAPITraverser(BrowserView):
 
     def __init__(self, context, request, parent=None):
         super(BaseAPITraverser, self).__init__(context, request)
+        # we are moving into API land, let's annotate the request object if
+        # necessary (mostly needed to avoid Plone's default error handling)
+        if not IJSONRequest.providedBy(self.request):
+            alsoProvides(self.request, IJSONRequest)
         self.parent = parent
 
     def lookup_service(self, name):
@@ -47,7 +51,7 @@ class BaseAPITraverser(BrowserView):
         else:
             return self.lookup_service(name)
 
-    @returnwrapper
+    @api_method
     def schema(self):
         # """
         # assumes: self.title, description, __name__, method
@@ -92,7 +96,7 @@ class BaseAPITraverser(BrowserView):
         except:
             raise NotFound(self, name, request)
 
-    @returnwrapper
+    @api_method
     def __call__(self, *args, **kw):
         # TODO: IAbsoluteURL does not ad @@ for view name
         url = getMultiAdapter((self, self.request), IAbsoluteURL)()
@@ -116,12 +120,14 @@ class BaseService(BrowserView):
     description = None
     __methods__ = None
     errors = None
+    # should we store __schema__ here?
 
     def __init__(self, context, request, parent):
         super(BaseService, self).__init__(context, request)
         self.parent = parent
         self.errors = []
 
+    # TODO: rename record_error to set/add_error or so?
     def record_error(self, title, status=None, detail=None, source=None):
         error = {'title': title}
         if status:
@@ -139,8 +145,9 @@ class BaseService(BrowserView):
             return self.__methods__[name]
         raise NotFound(self, name, self.request)
 
-    @returnwrapper
+    @api_method
     def schema(self):
+        # TODO: could just return original schema?
         url = getMultiAdapter((self, self.request), IAbsoluteURL)()
         purl = getMultiAdapter((self.__parent__, self.request), IAbsoluteURL)()
         schema = {
@@ -172,12 +179,12 @@ class BaseService(BrowserView):
             return self.schema
         try:
             method = self.get_methods(name)
-            func = getattr(self, method['method'])
+            func = getattr(self, name)  # method['method'])
             return func
         except:
             raise NotFound(self, name, request)
 
-    @returnwrapper
+    @api_method
     def __call__(self, *args, **kw):
         # TODO: IAbsoluteURL does not ad @@ for view name
         url = getMultiAdapter((self, self.request), IAbsoluteURL)()
