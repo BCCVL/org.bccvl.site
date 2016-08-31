@@ -52,7 +52,7 @@ class JSONErrorView(BrowserView):
             # variables
             ctypes.pythonapi.PyFrame_LocalsToFast(
                 ctypes.py_object(caller), ctypes.c_int(0))
-        if self.__parent__.errors:
+        if getattr(self.__parent__, 'errors', None):
             return json.dumps({
                 'errors': [
                     self.__parent__.errors
@@ -153,7 +153,15 @@ def api_method(f):
         view = args[0]
         ct = None
         # TODO: getting the schema this way is a bit clunky
-        link = view.__methods__[f.__name__]
+        if f.__name__ not in ('__call__', 'schema'):
+            link = view.__methods__[f.__name__]
+        else:
+            # Fallback for APITraversers, and default methods like __call__ and
+            # schema
+            link = {
+                'method': 'GET',
+                'schema': {}
+            }
         # TODO: extract correct link if multiple encodings are supported
 
         # No body on GET, HEAD, DELETE
