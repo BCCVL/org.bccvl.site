@@ -1,0 +1,61 @@
+{
+    "title": "Job API v1",
+    "description": "BCCVL background jobs",
+    "id": "/v1",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "links": [
+        {
+            "title": "Get job state",
+            "description": "State input parameter schema. If jobid is given it will be used to resolve a job, otherwise either the given content object uuid is used to find a related job object. If neither is set, the method tries to use the current context's uuid.",
+            "rel": "state",
+            "href": "/{id}/state",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "title": "Content object uuid",
+                        "description": "Experiment, result or datasetid for which to query job state",
+                        "default": null
+                    },
+                    "jobid": {
+                        "type": "string",
+                        "title": "Job id",
+                        "description": "A Job id to get status for.",
+                        "default": null
+                    }
+                }
+            }
+        },
+        {
+            "title": "Query for jobs",
+            "description": "Search system for background jobs.",
+            "rel": "query",
+            "href": "{id}/query",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "title": "Filter by job state",
+                        "enum": ["PENDING", "QUEUED", "COMPLETED", "FAILED"]
+                    },
+                    "content": {
+                        "type": "string",
+                        "title": "Filter by content ojebct uuid"
+                    },
+                    "id": {
+                        "type": "string",
+                        "title": "Filter by job id"
+                    }
+                }
+            }
+        }
+    ]
+}
+    

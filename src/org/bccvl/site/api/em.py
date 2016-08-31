@@ -4,6 +4,8 @@ import logging
 import urllib
 from pkg_resources import resource_string
 
+from Products.CMFCore.interfaces import ISiteRoot
+
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToObject
 from plone.registry.interfaces import IRegistry
@@ -17,7 +19,7 @@ from zope.schema import getFields
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api.base import BaseService
-from org.bccvl.site.api.decorators import api, apimethod, returnwrapper
+from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import IExperimentService
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IDownloadInfo, IExperimentJobTracker)
@@ -28,7 +30,7 @@ from org.bccvl.site.swift.interfaces import ISwiftSettings
 LOG = logging.getLogger(__name__)
 
 
-@api
+@api('em_v1.json')
 @implementer(IExperimentService)
 class ExperimentService(BaseService):
 
@@ -37,97 +39,23 @@ class ExperimentService(BaseService):
     method = 'GET'
     encType = "application/x-www-form-urlencoded"
 
-    @returnwrapper
-    @apimethod(
-        method='POST',
-        encType='application/json',
-        properties={
-            'title': {
-                'type': 'string',
-                'title': 'Experiment title',
-                'description': 'A title for this experiment',
-            },
-            'description': {
-                'type': 'string',
-                'title': 'Description',
-                'description': 'A short description for this experiment',
-            },
-            'occurrence_data': {
-                'title': 'Occurrence Data',
-                'type': 'object',
-                'description': 'Occurrence data to use',
-                'properties': {
-                    'source': {
-                        'title': 'Occurrence data source',
-                        'description': 'Source from where to fetch the occurrence data',
-                        'type': 'string',
-                        'enum': ['ala', 'bccvl', 'gbif', 'aekos']
-                    },
-                    'id': {
-                        'title': 'Dataset id',
-                        'description': 'Dataset id specific for data source',
-                    }
-                }
-            },
-            'abbsence_data': {
-                'title': 'Occurrence Data',
-                'type': 'object',
-                'description': 'Occurrence data to use',
-                'properties': {
-                    'source': {
-                        'title': 'Abasence data source',
-                        'description': 'Source from where to fetch the absence data',
-                        'type': 'string',
-                        'enum': ['bccvl']
-                    },
-                    'id': {
-                        'title': 'Dataset id',
-                        'description': 'Dataset id specific for data source',
-                    }
-                }
-            },
-            'scale_down': {
-                'type': 'booloan',
-                'title': 'Common resolution',
-                'description': 'Scale to highest (true) or lowest (false) resolution',
-            },
-            'environmental_data': {
-                'title': 'Climate & Environmental data',
-                'description': 'Selected climate and environmental data',
-                'type': 'object',
-                'patternProperties': {
-                    '.+': {
-                        'title': 'Dataset',
-                        'description': "key is a dataset id, and value should be alist of layer id's availaible within this dataset",
-                        'type': 'array',
-                        'items': {'type': 'string'}
-                    }
-                }
-            },
-            'modelling_region': {
-                'title': 'Modelling Region',
-                'description': "A region to constrain the modelling area to. The value is expected to be a GeoJSON object of type 'feature'",
-                'type': 'object'
-            },
-            'algorithms': {
-                'title': 'Algorithms',
-                'description': 'Algorithms to use.',
-                'type': 'object',
-                'patternProperties': {
-                    '.+': {
-                        'title': 'Algorithm',
-                        'description': 'The algorithm id. Properties for each algorithm describe the algorithm parameters.',
-                        'type': 'object'
-                    }
-                }
-            }
-        })
     def submitsdm(self):
+        # TODO: catch UNAuthorized correctly and return json error
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             self.record_error('Request must be POST', 400)
             raise BadRequest('Request must be POST')
+        # make sure we have the right context
+        if ISiteRoot.providedBy(self.context):
+            # we have been called at site root... let's traverse to default
+            # experiments location
+            context = self.context.restrictedTraverse(
+                defaults.EXPERIMENTS_FOLDER_ID)
+        else:
+            # custom context.... let's use in
+            context = self.context
+
         # parse request body
-        params = json.load(self.request.BODYFILE)
+        params = self.request.form
         # validate input
         # TODO: should validate type as well..... (e.g. string has to be
         # string)
@@ -158,8 +86,11 @@ class ExperimentService(BaseService):
                               {'parameter': 'environmental_data'})
         else:
             props['environmental_datasets'] = params['environmental_data']
-        props['modelling_region'] = json.dumps(
-            params.get('modelling_region', ''))
+        if params.get('modelling_region', ''):
+            props['modelling_region'] = json.dumps(
+                params['modelling_region'])
+        else:
+            props['modelling_region'] = None
         if not params.get('algorithms', None):
             self.record_error('Bad Request', 400,
                               'Missing parameter algorithms',
@@ -194,7 +125,7 @@ class ExperimentService(BaseService):
         # TODO: make sure self.context is 'experiments' folder?
         from plone.dexterity.utils import createContent, addContentToContainer
         experiment = createContent("org.bccvl.content.sdmexperiment", **props)
-        experiment = addContentToContainer(self.context, experiment)
+        experiment = addContentToContainer(context, experiment)
         # TODO: check if props and algo params have been applied properly
         experiment.parameters = dict(props['functions'])
         # FIXME: need to get resolution from somewhere
@@ -224,18 +155,8 @@ class ExperimentService(BaseService):
             retval['jobs'].append(jt.get_job().id)
         return retval
 
-    @returnwrapper
-    @apimethod(
-        method='GET',
-        encType='application/x-www-form-urlencoded',
-        properties={
-            'uuid': {
-                'type': 'string',
-                'title': 'An experiment uuid',
-                'description': 'The uuid for an experiment, to fetch details.'
-            }
-        })
-    def metadata(self, uuid):
+    def metadata(self):
+        uuid = self.request.form.get('uuid')
         exp = uuidToObject(uuid)
         if not exp:
             self.record_error('Not Found', 404,
@@ -264,18 +185,8 @@ class ExperimentService(BaseService):
             })
         return retval
 
-    @returnwrapper
-    @apimethod(
-        method='POST',
-        encType='application/x-www-form-urlencoded',
-        properties={
-            'lsid': {
-                'type': 'string',
-                'title': 'Species LSID',
-                'description': 'The LSID of a species',
-            }
-        })
-    def demosdm(self, lsid):
+    def demosdm(self):
+        lsid = self.request.form.get('lsid')
         # Run SDM on a species given by lsid (from ALA), followed by a Climate
         # Change projection.
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':

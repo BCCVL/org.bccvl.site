@@ -1,0 +1,63 @@
+{
+    "title": "Global Site API v1",
+    "description": "Site wide API methods",
+    "id": "/v1",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "links": [
+        {
+            "title": "can_access",
+            "description": "Check whether current user cann access content object identified by uuid.",
+            "rel": "can_access",
+            "href": "/{id}/can_access",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "title": "Content object uuid",
+                        "description": "The uuid for a content object",
+                        "default": null
+                    }
+                }
+            }
+        },
+        {
+            "title": "send_support_email",
+            "description": "Send an email to ask for support for a specific location. (usually an experiment or a specific result.",
+            "rel": "send_support_email",
+            "href": "{id}/send_support_email",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "title": "Experiment URL"
+                    }
+                }
+            }
+        },
+        {
+            "title": "vocabulary",
+            "description": "Retrieve a vocabulary",
+            "rel": "vocabulary",
+            "href": "{id}/vocabulary",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Vocabulary name"
+                    }
+                }
+            }
+        }
+    ]
+}
+    

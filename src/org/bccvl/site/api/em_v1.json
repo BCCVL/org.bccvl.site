@@ -1,0 +1,137 @@
+{
+    "title": "Experiment API v1",
+    "description": "Manage experiments",
+    "id": "/v1",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "links": [
+        {
+            "title": "submitsdm",
+            "description": "Submit SDM Experiment",
+            "rel": "submitsdm",
+            "href": "/{id}/submitsdm",
+            "method": "POST",
+            "encType": "application/json",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Experiment title",
+                        "description": "A title for this experiment"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description",
+                        "description": "A short description for this experiment"
+                    },
+                    "occurrence_data": {
+                        "title": "Occurrence Data",
+                        "type": "object",
+                        "description": "Occurrence data to use",
+                        "properties": {
+                            "source": {
+                                "title": "Occurrence data source",
+                                "description": "Source from where to fetch the occurrence data",
+                                "type": "string",
+                                "enum": ["ala", "bccvl", "gbif", "aekos"]
+                            },
+                            "id": {
+                                "title": "Dataset id",
+                                "description": "Dataset id specific for data source"
+                            }
+                        }
+                    },
+                    "abbsence_data": {
+                        "title": "Occurrence Data",
+                        "type": "object",
+                        "description": "Occurrence data to use",
+                        "properties": {
+                            "source": {
+                                "title": "Abasence data source",
+                                "description": "Source from where to fetch the absence data",
+                                "type": "string",
+                                "enum": ["bccvl"]
+                            },
+                            "id": {
+                                "title": "Dataset id",
+                                "description": "Dataset id specific for data source"
+                            }
+                        }
+                    },
+                    "scale_down": {
+                        "type": "booloan",
+                        "title": "Common resolution",
+                        "description": "Scale to highest (true) or lowest (false) resolution"
+                    },
+                    "environmental_data": {
+                        "title": "Climate & Environmental data",
+                        "description": "Selected climate and environmental data",
+                        "type": "object",
+                        "patternProperties": {
+                            ".+": {
+                                "title": "Dataset",
+                                "description": "key is a dataset id, and value should be alist of layer id's availaible within this dataset",
+                                "type": "array",
+                                "items": {"type": "string"}
+                            }
+                        }
+                    },
+                    "modelling_region": {
+                        "title": "Modelling Region",
+                        "description": "A region to constrain the modelling area to. The value is expected to be a GeoJSON object of type feature",
+                        "type": "object"
+                    },
+                    "algorithms": {
+                        "title": "Algorithms",
+                        "description": "Algorithms to use.",
+                        "type": "object",
+                        "patternProperties": {
+                            ".+": {
+                                "title": "Algorithm",
+                                "description": "The algorithm id. Properties for each algorithm describe the algorithm parameters.",
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title": "metadata",
+            "description": "Retrieve metadata for an experiment. Returned data is encoding according to xml-rpc specification.",
+            "rel": "metadata",
+            "href": "{id}/metadata",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "title": "Experiment uuid"
+                    }
+                }
+            },
+            "mediaType": "text/xml"
+        },
+        {
+            "title": "demosdm",
+            "description": "Run demosdm",
+            "rel": "demosdm",
+            "href": "{id}/demosdm",
+            "method": "POST",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "lsid": {
+                        "type": "string",
+                        "title": "Species LSID"
+                    }
+                }
+            }
+        }
+    ]
+}
+    
