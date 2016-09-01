@@ -227,6 +227,7 @@ class DMService(BaseService):
             u' imported from {}'.format(source.upper())])
         md = IBCCVLMetadata(ds)
         md['genre'] = 'DataGenreTraits'
+        md['categories'] = ['traits']
         md['species'] = [{
             'scientificName': spec,
             'taxonID': spec} for spec in species]
