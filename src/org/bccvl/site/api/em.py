@@ -36,8 +36,6 @@ class ExperimentService(BaseService):
 
     title = u'Experiment API v1'
     description = u'Manage experiments'
-    method = 'GET'
-    encType = "application/x-www-form-urlencoded"
 
     def submitsdm(self):
         # TODO: catch UNAuthorized correctly and return json error
@@ -170,6 +168,7 @@ class ExperimentService(BaseService):
             'title': exp.title,
             'description': exp.description,
             'job_state': IExperimentJobTracker(exp).state,
+            'url': exp.absolute_url(),
             'results': []
         }
         # add info about parameters?
@@ -181,7 +180,8 @@ class ExperimentService(BaseService):
                 'title': result.title,
                 'description': result.description,
                 'job_state': IJobTracker(result).state,
-                'params': result.job_params
+                'params': result.job_params,
+                'url': result.absolute_url()
             })
         return retval
 

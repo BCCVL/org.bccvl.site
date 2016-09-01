@@ -1,3 +1,5 @@
+from Acquisition import aq_parent
+
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implementer, providedBy, alsoProvides
 from zope.component import getSiteManager, getMultiAdapter
@@ -7,6 +9,7 @@ from zope.publisher.interfaces import NotFound, IPublishTraverse
 from zope.traversing.browser.interfaces import IAbsoluteURL
 
 from org.bccvl.site.api.decorators import api_method, IJSONRequest
+from org.bccvl.site.api.interfaces import IAPIService, IAPITraverser
 
 
 @implementer(IPublishTraverse)
@@ -66,14 +69,19 @@ class BaseAPITraverser(BrowserView):
             'links': [
                 {'rel': 'self',
                  'href': url,  # '{id}',
-                 },
-                {'rel': 'up',
-                 'href': purl,
-                 'title': self.__parent__.title,
-                 'description': self.__parent__.description
                  }
             ]
         }
+        parent = aq_parent(self)
+        if (parent and (IAPITraverser.providedBy(parent) or IAPIService.providedBy(parent))):
+            schema['links'].append(
+                {'rel': 'up',
+                 'href': purl,
+                 'title': parent.title,
+                 'description': parent.description
+                 }
+            )
+
         # add links to sub services
         for service in self.get_services():
             schema["links"].append({
@@ -81,8 +89,7 @@ class BaseAPITraverser(BrowserView):
                 "href": '{id}/' + service.__name__,
                 "title": service.title,
                 "description": service.description,
-                "method": service.method
-                #schema, encType
+                "method": 'GET'  # this is always get for sub service traversers
             })
         # self.request.response['CONTENT-TYPE'] = 'application/json;
         # profile=http://json-schema.org/draft-04/hyper-schema#'

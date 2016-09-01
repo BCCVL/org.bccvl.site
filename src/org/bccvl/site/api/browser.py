@@ -12,7 +12,8 @@ from zope.schema.vocabulary import getVocabularyRegistry
 from org.bccvl.site.api.base import BaseAPITraverser, BaseService
 from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import (
-    IAPIService, IDMService, IJobService, IExperimentService, ISiteService)
+    IAPIService, IDMService, IJobService, IExperimentService, ISiteService,
+    IToolkitService, IAPITraverser)
 from org.bccvl.site.job.interfaces import IJobUtility
 import pkg_resources
 from email.mime.text import MIMEText
@@ -22,6 +23,7 @@ from email.mime.multipart import MIMEMultipart
 LOG = logging.getLogger(__name__)
 
 
+@implementer(IAPITraverser)
 class APITraverser(BaseAPITraverser):
 
     # entry point needs name, as we can't use browser:view registration
@@ -38,7 +40,6 @@ class DMVersionTraverser(BaseAPITraverser):
 
     title = u'Dataset API'
     description = u'Access datasets'
-    method = 'GET'
     service_iface = IDMService
     linkrel = 'version'
 
@@ -48,7 +49,6 @@ class JobVersionTraverser(BaseAPITraverser):
 
     title = u'Job API'
     description = u'Access jobs'
-    method = 'GET'
     service_iface = IJobService
     linkrel = 'version'
 
@@ -58,7 +58,6 @@ class ExperimentVersionTraverser(BaseAPITraverser):
 
     title = u'Experiment API'
     description = u'Access experiments'
-    method = 'GET'
     service_iface = IExperimentService
     linkrel = 'version'
 
@@ -68,8 +67,16 @@ class SiteVersionTraverser(BaseAPITraverser):
 
     title = u'Site API'
     description = u'Access site information'
-    method = 'GET'
     service_iface = ISiteService
+    linkrel = 'version'
+
+
+@implementer(IAPIService)
+class ToolkitVersionTraverser(BaseAPITraverser):
+
+    title = u'Toolkit API'
+    description = u'Access toolkit information'
+    service_iface = IToolkitService
     linkrel = 'version'
 
 
@@ -79,8 +86,6 @@ class JobService(BaseService):
 
     title = u'Job API v1'
     description = u'Access jobs'
-    method = 'GET'
-    encType = "application/x-www-form-urlencoded"
 
     def state(self):
         jobid = self.request.form.get('jobid', None)
@@ -144,8 +149,6 @@ class SiteService(BaseService):
 
     title = u'Global misc. API v1'
     description = u'Access site wide information'
-    method = 'GET'
-    encType = "application/x-www-form-urlencoded"
 
     # getindexnames .. for querying(+type?)
     # getvocabnames

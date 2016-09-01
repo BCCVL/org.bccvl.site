@@ -1,0 +1,19 @@
+{
+    "title": "Toolkit API v1",
+    "description": "Access toolkitss",
+    "id": "/v1",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "links": [
+        {
+            "title": "list",
+            "description": "List all toolkits",
+            "rel": "list",
+            "href": "/{id}/list",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {}
+        }
+    ]
+}
+    
