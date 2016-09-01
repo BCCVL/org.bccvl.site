@@ -26,6 +26,8 @@ def decimal_encoder(o):
     """
     if isinstance(o, Decimal):
         return float(o)
+    elif isinstance(o, set):
+        return list(o)
     raise TypeError(repr(o) + " is not JSON serializable")
 
 
