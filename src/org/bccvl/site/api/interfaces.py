@@ -94,3 +94,9 @@ class ISiteService(Interface):
     """
     Site information service
     """
+
+
+class IToolkitService(Interface):
+    """
+    API for toolkits.
+    """

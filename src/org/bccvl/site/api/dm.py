@@ -34,8 +34,6 @@ class DMService(BaseService):
 
     title = u'Dataset API v1'
     description = u'Access datasets'
-    method = 'GET'
-    encType = "application/x-www-form-urlencoded"
 
     def search(self):
         kw = self.request.form

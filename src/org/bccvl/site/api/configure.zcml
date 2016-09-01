@@ -179,6 +179,34 @@
         />  
   </class>
   
+  <!-- toolkit APIs -->
+  <adapter
+      name="toolkit"
+      for="* * *"
+      provides=".interfaces.IAPIService"
+      factory=".browser.ToolkitVersionTraverser"
+      permission="zope2.View"
+      />
+  <class class=".browser.ToolkitVersionTraverser">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IAPIService"
+        />  
+  </class>
+  
+  <adapter
+      name="v1"
+      for="* * *"
+      provides=".interfaces.IToolkitService"
+      factory=".toolkit.ToolkitService"
+      permission="zope2.View"
+      />
+  <class class=".toolkit.ToolkitService">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IToolkitService"
+        />  
+  </class>
   
   
  </configure>
