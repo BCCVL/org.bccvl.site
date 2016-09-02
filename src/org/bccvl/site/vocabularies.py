@@ -445,6 +445,13 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
 def scientific_category_source(context):
     return scientific_category_vocabulary
 
+summary_dataset_vocabulary = SimpleVocabulary([
+    SimpleTerm("Summary datasets", "Summarydatasets", u'Summary datasets'),
+])
+
+@provider(IVocabularyFactory)
+def summary_dataset_source(context):
+    return summary_dataset_vocabulary
 
 @provider(IVocabularyFactory)
 def data_collections_source(context):
