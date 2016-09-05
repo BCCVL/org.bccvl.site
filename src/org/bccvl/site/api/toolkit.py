@@ -55,6 +55,7 @@ def toolkit_schema(schema):
             continue
         if modes.get(name, '') == 'hidden':
             continue
+        # TODO: catch case, where field values come from a vocabulary
         ret['properties'][name] = {
             'type': type_to_string(field._type),
             'title': field.title,
