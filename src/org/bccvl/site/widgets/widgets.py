@@ -321,6 +321,9 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
                 # get algorithm term
                 algoid = getattr(brain.getObject(), 'job_params', {}).get('function')
                 algobrain = self.algo_dict.get(algoid, None)
+                # Filter out geographic models
+                if algobrain.getObject().algorithm_category == 'geographic':
+                    continue
                 item['subitems'].append(
                     {'item': brain,
                      'uuid': brain.UID,
