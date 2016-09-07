@@ -55,7 +55,7 @@
         <property name="icon_expr"></property>
         <property name="available_expr">python:portal.portal_membership.checkPermission('org.bccvl: Add Dataset', portal, 'datasets')</property>
         <property name="permissions">
-          <element value="org.bccvl: Add Dataset"/>
+          <element value="View"/>
         </property>
         <property name="visible">True</property>
       </object>
@@ -67,7 +67,7 @@
         <property name="icon_expr"></property>
         <property name="available_expr">python:portal.portal_membership.checkPermission('org.bccvl: Add Dataset', portal, 'datasets')</property>
         <property name="permissions">
-          <element value="org.bccvl: Add Dataset"/>
+          <element value="View"/>
         </property>
         <property name="visible">True</property>
       </object>
