@@ -135,7 +135,6 @@
                         "description": "Selected climate and environmental data. Missing layers will be filled with layers from SDM experiment.",
                         "type": "array",
                         "items": {"type": "string"}                        
-                        }
                     },
                     "projection_region": {
                         "title": "Projection Region",
