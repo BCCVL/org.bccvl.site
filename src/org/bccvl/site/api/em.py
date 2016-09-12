@@ -153,6 +153,92 @@ class ExperimentService(BaseService):
             retval['jobs'].append(jt.get_job().id)
         return retval
 
+    def submitcc(self):
+        # TODO: catch UNAuthorized correctly and return json error
+        if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
+            self.record_error('Request must be POST', 400)
+            raise BadRequest('Request must be POST')
+        # make sure we have the right context
+        if ISiteRoot.providedBy(self.context):
+            # we have been called at site root... let's traverse to default
+            # experiments location
+            context = self.context.restrictedTraverse(
+                defaults.EXPERIMENTS_FOLDER_ID)
+        else:
+            # custom context.... let's use in
+            context = self.context
+
+        # parse request body
+        params = self.request.form
+        # validate input
+        # TODO: should validate type as well..... (e.g. string has to be
+        # string)
+        # TODO: validate dataset and layer id's existence if possible
+        props = {}
+        if not params.get('title', None):
+            self.record_error('Bad Request', 400, 'Missing parameter title',
+                              {'parameter': 'title'})
+        else:
+            props['title'] = params['title']
+        props['description'] = params.get('description', '')
+
+        if not params.get('species_distribution_models', None):
+            self.record_error('Bad Request', 400,
+                              'Missing parameter species_distribution_models',
+                              {'parameter': 'species_distribution_models'})
+        else:
+            props['species_distribution_models'] = params[
+                'species_distribution_models']
+
+        if not params.get('future_climate_datasets', None):
+            self.record_error('Bad Request', 400,
+                              'Missing parameter future_climate_datasets',
+                              {'parameter': 'future_climate_datasets'})
+        else:
+            props['future_climate_datasetssets'] = params[
+                'future_climate_datasets']
+        if params.get('projection_region', ''):
+            props['projection_region'] = json.dumps(
+                params['projection_region'])
+        else:
+            props['projection_region'] = None
+
+        if self.errors:
+            raise BadRequest("Validation Failed")
+
+        # create experiment with data as form would do
+        # TODO: make sure self.context is 'experiments' folder?
+        from plone.dexterity.utils import createContent, addContentToContainer
+        experiment = createContent("org.bccvl.content.projectionexperiment",
+                                   **props)
+        experiment = addContentToContainer(context, experiment)
+        # FIXME: need to get resolution from somewhere
+        IBCCVLMetadata(experiment)['resolution'] = 'Resolution30m'
+
+        # submit newly created experiment
+        # TODO: handle background job submit .... at this stage we wouldn't
+        #       know the model run job ids
+        # TODO: handle submit errors and other errors that may happen above?
+        #       generic exceptions could behandled in returnwrapper
+        retval = {
+            'experiment': {
+                'url': experiment.absolute_url(),
+                'uuid': IUUID(experiment)
+            },
+            'jobs': [],
+        }
+        jt = IExperimentJobTracker(experiment)
+        msgtype, msg = jt.start_job(self.request)
+        if msgtype is not None:
+            retval['message'] = {
+                'type': msgtype,
+                'message': msg
+            }
+        for result in experiment.values():
+            jt = IJobTracker(result)
+            retval['jobs'].append(jt.get_job().id)
+        return retval
+
     def metadata(self):
         uuid = self.request.form.get('uuid')
         exp = uuidToObject(uuid)

@@ -675,6 +675,7 @@ class ProjectionJobTracker(MultiJobTracker):
                     # match sdm exp layers with future dataset layers
                     projlayers = {}
                     for ds, dslayerset in exp.environmental_datasets.items():
+                        dslayerset = set(dslayerset)
                         # add matching layers
                         projlayers.setdefault(dsuuid, set()).update(
                             dslayerset.intersection(futurelayers))
