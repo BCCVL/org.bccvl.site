@@ -79,8 +79,8 @@ class JobCatalogTool(CatalogTool):
     plone_tool = 1
 
     security = ClassSecurityInfo()
-    _properties=(
-        {'id':'title', 'type': 'string', 'mode':'w'},
+    _properties = (
+        {'id': 'title', 'type': 'string', 'mode': 'w'},
     )
 
     def __init__(self):
@@ -89,6 +89,7 @@ class JobCatalogTool(CatalogTool):
         self.jobs = OOBTree()
 
     security.declareProtected(SearchZCatalog, 'resolve_path')
+
     def resolve_path(self, path):
         # Attempt to resolve a job id (path) within this catalog.
         # The path is meant to be  a job id.
@@ -100,6 +101,7 @@ class JobCatalogTool(CatalogTool):
             pass
 
     security.declareProtected(ManageZCatalogEntries, 'clearFindAndRebuild')
+
     def clearFindAndRebuild(self):
         """
         Empties catalog, then finds all contentish objects (i.e. objects
@@ -112,6 +114,7 @@ class JobCatalogTool(CatalogTool):
             self.reindexObject(job, uid=job.id)
 
     security.declareProtected(ManageZCatalogEntries, 'reindexIndex')
+
     def reindexIndex(self, name, REQUEST, pghandler=None):
         if isinstance(name, str):
             name = (name, )
@@ -139,7 +142,6 @@ class JobCatalogTool(CatalogTool):
 
         if pghandler:
             pghandler.finish()
-
 
     # FIXME: either Job objects need to be locatable (SimpleItems)
     #        or we should override a few more methods here (and potentially in Catalog class as well), because currently indexed objects don't have a path or url (they are not Acquisition providers, and are therefore not accessible via traverse?)
@@ -172,7 +174,7 @@ def setup_job_catalog(portal):
     addIndex(cat, 'type', 'FieldIndex')
     addIndex(cat, 'function', 'FieldIndex')
 
-    #cat.addColumn('name')
+    # cat.addColumn('name')
     addColumn(cat, 'id')
     addColumn(cat, 'state')
     addColumn(cat, 'content')

@@ -1,0 +1,117 @@
+{
+    "title": "Dataset API v1",
+    "description": "Access datasets",
+    "id": "/v1",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "links": [
+        {
+            "title": "search",
+            "description": "Search for datasets",
+            "rel": "search",
+            "href": "/{id}/search",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "b_start": {
+                        "type": "integer",
+                        "title": "Batch start",
+                        "description": "Start index for result batching",
+                        "default": 0
+                    },
+                    "b_size": {
+                        "type": "integer",
+                        "title": "Batch size",
+                        "description": "Max size of result batch (limited to 50)",
+                        "default": 50
+                    },
+                    "sort_on": {
+                        "type": "string",
+                        "title": "Field to sort on",
+                        "description": "Fild name used to sort results",
+                        "default": null
+                    },
+                    "sort_order": {
+                        "type": "string",
+                        "title": "Sort order",
+                        "description": "Sort result based on sort_on in ascending or descending order",
+                        "default": null,
+                        "enum": ["ascending", "descending"]
+                    },
+                    "**kw": {
+                        "type": "string",
+                        "title": "Fields to query",
+                        "default": null
+                    }
+                }
+            }
+        },
+        {
+            "title": "metadata",
+            "description": "Retrieve metadata for a dataset",
+            "rel": "metadata",
+            "href": "{id}/metadata",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "title": "Dataset uuid"
+                    }
+                }
+            },
+            "mediaType": "text/xml"            
+        },
+        {
+            "title": "update_metadata",
+            "description": "Trigger update metadata background job",
+            "rel": "update_metadata",
+            "href": "{id}/update_metadata",
+            "method": "POST",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "title": "Dataset uuid"
+                    }
+                }
+            }
+        },
+        {
+            "title": "import_trait_data",
+            "description": "Trigger import of species trait data from external data repository",
+            "rel": "import_trait_data",
+            "href": "{id}/import_trait_data",
+            "method": "POST",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "source": {
+                        "type": "string",
+                        "title": "data source"
+                    },
+                    "species": {
+                        "type": "list",
+                        "title": "List of source specific species identifiers"
+                    },
+                    "traits": {
+                        "type": "list",
+                        "title": "List of source specific trait identifiers"
+                    },
+                    "environ": {
+                        "type": "list",
+                        "title": "List of source specific environment variables"
+                    }
+                }
+            }
+        }
+    ]
+}
+    

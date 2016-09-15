@@ -18,9 +18,11 @@ from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
     IEnsembleExperiment, ISpeciesTraitsExperiment, IMSDMExperiment)
-from org.bccvl.site.interfaces import IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker
+from org.bccvl.site.interfaces import (
+    IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker)
 from org.bccvl.site.job.interfaces import IJobTracker
-from org.bccvl.site.utils import build_ala_import_task
+from org.bccvl.site.utils import (
+    build_ala_import_task, build_traits_import_task)
 from org.bccvl.tasks.plone import after_commit_task
 
 
@@ -183,7 +185,9 @@ class SDMJobTracker(MultiJobTracker):
         # -> source code ... maybe some link expression? stored on result ? separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
-        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        # TODO: this is rather queued or created time for this activity ...
+        # could capture real start time on running status update (or start
+        # transfer)
         now = datetime.now().replace(microsecond=0)
         activity.add(PROV['startedAtTime'],
                      Literal(now.isoformat(), datatype=XSD['dateTime']))
@@ -202,7 +206,8 @@ class SDMJobTracker(MultiJobTracker):
             elif key in ('environmental_datasets',):
                 # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
                 # FIXME: look for dict params in other experiment types as well
-                # value is a dictionary, where keys are dataset uuids and values are a set of selected layers
+                # value is a dictionary, where keys are dataset uuids and
+                # values are a set of selected layers
                 for uuid, layers in value.items():
                     param.add(BCCVL['value'], LOCAL[uuid])
                     for layer in layers:
@@ -225,8 +230,8 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
@@ -234,10 +239,12 @@ class SDMJobTracker(MultiJobTracker):
             # TODO: resolution
             # species metadata
             md = IBCCVLMetadata(ds)
-            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['scientificName'], Literal(
+                md['species']['scientificName']))
             if md['species'].get('taxonID'):
                 dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
-            dsprov.add(DCTERMS['extent'], Literal('{} rows'.format(md.get('rows', 'N/A'))))
+            dsprov.add(DCTERMS['extent'], Literal(
+                '{} rows'.format(md.get('rows', 'N/A'))))
             # ... species data, ... species id
 
             # link with activity
@@ -253,8 +260,8 @@ class SDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # TODO: genre ...
             for layer in layers:
@@ -308,7 +315,7 @@ class SDMJobTracker(MultiJobTracker):
                 job.type = self.context.portal_type
                 job.function = func.getId()
                 job.toolkit = IUUID(func)
-                #reindex job object here ... next call should do that
+                # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
@@ -357,7 +364,9 @@ class MSDMJobTracker(MultiJobTracker):
         # -> source code ... maybe some link expression? stored on result ? separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
-        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        # TODO: this is rather queued or created time for this activity ...
+        # could capture real start time on running status update (or start
+        # transfer)
         now = datetime.now().replace(microsecond=0)
         activity.add(PROV['startedAtTime'],
                      Literal(now.isoformat(), datatype=XSD['dateTime']))
@@ -376,7 +385,8 @@ class MSDMJobTracker(MultiJobTracker):
             elif key in ('environmental_datasets',):
                 # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
                 # FIXME: look for dict params in other experiment types as well
-                # value is a dictionary, where keys are dataset uuids and values are a set of selected layers
+                # value is a dictionary, where keys are dataset uuids and
+                # values are a set of selected layers
                 for uuid, layers in value.items():
                     param.add(BCCVL['value'], LOCAL[uuid])
                     for layer in layers:
@@ -399,8 +409,8 @@ class MSDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
@@ -408,10 +418,12 @@ class MSDMJobTracker(MultiJobTracker):
             # TODO: resolution
             # species metadata
             md = IBCCVLMetadata(ds)
-            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['scientificName'], Literal(
+                md['species']['scientificName']))
             if md['species'].get('taxonID'):
                 dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
-            dsprov.add(DCTERMS['extent'], Literal('{} rows'.format(md.get('rows', 'N/A'))))
+            dsprov.add(DCTERMS['extent'], Literal(
+                '{} rows'.format(md.get('rows', 'N/A'))))
             # ... species data, ... species id
 
             # link with activity
@@ -427,8 +439,8 @@ class MSDMJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # TODO: genre ...
             for layer in layers:
@@ -471,7 +483,8 @@ class MSDMJobTracker(MultiJobTracker):
                         'modelling_region': self.context.modelling_region,
                     }
                     # add toolkit params:
-                    result.job_params.update(self.context.parameters[IUUID(func)])
+                    result.job_params.update(
+                        self.context.parameters[IUUID(func)])
                     self._createProvenance(result)
                     # submit job
                     LOG.info("Submit JOB %s to queue", func.getId())
@@ -482,7 +495,7 @@ class MSDMJobTracker(MultiJobTracker):
                     job.type = self.context.portal_type
                     job.function = func.getId()
                     job.toolkit = IUUID(func)
-                    #reindex job object here ... next call should do that
+                    # reindex job object here ... next call should do that
                     resultjt.set_progress('PENDING',
                                           u'{} pending'.format(func.getId()))
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
@@ -507,7 +520,8 @@ class ProjectionJobTracker(MultiJobTracker):
         month = dsmd.get('month', None)
         # TODO: get proper labels for emsc, gcm
         title = u'{} - project {}_{}_{} {} {}'.format(
-            self.context.title, dsmd['emsc'], dsmd['gcm'], year or '', month or '',
+            self.context.title, dsmd['emsc'], dsmd[
+                'gcm'], year or '', month or '',
             datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
         result = createContentInContainer(
             self.context,
@@ -523,7 +537,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'future_climate_datasets': projlayers,
             'function': algorithm,
             'projection_region': self.context.projection_region,
-            }
+        }
         return result
 
     def _createProvenance(self, result):
@@ -557,7 +571,9 @@ class ProjectionJobTracker(MultiJobTracker):
         # -> source code ... maybe some link expression? stored on result ? separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
-        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        # TODO: this is rather queued or created time for this activity ...
+        # could capture real start time on running status update (or start
+        # transfer)
         now = datetime.now().replace(microsecond=0)
         activity.add(PROV['startedAtTime'],
                      Literal(now.isoformat(), datatype=XSD['dateTime']))
@@ -590,8 +606,8 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
@@ -599,12 +615,13 @@ class ProjectionJobTracker(MultiJobTracker):
             # TODO: resolution
             # species metadata
             md = IBCCVLMetadata(ds)
-            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['scientificName'], Literal(
+                md['species']['scientificName']))
             if md['species'].get('taxonID'):
                 dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
-            for layer in md.get('layers_used',()):
+            for layer in md.get('layers_used', ()):
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
 
             # link with activity
@@ -621,8 +638,8 @@ class ProjectionJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # TODO: genre, resolution, emsc, gcm, year(s) ...
             for layer in layers:
@@ -658,15 +675,18 @@ class ProjectionJobTracker(MultiJobTracker):
                     # match sdm exp layers with future dataset layers
                     projlayers = {}
                     for ds, dslayerset in exp.environmental_datasets.items():
+                        dslayerset = set(dslayerset)
                         # add matching layers
-                        projlayers.setdefault(dsuuid, set()).update(dslayerset.intersection(futurelayers))
+                        projlayers.setdefault(dsuuid, set()).update(
+                            dslayerset.intersection(futurelayers))
                         # remove matching layers
                         projlayers[ds] = dslayerset - futurelayers
                         if not projlayers[ds]:
                             # remove if all layers replaced
                             del projlayers[ds]
                     # create result
-                    result = self._create_result_container(sdmuuid, dsbrain, projlayers)
+                    result = self._create_result_container(
+                        sdmuuid, dsbrain, projlayers)
                     # update provenance
                     self._createProvenance(result)
                     # submit job
@@ -677,7 +697,8 @@ class ProjectionJobTracker(MultiJobTracker):
                                            'generate taskname: projection experiment')
                     job.type = self.context.portal_type
                     job.function = result.job_params['function']
-                    job.toolkit = IUUID(api.portal.get()[defaults.TOOLKITS_FOLDER_ID][job.function])
+                    job.toolkit = IUUID(
+                        api.portal.get()[defaults.TOOLKITS_FOLDER_ID][job.function])
                     # reindex job object here ... next call should do that
                     resultjt.set_progress('PENDING',
                                           u'projection pending')
@@ -723,7 +744,9 @@ class BiodiverseJobTracker(MultiJobTracker):
         # -> source code ... maybe some link expression? stored on result ? separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
-        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        # TODO: this is rather queued or created time for this activity ...
+        # could capture real start time on running status update (or start
+        # transfer)
         now = datetime.now().replace(microsecond=0)
         activity.add(PROV['startedAtTime'],
                      Literal(now.isoformat(), datatype=XSD['dateTime']))
@@ -754,32 +777,34 @@ class BiodiverseJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # threshold used:
             # FIXME: what's the label of manually entered value?
-            dsprov.add(BCCVL['threshold_label'], Literal(value['threshold']['label']))
-            dsprov.add(BCCVL['threshold_value'], Literal(value['threshold']['value']))
+            dsprov.add(BCCVL['threshold_label'],
+                       Literal(value['threshold']['label']))
+            dsprov.add(BCCVL['threshold_value'],
+                       Literal(value['threshold']['value']))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
             # TODO: genre ...
             # TODO: resolution
             # species metadata
             md = IBCCVLMetadata(ds)
-            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['scientificName'], Literal(
+                md['species']['scientificName']))
             if md['species'].get('taxonID'):
                 dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
-            for layer in md.get('layers_used',()):
+            for layer in md.get('layers_used', ()):
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
 
             # link with activity
             activity.add(PROV['used'], dsprov)
 
         provdata.data = graph.serialize(format="turtle")
-
 
     def start_job(self, request):
         # TODO: split biodiverse job across years, gcm, emsc
@@ -854,7 +879,8 @@ class BiodiverseJobTracker(MultiJobTracker):
 
                 resultjt.set_progress('PENDING',
                                       'biodiverse pending')
-            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+            return 'info', u'Job submitted {0} - {1}'.format(
+                self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
 
@@ -865,7 +891,7 @@ class EnsembleJobTracker(MultiJobTracker):
     def _createProvenance(self, result):
         provdata = IProvenanceData(result)
         from rdflib import URIRef, Literal, Namespace, Graph
-        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.namespace import RDF, FOAF, DCTERMS, XSD
         from rdflib.resource import Resource
         PROV = Namespace(u"http://www.w3.org/ns/prov#")
         BCCVL = Namespace(u"http://ns.bccvl.org.au/")
@@ -893,7 +919,9 @@ class EnsembleJobTracker(MultiJobTracker):
         # -> source code ... maybe some link expression? stored on result ? separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
-        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        # TODO: this is rather queued or created time for this activity ...
+        # could capture real start time on running status update (or start
+        # transfer)
         now = datetime.now().replace(microsecond=0)
         activity.add(PROV['startedAtTime'],
                      Literal(now.isoformat(), datatype=XSD['dateTime']))
@@ -924,8 +952,8 @@ class EnsembleJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
@@ -933,12 +961,13 @@ class EnsembleJobTracker(MultiJobTracker):
             # TODO: resolution
             # species metadata
             md = IBCCVLMetadata(ds)
-            dsprov.add(BCCVL['scientificName'], Literal(md['species']['scientificName']))
+            dsprov.add(BCCVL['scientificName'], Literal(
+                md['species']['scientificName']))
             if md['species'].get('taxonID'):
                 dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
 
             # ... species data, ... species id
-            for layer in md.get('layers_used',()):
+            for layer in md.get('layers_used', ()):
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
             for layer in md.get('layers', ()):
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
@@ -1029,7 +1058,9 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
         # -> source code ... maybe some link expression? stored on result ? separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
-        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        # TODO: this is rather queued or created time for this activity ...
+        # could capture real start time on running status update (or start
+        # transfer)
         now = datetime.now().replace(microsecond=0)
         activity.add(PROV['startedAtTime'],
                      Literal(now.isoformat(), datatype=XSD['dateTime']))
@@ -1059,8 +1090,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             dsprov.add(DCTERMS['description'], Literal(ds.description))
             dsprov.add(DCTERMS['rights'], Literal(ds.rights))
             if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                or
-                (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
                 dsprov.add(DCTERMS['format'], Literal(ds.format))
             # location / source
             # graph.add(uri, DCTERMS['source'], Literal(''))
@@ -1072,7 +1103,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             # dsprov.add(BCCVL['taxonID'], URIRef(md['species']['taxonID']))
 
             # ... species data, ... species id
-            for layer in md.get('layers_used',()):
+            for layer in md.get('layers_used', ()):
                 dsprov.add(BCCVL['layer'], LOCAL[layer])
 
             # link with activity
@@ -1094,7 +1125,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             # create result object:
             # TODO: refactor this out into helper method
             title = u'{} - {} {}'.format(self.context.title, algorithm.id,
-                                     datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                                         datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
             result = createContentInContainer(
                 self.context,
                 'Folder',
@@ -1164,7 +1195,9 @@ class ALAJobTracker(MultiJobTracker):
         # -> source code ... maybe some link expression? stored on result ? separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
-        # TODO: this is rather queued or created time for this activity ... could capture real start time on running status update (or start transfer)
+        # TODO: this is rather queued or created time for this activity ...
+        # could capture real start time on running status update (or start
+        # transfer)
         now = datetime.now().replace(microsecond=0)
         activity.add(PROV['startedAtTime'],
                      Literal(now.isoformat(), datatype=XSD['dateTime']))
@@ -1177,30 +1210,47 @@ class ALAJobTracker(MultiJobTracker):
     def start_job(self):
         if self.is_active():
             return 'error', u'Current Job is still running'
-        # The dataset object already exists and should have all required metadata
+        # The dataset object already exists and should have all required
+        # metadata
         md = IBCCVLMetadata(self.context)
         # TODO: this assumes we have an lsid in the metadata
         #       should check for it
-        lsid = md['species']['taxonID']
+        if md['genre'] == 'DataGenreTraits':
+            traits_import_task = build_traits_import_task(
+                self.context, self.context.REQUEST)
+            after_commit_task(traits_import_task)
+            # FIXME: we don't have a backend task id here as it will be started
+            #        after commit, when we shouldn't write anything to the db
+            #        maybe add another callback to set task_id?
+            jt = IJobTracker(self.context)
+            job = jt.new_job('TODO: generate id',
+                             'generate taskname: traits_import')
+            job.type = self.context.portal_type
+            # job reindex happens in next call
+            jt.set_progress('PENDING', u'Data import pending')
+        else:
+            lsid = md['species']['taxonID']
 
-        # ala_import will be submitted after commit, so we won't get a
-        # result here
-        # FIXME: hacky way to get to request
-        ala_import_task = build_ala_import_task(lsid, self.context, self.context.REQUEST)
-        # TODO: add title, and url for dataset? (like with experiments?)
-        # update provenance
-        self._createProvenance(self.context)
-        after_commit_task(ala_import_task)
+            # ala_import will be submitted after commit, so we won't get a
+            # result here
+            # FIXME: hacky way to get to request
+            ala_import_task = build_ala_import_task(
+                lsid, self.context, self.context.REQUEST)
+            # TODO: add title, and url for dataset? (like with experiments?)
+            # update provenance
+            self._createProvenance(self.context)
+            after_commit_task(ala_import_task)
 
-        # FIXME: we don't have a backend task id here as it will be started
-        #        after commit, when we shouldn't write anything to the db
-        #        maybe add another callback to set task_id?
-        jt = IJobTracker(self.context)
-        job = jt.new_job('TODO: generate id', 'generate taskname: ala_import')
-        job.type = self.context.portal_type
-        job.lsid = lsid
-        # job reindex happens in next call
-        jt.set_progress('PENDING', u'ALA import pending')
+            # FIXME: we don't have a backend task id here as it will be started
+            #        after commit, when we shouldn't write anything to the db
+            #        maybe add another callback to set task_id?
+            jt = IJobTracker(self.context)
+            job = jt.new_job('TODO: generate id',
+                             'generate taskname: ala_import')
+            job.type = self.context.portal_type
+            job.lsid = lsid
+            # job reindex happens in next call
+            jt.set_progress('PENDING', u'Data import pending')
 
         return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
 

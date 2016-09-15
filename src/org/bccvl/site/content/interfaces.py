@@ -1,9 +1,8 @@
 from zope.interface import Interface
-from plone.app.textfield import RichText as RichTextField
 from plone.autoform import directives
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
-from zope.schema import Choice, List, Dict, Bool, Int, TextLine, Text, Set, URI
+from zope.schema import Choice, List, Dict, Bool, TextLine, Text, Set
 from z3c.form.browser.radio import RadioFieldWidget
 from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import MessageFactory as _
@@ -28,7 +27,8 @@ class IDataset(model.Schema):
     directives.mode(downloadable=HIDDEN_MODE)
     downloadable = Bool(
         title=_(u"Download allowed"),
-        description=_(u"If set, then users are allowed to directly download this dataset."),
+        description=_(
+            u"If set, then users are allowed to directly download this dataset."),
         required=True,
         default=True
     )
@@ -97,10 +97,10 @@ class ISDMExperiment(IExperiment):
     )
 
     directives.widget('species_occurrence_dataset',
-                DatasetFieldWidget,
-                genre=['DataGenreSpeciesOccurrence'],
-                errmsg=u"Please select at least 1 occurrence dataset.",
-                vizclass=u'bccvl-occurrence-viz')
+                      DatasetFieldWidget,
+                      genre=['DataGenreSpeciesOccurrence'],
+                      errmsg=u"Please select at least 1 occurrence dataset.",
+                      vizclass=u'bccvl-occurrence-viz')
     species_occurrence_dataset = TextLine(
         title=u'Species Occurrence Datasets',
         default=None,
@@ -108,10 +108,10 @@ class ISDMExperiment(IExperiment):
     )
 
     directives.widget('species_absence_dataset',
-                DatasetFieldWidget,
-                genre=['DataGenreSpeciesAbsence'],
-                errmsg=u"Please select at least 1 emmission scenario.",
-                vizclass=u'bccvl-absence-viz')
+                      DatasetFieldWidget,
+                      genre=['DataGenreSpeciesAbsence'],
+                      errmsg=u"Please select at least 1 emmission scenario.",
+                      vizclass=u'bccvl-absence-viz')
     species_absence_dataset = TextLine(
         title=u'Species Absence Datasets',
         default=None,
@@ -130,11 +130,11 @@ class ISDMExperiment(IExperiment):
     )
 
     directives.widget('environmental_datasets',
-                DatasetDictFieldWidget,
-                multiple='multiple',
-                genre=['DataGenreCC', 'DataGenreE'],
-                filters=['text', 'source', 'layer', 'resolution'],
-                errmsg=u"Please select at least 1 layer.")
+                      DatasetDictFieldWidget,
+                      multiple='multiple',
+                      genre=['DataGenreCC', 'DataGenreE'],
+                      filters=['text', 'source', 'layer', 'resolution'],
+                      errmsg=u"Please select at least 1 layer.")
     environmental_datasets = Dict(
         title=u'Climate & Environmental Datasets',
         key_type=TextLine(),
@@ -161,11 +161,11 @@ class IMSDMExperiment(IExperiment):
     )
 
     directives.widget('species_occurrence_collections',
-                DatasetDictFieldWidget,
-                multiple='multiple',
-                genre=['DataGenreSpeciesCollection'],
-                errmsg=u"Please select at least 1 occurrence dataset.",
-                vizclass=u'bccvl-occurrence-viz')
+                      DatasetDictFieldWidget,
+                      multiple='multiple',
+                      genre=['DataGenreSpeciesCollection'],
+                      errmsg=u"Please select at least 1 occurrence dataset.",
+                      vizclass=u'bccvl-occurrence-viz')
     species_occurrence_collections = Dict(
         title=u'Species Occurrence Collections',
         key_type=TextLine(),
@@ -188,11 +188,11 @@ class IMSDMExperiment(IExperiment):
     )
 
     directives.widget('environmental_datasets',
-                DatasetDictFieldWidget,
-                multiple='multiple',
-                genre=['DataGenreCC', 'DataGenreE'],
-                filters=['text', 'source', 'layer', 'resolution'],
-                errmsg=u"Please select at least 1 layer.")
+                      DatasetDictFieldWidget,
+                      multiple='multiple',
+                      genre=['DataGenreCC', 'DataGenreE'],
+                      filters=['text', 'source', 'layer', 'resolution'],
+                      errmsg=u"Please select at least 1 layer.")
     environmental_datasets = Dict(
         title=u'Climate & Environmental Datasets',
         key_type=TextLine(),
@@ -212,9 +212,9 @@ class IProjectionExperiment(IExperiment):
 
     # TODO: ignore context here? don't really need to store this?
     directives.widget('species_distribution_models',
-                ExperimentSDMFieldWidget,
-                experiment_type=[ISDMExperiment.__identifier__],
-                errmsg=u"Please select at least 1 Species Distribution Model")
+                      ExperimentSDMFieldWidget,
+                      experiment_type=[ISDMExperiment.__identifier__],
+                      errmsg=u"Please select at least 1 Species Distribution Model")
     species_distribution_models = Dict(
         title=u'Species Distribution Models',
         key_type=TextLine(),
@@ -224,10 +224,10 @@ class IProjectionExperiment(IExperiment):
     )
 
     directives.widget('future_climate_datasets',
-                FutureDatasetsFieldWidget,
-                genre=['DataGenreFC'],
-                errmsg=u"Please select at least 1 future climate dataset.",
-                vizclass=u'bccvl-absence-viz')
+                      FutureDatasetsFieldWidget,
+                      genre=['DataGenreFC'],
+                      errmsg=u"Please select at least 1 future climate dataset.",
+                      vizclass=u'bccvl-absence-viz')
     future_climate_datasets = List(
         title=u'Future Climate Data',
         value_type=TextLine(),
@@ -243,7 +243,6 @@ class IProjectionExperiment(IExperiment):
     )
 
 
-
 class IBiodiverseExperiment(IExperiment):
 
     # - Opt1 ... select experiments and pick datasets from experiment (like experimend sdm model select)
@@ -254,10 +253,10 @@ class IBiodiverseExperiment(IExperiment):
 
     # Key is the dataset uuid and value a threstold to apply
     directives.widget('projection',
-                ExperimentResultProjectionFieldWidget,
-                experiment_type=[ISDMExperiment.__identifier__,
-                                 IProjectionExperiment.__identifier__],
-                errmsg=u"Please select at least 1 dataset.")
+                      ExperimentResultProjectionFieldWidget,
+                      experiment_type=[ISDMExperiment.__identifier__,
+                                       IProjectionExperiment.__identifier__],
+                      errmsg=u"Please select at least 1 dataset.")
     projection = Dict(
         title=u'Projection Datasets',
         key_type=TextLine(),
@@ -299,10 +298,10 @@ class ISpeciesTraitsExperiment(IExperiment):
     )
 
     directives.widget('data_table',
-        DatasetFieldWidget,
-        genre=['DataGenreTraits'],
-        errmsg=u"Please select 1 species traits dataset.",
-        vizclass=u'bccvl-auto-viz')
+                      DatasetFieldWidget,
+                      genre=['DataGenreTraits'],
+                      errmsg=u"Please select 1 species traits dataset.",
+                      vizclass=u'bccvl-auto-viz')
     data_table = TextLine(
         title=u'Species Traits Datasets',
         default=None,
@@ -314,7 +313,8 @@ class ISpeciesTraitsExperiment(IExperiment):
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 EXPERIMENT_TYPE_VOCAB = SimpleVocabulary(
     (SimpleTerm(ISDMExperiment.__identifier__, ISDMExperiment.__identifier__, u'SDM Experiment'),
-     SimpleTerm(IProjectionExperiment.__identifier__, IProjectionExperiment.__identifier__, u'Climate Change Experiment'),
+     SimpleTerm(IProjectionExperiment.__identifier__,
+                IProjectionExperiment.__identifier__, u'Climate Change Experiment'),
      SimpleTerm(IBiodiverseExperiment.__identifier__, IBiodiverseExperiment.__identifier__,  u'Biodiverse Experiment'))
 )
 
@@ -323,14 +323,14 @@ class IEnsembleExperiment(IExperiment):
 
     experiment_type = Choice(
         title=u"Select Experiment Type",
-        vocabulary = EXPERIMENT_TYPE_VOCAB,
+        vocabulary=EXPERIMENT_TYPE_VOCAB,
         default=ISDMExperiment.__identifier__,
         required=True
     )
 
     directives.widget('datasets',
-                ExperimentResultFieldWidget,
-                errmsg=u"Please select at least 1 Experiment Result")
+                      ExperimentResultFieldWidget,
+                      errmsg=u"Please select at least 1 Experiment Result")
     datasets = Dict(
         title=u'Result Datasets',
         key_type=TextLine(),

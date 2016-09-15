@@ -156,8 +156,22 @@
 
     <genericsetup:upgradeStep
         title="Upgrade profile to version 260"
-        description="Add Geofabric"
+        description="AEKOS integration"
         handler=".setuphandlers.upgrade_250_260_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="260"
+      destination="270"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 270"
+        description="Add Geofabric"
+        description="AEKOS integration"
+        handler=".setuphandlers.upgrade_260_270_1"
         />
 
   </genericsetup:upgradeSteps>

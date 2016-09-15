@@ -287,6 +287,11 @@
       />
 
   <utility
+      component=".vocabularies.summary_dataset_source"
+      name="summary_dataset_source"
+      />
+
+  <utility
       component=".vocabularies.data_collections_source"
       name="data_collections_source"
       />

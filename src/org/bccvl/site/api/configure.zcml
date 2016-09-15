@@ -4,6 +4,16 @@
     i18n_domain="org.bccvl.site"
     >
 
+
+  <!-- JSON Error View -->
+  <adapter
+      name="index.html"
+      for="* .decorators.IJSONRequest"
+      provides="zope.publisher.interfaces.IPublishTraverse"      
+      factory=".decorators.JSONErrorView"
+      permission="zope2.View"
+      />
+  
  <!-- TODO: add class security for adapters? -->
 
   
@@ -55,13 +65,13 @@
       name="v1"
       for="* * *"
       provides=".interfaces.IDMService"
-      factory=".browser.DMService"
+      factory=".dm.DMService"
       permission="zope2.View"
       />
-  <class class=".browser.DMService">
+  <class class=".dm.DMService">
     <require
         permission="zope2.View"
-        attributes="metadata update_metadata"
+        attributes="metadata search update_metadata"
         />  
     <require
         permission="zope2.View"
@@ -122,13 +132,13 @@
       name="v1"
       for="* * *"
       provides=".interfaces.IExperimentService"
-      factory=".browser.ExperimentService"
+      factory=".em.ExperimentService"
       permission="zope2.View"
       />
-  <class class=".browser.ExperimentService">
+  <class class=".em.ExperimentService">
     <require
         permission="org.bccvl.AddExperiment"
-        attributes="demosdm"
+        attributes="demosdm submitsdm"
         />  
     <require
         permission="zope2.View"
@@ -169,6 +179,34 @@
         />  
   </class>
   
+  <!-- toolkit APIs -->
+  <adapter
+      name="toolkit"
+      for="* * *"
+      provides=".interfaces.IAPIService"
+      factory=".browser.ToolkitVersionTraverser"
+      permission="zope2.View"
+      />
+  <class class=".browser.ToolkitVersionTraverser">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IAPIService"
+        />  
+  </class>
+  
+  <adapter
+      name="v1"
+      for="* * *"
+      provides=".interfaces.IToolkitService"
+      factory=".toolkit.ToolkitService"
+      permission="zope2.View"
+      />
+  <class class=".toolkit.ToolkitService">
+    <require
+        permission="zope2.View"
+        interface=".interfaces.IToolkitService"
+        />  
+  </class>
   
   
  </configure>

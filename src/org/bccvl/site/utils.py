@@ -10,6 +10,7 @@ from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
 from zope.component import getUtility
 
+from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.tasks import datamover
 
@@ -25,6 +26,8 @@ def decimal_encoder(o):
     """
     if isinstance(o, Decimal):
         return float(o)
+    elif isinstance(o, set):
+        return list(o)
     raise TypeError(repr(o) + " is not JSON serializable")
 
 
@@ -34,7 +37,8 @@ def get_public_ip():
     ip = os.environ.get('EXT_IP', None)
     if ip:
         return ip
-    # otherwise we connect to some host, and check which local ip the socket uses
+    # otherwise we connect to some host, and check which local ip the socket
+    # uses
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('google.com', 80))
@@ -73,7 +77,7 @@ def get_hostname(request):
         return None
 
     # separate to domain name and port sections
-    host=host.split(":")[0].lower()
+    host = host.split(":")[0].lower()
 
     return host
 
@@ -95,10 +99,11 @@ def get_results_dir(result, request):
         results_dir = 'scp://{uid}@{ip}:{port}{path}/'.format(
             uid=pwd.getpwuid(os.getuid()).pw_name,
             # FIXME: hostname from request is not good enough...
-            #        need to get ip or host from plone_worker that does actual import
+            #        need to get ip or host from plone_worker that does actual
+            #        import
             #        store in registry?
             #        (is ok for testing)
-            #ip=get_public_ip(),
+            # ip=get_public_ip(),
             ip=get_hostname(request),
             port=os.environ.get('SSH_PORT', 22),
             path=tempfile.mkdtemp(prefix='result_import_')
@@ -128,6 +133,41 @@ def build_ala_import_task(lsid, dataset, request):
 
     results_dir = get_results_dir(dataset, request)
     if dataset.dataSource == 'gbif':
-        return datamover.pull_occurrences_from_gbif.si(lsid, results_dir, context)
+        return datamover.pull_occurrences_from_gbif.si(lsid,
+                                                       results_dir, context)
+    elif dataset.dataSource == 'aekos':
+        return datamover.pull_occurrences_from_aekos.si(lsid,
+                                                        results_dir, context)
     else:
-        return datamover.pull_occurrences_from_ala.si(lsid, results_dir, context)
+        return datamover.pull_occurrences_from_ala.si(lsid,
+                                                      results_dir, context)
+
+
+def build_traits_import_task(dataset, request):
+    # creates task chain to import ala dataset
+    """
+    context ... a dictionary with keys:
+      - context: path to context object
+      - userid: zope userid
+    """
+    # we need site-path, context-path and lsid for this job
+    dataset_path = '/'.join(dataset.getPhysicalPath())
+    member = api.user.get_current()
+    context = {
+        'context': dataset_path,
+        'user': {
+            'id': member.getUserName(),
+            'email': member.getProperty('email'),
+            'fullname': member.getProperty('fullname')
+        }
+    }
+
+    results_dir = get_results_dir(dataset, request)
+    if dataset.dataSource == 'aekos':
+        md = IBCCVLMetadata(dataset)
+        return datamover.pull_traits_from_aekos.si(
+            traits=md['traits'],
+            species=[sp['scientificName'] for sp in md['species']],
+            envvars=md['environ'],
+            dest_url=results_dir,
+            context=context)
