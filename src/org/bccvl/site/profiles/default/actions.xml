@@ -23,7 +23,7 @@
       <property name="visible">True</property>
     </object>
     <object name="datasets_sub" meta_type="CMF Action Category">
-      <object name="browse" meta_type="CMF Action" i18n:domain="plone">
+      <object name="browse" meta_type="CMF Action" i18n:domain="plone" insert-before="*">
         <property name="title" i18n:translate="">Search Datasets</property>
         <property name="description" i18n:translate=""></property>
         <property name="url_expr">string:${portal/datasets/absolute_url}</property>
@@ -35,7 +35,7 @@
         </property>
         <property name="visible">True</property>
       </object>
-      <object name="collections" meta_type="CMF Action" i18n:domain="plone">
+      <object name="collections" meta_type="CMF Action" i18n:domain="plone" insert-after="browse">
         <property name="title" i18n:translate="">Browse Collections</property>
         <property name="description" i18n:translate=""></property>
         <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_collection_list</property>
@@ -47,7 +47,7 @@
         </property>
         <property name="visible">True</property>
       </object>
-      <object name="import" meta_type="CMF Action" i18n:domain="plone">
+      <object name="import" meta_type="CMF Action" i18n:domain="plone" insert-after="collections">
         <property name="title" i18n:translate="">Get Species Data</property>
         <property name="description" i18n:translate=""></property>
         <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_import_view</property>
@@ -59,7 +59,7 @@
         </property>
         <property name="visible">True</property>
       </object>
-      <object name="upload" meta_type="CMF Action" i18n:domain="plone">
+      <object name="upload" meta_type="CMF Action" i18n:domain="plone" insert-after="import">
         <property name="title" i18n:translate="">Upload Dataset</property>
         <property name="description" i18n:translate=""></property>
         <property name="url_expr">string:${portal/datasets/absolute_url}/datasets_upload_view</property>
