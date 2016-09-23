@@ -84,6 +84,18 @@
       </property>
       <property name="visible">True</property>
     </object>
+    <object name="training" meta_type="CMF Action" i18n:domain="plone" insert-before="knowledgebase">
+      <property name="title" i18n:translate="">Training</property>
+      <property name="description" i18n:translate=""></property>
+      <property name="url_expr">string:${globals_view/navigationRootUrl}/training</property>
+      <property name="link_target"></property>
+      <property name="icon_expr"></property>
+      <property name="available_expr">python:member is not None</property>
+      <property name="permissions">
+        <element value="View"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
     <object name="knowledgebase" meta_type="CMF Action" i18n:domain="plone">
       <property name="title" i18n:translate="">Support</property>
       <property name="description" i18n:translate=""></property>
