@@ -118,7 +118,7 @@
    <property name="section">default</property>
    <property name="hidden">1</property>
    <property name="vocabulary"></property>
-   <property name="default">effective(reverse)</property>
+   <property name="default">sortable_title</property>
   </criterion>
   <criterion name="c4">
    <property name="widget">select</property>
