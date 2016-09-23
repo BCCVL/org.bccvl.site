@@ -273,10 +273,10 @@ def gcm_source(context):
 
 
 emsc_vocabulary = SimpleVocabulary([
-    SimpleTerm("RCP3PD", "RCP3PD", "RCP3PD"),
-    SimpleTerm("RCP45", "RCP45", "RCP45"),
-    SimpleTerm("RCP6", "RCP6", "RCP6"),
-    SimpleTerm("RCP85", "RCP85", "RCP85"),
+    SimpleTerm("RCP3PD", "RCP3PD", "RCP2.6"),
+    SimpleTerm("RCP45", "RCP45", "RCP4.5"),
+    SimpleTerm("RCP6", "RCP6", "RCP6.0"),
+    SimpleTerm("RCP85", "RCP85", "RCP8.5"),
     SimpleTerm("SRESA1B", "SRESA1B", "SRESA1B"),
     SimpleTerm("SRESA1FI", "SRESA1FI", "SRESA1FI"),
     SimpleTerm("SRESA2", "SRESA2", "SRESA2"),
