@@ -4,5 +4,6 @@
     "description": "Gross Primary Productivity (GPP) is an annual rate of carbon uptake by photosynthesis. Continental yearly time series of GPP from 2000 to 2007, derived from NASA MODIS satellite imagery (MOD13Q1). MODIS NDVI products have been atmospherically corrected for water, clouds, heavy aerosols & cloud shadows. MODIS data undergo a quality assurance process where pixels are ranked according to their overall quality.",
     "rights": "CC-BY Attribution 3.0",
     "categories": ["environmental"],
+    "BCCDataGenre": ["DataGenreE"],
     "_transitions": ["show_internally", "publish_internally"]
 }

@@ -8,5 +8,6 @@
     "rights": "CC-BY Attribution 3.0",
     "external_description": "Complete information on the creation of this product can be found in the documents available from the Geoscience Australia website <a href=\"http://www.ga.gov.au/earth-observation/landcover\">http://www.ga.gov.au/earth-observation/landcover</a>", 
     "categories": ["environmental"],
+    "BCCDataGenre": ["DataGenreE"],
     "_transitions": ["show_internally", "publish_internally"]
 }

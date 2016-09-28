@@ -6,5 +6,6 @@
     "external_description": "See <a href=\"https://www.climond.org/ClimateData.aspx\">CliMond Climate Data</a>",
     "attribution": ["Kriticos, D.J., B.L. Webber, A. Leriche, N. Ota, I. Macadam, J. Bathols & J.K. Scott.  2012.  CliMond: global high-resolution historical and future scenario climate surfaces for bioclimatic modelling.  Methods in Ecology & Evolution, 3(1), 53 - 64."],
     "categories": ["climate"],
+    "BCCDataGenre": ["DataGenreCC", "DataGenreFC"],
     "_transitions": ["show_internally", "publish_internally"]
 }

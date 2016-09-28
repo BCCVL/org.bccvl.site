@@ -6,5 +6,6 @@
     "external_description": "See <a href=\"https://climatedata.environment.nsw.gov.au/\">NSW Climate Data Portal</a>",
     "attribution": ["Evans JP, Ji F, Lee C, Smith P, Argueso D and Fita L (2014) Design of a regional climate modelling projection ensemble experiment Geosci. Model Dev., 7, 621-629"],
     "categories": ["climate"],
+    "BCCDataGenre": ["DataGenreCC", "DataGenreFC"],
     "_transitions": ["show_internally", "publish_internally"]
 }
