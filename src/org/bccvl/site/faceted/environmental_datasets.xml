@@ -64,7 +64,7 @@
   </criterion>
   <criterion name="c7">
    <property name="widget">pathselect</property>
-   <property name="title">Climate & Environmental Collections</property>
+   <property name="title">Climate &amp; Environmental Collections</property>
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">0</property>
