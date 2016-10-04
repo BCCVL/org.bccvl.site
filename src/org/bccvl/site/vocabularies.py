@@ -273,10 +273,10 @@ def gcm_source(context):
 
 
 emsc_vocabulary = SimpleVocabulary([
-    SimpleTerm("RCP3PD", "RCP3PD", "RCP3PD"),
-    SimpleTerm("RCP45", "RCP45", "RCP45"),
-    SimpleTerm("RCP6", "RCP6", "RCP6"),
-    SimpleTerm("RCP85", "RCP85", "RCP85"),
+    SimpleTerm("RCP3PD", "RCP3PD", "RCP2.6"),
+    SimpleTerm("RCP45", "RCP45", "RCP4.5"),
+    SimpleTerm("RCP6", "RCP6", "RCP6.0"),
+    SimpleTerm("RCP85", "RCP85", "RCP8.5"),
     SimpleTerm("SRESA1B", "SRESA1B", "SRESA1B"),
     SimpleTerm("SRESA1FI", "SRESA1FI", "SRESA1FI"),
     SimpleTerm("SRESA2", "SRESA2", "SRESA2"),
@@ -464,10 +464,37 @@ def data_collections_source(context):
         'portal_type': 'org.bccvl.content.collection',
         'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
     }
-
     def generate_collections():
         for term in vocab:
             coll_query['BCCCategory'] = term.value
             for brain in catalog.searchResults(**coll_query):
                 yield brain
+    return BrainsVocabulary.fromBrains(generate_collections(), context)
+
+@provider(IVocabularyFactory)
+def future_climate_source(context):
+    portal_url = getToolByName(context, 'portal_url')
+    catalog = getToolByName(context, 'portal_catalog')
+    coll_query = {
+        'portal_type': 'org.bccvl.content.collection',
+        'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
+    }
+    def generate_collections():
+        coll_query['BCCDataGenre'] = 'DataGenreFC'
+        for brain in catalog.searchResults(sort_on='sortable_title', sort_order='ascending', **coll_query):
+            yield brain
+    return BrainsVocabulary.fromBrains(generate_collections(), context)
+
+@provider(IVocabularyFactory)
+def climate_environmental_source(context):
+    portal_url = getToolByName(context, 'portal_url')
+    catalog = getToolByName(context, 'portal_catalog')
+    coll_query = {
+        'portal_type': 'org.bccvl.content.collection',
+        'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
+    }
+    def generate_collections():
+        coll_query['BCCDataGenre'] = ['DataGenreFC', 'DataGenreCC', 'DataGenreE']
+        for brain in catalog.searchResults(sort_on='sortable_title', sort_order='ascending', **coll_query):
+            yield brain
     return BrainsVocabulary.fromBrains(generate_collections(), context)

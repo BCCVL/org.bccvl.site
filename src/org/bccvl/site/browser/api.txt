@@ -126,10 +126,10 @@ Vocabulary endpoint:
       'token': 'gcm-mean-5'}]
 
    >>> pprint(proxy.getVocabulary('emsc_source'))
-    [{'title': 'RCP3PD', 'token': 'RCP3PD'},
-     {'title': 'RCP45', 'token': 'RCP45'},
-     {'title': 'RCP6', 'token': 'RCP6'},
-     {'title': 'RCP85', 'token': 'RCP85'},
+    [{'title': 'RCP2.6', 'token': 'RCP3PD'},
+     {'title': 'RCP4.5', 'token': 'RCP45'},
+     {'title': 'RCP6.0', 'token': 'RCP6'},
+     {'title': 'RCP8.5', 'token': 'RCP85'},
      {'title': 'SRESA1B', 'token': 'SRESA1B'},
      {'title': 'SRESA1FI', 'token': 'SRESA1FI'},
      {'title': 'SRESA2', 'token': 'SRESA2'},

@@ -6,5 +6,6 @@
     "external_description": "See <a href=\"http://www.asris.csiro.au/themes/NationalGrids.html\">http://www.asris.csiro.au/themes/NationalGrids.html</a>",
     "attribution": ["National soil data provided by the Australian Collaborative Land Evaluation Program ACLEP, endorsed through the National Committee on Soil and Terrain NCST (www.clw.csiro.au/aclep)."],
     "categories": ["environmental"],
+    "BCCDataGenre": ["DataGenreE"],
     "_transitions": ["show_internally", "publish_internally"]
 }

@@ -7,5 +7,6 @@
     "rights": "CC-BY Attribution 3.0",
     "external_description": "See <a href=\"http://dx.doi.org/10.4225/08/512EEA6332EEB\">http://dx.doi.org/10.4225/08/512EEA6332EEB</a>",
     "categories": ["environmental"],
+    "BCCDataGenre": ["DataGenreE"],
     "_transitions": ["show_internally", "publish_internally"]
 }

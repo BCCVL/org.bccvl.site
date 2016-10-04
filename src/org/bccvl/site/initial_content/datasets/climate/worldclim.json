@@ -6,5 +6,6 @@
     "attribution": ["Hijmans, R.J., S.E. Cameron, J.L. Parra, P.G. Jones and A. Jarvis, 2005. <a href=\"http://www.worldclim.org/worldclim_IJC.pdf\">Very high resolution interpolated climate surfaces for global land areas</a>. International Journal of Climatology 25: 1965-1978."],
     "external_description": "See <a href=\"http://www.worldclim.org/methods\">http://www.worldclim.org/methods</a>",
     "categories": ["climate"],
+    "BCCDataGenre": ["DataGenreCC", "DataGenreFC"],
     "_transitions": ["show_internally", "publish_internally"]
 }
