@@ -8,5 +8,6 @@
     ],
     "external_description": "See <a href=\"http://www.cgiar-csi.org/data/global-aridity-and-pet-database\">http://www.cgiar-csi.org/data/global-aridity-and-pet-database</a>",
     "categories": ["environmental"],
+    "BCCDataGenre": ["DataGenreE"],
     "_transitions": ["show_internally", "publish_internally"]
 }

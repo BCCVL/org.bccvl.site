@@ -6,5 +6,6 @@
     "external_description": "TBA - Most likely Tropical Data Hub w/ exposure via MediaFlux WebDev",
     "attribution": ["Storlie, C.J., Phillips, B.L., VanDerWal, J.J., and Williams, S.E. (2013) Improved spatial estimates of climate predict patchier species distributions. Diversity and Distributions, 19 (9). pp. 1106-1113."],
     "categories": ["climate"],
+    "BCCDataGenre": ["DataGenreCC"],
     "_transitions": ["show_internally", "publish_internally"]
 }

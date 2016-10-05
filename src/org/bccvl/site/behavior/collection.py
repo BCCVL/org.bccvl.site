@@ -47,3 +47,13 @@ class ICollection(model.Schema):
             vocabulary='scientific_category_source'
         )
     )
+
+    BCCDataGenre = List(
+        title=u'Data Genre',
+        description=u'',
+        unique=True,
+        required=False,
+        value_type=Choice(
+            vocabulary='genre_source'
+        )
+    )
