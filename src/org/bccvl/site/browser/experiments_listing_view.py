@@ -20,9 +20,12 @@ from zope.security import checkPermission
 
 
 def get_title_from_uuid(uuid):
-    obj = uuidToCatalogBrain(uuid)
-    if obj:
-        return obj.Title
+    try:
+        obj = uuidToCatalogBrain(uuid)
+        if obj:
+            return obj.Title
+    except Exception as e:
+        pass
     return None
 
 @implementer(IExperimentTools)
@@ -155,10 +158,14 @@ def msdm_listing_details(expbrain):
     details = {}
     exp = expbrain.getObject()
     if exp.environmental_datasets:
+        try:
+            species_titles = ', '.join(get_title_from_uuid(ds) for ds in exp.species_occurrence_collections)
+        except Exception as e:
+            species_titles = ''
         details.update({
             'type': 'MSDM',
             'functions': get_title_from_uuid(exp.function),
-            'species_occurrence': ', '.join(get_title_from_uuid(ds) for ds in exp.species_occurrence_collections),
+            'species_occurrence': species_titles,
             'species_absence': '',
             'environmental_layers': ({
                 'title': get_title_from_uuid(dataset),
