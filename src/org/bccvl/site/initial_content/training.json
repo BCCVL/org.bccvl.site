@@ -1,7 +1,7 @@
 {
     "_type": "Document",
     "title": "BCCVL Training",
-    "_transitions": "publish_internally",
+    "_transitions": ["publish_internally", "publish_externally"],
     "_layout": "frontpage",
     "description": "The Biodiversity & Climate Change Virtual Laboratory (BCCVL) provides an innovative, efficient, robust portfolio of integrated tools and data collections modelling the potential responses of Australia’s biodiversity to climate change through an easy-to-use, web-based platform.",
     "text": {

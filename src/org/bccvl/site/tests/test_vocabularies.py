@@ -25,7 +25,7 @@ class LayerSourceTest(unittest.TestCase):
         self.assertIn(u'B01', source)
         term = source.getTerm(u'B01')
         self.assertEqual(term.value, u'B01')
-        self.assertEqual(len(source), 161)
+        self.assertEqual(len(source), 303)
 
 
 class GCMSourceTest(unittest.TestCase):
@@ -158,7 +158,8 @@ class SdmFunctionsSourceTest(unittest.TestCase):
         data = ds['bioclim']
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
-        # TODO: this test depends on whatever is setup in org.bccvl.compute:content
+        # TODO: this test depends on whatever is setup in
+        # org.bccvl.compute:content
         self.assertEqual(len(source), 17)
 
 
@@ -182,7 +183,8 @@ class TraitsFunctionsSourceTest(unittest.TestCase):
         data = ds['lm']
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
-        # TODO: this test depends on whatever is setup in org.bccvl.compute:content
+        # TODO: this test depends on whatever is setup in
+        # org.bccvl.compute:content
         self.assertEqual(len(source), 6)
 
 

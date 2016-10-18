@@ -681,3 +681,15 @@ def upgrade_250_260_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     # update facet settings
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
+
+def upgrade_260_270_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    # update vocabularies
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    # update initial site content and r scripts
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')

@@ -287,6 +287,16 @@
       />
 
   <utility
+      component=".vocabularies.future_climate_source"
+      name="future_climate_source"
+      />
+
+  <utility
+      component=".vocabularies.climate_environmental_source"
+      name="climate_environmental_source"
+      />
+
+  <utility
       component=".vocabularies.summary_dataset_source"
       name="summary_dataset_source"
       />

@@ -153,6 +153,7 @@ class DatasetTools(BrowserView):
         return {
             'DataGenreSpeciesOccurrence': 'bccvl-occurrence-viz',
             'DataGenreSpeciesAbsence': 'bccvl-absence-viz',
+            'DataGenreBiodiverseOutput': 'bccvl-biodiverse-viz',
         }.get(md.get('genre'), 'bccvl-auto-viz')
 
     @property

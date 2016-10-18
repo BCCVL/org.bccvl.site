@@ -1503,6 +1503,24 @@
         <element key="tooltip">fPAR is the fraction of photosythetically active radiation intercepted by the sunlit vegetation canopy. It is a good measure of vegetation greenness which can be used to analyse biomass production, carbon storage, habitat quality and disturbance regimes.</element>
       </element>
       <element>
+        <element key="value">AMVG</element>
+        <element key="title">Australian Major Vegetation Groups - present</element>
+        <element key="unit"> </element>
+        <element key="unitfull">unitless</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Present Australian Major Vegetation Groups.</element>
+      </element>
+      <element>
+        <element key="value">AMVG1750</element>
+        <element key="title">Australian Major Vegetation Groups - pre-1750</element>
+        <element key="unit"> </element>
+        <element key="unitfull">unitless</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Pre-1750 Australian Major Vegetation Groups.</element>
+      </element>
+      <element>
         <element key="value">projection_suitability</element>
         <element key="title">Environmental Suitability</element>
         <element key="unit"> </element>
@@ -1538,7 +1556,1311 @@
         <element key="type">clampingmask</element>
         <element key="tooltip">Clamping Mask is the number of variables that are out of their calibrating/training range.</element>   
       </element>
-    </value>
+      <element>
+        <element key="value">carbonatesedimentrock</element>
+        <element key="title">Percentage of carbonate sedimentary rocks</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Areal proportion of all upstream grid cells overlying carbonate sedimentary rocks (examples include limestone,marl,dolomite).</element>   
+      </element>
+      <element>
+        <element key="value">igneousrock</element>
+        <element key="title">Percentage of igneous rocks</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Areal proportion of all upstream grid cells overlying igneous rocks (examples include granites, basalts, granodiorite, rhyolite, gabbro).</element>   
+      </element>
+      <element>
+        <element key="value">metamorphicrock</element>
+        <element key="title">Percentage of metamorphic rocks</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Areal proportion of all grid cells overlying metamorphic rocks (examples include slate, schist, gneiss, serpentinite, hornfels).</element>   
+      </element>
+      <element>
+        <element key="value">oldbedrock</element>
+        <element key="title">Percentage of old bedrock</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Areal proportion of all upstream grid cells overlying old rocks (>570My).</element>   
+      </element>
+      <element>
+        <element key="value">othersedimentrock</element>
+        <element key="title">Percentage of other sedimentary rocks</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Areal proportion of all upstream grid cells overlying other sedimentary rocks (examples include volcanogenic sediments, non-carbonate chemical sediment, organic-rich rocks).</element>   
+      </element>
+      <element>
+        <element key="value">mixedsedimentigneousrock</element>
+        <element key="title">Percentage of mixed sedimentary and igneous rocks</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Areal proportion of all upstream grid cells overlying mixed sedimentary and igneous rocks.</element>   
+      </element>
+      <element>
+        <element key="value">siliciclasticrock</element>
+        <element key="title">Percentage of siliciclastic/undifferentiated sedimentary rocks</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Areal proportion of all upstream grid cells overlying siliciclastic/undifferentiated sedimentary rocks (examples include sandstones,conglomerate,mudstone,siltstone).</element>   
+      </element>
+      <element>
+        <element key="value">unconsolidatedrock</element>
+        <element key="title">Percentage of unconsolidated rocks</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Areal proportion of all upstream grid cells overlying unconsolidated material (regolith).</element>   
+      </element>
+      <element>
+        <element key="value">sathydraulicconductivity</element>
+        <element key="title">Average Saturated Hydraulic Conductivity</element>
+        <element key="unit">mm/h</element>
+        <element key="unitfull">millimetres per hour</element>
+        <element key="legend">default</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Average Saturated Hydraulic Conductivity value of all grid cells upstream of the segment pour-point.</element>   
+      </element>
+      <element>
+        <element key="value">WaterHoldCapacity</element>
+        <element key="title">Average Solum Plant Available Water Holding Capacity</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">default</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Average Solum Plant Available Water Holding Capacity value of all grid cells upstream of the segment pour-point.</element>   
+      </element>
+      <element>
+        <element key="value">clayAhorizon</element>
+        <element key="title">Average percent clay in the soil A horizon</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Average percentage of clay in the A horizon  value of all grid cells comprising the stream segment and associated valley bottoms.</element>
+      </element>
+      <element>
+        <element key="value">clayBhorizon</element>
+        <element key="title">Average percent clay in the soil B horizon</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Average percentage of clay in the B horizon  value of all grid cells comprising the stream segment and associated valley bottoms.</element>
+      </element>
+      <element>
+        <element key="value">sandAhorizon</element>
+        <element key="title">Average percent sand in the soil A horizon</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">substrate</element>
+        <element key="tooltip">Average percentage of sand in the A horizon  value of all grid cells comprising the stream segment and associated valley bottoms.</element>
+      </element>
+      <element>
+        <element key="value">megathermgrowindex</element>
+        <element key="title">Average annual growth index (megatherm plants)</element>
+        <element key="unit">Growth Index</element>
+        <element key="unitfull">Growth Index</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average growth index value calculated for megatherm plants.</element>   
+      </element>
+      <element>
+        <element key="value">mesothermgrowindex</element>
+        <element key="title">Average annual growth index (mesotherm plants)</element>
+        <element key="unit">Growth Index</element>
+        <element key="unitfull">Growth Index</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average growth index value calculated for mesotherm plants.</element>   
+      </element>
+      <element>
+        <element key="value">microthermgrowindex</element>
+        <element key="title">Average annual growth index (microtherm plants)</element>
+        <element key="unit">Growth Index</element>
+        <element key="unitfull">Growth Index</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average growth index value calculated for microtherm plants.</element>   
+      </element>
+      <element>
+        <element key="value">megaseasongrowindex</element>
+        <element key="title">Average growth index seasonality (mesoatherm plants)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average growth index seasonality value calculated for megatherm plants.</element>   
+      </element>
+      <element>
+        <element key="value">mesoseasongrowindex</element>
+        <element key="title">Average growth index seasonality (mesotherm plants)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average growth index seasonality value calculated for mesotherm plants.</element>   
+      </element>
+      <element>
+        <element key="value">microseasongrowindex</element>
+        <element key="title">Average growth index seasonality (microtherm plants)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average growth index seasonality value calculated for microtherm plants.</element>   
+      </element>
+      <element>
+        <element key="value">rainerosivityfactor</element>
+        <element key="title">Average rainfall erosivity R factor</element>
+        <element key="unit">MJ mm ha-1 h-1 yr-1</element>
+        <element key="unitfull">megajoule-millimetre per hectare per hour per year</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of the rainfall erosivity R-factor of all grid cells upstream of the center of the stream segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">areatotal</element>
+        <element key="title">Area</element>
+        <element key="unit">km^2</element>
+        <element key="unitfull">square kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Sum of the area of all grid cells upstream of the center of the stream segment pour point.</element>   
+      </element>
+      <element>
+        <element key="value">areadivided</element>
+        <element key="title">Area divided at stream bifurcations</element>
+        <element key="unit">km^2</element>
+        <element key="unitfull">square kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Sum of the area of all grid cells upstream of the center of the stream segmentpour point divided at stream bifurcations in the ratio of 8 river:4 creeks:1 unnamed streams:0.1 floodplain wetlands.</element>   
+      </element>
+      <element>
+        <element key="value">elevationmax</element>
+        <element key="title">Maximum upstream elevation</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Maximum elevation value of all upstream grid cells.</element>   
+      </element>
+      <element>
+        <element key="value">elevationmean</element>
+        <element key="title">Area</element>
+        <element key="unit">km^2</element>
+        <element key="unitfull">square kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Mean elevation value of all upstream grid cells.</element>   
+      </element>
+      <element>
+        <element key="value">relief</element>
+        <element key="title">Relief</element>
+        <element key="unit">Ratio</element>
+        <element key="unitfull">Ratio</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">(mean upstream elevation-pour point elevation)/(max upstream elevation-pour point elevation).</element>   
+      </element>
+      <element>
+        <element key="value">slope</element>
+        <element key="title">Average slope</element>
+        <element key="unit">degree</element>
+        <element key="unitfull">degree</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Average value of all  grid cells upstream of the segment pour-point.</element>   
+      </element>
+      <element>
+        <element key="value">storage</element>
+        <element key="title">Storage</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Proportion of upstream grid cells that are valley bottoms.</element>   
+      </element>
+      <element>
+        <element key="value">elongationratio</element>
+        <element key="title">Shape (Elongation ratio)</element>
+        <element key="unit">Elongation ratio</element>
+        <element key="unitfull">Elongation ratio</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Re = Dc / L where Dc = the diameter of a circle with the same area as the catchment area upstream of the segment, L = the maximum length of the catchment along a line basically parallel to the main stem (Gordon et al., 1992).</element>   
+      </element>
+      <element>
+        <element key="value">reliefratio</element>
+        <element key="title">Relief ratio </element>
+        <element key="unit">Relief ratio</element>
+        <element key="unitfull">Relief ratio</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">(maximum upstream elevation-pour point elevation)/(flow path distance from source).</element>   
+      </element>
+      <element>
+        <element key="value">strahlerorder</element>
+        <element key="title">Strahler stream order</element>
+        <element key="unit">order</element>
+        <element key="unitfull">order</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Strahler stream order, order not incremented for rejoining anabranches,stream order allowed to increment downstream of a confluence with one or more DEM  connectors.</element>   
+      </element>
+      <element>
+        <element key="value">segelevationmax</element>
+        <element key="title">Maximum segment elevation</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Maximum elevation value of all grid cells comprising the stream segment.</element>   
+      </element>
+      <element>
+        <element key="value">segelevationmean</element>
+        <element key="title">Mean segment elevation</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Mean elevation value of all grid cells comprising the stream segment.</element>   
+      </element>
+      <element>
+        <element key="value">segelevationmin</element>
+        <element key="title">Minimum segment elevation</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Minimum elevation value of all grid cells comprising the stream segment.</element>   
+      </element>
+      <element>
+        <element key="value">segslope</element>
+        <element key="title">Stream segment slope</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">topography</element>
+        <element key="tooltip">The slope of the stream segment calculated as the stream segment elevation range / length of segment.</element>   
+      </element>
+      <element>
+        <element key="value">downstreamslope</element>
+        <element key="title">Average slope of downstream flow path</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Average slope from one grid cell to the next in the  direction of flow downstream to the stream outlet (either the sea or an internal sink). At stream bifurcations direction is always that to the main channel.</element>   
+      </element>
+      <element>
+        <element key="value">downstreamslopemax</element>
+        <element key="title">Maximum slope in downstream flow path</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Maximum slope from one grid cell to the next in the  direction of flow downstream to the stream outlet. At stream bifurcations direction is always that to the main channel.</element>   
+      </element>
+      <element>
+        <element key="value">sourcedistance</element>
+        <element key="title">Distance to source</element>
+        <element key="unit">km</element>
+        <element key="unitfull">kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Maximum flow path length upstream to the segment pour-point, calculated by incrementing the maximum upstream length of neighbouring contributing cells. Flow path distance is the distance to move across the surface, allowing for the change in elevation, from the centre of the grid cell to the centre of the next grid cell downstream in the direction of flow.</element>   
+      </element>
+      <element>
+        <element key="value">outletdistance</element>
+        <element key="title">Distance to outlet</element>
+        <element key="unit">km</element>
+        <element key="unitfull">kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Maximum flow path length downstream to the stream outlet (either the sea or an internal sink). Flow path distance is the distance to move across the surface, allowing for the change in elevation, from the centre of the grid cell to the centre of the next grid cell downstream in the direction of flow.  At stream bifurcations direction is always that to the main channel.</element>   
+      </element>
+      <element>
+        <element key="value">localaspect</element>
+        <element key="title">Local aspect</element>
+        <element key="unit">degree</element>
+        <element key="unitfull">degree</element>
+        <element key="legend">default</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Mean aspect of the stream segment grid cells (computed by taking the mean of the northerly and easterly components of the direction of flow separately).</element>   
+      </element>
+      <element>
+        <element key="value">confinement</element>
+        <element key="title">Indicator of valley confinement</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">topography</element>
+        <element key="tooltip">Percentage of stream segment grid cells and their immediate neighbours that are not valley bottoms as defined by mrVBF and mrRTF indices.</element>   
+      </element> 
+      <element>
+        <element key="value">bareextant</element>
+        <element key="title">Percentage extant bare</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with extant bare cover.</element>   
+      </element>
+      <element>
+        <element key="value">forestcover</element>
+        <element key="title">Percentage extant forests cover</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with extant grasses cover with extant forests cover.</element>   
+      </element>
+      <element>
+        <element key="value">grasscover</element>
+        <element key="title">Percentage extant grasses cover </element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with no data values for extant vegetation cover.</element>   
+      </element>
+      <element>
+        <element key="value">nodataextant</element>
+        <element key="title">Percentage extant vegetation cover grid is nodata</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell  with extant bare cover.</element>   
+      </element>
+      <element>
+        <element key="value">woodlandcover</element>
+        <element key="title">Percentage extant woodland cover </element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with extant woodland cover.</element>   
+      </element>
+      <element>
+        <element key="value">shrubcover</element>
+        <element key="title">Percentage extant shrub cover</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with extant shrub cover.</element>   
+      </element>
+      <element>
+        <element key="value">naturallybare</element>
+        <element key="title">Percentage naturally bare</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell  with naturally bare cover.</element>   
+      </element>
+      <element>
+        <element key="value">natforestcover</element>
+        <element key="title">Percentage natural forests cover</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with extant grasses cover with natural forests cover.</element>   
+      </element>
+      <element>
+        <element key="value">natgrasscover</element>
+        <element key="title">Percentage natural grasses cover</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with extant grasses cover with natural grasses cover.</element>   
+      </element>
+      <element>
+        <element key="value">natnodata</element>
+        <element key="title">Catchment percentage natural vegetation cover grid is nodata</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with no data values for natural vegetation cover.</element>   
+      </element>
+      <element>
+        <element key="value">natshrubcover</element>
+        <element key="title">Percentage natural shrub cover</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with natural shrub cover.</element>   
+      </element>
+      <element>
+        <element key="value">natwoodlandcover</element>
+        <element key="title">Percentage natural woodland cover </element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">vegetation</element>
+        <element key="tooltip">Areal proportion of grid cells upstream of the center of the stream segment pour-point cell with naturally woodland cover.</element>   
+      </element>
+      <element>
+        <element key="value">modifiedland</element>
+        <element key="title">Proportion that is modified land (i.e. not conservation)</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is modified land.</element>   
+      </element>
+      <element>
+        <element key="value">irrigatedland</element>
+        <element key="title">Proportion that is irrigated land</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is irrigated land.</element>   
+      </element>
+      <element>
+        <element key="value">aquaculture</element>
+        <element key="title">Proportion that is used for aquaculture</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is used for aquaculture.</element>   
+      </element>
+      <element>
+        <element key="value">animalproduction</element>
+        <element key="title">Proportion that is used for intensive animal production</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is used for intensive animal production.</element>   
+      </element>
+      <element>
+        <element key="value">plantproduction</element>
+        <element key="title">Proportion that is used for intensive plant production</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is used for intensive plant production.</element>   
+      </element>
+      <element>
+        <element key="value">pestherbicidesused</element>
+        <element key="title">Proportion where herbicides/pesticides is likely to be used</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion where herbicides/pesticides is likely to be used.</element>   
+      </element>
+      <element>
+        <element key="value">fertilzerused</element>
+        <element key="title">Proportion where fertilzer is likely to be used</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion where fertilzer is likely to be used.</element>   
+      </element>
+      <element>
+        <element key="value">forestryland</element>
+        <element key="title">Proportion that is used for forestry</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is used for forestry.</element>   
+      </element>
+      <element>
+        <element key="value">miningland</element>
+        <element key="title">Proportion that is used for mining</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is used for mining.</element>   
+      </element>
+      <element>
+        <element key="value">urbanland</element>
+        <element key="title">Proportion that is urban</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is urban.</element>   
+      </element>
+      <element>
+        <element key="value">irridrainageland</element>
+        <element key="title">Proportion that is used for irrigation supply/drainage</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is used for irrigation supply/drainage.</element>   
+      </element>
+      <element>
+        <element key="value">artficialimpoundment</element>
+        <element key="title">Proportion that is an artifical impoundment</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is an artifical impoundment.</element>   
+      </element>
+      <element>
+        <element key="value">roadland</element>
+        <element key="title">Proportion that is road</element>
+        <element key="unit">ratio</element>
+        <element key="unitfull">ratio</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Areal proportion that is road.</element>   
+      </element>
+      <element>
+        <element key="value">popdensitymean</element>
+        <element key="title">Average population density</element>
+        <element key="unit">no/km^2</element>
+        <element key="unitfull">count per square kilimetre</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Average population density of all grid cells upstream of the stream segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">popdensitymax</element>
+        <element key="title">Maximum population density</element>
+        <element key="unit">no/km^2</element>
+        <element key="unitfull">count per square kilimetre</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Maximum population density of all grid cells upstream of the stream segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">popdensitygter1</element>
+        <element key="title">Proportion with population density greater than 1 person /km2</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Proportion of grid cells upstream of the stream segment pour-point cell with population density greater than 1 person /km2.</element>   
+      </element>
+      <element>
+        <element key="value">popdensitygter10</element>
+        <element key="title">Proportion with population density greater than 10 person /km2</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Proportion of grid cells upstream of the stream segment pour-point cell with population density greater than 10 person /km2.</element>   
+      </element>
+      <element>
+        <element key="value">npp00</element>
+        <element key="title">Annual mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp01</element>
+        <element key="title">January mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of  “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp02</element>
+        <element key="title">February mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp03</element>
+        <element key="title">March mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp04</element>
+        <element key="title">April mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp05</element>
+        <element key="title">May mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp06</element>
+        <element key="title">June mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp07</element>
+        <element key="title">July mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp08</element>
+        <element key="title">August mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp09</element>
+        <element key="title">September mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp10</element>
+        <element key="title">October mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp11</element>
+        <element key="title">November mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">npp12</element>
+        <element key="title">December mean Net Primary Productivity</element>
+        <element key="unit">tC ha</element>
+        <element key="unitfull">tonnes of carbon per hectare</element>
+        <element key="legend">default</element>
+        <element key="type">vegetation</element>
+        <element key="type">productivity</element>
+        <element key="tooltip">Average of the grid cell values of “Base” (pre-1788) Net Primary Production upstream of the center of the segment pour-point cell.</element>   
+      </element>
+      <element>
+        <element key="value">catdisturbindex</element>
+        <element key="title">Catchment Disturbance Index</element>
+        <element key="unit">index</element>
+        <element key="unitfull">disturbance index</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Catchment Disturbance Index</element>   
+      </element>
+      <element>
+        <element key="value">subcatdisturbindex</element>
+        <element key="title">Sub-catchment Disturbance Index</element>
+        <element key="unit">index</element>
+        <element key="unitfull">disturbance index</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Sub-catchment Disturbance Index</element>   
+      </element>
+      <element>
+        <element key="value">segflowdisturbindex</element>
+        <element key="title">Segment Flow Regime Disturbance Index</element>
+        <element key="unit">index</element>
+        <element key="unitfull">disturbance index</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Segment Flow Regime Disturbance Index</element>   
+      </element>
+      <element>
+        <element key="value">flowregimedisturbindex</element>
+        <element key="title">Flow Regime Disturbance Index</element>
+        <element key="unit">index</element>
+        <element key="unitfull">disturbance index</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Flow Regime Disturbance Index</element>   
+      </element>
+      <element>
+        <element key="value">riverdisturbindex</element>
+        <element key="title">River Disturbance Index</element>
+        <element key="unit">index</element>
+        <element key="unitfull">disturbance index</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">River Disturbance Index</element>   
+      </element>
+      <element>
+        <element key="value">extindsrcptfactor</element>
+        <element key="title">Extractive Industries/ Point source Factor</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Extractive Industries/ Point source Factor</element>   
+      </element>
+      <element>
+        <element key="value">landusefactor</element>
+        <element key="title">Landuse Factor</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">landuse factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Landuse Factor</element>   
+      </element>
+      <element>
+        <element key="value">leveebankfactor</element>
+        <element key="title">Leveebank Factor</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">leveebank factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Leveebank Factor</element>   
+      </element>
+      <element>
+        <element key="value">nwisettlefactor</element>
+        <element key="title">Settlement factor (NWI data only)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">settlement factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Settlement factor (NWI data only)</element>   
+      </element>
+      <element>
+        <element key="value">geodatasettlefactor</element>
+        <element key="title">Settlement factor (GEODATA data only)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">settlement factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Settlement factor (GEODATA data only)</element>   
+      </element>
+      <element>
+        <element key="value">otherdatasettlefactor</element>
+        <element key="title">Settlement factor (Other data)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">settlement factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Settlement factor (Other data)</element>   
+      </element>
+      <element>
+        <element key="value">maxsettlefactor</element>
+        <element key="title">Settlement factor (max of SDSF, GDSF and NWISF)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">settlement factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Settlement factor (max of SDSF, GDSF and NWISF)</element>   
+      </element>
+      <element>
+        <element key="value">nwiinffactor</element>
+        <element key="title">Infrastructure factor (NWI data only)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">infrastructure factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Infrastructure factor (NWI data only)</element>   
+      </element>
+      <element>
+        <element key="value">geodatainffactor</element>
+        <element key="title">Infrastructure factor (GEODATA data only)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">infrastructure factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Infrastructure factor (GEODATA data only)</element>   
+      </element>
+      <element>
+        <element key="value">maxinffactor</element>
+        <element key="title">Infrastructure factor (max of GDIF and NWIIF)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">infrastructure factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Infrastructure factor (max of GDIF and NWIIF)</element>   
+      </element>
+      <element>
+        <element key="value">nwiimpfactor</element>
+        <element key="title">Impoundments Factor (NWI data only)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">impoundments factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Impoundments Factor (NWI data only)</element>   
+      </element>
+      <element>
+        <element key="value">geodataimpfactor</element>
+        <element key="title">Impoundments factor (GEODATA only)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">impoundments factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Impoundments factor (GEODATA only)</element>   
+      </element>
+      <element>
+        <element key="value">maximpfactor</element>
+        <element key="title">Impoundments factor (max of GDIMF and NWIIMF)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">impoundments factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Impoundments factor (max of GDIMF and NWIIMF)</element>   
+      </element>
+      <element>
+        <element key="value">nwidiverfactor</element>
+        <element key="title">Flow diversions factor (NWI data only)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">flow diversions factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Flow diversions factor (NWI data only)</element>   
+      </element>
+      <element>
+        <element key="value">geodatadiverfactor</element>
+        <element key="title">Flow diversions factor (GEODATA data only)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">flow diversions factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Flow diversions factor (GEODATA data only)</element>   
+      </element>
+      <element>
+        <element key="value">maxdiverfactor</element>
+        <element key="title">Flow diversions factor (max of GDFDF and NWIFDF)</element>
+        <element key="unit">factor</element>
+        <element key="unitfull">flow diversions factor</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">Flow diversions factor (max of GDFDF and NWIFDF)</element>   
+      </element>
+      <element>
+        <element key="value">sdif</element>
+        <element key="title">sdif</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">nwief</element>
+        <element key="title">nwief</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">gdef</element>
+        <element key="title">gdef</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">sdef</element>
+        <element key="title">sdef</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">sdimf</element>
+        <element key="title">sdimf</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">sdfdf</element>
+        <element key="title">sdfdf</element>
+        <element key="unit">TBD</element>
+        <element key="unitfull">To be done</element>
+        <element key="legend">default</element>
+        <element key="type">landuse</element>
+        <element key="tooltip">To be done</element>   
+      </element>
+      <element>
+        <element key="value">barfreelengmin</element>
+        <element key="title">Barrier free flow path length percentage</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Minimum of barrier free flow path length percentage for reservoirs and damwalls, spillways or large dams</element>
+      </element>
+      <element>
+        <element key="value">barfreelengresv</element>
+        <element key="title">Barrier free flow path length percentage (reservoirs)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">((DUPRESERVR + D2RESERVOR ) / TOTLEN ) * 100</element>
+      </element>
+      <element>
+        <element key="value">barfreelengdam</element>
+        <element key="title">Barrier free flow path length percentage (damwalls, spillways or large dams)</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">((DISTUPDAMW + D2DAMWALL ) / TOTLEN ) * 100</element>
+      </element>
+      <element>
+        <element key="value">totalcatlength</element>
+        <element key="title">Total catchment length</element>
+        <element key="unit">km</element>
+        <element key="unitfull">kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Sum of UPSDIST and D2OUTLET (terrain.lut)</element>
+      </element>
+      <element>
+        <element key="value">maxupstbffplengres</element>
+        <element key="title">Maximum barrier free flow path length upstream (reservoirs)</element>
+        <element key="unit">km</element>
+        <element key="unitfull">kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Calculated as for UPSDIST with sinks imposed on flow pathways at the outlet of stream segments flowing out of a reservoir (i.e. the RESERVOIRPID of the next stream segment downstream is 0)</element>
+      </element>
+      <element>
+        <element key="value">unrestdowndistres</element>
+        <element key="title">Unrestricted (no reservoirs) distance downstream</element>
+        <element key="unit">km</element>
+        <element key="unitfull">kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flow path length downstream to the outlet of stream segments flowing out of a reservoir or if no reservoir the stream outlet (either the sea or an internal sink). Flow path distance is the distance to move across the surface, allowing for the change in elevation, from the centre of the grid cell to the centre of the next grid cell downstream in the direction of flow.  At stream bifurcations direction is always that to the main channel.</element>
+      </element>
+      <element>
+        <element key="value">maxupstbffplengdam</element>
+        <element key="title">Maximum barrier free flow path length upstream  (damwalls, spillways or large dams)</element>
+        <element key="unit">km</element>
+        <element key="unitfull">kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Calculated as for UPSDIST with sinks imposed on flow pathways at damwalls or spillways intersecting or within 100m of an AusHydro 1.1.6 WatercourseLine feature.</element>
+      </element>
+      <element>
+        <element key="value">unrestdowndistdam</element>
+        <element key="title">Unrestricted (no damwalls, spillways or large dams) distance downstream</element>
+        <element key="unit">km</element>
+        <element key="unitfull">kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flow path length downstream to a damwall or spillway or if absent the stream outlet (either the sea or an internal sink). Flow path distance is the distance to move across the surface, allowing for the change in elevation, from the centre of the grid cell to the centre of the next grid cell downstream in the direction of flow.  At stream bifurcations direction is always that to the main channel.</element>
+      </element>
+      <element>
+        <element key="value">barrierupdownstr</element>
+        <element key="title">Artificial barrier presence up or downstream</element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">A damwall, spillway or reservoir outlet is present up and/or downstream (1 if present, 0 if absent).</element>
+      </element>
+      <element>
+        <element key="value">barrierdownstr</element>
+        <element key="title">Artificial barrier presence downstream</element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flags a damwall, spillway or reservoir outlet in the downstream flow path (1 if present, 0 if absent).</element>
+      </element>
+      <element>
+        <element key="value">barrierupstr</element>
+        <element key="title">Artificial barrier presence upstream</element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flags a damwall, spillway or reservoir outlet in the upstream flow path (1 if present, 0 if absent).</element>
+      </element>
+      <element>
+        <element key="value">cliffupstr</element>
+        <element key="title">Upstream of a cliff</element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flags stream segments upstream of a segment flowing over a cliff (1 if present downstream, 0 if absent).</element>
+      </element>
+      <element>
+        <element key="value">cliffdownstr</element>
+        <element key="title">Downstream of a cliff</element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flags stream segments downstream of a segment flowing over a cliff (1 if present downstream, 0 if absent).</element>
+      </element>
+      <element>
+        <element key="value">waterfallflow</element>
+        <element key="title">Flowing over a waterfall</element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flags stream segments flowing over a waterfall (1 if present, 0 if absent).</element>
+      </element>
+      <element>
+        <element key="value">waterfallupstr</element>
+        <element key="title">Upstream of a waterfall</element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flags stream segments upstream of a segment flowing over a waterfall (1 if present downstream, 0 if absent).</element>
+      </element>
+      <element>
+        <element key="value">waterfalldownstr</element>
+        <element key="title">Downstream of a waterfall</element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Flags stream segments downstream of a segment flowing over a waterfall (1 if present upstream, 0 if absent).</element>
+      </element>
+      <element>
+        <element key="value">strdensity</element>
+        <element key="title">Stream density</element>
+        <element key="unit">km/km^2</element>
+        <element key="unitfull">kilometres per square kilometre</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Total segment length of all upstream segments in the DEM derived stream network / contributing area calculated for the segment pour-point.</element>
+      </element>
+      <element>
+        <element key="value">lakeportion</element>
+        <element key="title">Stream and valley lake proportion</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Proportion of stream segment and associated valley bottom grid cells where a lake occupies the majority of the grid cell.</element>
+      </element>
+      <element>
+        <element key="value">springportion</element>
+        <element key="title">Stream and valley springs proportion</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Proportion of stream segment and associated valley bottom grid cells in which a spring occurs.</element>
+      </element>
+      <element>
+        <element key="value">watercourseportion</element>
+        <element key="title">Stream and valley large streams proportion</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Proportion of stream segment and associated valley bottom grid cells where a large stream mapped as a watercourse area occupies the majority of the grid cell.</element>
+      </element>
+      <element>
+        <element key="value">waterholeportion</element>
+        <element key="title">Stream and valley waterholes proportion</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Proportion of stream segment and associated valley bottom grid cells in which a waterhole occurs.</element>
+      </element>
+      <element>
+        <element key="value">waterynessind</element>
+        <element key="title">"Wateryness" Indicator</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Proportion of stream segment and associated valley bottom grid cells that contains one or more of a waterhole or spring or the majority of the grid cell is occupied by a lake or watercoursearea.</element>
+      </element>
+      <element>
+        <element key="value">strsegmentleng</element>
+        <element key="title">Stream segment length</element>
+        <element key="unit">km</element>
+        <element key="unitfull">kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Sum of the distances to move across the surface from each segment grid cell to the next downstream in the direction of flow.</element>
+      </element>
+      <element>
+        <element key="value">waterholecount</element>
+        <element key="title">Segment sub-catchment waterholes frequency</element>
+        <element key="unit">count</element>
+        <element key="unitfull">count</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Number of waterholes occurring within the stream segment sub-catchment.</element>
+      </element>
+      <element>
+        <element key="value">springcount</element>
+        <element key="title">Segment sub-catchment springs frequency</element>
+        <element key="unit">count</element>
+        <element key="unitfull">count</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Number of springs occurring within the stream segment sub-catchment.</element>
+      </element>
+      <element>
+        <element key="value">waterholedensity</element>
+        <element key="title">Segment waterholes density</element>
+        <element key="unit">no/km</element>
+        <element key="unitfull">count per kilometre</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Number of waterholes occurring within the stream segment sub-catchment divided by the length of the stream segment.</element>
+      </element>
+      <element>
+        <element key="value">springdensity</element>
+        <element key="title">Segment springs density</element>
+        <element key="unit">no/km</element>
+        <element key="unitfull">count per kilometre</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Number of springs occurring within the stream segment sub-catchment divided by the length of the stream segment.</element>
+      </element>
+      <element>
+        <element key="value">lakearea</element>
+        <element key="title">Segment sub-catchment lake area</element>
+        <element key="unit">km^2</element>
+        <element key="unitfull">square kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Total area of lakes occurring within the stream segment sub-catchment.</element>
+      </element>
+      <element>
+        <element key="value">lakedensity</element>
+        <element key="title">Segment lakes density</element>
+        <element key="unit">km^2/km</element>
+        <element key="unitfull">square kilometres per kilometre</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Total area of lakes occurring within the stream segment sub-catchment divided by the length of the stream segment.</element>
+      </element>
+      <element>
+        <element key="value">watercoursearea</element>
+        <element key="title">Segment sub-catchment area of large streams</element>
+        <element key="unit">km^2</element>
+        <element key="unitfull">square kilometres</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Total area of large streams mapped as watercourse area occurring within the stream segment sub-catchment.</element>
+      </element>
+      <element>
+        <element key="value">watercoursedensity</element>
+        <element key="title">Segment large streams density</element>
+        <element key="unit">km^2/km</element>
+        <element key="unitfull">square kilometres per kilometre</element>
+        <element key="legend">default</element>
+        <element key="type">hydrology</element>
+        <element key="type">topography</element>        
+        <element key="tooltip">Total area of large streams mapped as watercourse area occurring within the stream segment sub-catchment divided by the length of the stream segment.</element>
+      </element>
+    </value>    
   </record>
 
   <record name="org.bccvl.resolution">
