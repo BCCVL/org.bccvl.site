@@ -693,3 +693,15 @@ def upgrade_260_270_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     # update initial site content and r scripts
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    # rename traits dataset facet
+    from org.bccvl.site.faceted.interfaces import IFacetConfigUtility
+    facet_tool = getUtility(IFacetConfigUtility)
+    if 'data_table' in facet_tool.context:
+        # data_table is still there....
+        if 'species_traits_dataset' in facet_tool.context:
+            # new facet is already ... delete old one
+            facet_tool.conetxt.manage_delObjects('data_table')
+        else:
+            # rename old one
+            facet_tool.context.manage_renameObject(
+                'data_table', 'species_traits_dataset')
