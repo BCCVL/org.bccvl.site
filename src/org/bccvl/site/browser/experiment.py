@@ -53,10 +53,12 @@ class ExperimentParamGroup(AutoFields, Group):
         #        prefix
         # self.updateFieldsFromSchemata()
         #
-        # stupid autoform thinks self.groups should be a list and not a tuple :(
+        # stupid autoform thinks self.groups should be a list and not a tuple
+        # :(
         self.groups = list(self.groups)
         # use  processFields instead
-        processFields(self, self.schema, prefix=self.toolkit) #, permissionChecks=have_user)
+        # , permissionChecks=have_user)
+        processFields(self, self.schema, prefix=self.toolkit)
         # revert back to tuple
         self.groups = tuple(self.groups)
 
@@ -71,15 +73,19 @@ class ParamGroupMixin(object):
     param_groups = ()
 
     def addToolkitFields(self):
-        # FIXME: This relies on the order the vicabularies are returned, which shall be fixed.
-        vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
-        groups = OrderedDict((cat.value,[]) for cat in vocab)
+        # FIXME: This relies on the order the vicabularies are returned, which
+        # shall be fixed.
+        vocab = getUtility(
+            IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        groups = OrderedDict((cat.value, []) for cat in vocab)
 
-        # TODO: only sdms have functions at the moment ,... maybe sptraits as well?
+        # TODO: only sdms have functions at the moment ,... maybe sptraits as
+        # well?
         func_vocab = getUtility(IVocabularyFactory, name=self.func_vocab_name)
         functions = getattr(self.context, self.func_select_field, None) or ()
 
-        # TODO: could also use uuidToObject(term.value) instead of relying on BrainsVocabluary terms
+        # TODO: could also use uuidToObject(term.value) instead of relying on
+        # BrainsVocabluary terms
         for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
             if self.mode == DISPLAY_MODE and not self.is_toolkit_selected(toolkit.UID(), functions):
                 # filter out unused algorithms in display mode
@@ -103,7 +109,7 @@ class ParamGroupMixin(object):
                 self.request,
                 self)
             param_group.__name__ = "parameters_{}".format(toolkit.UID())
-            #param_group.prefix = ''+ form.prefix?
+            # param_group.prefix = ''+ form.prefix?
             param_group.toolkit = toolkit.UID()
             param_group.schema = parameters_schema
             #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
@@ -187,7 +193,8 @@ class View(edit.DefaultEditForm):
             self.status = self.formErrorsMessage
             return
 
-        msgtype, msg = IExperimentJobTracker(self.context).start_job(self.request)
+        msgtype, msg = IExperimentJobTracker(
+            self.context).start_job(self.request)
         if msgtype is not None:
             IStatusMessage(self.request).add(msg, type=msgtype)
         self.request.response.redirect(self.context.absolute_url())
@@ -301,9 +308,11 @@ class SDMAdd(ParamGroupMixin, Add):
 
     def create(self, data):
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
-        # we'll have to override it to find a place to apply our algo_group data'
+        # we'll have to override it to find a place to apply our algo_group
+        # data'
         newob = super(SDMAdd, self).create(data)
-        # apply values to algo dict manually to make sure we don't write data on read
+        # apply values to algo dict manually to make sure we don't write data
+        # on read
         new_params = {}
         for group in self.param_groups:
             if group.toolkit in data['functions']:
@@ -320,18 +329,22 @@ class SDMAdd(ParamGroupMixin, Add):
         # data contains already field values
         datasets = data.get('environmental_datasets', {}).keys()
         if not datasets:
-            # FIXME: Make this a widget error, currently shown as form wide error
-            raise ActionExecutionError(Invalid('No environmental dataset selected.'))
+            # FIXME: Make this a widget error, currently shown as form wide
+            # error
+            raise ActionExecutionError(
+                Invalid('No environmental dataset selected.'))
 
         # Determine highest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
-        res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
+        res_vocab = getUtility(
+            IVocabularyFactory, 'resolution_source')(self.context)
         if data.get('scale_down', False):
             # ... find highest resolution
-            resolution_idx = 99 # Arbitrary choice of upper index limit
+            resolution_idx = 99  # Arbitrary choice of upper index limit
             for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
-                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+                idx = res_vocab._terms.index(
+                    res_vocab.getTerm(dsbrain.BCCResolution))
                 if idx < resolution_idx:
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
@@ -339,7 +352,8 @@ class SDMAdd(ParamGroupMixin, Add):
             # ... find lowest resolution
             resolution_idx = -1
             for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
-                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+                idx = res_vocab._terms.index(
+                    res_vocab.getTerm(dsbrain.BCCResolution))
                 if idx > resolution_idx:
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
@@ -361,9 +375,11 @@ class MSDMAdd(ParamGroupMixin, Add):
 
     def create(self, data):
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
-        # we'll have to override it to find a place to apply our algo_group data'
+        # we'll have to override it to find a place to apply our algo_group
+        # data'
         newob = super(MSDMAdd, self).create(data)
-        # apply values to algo dict manually to make sure we don't write data on read
+        # apply values to algo dict manually to make sure we don't write data
+        # on read
         new_params = {}
         for group in self.param_groups:
             if group.toolkit == data['function']:
@@ -380,18 +396,22 @@ class MSDMAdd(ParamGroupMixin, Add):
         # data contains already field values
         datasets = data.get('environmental_datasets', {}).keys()
         if not datasets:
-            # FIXME: Make this a widget error, currently shown as form wide error
-            raise ActionExecutionError(Invalid('No environmental dataset selected.'))
+            # FIXME: Make this a widget error, currently shown as form wide
+            # error
+            raise ActionExecutionError(
+                Invalid('No environmental dataset selected.'))
 
         # Determine highest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
-        res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
+        res_vocab = getUtility(
+            IVocabularyFactory, 'resolution_source')(self.context)
         if data.get('scale_down', False):
             # ... find highest resolution
-            resolution_idx = 99 # Arbitrary choice of upper index limit
+            resolution_idx = 99  # Arbitrary choice of upper index limit
             for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
-                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+                idx = res_vocab._terms.index(
+                    res_vocab.getTerm(dsbrain.BCCResolution))
                 if idx < resolution_idx:
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
@@ -399,7 +419,8 @@ class MSDMAdd(ParamGroupMixin, Add):
             # ... find lowest resolution
             resolution_idx = -1
             for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
-                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+                idx = res_vocab._terms.index(
+                    res_vocab.getTerm(dsbrain.BCCResolution))
                 if idx > resolution_idx:
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
@@ -430,12 +451,15 @@ class ProjectionAdd(Add):
 
         datasets = data.get('future_climate_datasets', [])
         if not datasets:
-            # FIXME: Make this a widget error, currently shown as form wide error
-            raise ActionExecutionError(Invalid('No future climate dataset selected.'))
+            # FIXME: Make this a widget error, currently shown as form wide
+            # error
+            raise ActionExecutionError(
+                Invalid('No future climate dataset selected.'))
         models = data.get('species_distribution_models', {})
         if not tuple(chain.from_iterable(x for x in models.values())):
             # FIXME: collecting all errors is better than raising an exception for each single error
-            # TODO: see http://stackoverflow.com/questions/13040487/how-to-raise-a-widgetactionexecutionerror-for-multiple-fields-with-z3cform
+            # TODO: see
+            # http://stackoverflow.com/questions/13040487/how-to-raise-a-widgetactionexecutionerror-for-multiple-fields-with-z3cform
             raise WidgetActionExecutionError(
                 'species_distribution_models',
                 Invalid('No source dataset selected.')
@@ -444,10 +468,12 @@ class ProjectionAdd(Add):
         # Determine lowest resolution
         # FIXME: this is slow and needs improvements
         #        and accessing _terms is not ideal
-        res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
+        res_vocab = getUtility(
+            IVocabularyFactory, 'resolution_source')(self.context)
         resolution_idx = -1
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
-            idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+            idx = res_vocab._terms.index(
+                res_vocab.getTerm(dsbrain.BCCResolution))
             if idx > resolution_idx:
                 resolution_idx = idx
         data['resolution'] = res_vocab._terms[resolution_idx].value
@@ -480,10 +506,13 @@ class BiodiverseAdd(Add):
             # ds should be a projection output which has only one layer
             # FIXME: error message is not clear enough and
             #        use widget.errors instead of exception
-            #        also it will only verify if dateset has min/max values in metadata
+            # also it will only verify if dateset has min/max values in
+            # metadata
             layermd = md['layers'].values()[0]
             if 'min' in layermd and 'max' in layermd:
-                # FIXME: at least layermd['min'] may be a string '0', when comparing to decimal from threshold selector, this comparison fails and raises the widget validation error
+                # FIXME: at least layermd['min'] may be a string '0', when
+                # comparing to decimal from threshold selector, this comparison
+                # fails and raises the widget validation error
                 if value <= float(layermd['min']) or value >= float(layermd['max']):
                     raise WidgetActionExecutionError(
                         'projection',
@@ -503,22 +532,26 @@ class EnsembleAdd(Add):
     def validateAction(self, data):
         datasets = list(chain.from_iterable(data.get('datasets', {}).values()))
         if not datasets:
-            # FIXME: Make this a widget error, currently shown as form wide error
+            # FIXME: Make this a widget error, currently shown as form wide
+            # error
             raise ActionExecutionError(Invalid('No dataset selected.'))
 
         # all selected datasets are combined into one ensemble analysis
         # get resolution for ensembling
         # Determine lowest resolution
         # FIXME: An experiment should store the resolution metadata on the dataset
-        #        e.g. an SDM current projection needs to store resolution on tif file
-        res_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
+        # e.g. an SDM current projection needs to store resolution on tif file
+        res_vocab = getUtility(
+            IVocabularyFactory, 'resolution_source')(self.context)
         resolution_idx = -1
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
             try:
-                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.BCCResolution))
+                idx = res_vocab._terms.index(
+                    res_vocab.getTerm(dsbrain.BCCResolution))
             except:
                 # FIXME: need faster way to order resolutions
-                idx = res_vocab._terms.index(res_vocab.getTerm(dsbrain.getObject().__parent__.job_params['resolution']))
+                idx = res_vocab._terms.index(res_vocab.getTerm(
+                    dsbrain.getObject().__parent__.job_params['resolution']))
             if idx > resolution_idx:
                 resolution_idx = idx
         data['resolution'] = res_vocab._terms[resolution_idx].value
@@ -529,8 +562,8 @@ class SpeciesTraitsView(ParamGroupMixin, View):
     View SDM Experiment
     """
     # Parameters for ParamGroupMixin
-    func_vocab_name = 'traits_functions_source'
-    func_select_field = 'algorithm'
+    func_vocab_name = 'traits_functions_env_source'
+    func_select_field = 'algorithms_env'
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
@@ -542,8 +575,8 @@ class SpeciesTraitsEdit(ParamGroupMixin, Edit):
     Edit SDM Experiment
     """
     # Parameters for ParamGroupMixin
-    func_vocab_name = 'traits_functions_source'
-    func_select_field = 'algorithm'
+    func_vocab_name = 'traits_functions_env_source'
+    func_select_field = 'algorithms_env'
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
@@ -555,8 +588,8 @@ class SpeciesTraitsAdd(ParamGroupMixin, Add):
     portal_type = "org.bccvl.content.speciestraitsexperiment"
 
     # Parameters for ParamGroupMixin
-    func_vocab_name = 'traits_functions_source'
-    func_select_field = 'algorithm'
+    func_vocab_name = 'traits_functions_env_source'
+    func_select_field = 'algorithms_env'
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
@@ -564,12 +597,14 @@ class SpeciesTraitsAdd(ParamGroupMixin, Add):
 
     def create(self, data):
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
-        # we'll have to override it to find a place to apply our algo_group data'
+        # we'll have to override it to find a place to apply our algo_group
+        # data'
         newob = super(SpeciesTraitsAdd, self).create(data)
-        # apply values to algo dict manually to make sure we don't write data on read
+        # apply values to algo dict manually to make sure we don't write data
+        # on read
         new_params = {}
         for group in self.param_groups:
-            if group.toolkit == data['algorithm']:
+            if group.toolkit == data['algorithms_env']:
                 group.applyChanges(data)
                 new_params[group.toolkit] = group.getContent()
         newob.parameters = new_params
