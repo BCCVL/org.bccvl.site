@@ -57,7 +57,7 @@
 
   <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
                 name="species_traits_dataset.xml"
-                template="species_traits_datasets.xml"
+                template="species_traits_dataset.xml"
                 permission="cmf.ModifyPortalContent" />
 
   <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
