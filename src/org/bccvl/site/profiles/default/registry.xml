@@ -1507,7 +1507,7 @@
         <element key="title">Australian Major Vegetation Groups - present</element>
         <element key="unit"> </element>
         <element key="unitfull">unitless</element>
-        <element key="legend">default</element>
+        <element key="legend">categories</element>
         <element key="type">vegetation</element>
         <element key="tooltip">Present Australian Major Vegetation Groups.</element>
       </element>
@@ -1516,7 +1516,7 @@
         <element key="title">Australian Major Vegetation Groups - pre-1750</element>
         <element key="unit"> </element>
         <element key="unitfull">unitless</element>
-        <element key="legend">default</element>
+        <element key="legend">categories</element>
         <element key="type">vegetation</element>
         <element key="tooltip">Pre-1750 Australian Major Vegetation Groups.</element>
       </element>
