@@ -137,8 +137,8 @@ sdm_functions_source = CatalogVocabularyFactory(
 )
 
 
-traits_functions_source = CatalogVocabularyFactory(
-    'traits_functions_source',
+traits_functions_env_source = CatalogVocabularyFactory(
+    'traits_functions_env_source',
     query={
         # TODO: could use a path restriction to toolkits folder
         # 'path': {
@@ -148,6 +148,20 @@ traits_functions_source = CatalogVocabularyFactory(
         # FIXME: find another way to separate SDM and traits "functions"
         'id': ['lm', 'speciestrait_glm', 'speciestrait_gam', 'gamlss',
                'aov', 'manova'],
+        'sort_on': 'sortable_title',
+    },
+)
+
+traits_functions_species_source = CatalogVocabularyFactory(
+    'traits_functions_species_source',
+    query={
+        # TODO: could use a path restriction to toolkits folder
+        # 'path': {
+        #     'query': '/'.join([self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID])
+        # },
+        'object_provides': 'org.bccvl.site.content.function.IFunction',
+        # FIXME: find another way to separate SDM and traits "functions"
+        'id': [],
         'sort_on': 'sortable_title',
     },
 )
@@ -450,9 +464,11 @@ summary_dataset_vocabulary = SimpleVocabulary([
     SimpleTerm("Summary datasets", "Summarydatasets", u'Summary datasets'),
 ])
 
+
 @provider(IVocabularyFactory)
 def summary_dataset_source(context):
     return summary_dataset_vocabulary
+
 
 @provider(IVocabularyFactory)
 def data_collections_source(context):
@@ -464,12 +480,14 @@ def data_collections_source(context):
         'portal_type': 'org.bccvl.content.collection',
         'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
     }
+
     def generate_collections():
         for term in vocab:
             coll_query['BCCCategory'] = term.value
             for brain in catalog.searchResults(**coll_query):
                 yield brain
     return BrainsVocabulary.fromBrains(generate_collections(), context)
+
 
 @provider(IVocabularyFactory)
 def future_climate_source(context):
@@ -479,11 +497,13 @@ def future_climate_source(context):
         'portal_type': 'org.bccvl.content.collection',
         'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
     }
+
     def generate_collections():
         coll_query['BCCDataGenre'] = 'DataGenreFC'
         for brain in catalog.searchResults(sort_on='sortable_title', sort_order='ascending', **coll_query):
             yield brain
     return BrainsVocabulary.fromBrains(generate_collections(), context)
+
 
 @provider(IVocabularyFactory)
 def climate_environmental_source(context):
@@ -493,8 +513,10 @@ def climate_environmental_source(context):
         'portal_type': 'org.bccvl.content.collection',
         'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
     }
+
     def generate_collections():
-        coll_query['BCCDataGenre'] = ['DataGenreFC', 'DataGenreCC', 'DataGenreE']
+        coll_query['BCCDataGenre'] = [
+            'DataGenreFC', 'DataGenreCC', 'DataGenreE']
         for brain in catalog.searchResults(sort_on='sortable_title', sort_order='ascending', **coll_query):
             yield brain
     return BrainsVocabulary.fromBrains(generate_collections(), context)

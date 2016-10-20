@@ -282,30 +282,78 @@ class IBiodiverseExperiment(IExperiment):
 
 class ISpeciesTraitsExperiment(IExperiment):
 
-    directives.widget(algorithm=RadioFieldWidget)
-    algorithm = Choice(
-        title=u'Algorithm',
-        vocabulary='traits_functions_source',
-        required=True,
-        default=None,
-    )
-
-    formula = Text(
-        title=u'Formula',
-        description=u'Please see <a href="http://stat.ethz.ch/R-manual/R-devel/library/stats/html/lm.htm">R:Fitting Linear Models</a> for details.',
-        required=True,
-        default=None,
-    )
-
-    directives.widget('data_table',
+    directives.widget('species_traits_dataset',
                       DatasetFieldWidget,
                       genre=['DataGenreTraits'],
-                      errmsg=u"Please select 1 species traits dataset.",
-                      vizclass=u'bccvl-auto-viz')
-    data_table = TextLine(
+                      errmsg=u"Please select 1 traits dataset.",
+                      vizclass=u'bccvl-traits-viz')
+    species_traits_dataset = TextLine(
         title=u'Species Traits Datasets',
         default=None,
         required=True,
+    )
+
+    # map column names to type (lon, lat, species, traits var(cat/cont), env
+    # var (cat/cont), ...
+    directives.mode(species_traits_dataset_params=HIDDEN_MODE)
+    species_traits_dataset_params = Dict(
+        title=u"Column descriptions",
+        description=u"Describe columns to be used in analysis",
+        key_type=TextLine(),  # -> column names of selected dataset
+        value_type=TextLine(),  # -> vocab?
+        default={},
+        required=False
+    )
+
+    directives.widget('scale_down',
+                      BoolRadioFieldWidget,
+                      true_label=u"Scale to highest resolution",
+                      false_label=u"Scale to lowest resolution")
+    scale_down = Bool(
+        title=u'Select common resolution',
+        description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
+        default=False,
+        required=True
+    )
+
+    directives.widget('environmental_datasets',
+                      DatasetDictFieldWidget,
+                      multiple='multiple',
+                      genre=['DataGenreCC', 'DataGenreE'],
+                      filters=['text', 'source', 'layer', 'resolution'],
+                      errmsg=u"Please select at least 1 layer.")
+    environmental_datasets = Dict(
+        title=u'Climate & Environmental Datasets',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        required=True,
+    )
+
+    directives.mode(modelling_region=HIDDEN_MODE)
+    modelling_region = Text(
+        title=u"Modelling Region",
+        description=u"GEOJson describing the geographic region which is used to generate the model.",
+        required=False,
+    )
+
+    directives.widget('algorithms_env',
+                      FunctionsFieldWidget,
+                      multiple='multiple')
+    algorithms_env = List(
+        title=u'Algorithm',
+        value_type=Choice(vocabulary='traits_functions_env_source'),
+        required=True,
+        default=None,
+    )
+
+    directives.widget('algorithms_species',
+                      FunctionsFieldWidget,
+                      multiple='multiple')
+    algorithms_species = List(
+        title=u'Algorithm',
+        value_type=Choice(vocabulary='traits_functions_species_source'),
+        required=True,
+        default=None,
     )
 
 

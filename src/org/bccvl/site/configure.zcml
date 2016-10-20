@@ -222,10 +222,15 @@
       />
 
   <utility
-      component=".vocabularies.traits_functions_source"
-      name="traits_functions_source"
+      component=".vocabularies.traits_functions_env_source"
+      name="traits_functions_env_source"
       />
 
+  <utility
+      component=".vocabularies.traits_functions_species_source"
+      name="traits_functions_species_source"
+      />
+  
   <utility
       component=".vocabularies.experiment_type_source"
       name="experiment_type_source"
