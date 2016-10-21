@@ -1512,7 +1512,7 @@
         <element key="tooltip">Present Australian Major Vegetation Groups.</element>
       </element>
       <element>
-        <element key="value">AMVG1750</element>
+        <element key="value">AMVG-1750</element>
         <element key="title">Australian Major Vegetation Groups - pre-1750</element>
         <element key="unit"> </element>
         <element key="unitfull">unitless</element>

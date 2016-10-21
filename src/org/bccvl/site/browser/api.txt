@@ -1239,7 +1239,7 @@ Vocabulary endpoint:
       'unitfull': 'unitless'},
      {'legend': 'categories',
       'title': 'Australian Major Vegetation Groups - pre-1750',
-      'token': 'AMVG1750',
+      'token': 'AMVG-1750',
       'tooltip': 'Pre-1750 Australian Major Vegetation Groups.',
       'type': 'vegetation',
       'unit': ' ',
