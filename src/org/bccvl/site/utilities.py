@@ -1072,12 +1072,22 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             activity.add(BCCVL['algoparam'], param)
             param.add(BCCVL['name'], Literal(key))
             # We have only dataset references as parameters
-            if key in ('data_table',):
+            if key in ('traits_dataset',):
                 param.add(BCCVL['value'], LOCAL[value])
+            elif key in ('environmental_datasets', ):
+                # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
+                # FIXME: look for dict params in other experiment types as well
+                # value is a dictionary, where keys are dataset uuids and
+                # values are a set of selected layers
+                for uuid, layers in value.items():
+                    param.add(BCCVL['value'], LOCAL[uuid])
+                    for layer in layers:
+                        # TODO: maybe URIRef?
+                        param.add(BCCVL['layer'], LOCAL[layer])
             else:
                 param.add(BCCVL['value'], Literal(value))
         # iterate over all input datasets and add them as entities
-        for key in ('data_table',):
+        for key in ('traits_dataset',):
             dsbrain = uuidToCatalogBrain(result.job_params[key])
             if not dsbrain:
                 continue
@@ -1109,52 +1119,74 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             # link with activity
             activity.add(PROV['used'], dsprov)
 
+        for uuid, layers in result.job_params['environmental_datasets'].items():
+            key = 'environmental_datasets'
+            ds = uuidToObject(uuid)
+            dsprov = Resource(graph, LOCAL[key])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
+            # TODO: genre ...
+            for layer in layers:
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
+            # location / source
+            # layers selected + layer metadata
+            # ... raster data, .. layers
+
+            # link with activity
+            activity.add(PROV['used'], dsprov)
+
         provdata.data = graph.serialize(format="turtle")
 
     def start_job(self, request):
         if not self.is_active():
-            # get utility to execute this experiment
-            method = queryUtility(IComputeMethod,
-                                  name=ISpeciesTraitsExperiment.__identifier__)
-            if method is None:
-                return ('error',
-                        u"Can't find method to run Species Traits Experiment")
-            # iterate over all datasets and group them by emsc,gcm,year
-            algorithm = uuidToCatalogBrain(self.context.algorithm)
+            for algorithm in (uuidToCatalogBrain(f) for f in self.context.algorithms_env):
+                # get utility to execute this experiment
+                method = queryUtility(IComputeMethod,
+                                      name=ISpeciesTraitsExperiment.__identifier__)
+                if method is None:
+                    return ('error',
+                            u"Can't find method to run Species Traits Experiment")
+                # create result object:
+                # TODO: refactor this out into helper method
+                title = u'{} - {} {}'.format(self.context.title, algorithm.id,
+                                             datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                result = createContentInContainer(self.context,
+                                                  'Folder',
+                                                  title=title)
 
-            # create result object:
-            # TODO: refactor this out into helper method
-            title = u'{} - {} {}'.format(self.context.title, algorithm.id,
-                                         datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
-            result = createContentInContainer(
-                self.context,
-                'Folder',
-                title=title)
+                # Build job_params store them on result and submit job
+                result.job_params = {
+                    'algorithm': algorithm.id,
+                    'traits_dataset': self.context.species_traits_dataset,
+                    'environmental_datasets': self.context.environmental_datasets,
+                    'modelling_region': self.context.modelling_region,
+                }
+                # add toolkit params:
+                result.job_params.update(
+                    self.context.parameters[algorithm.UID])
+                # update provenance
+                self._createProvenance(result)
+                # submit job
+                LOG.info("Submit JOB %s to queue", algorithm.id)
+                method(result, algorithm.getObject())
+                resultjt = IJobTracker(result)
+                job = resultjt.new_job('TODO: generate id',
+                                       'generate taskname: sdm_experiment')
 
-            # Build job_params store them on result and submit job
-            result.job_params = {
-                'algorithm': algorithm.id,
-                'formula': self.context.formula,
-                'data_table': self.context.data_table,
-            }
-            # add toolkit params:
-            result.job_params.update(self.context.parameters[algorithm.UID])
-            # update provenance
-            self._createProvenance(result)
-            # submit job
-            LOG.info("Submit JOB %s to queue", algorithm.id)
-            method(result, algorithm.getObject())
-            resultjt = IJobTracker(result)
-            job = resultjt.new_job('TODO: generate id',
-                                   'generate taskname: sdm_experiment')
+                job.type = self.context.portal_type
+                job.function = algorithm.id
+                job.toolkit = algorithm.UID
+                # job reindex happens in next call
 
-            job.type = self.context.portal_type
-            job.function = algorithm.id
-            job.toolkit = algorithm.UID
-            # job reindex happens in next call
-
-            resultjt.set_progress('PENDING',
-                                  u'{} pending'.format(algorithm.id))
+                resultjt.set_progress('PENDING',
+                                      u'{} pending'.format(algorithm.id))
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
