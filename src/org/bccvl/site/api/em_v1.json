@@ -145,6 +145,76 @@
             }
         },
         {
+            "title": "submittraits",
+            "description": "Submit Traits Experiment",
+            "rel": "submittraits",
+            "href": "/{id}/submittraits",
+            "method": "POST",
+            "encType": "application/json",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "title": "Experiment title",
+                        "description": "A title for this experiment"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description",
+                        "description": "A short description for this experiment"
+                    },
+                    "traits_data": {
+                        "title": "Species Traits Data",
+                        "type": "object",
+                        "description": "SPecies traits data to use",
+                        "properties": {
+                            "source": {
+                                "title": "Traits data source",
+                                "description": "Source from where to fetch the occurrence data",
+                                "type": "string",
+                                "enum": ["bccvl", "aekos"]
+                            },
+                            "id": {
+                                "title": "Dataset id",
+                                "description": "Dataset id specific for data source"
+                            }
+                        }
+                    },
+                    "environmental_data": {
+                        "title": "Climate & Environmental data",
+                        "description": "Selected climate and environmental data",
+                        "type": "object",
+                        "patternProperties": {
+                            ".+": {
+                                "title": "Dataset",
+                                "description": "key is a dataset id, and value should be alist of layer id's availaible within this dataset",
+                                "type": "array",
+                                "items": {"type": "string"}
+                            }
+                        }
+                    },
+                    "modelling_region": {
+                        "title": "Modelling Region",
+                        "description": "A region to constrain the modelling area to. The value is expected to be a GeoJSON object of type feature",
+                        "type": "object"
+                    },
+                    "algorithms": {
+                        "title": "Algorithms",
+                        "description": "Algorithms to use.",
+                        "type": "object",
+                        "patternProperties": {
+                            ".+": {
+                                "title": "Algorithm",
+                                "description": "The algorithm id. Properties for each algorithm describe the algorithm parameters.",
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
             "title": "metadata",
             "description": "Retrieve metadata for an experiment. Returned data is encoding according to xml-rpc specification.",
             "rel": "metadata",
