@@ -297,7 +297,7 @@ class ExperimentService(BaseService):
             props['algorithms_env'] = {}
             props['algorithms_species'] = {}
             funcs_env = getUtility(
-                IVocabularyFactory, 'traits_functinos_env_source')(context)
+                IVocabularyFactory, 'traits_functions_env_source')(context)
             funcs_species = getUtility(
                 IVocabularyFactory, 'traits_functions_species_source')(context)
             # FIXME: make sure we get the default values from our func object
