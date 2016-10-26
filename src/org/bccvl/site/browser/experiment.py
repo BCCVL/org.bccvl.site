@@ -112,8 +112,8 @@ class ParamGroupMixin(object):
             # param_group.prefix = ''+ form.prefix?
             param_group.toolkit = toolkit.UID()
             param_group.schema = parameters_schema
-            #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
-            #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
+            # param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
+            # param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
             param_group.label = u"configuration for {}".format(toolkit.title)
             if len(parameters_schema.names()) == 0:
                 param_group.description = u"No configuration options"
@@ -221,8 +221,8 @@ class MultiParamGroupMixin(object):
             # param_group.prefix = ''+ form.prefix?
             param_group.toolkit = toolkit.UID()
             param_group.schema = parameters_schema
-            #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
-            #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
+            # param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
+            # param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
             param_group.label = u"configuration for {}".format(toolkit.title)
             if len(parameters_schema.names()) == 0:
                 param_group.description = u"No configuration options"
@@ -718,7 +718,7 @@ class SpeciesTraitsAdd(MultiParamGroupMixin, Add):
         new_params = {}
         for field, groups in self.param_groups.items():
             for group in groups:
-                if group.toolkit == data[field]:
+                if group.toolkit in data[field]:
                     group.applyChanges(data)
                     new_params[group.toolkit] = group.getContent()
         newob.parameters = new_params

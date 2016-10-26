@@ -1146,7 +1146,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
     def start_job(self, request):
         if not self.is_active():
-            for algorithm in (uuidToCatalogBrain(f) for f in self.context.algorithms_env):
+            for algorithm in (uuidToCatalogBrain(f) for f in chain(self.context.algorithms_species,
+                                                                   self.context.algorithms_diff)):
                 # get utility to execute this experiment
                 method = queryUtility(IComputeMethod,
                                       name=ISpeciesTraitsExperiment.__identifier__)
