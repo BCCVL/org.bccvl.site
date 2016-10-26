@@ -294,12 +294,12 @@ class ExperimentService(BaseService):
                               {'parameter': 'algorithms'})
         else:
             portal = ploneapi.portal.get()
-            props['algorithms_env'] = {}
             props['algorithms_species'] = {}
+            props['algorithms_diff'] = {}
             funcs_env = getUtility(
-                IVocabularyFactory, 'traits_functions_env_source')(context)
-            funcs_species = getUtility(
                 IVocabularyFactory, 'traits_functions_species_source')(context)
+            funcs_species = getUtility(
+                IVocabularyFactory, 'traits_functions_diff_source')(context)
             # FIXME: make sure we get the default values from our func object
             for algo, algo_params in params['algorithms'].items():
                 if algo_params is None:
@@ -319,9 +319,9 @@ class ExperimentService(BaseService):
                         func_props[field_name] = value
 
             if toolkit.id in funcs_env:
-                props['algorithms_env'][IUUID(toolkit)] = func_props
-            elif toolkit.id in funcs_species:
                 props['algorithms_species'][IUUID(toolkit)] = func_props
+            elif toolkit.id in funcs_species:
+                props['algorithms_diff'][IUUID(toolkit)] = func_props
             else:
                 LOG.warn(
                     'Algorithm {} not in allowed list of functions'.format(toolkit.id))

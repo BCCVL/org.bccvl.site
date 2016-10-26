@@ -70,7 +70,7 @@ class ParamGroupMixin(object):
     Mix-in to handle parameter froms
     """
 
-    param_groups = ()
+    param_groups = None
 
     def addToolkitFields(self):
         # FIXME: This relies on the order the vicabularies are returned, which
@@ -120,10 +120,12 @@ class ParamGroupMixin(object):
             groups[toolkit.algorithm_category].append(param_group)
 
         # join the lists in that order
-        self.param_groups = (tuple(groups['profile'])
-                             + tuple(groups['machineLearning'])
-                             + tuple(groups['statistical'])
-                             + tuple(groups['geographic']))
+        self.param_groups = {
+            self.func_select_field: (tuple(groups['profile'])
+                                     + tuple(groups['machineLearning'])
+                                     + tuple(groups['statistical'])
+                                     + tuple(groups['geographic']))
+        }
 
     def updateFields(self):
         super(ParamGroupMixin, self).updateFields()
@@ -132,7 +134,7 @@ class ParamGroupMixin(object):
     def updateWidgets(self):
         super(ParamGroupMixin, self).updateWidgets()
         # update groups here
-        for group in self.param_groups:
+        for group in self.param_groups[self.func_select_field]:
             try:
                 group.update()
             except Exception as e:
@@ -141,7 +143,7 @@ class ParamGroupMixin(object):
 
     def extractData(self, setErrors=True):
         data, errors = super(ParamGroupMixin, self).extractData(setErrors)
-        for group in self.param_groups:
+        for group in self.param_groups[self.func_select_field]:
             groupData, groupErrors = group.extractData(setErrors=setErrors)
             data.update(groupData)
             if groupErrors:
@@ -155,10 +157,124 @@ class ParamGroupMixin(object):
         changed = super(ParamGroupMixin, self).applyChanges(data)
         # apply algo params:
         new_params = {}
-        for group in self.param_groups:
+        for group in self.param_groups[self.func_select_field]:
             if self.is_toolkit_selected(group.toolkit, data[self.func_select_field]):
                 group.applyChanges(data)
                 new_params[group.toolkit] = group.getContent()
+        self.context.parameters = new_params
+
+        return changed
+
+
+class MultiParamGroupMixin(object):
+    """
+    Mix-in to handle multiple parameter froms
+    """
+
+    param_groups = None
+
+    def addToolkitFields(self):
+        self.param_groups = {}
+        for func_vocab_name, func_select_field in zip(self.func_vocab_name, self.func_select_field):
+            param_groups = self._addToolkitFields(
+                func_vocab_name, func_select_field)
+            self.param_groups[func_select_field] = param_groups
+
+    def _addToolkitFields(self, func_vocab_name, func_select_field):
+        # section ... algorithm section
+        # FIXME: This relies on the order the vicabularies are returned, which
+        # shall be fixed.
+        vocab = getUtility(
+            IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        groups = OrderedDict((cat.value, []) for cat in vocab)
+
+        # TODO: only sdms have functions at the moment ,... maybe sptraits as
+        # well?
+        func_vocab = getUtility(IVocabularyFactory, name=func_vocab_name)
+        functions = getattr(self.context, func_select_field, None) or ()
+
+        # TODO: could also use uuidToObject(term.value) instead of relying on
+        # BrainsVocabluary terms
+        for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
+            if self.mode == DISPLAY_MODE and not self.is_toolkit_selected(toolkit.UID(), functions):
+                # filter out unused algorithms in display mode
+                continue
+            # FIXME: need to cache form schema
+            try:
+                # FIXME: do some schema caching here
+                parameters_model = loadString(toolkit.schema)
+            except Exception as e:
+                LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
+                continue
+
+            # Skip if algorithm does not have a category or unknown category
+            if toolkit.algorithm_category is None or toolkit.algorithm_category not in groups:
+                continue
+
+            parameters_schema = parameters_model.schema
+
+            param_group = ExperimentParamGroup(
+                self.context,
+                self.request,
+                self)
+            param_group.__name__ = "parameters_{}".format(toolkit.UID())
+            # param_group.prefix = ''+ form.prefix?
+            param_group.toolkit = toolkit.UID()
+            param_group.schema = parameters_schema
+            #param_group.prefix = "{}{}.".format(self.prefix, toolkit.id)
+            #param_group.fields = Fields(parameters_schema, prefix=toolkit.id)
+            param_group.label = u"configuration for {}".format(toolkit.title)
+            if len(parameters_schema.names()) == 0:
+                param_group.description = u"No configuration options"
+            groups[toolkit.algorithm_category].append(param_group)
+
+        # join the lists in that order
+        return (tuple(groups['profile'])
+                + tuple(groups['machineLearning'])
+                + tuple(groups['statistical'])
+                + tuple(groups['geographic']))
+
+    def updateFields(self):
+        super(MultiParamGroupMixin, self).updateFields()
+        self.addToolkitFields()
+
+    def updateWidgets(self):
+        super(MultiParamGroupMixin, self).updateWidgets()
+        # update groups here
+        import ipdb
+        ipdb.set_trace()
+        for group in (g for groups in self.param_groups.values() for g in groups):
+            try:
+                group.update()
+            except Exception as e:
+                LOG.info("Group %s failed: %s", group.__name__, e)
+        # should group generation happen here in updateFields or in update?
+
+    def extractData(self, setErrors=True):
+        data, errors = super(MultiParamGroupMixin, self).extractData(setErrors)
+        import ipdb
+        ipdb.set_trace()
+        for group in (g for groups in self.param_groups.values() for g in groups):
+            groupData, groupErrors = group.extractData(setErrors=setErrors)
+            data.update(groupData)
+            if groupErrors:
+                if errors:
+                    errors += groupErrors
+                else:
+                    errors = groupErrors
+        return data, errors
+
+    def applyChanges(self, data):
+        changed = super(MultiParamGroupMixin, self).applyChanges(data)
+        # apply algo params:
+        new_params = {}
+        import ipdb
+        ipdb.set_trace()
+        for field, groups in self.param_groups.items():
+            for group in groups:
+                if self.is_toolkit_selected(group.toolkit, data[field]):
+                    group.applyChanges(data)
+                    new_params[group.toolkit] = group.getContent()
         self.context.parameters = new_params
 
         return changed
@@ -314,7 +430,7 @@ class SDMAdd(ParamGroupMixin, Add):
         # apply values to algo dict manually to make sure we don't write data
         # on read
         new_params = {}
-        for group in self.param_groups:
+        for group in self.param_groups[self.func_select_field]:
             if group.toolkit in data['functions']:
                 group.applyChanges(data)
                 new_params[group.toolkit] = group.getContent()
@@ -381,7 +497,7 @@ class MSDMAdd(ParamGroupMixin, Add):
         # apply values to algo dict manually to make sure we don't write data
         # on read
         new_params = {}
-        for group in self.param_groups:
+        for group in self.param_groups[self.func_select_field]:
             if group.toolkit == data['function']:
                 group.applyChanges(data)
                 new_params[group.toolkit] = group.getContent()
@@ -557,39 +673,42 @@ class EnsembleAdd(Add):
         data['resolution'] = res_vocab._terms[resolution_idx].value
 
 
-class SpeciesTraitsView(ParamGroupMixin, View):
+class SpeciesTraitsView(MultiParamGroupMixin, View):
     """
     View SDM Experiment
     """
     # Parameters for ParamGroupMixin
-    func_vocab_name = 'traits_functions_env_source'
-    func_select_field = 'algorithms_env'
+    func_vocab_name = ('traits_functions_species_source',
+                       'traits_functions_diff_source')
+    func_select_field = ('algorithms_species', 'algorithms_diff')
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
         return tid == data
 
 
-class SpeciesTraitsEdit(ParamGroupMixin, Edit):
+class SpeciesTraitsEdit(MultiParamGroupMixin, Edit):
     """
     Edit SDM Experiment
     """
     # Parameters for ParamGroupMixin
-    func_vocab_name = 'traits_functions_env_source'
-    func_select_field = 'algorithms_env'
+    func_vocab_name = ('traits_functions_species_source',
+                       'traits_functions_diff_source')
+    func_select_field = ('algorithms_species', 'algorithms_diff')
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
         return tid == data
 
 
-class SpeciesTraitsAdd(ParamGroupMixin, Add):
+class SpeciesTraitsAdd(MultiParamGroupMixin, Add):
 
     portal_type = "org.bccvl.content.speciestraitsexperiment"
 
     # Parameters for ParamGroupMixin
-    func_vocab_name = 'traits_functions_env_source'
-    func_select_field = 'algorithms_env'
+    func_vocab_name = ('traits_functions_species_source',
+                       'traits_functions_diff_source')
+    func_select_field = ('algorithms_species', 'algorithms_diff')
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
@@ -603,10 +722,13 @@ class SpeciesTraitsAdd(ParamGroupMixin, Add):
         # apply values to algo dict manually to make sure we don't write data
         # on read
         new_params = {}
-        for group in self.param_groups:
-            if group.toolkit == data['algorithms_env']:
-                group.applyChanges(data)
-                new_params[group.toolkit] = group.getContent()
+        import ipdb
+        ipdb.set_trace()
+        for field, groups in self.param_groups.items():
+            for group in groups:
+                if group.toolkit == data[field]:
+                    group.applyChanges(data)
+                    new_params[group.toolkit] = group.getContent()
         newob.parameters = new_params
         return newob
 
