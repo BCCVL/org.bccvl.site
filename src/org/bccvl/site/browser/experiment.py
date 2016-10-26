@@ -241,8 +241,6 @@ class MultiParamGroupMixin(object):
     def updateWidgets(self):
         super(MultiParamGroupMixin, self).updateWidgets()
         # update groups here
-        import ipdb
-        ipdb.set_trace()
         for group in (g for groups in self.param_groups.values() for g in groups):
             try:
                 group.update()
@@ -252,8 +250,6 @@ class MultiParamGroupMixin(object):
 
     def extractData(self, setErrors=True):
         data, errors = super(MultiParamGroupMixin, self).extractData(setErrors)
-        import ipdb
-        ipdb.set_trace()
         for group in (g for groups in self.param_groups.values() for g in groups):
             groupData, groupErrors = group.extractData(setErrors=setErrors)
             data.update(groupData)
@@ -268,8 +264,6 @@ class MultiParamGroupMixin(object):
         changed = super(MultiParamGroupMixin, self).applyChanges(data)
         # apply algo params:
         new_params = {}
-        import ipdb
-        ipdb.set_trace()
         for field, groups in self.param_groups.items():
             for group in groups:
                 if self.is_toolkit_selected(group.toolkit, data[field]):
@@ -722,8 +716,6 @@ class SpeciesTraitsAdd(MultiParamGroupMixin, Add):
         # apply values to algo dict manually to make sure we don't write data
         # on read
         new_params = {}
-        import ipdb
-        ipdb.set_trace()
         for field, groups in self.param_groups.items():
             for group in groups:
                 if group.toolkit == data[field]:
