@@ -700,7 +700,7 @@ def upgrade_260_270_1(context, logger=None):
         # data_table is still there....
         if 'species_traits_dataset' in facet_tool.context:
             # new facet is already ... delete old one
-            facet_tool.conetxt.manage_delObjects('data_table')
+            facet_tool.context.manage_delObjects('data_table')
         else:
             # rename old one
             facet_tool.context.manage_renameObject(
