@@ -11,10 +11,14 @@
 
     <metal:block metal:define-macro="algo_parameters">
 
+      <tal:block tal:repeat="param_field_name view/param_groups|nothing">
+      
          <fieldset id="fieldset-parameters"
-                   tal:define="param_groups view/param_groups|nothing"
+                   tal:define="param_groups python:view.param_groups[param_field_name]"
+                   tal:attributes="id string:fieldset-parameters-${param_field_name}"
                    tal:condition="param_groups">
-           <legend id="fieldset-parameters_label">Algo Params</legend>
+           <legend id="fieldset-parameters_label"
+                   tal:attributes="id string:fieldset-parameters_label-${param_field_name}">Algo Params</legend>
          <tal:block tal:repeat="group param_groups">
            <fieldset
                tal:define="normalizeString nocall:context/@@plone/normalizeString;
@@ -51,6 +55,7 @@
            </fieldset>
          </tal:block>
          </fieldset>
+      </tal:block>
     </metal:block>
 
     <metal:block metal:define-macro="experiment_state">

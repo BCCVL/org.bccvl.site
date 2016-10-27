@@ -336,22 +336,22 @@ class ISpeciesTraitsExperiment(IExperiment):
         required=False,
     )
 
-    directives.widget('algorithms_env',
-                      FunctionsFieldWidget,
-                      multiple='multiple')
-    algorithms_env = List(
-        title=u'Algorithm',
-        value_type=Choice(vocabulary='traits_functions_env_source'),
-        required=True,
-        default=None,
-    )
-
     directives.widget('algorithms_species',
                       FunctionsFieldWidget,
                       multiple='multiple')
     algorithms_species = List(
         title=u'Algorithm',
         value_type=Choice(vocabulary='traits_functions_species_source'),
+        required=True,
+        default=None,
+    )
+
+    directives.widget('algorithms_diff',
+                      FunctionsFieldWidget,
+                      multiple='multiple')
+    algorithms_diff = List(
+        title=u'Algorithm',
+        value_type=Choice(vocabulary='traits_functions_diff_source'),
         required=True,
         default=None,
     )

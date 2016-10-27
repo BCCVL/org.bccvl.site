@@ -137,21 +137,6 @@ sdm_functions_source = CatalogVocabularyFactory(
 )
 
 
-traits_functions_env_source = CatalogVocabularyFactory(
-    'traits_functions_env_source',
-    query={
-        # TODO: could use a path restriction to toolkits folder
-        # 'path': {
-        #     'query': '/'.join([self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID])
-        # },
-        'object_provides': 'org.bccvl.site.content.function.IFunction',
-        # FIXME: find another way to separate SDM and traits "functions"
-        'id': ['lm', 'speciestrait_glm', 'speciestrait_gam', 'gamlss',
-               'aov', 'manova'],
-        'sort_on': 'sortable_title',
-    },
-)
-
 traits_functions_species_source = CatalogVocabularyFactory(
     'traits_functions_species_source',
     query={
@@ -161,7 +146,22 @@ traits_functions_species_source = CatalogVocabularyFactory(
         # },
         'object_provides': 'org.bccvl.site.content.function.IFunction',
         # FIXME: find another way to separate SDM and traits "functions"
-        'id': [],
+        'id': ['lm', 'speciestrait_glm', 'speciestrait_gam', 'gamlss',
+               'aov'],
+        'sort_on': 'sortable_title',
+    },
+)
+
+traits_functions_diff_source = CatalogVocabularyFactory(
+    'traits_functions_diff_source',
+    query={
+        # TODO: could use a path restriction to toolkits folder
+        # 'path': {
+        #     'query': '/'.join([self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID])
+        # },
+        'object_provides': 'org.bccvl.site.content.function.IFunction',
+        # FIXME: find another way to separate SDM and traits "functions"
+        'id': ['manova'],
         'sort_on': 'sortable_title',
     },
 )

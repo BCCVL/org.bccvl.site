@@ -222,13 +222,13 @@
       />
 
   <utility
-      component=".vocabularies.traits_functions_env_source"
-      name="traits_functions_env_source"
+      component=".vocabularies.traits_functions_species_source"
+      name="traits_functions_species_source"
       />
 
   <utility
-      component=".vocabularies.traits_functions_species_source"
-      name="traits_functions_species_source"
+      component=".vocabularies.traits_functions_diff_source"
+      name="traits_functions_diff_source"
       />
   
   <utility

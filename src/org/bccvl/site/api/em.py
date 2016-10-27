@@ -16,6 +16,7 @@ from zope.component import getUtility
 from zope.interface import implementer
 from zope.publisher.interfaces import BadRequest, NotFound
 from zope.schema import getFields
+from zope.schema.interfaces import IVocabularyFactory
 
 from org.bccvl.site import defaults
 from org.bccvl.site.api.base import BaseService
@@ -75,7 +76,7 @@ class ExperimentService(BaseService):
                 'occurrence_data']['id']
         # FIXME: should properly support source/id for onw only bccvl source is
         # supported
-        props['species_abesnce_dataset'] = params.get(
+        props['species_absence_dataset'] = params.get(
             'absence_data', {}).get('id', None)
         props['scale_down'] = params.get('scale_down', False)
         if not params.get('environmental_data', None):
@@ -212,6 +213,147 @@ class ExperimentService(BaseService):
         experiment = createContent("org.bccvl.content.projectionexperiment",
                                    **props)
         experiment = addContentToContainer(context, experiment)
+        # FIXME: need to get resolution from somewhere
+        IBCCVLMetadata(experiment)['resolution'] = 'Resolution30m'
+
+        # submit newly created experiment
+        # TODO: handle background job submit .... at this stage we wouldn't
+        #       know the model run job ids
+        # TODO: handle submit errors and other errors that may happen above?
+        #       generic exceptions could behandled in returnwrapper
+        retval = {
+            'experiment': {
+                'url': experiment.absolute_url(),
+                'uuid': IUUID(experiment)
+            },
+            'jobs': [],
+        }
+        jt = IExperimentJobTracker(experiment)
+        msgtype, msg = jt.start_job(self.request)
+        if msgtype is not None:
+            retval['message'] = {
+                'type': msgtype,
+                'message': msg
+            }
+        for result in experiment.values():
+            jt = IJobTracker(result)
+            retval['jobs'].append(jt.get_job().id)
+        return retval
+
+    def submittraits(self):
+        # TODO: catch UNAuthorized correctly and return json error
+        if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
+            self.record_error('Request must be POST', 400)
+            raise BadRequest('Request must be POST')
+        # make sure we have the right context
+        if ISiteRoot.providedBy(self.context):
+            # we have been called at site root... let's traverse to default
+            # experiments location
+            context = self.context.restrictedTraverse(
+                defaults.EXPERIMENTS_FOLDER_ID)
+        else:
+            # custom context.... let's use in
+            context = self.context
+
+        # parse request body
+        params = self.request.form
+        # validate input
+        # TODO: should validate type as well..... (e.g. string has to be
+        # string)
+        # TODO: validate dataset and layer id's existence if possible
+        props = {}
+        if not params.get('title', None):
+            self.record_error('Bad Request', 400, 'Missing parameter title',
+                              {'parameter': 'title'})
+        else:
+            props['title'] = params['title']
+        props['description'] = params.get('description', '')
+        if not params.get('traits_data', None):
+            self.record_error('Bad Request', 400, 'Missing parameter traits_data',
+                              {'parameter': 'traits_data'})
+        else:
+            # FIXME:  should properly support source / id
+            #         for now only bccvl source is supported
+            props['species_traits_dataset'] = params[
+                'traits_data']['id']
+
+        props['species_traits_dataset_params'] = {}
+        for col_name, col_val in params.get("columns", {}).items():
+            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'trait_cat', 'env_var_con', 'env_var_cat'):
+                continue
+            props['species_traits_dataset_params'][col_name] = col_val
+        if not props['species_traits_dataset_params']:
+            self.record_error('Bad Request', 400,
+                              'Invalid values  for columns',
+                              {'parameter': 'columns'})
+
+        props['scale_down'] = params.get('scale_down', False)
+        if not params.get('environmental_data', None):
+            self.record_error('Bad Request', 400,
+                              'Missing parameter environmental_data',
+                              {'parameter': 'environmental_data'})
+        else:
+            props['environmental_datasets'] = params['environmental_data']
+        if params.get('modelling_region', ''):
+            props['modelling_region'] = json.dumps(
+                params['modelling_region'])
+        else:
+            props['modelling_region'] = None
+
+        if not params.get('algorithms', None):
+            self.record_error('Bad Request', 400,
+                              'Missing parameter algorithms',
+                              {'parameter': 'algorithms'})
+        else:
+            portal = ploneapi.portal.get()
+            props['algorithms_species'] = {}
+            props['algorithms_diff'] = {}
+            funcs_env = getUtility(
+                IVocabularyFactory, 'traits_functions_species_source')(context)
+            funcs_species = getUtility(
+                IVocabularyFactory, 'traits_functions_diff_source')(context)
+            # FIXME: make sure we get the default values from our func object
+            for algo_uuid, algo_params in params['algorithms'].items():
+                if algo_params is None:
+                    algo_params = {}
+                toolkit = uuidToObject(algo_uuid)
+                toolkit_model = loadString(toolkit.schema)
+                toolkit_schema = toolkit_model.schema
+
+                func_props = {}
+
+                for field_name in toolkit_schema.names():
+                    field = toolkit_schema.get(field_name)
+                    value = algo_params.get(field_name, field.missing_value)
+                    if value == field.missing_value:
+                        func_props[field_name] = field.default
+                    else:
+                        func_props[field_name] = value
+
+                if algo_uuid in funcs_env:
+                    props['algorithms_species'][algo_uuid] = func_props
+                elif algo_uuid in funcs_species:
+                    props['algorithms_diff'][algo_uuid] = func_props
+                else:
+                    LOG.warn(
+                        'Algorithm {} not in allowed list of functions'.format(toolkit.id))
+            if not (props['algorithms_species'] or props['algorithms_diff']):
+                self.record_error('Bad Request', 400,
+                                  'Iinvalid algorithms selected',
+                                  {'parameter': 'algorithms'})
+
+        if self.errors:
+            raise BadRequest("Validation Failed")
+
+        # create experiment with data as form would do
+        # TODO: make sure self.context is 'experiments' folder?
+        from plone.dexterity.utils import createContent, addContentToContainer
+        experiment = createContent(
+            "org.bccvl.content.speciestraitsexperiment", **props)
+        experiment = addContentToContainer(context, experiment)
+        # TODO: check if props and algo params have been applied properly
+        experiment.parameters = dict(props['algorithms_species'])
+        experiment.parameters.update(dict(props['algorithms_diff']))
         # FIXME: need to get resolution from somewhere
         IBCCVLMetadata(experiment)['resolution'] = 'Resolution30m'
 
