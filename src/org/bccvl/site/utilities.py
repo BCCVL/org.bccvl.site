@@ -302,6 +302,8 @@ class SDMJobTracker(MultiJobTracker):
                     'environmental_datasets': self.context.environmental_datasets,
                     'scale_down': self.context.scale_down,
                     'modelling_region': self.context.modelling_region,
+                    # TO DO: This shall be input from user??
+                    'generate_convexhull': False,
                 }
                 # add toolkit params:
                 result.job_params.update(self.context.parameters[IUUID(func)])
@@ -481,7 +483,10 @@ class MSDMJobTracker(MultiJobTracker):
                         'environmental_datasets': self.context.environmental_datasets,
                         'scale_down': self.context.scale_down,
                         'modelling_region': self.context.modelling_region,
+                        # TO DO: This shall be input from user??
+                        'generate_convexhull': True,
                     }
+
                     # add toolkit params:
                     result.job_params.update(
                         self.context.parameters[IUUID(func)])
@@ -537,6 +542,8 @@ class ProjectionJobTracker(MultiJobTracker):
             'future_climate_datasets': projlayers,
             'function': algorithm,
             'projection_region': self.context.projection_region,
+            # TO DO: This shall be input from user??
+            'generate_convexhull': True,
         }
         return result
 
