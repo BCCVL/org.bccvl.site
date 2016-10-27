@@ -1166,6 +1166,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                 result.job_params = {
                     'algorithm': algorithm.id,
                     'traits_dataset': self.context.species_traits_dataset,
+                    'traits_dataset_params': self.context.species_traits_dataset_params,
                     'environmental_datasets': self.context.environmental_datasets,
                     'modelling_region': self.context.modelling_region,
                 }

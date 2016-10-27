@@ -194,6 +194,11 @@
                             }
                         }
                     },
+                    "scale_down": {
+                        "type": "booloan",
+                        "title": "Common resolution",
+                        "description": "Scale to highest (true) or lowest (false) resolution"
+                    },
                     "modelling_region": {
                         "title": "Modelling Region",
                         "description": "A region to constrain the modelling area to. The value is expected to be a GeoJSON object of type feature",

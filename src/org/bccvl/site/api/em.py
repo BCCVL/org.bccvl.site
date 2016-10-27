@@ -268,14 +268,26 @@ class ExperimentService(BaseService):
         else:
             props['title'] = params['title']
         props['description'] = params.get('description', '')
-        if not params.get('occurrence_data', None):
-            self.record_error('Bad Request', 400, 'Missing parameter occurrence_data',
-                              {'parameter': 'occurrence_data'})
+        if not params.get('traits_data', None):
+            self.record_error('Bad Request', 400, 'Missing parameter traits_data',
+                              {'parameter': 'traits_data'})
         else:
             # FIXME:  should properly support source / id
             #         for now only bccvl source is supported
             props['species_traits_dataset'] = params[
                 'traits_data']['id']
+
+        props['species_traits_dataset_params'] = {}
+        for col_name, col_val in params.get("columns", {}).items():
+            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'trait_cat', 'env_var_con', 'env_var_cat'):
+                continue
+            props['species_traits_dataset_params'][col_name] = col_val
+        if not props['species_traits_dataset_params']:
+            self.record_error('Bad Request', 400,
+                              'Invalid values  for columns',
+                              {'parameter': 'columns'})
+
+        props['scale_down'] = params.get('scale_down', False)
         if not params.get('environmental_data', None):
             self.record_error('Bad Request', 400,
                               'Missing parameter environmental_data',
@@ -301,10 +313,10 @@ class ExperimentService(BaseService):
             funcs_species = getUtility(
                 IVocabularyFactory, 'traits_functions_diff_source')(context)
             # FIXME: make sure we get the default values from our func object
-            for algo, algo_params in params['algorithms'].items():
+            for algo_uuid, algo_params in params['algorithms'].items():
                 if algo_params is None:
                     algo_params = {}
-                toolkit = portal[defaults.FUNCTIONS_FOLDER_ID][algo]
+                toolkit = uuidToObject(algo_uuid)
                 toolkit_model = loadString(toolkit.schema)
                 toolkit_schema = toolkit_model.schema
 
@@ -318,13 +330,17 @@ class ExperimentService(BaseService):
                     else:
                         func_props[field_name] = value
 
-            if toolkit.id in funcs_env:
-                props['algorithms_species'][IUUID(toolkit)] = func_props
-            elif toolkit.id in funcs_species:
-                props['algorithms_diff'][IUUID(toolkit)] = func_props
-            else:
-                LOG.warn(
-                    'Algorithm {} not in allowed list of functions'.format(toolkit.id))
+                if algo_uuid in funcs_env:
+                    props['algorithms_species'][algo_uuid] = func_props
+                elif algo_uuid in funcs_species:
+                    props['algorithms_diff'][algo_uuid] = func_props
+                else:
+                    LOG.warn(
+                        'Algorithm {} not in allowed list of functions'.format(toolkit.id))
+            if not (props['algorithms_species'] or props['algorithms_diff']):
+                self.record_error('Bad Request', 400,
+                                  'Iinvalid algorithms selected',
+                                  {'parameter': 'algorithms'})
 
         if self.errors:
             raise BadRequest("Validation Failed")
@@ -332,10 +348,12 @@ class ExperimentService(BaseService):
         # create experiment with data as form would do
         # TODO: make sure self.context is 'experiments' folder?
         from plone.dexterity.utils import createContent, addContentToContainer
-        experiment = createContent("org.bccvl.content.sdmexperiment", **props)
+        experiment = createContent(
+            "org.bccvl.content.speciestraitsexperiment", **props)
         experiment = addContentToContainer(context, experiment)
         # TODO: check if props and algo params have been applied properly
-        experiment.parameters = dict(props['functions'])
+        experiment.parameters = dict(props['algorithms_species'])
+        experiment.parameters.update(dict(props['algorithms_diff']))
         # FIXME: need to get resolution from somewhere
         IBCCVLMetadata(experiment)['resolution'] = 'Resolution30m'
 
