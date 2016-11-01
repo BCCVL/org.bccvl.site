@@ -144,8 +144,8 @@ class DatasetTools(BrowserView):
         if resultobj is None:
             resultobj = self.context
         pc = api.portal.get_tool('portal_catalog')
-        for brain in pc.searchResults(path={'query':resultobj.getPath(), 'depth':1},
-                                      BCCDataGenre=('DataGenreCP', 'DataGenceFP')):
+        for brain in pc.searchResults(path={'query': resultobj.getPath(), 'depth': 1},
+                                      BCCDataGenre=('DataGenreCP', 'DataGenceFP', 'DataGenreBiodiverseOutput')):
             return IContentListingObject(brain)
         return None
 
