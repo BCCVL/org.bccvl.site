@@ -55,7 +55,7 @@ class DatasetTools(BrowserView):
 
     def get_transition(self, itemob=None):
         # TODO: should this return all possible transitions?
-        #return checkPermission('cmf.RequestReview', self.context)
+        # return checkPermission('cmf.RequestReview', self.context)
         if itemob is None:
             itemob = self.context
         wftool = getToolByName(itemob, 'portal_workflow')
@@ -114,7 +114,8 @@ class DatasetTools(BrowserView):
         md = self.metadata(itemobj)
         if 'bounds' in md:
             return json.dumps(md.get("bounds", ""))
-        # get first bounds of first layer... all layers should have thesame bounds
+        # get first bounds of first layer... all layers should have thesame
+        # bounds
         layermd = md['layers'].values()[0]
         return json.dumps(layermd.get("bounds", ""))
 
@@ -159,17 +160,18 @@ class DatasetTools(BrowserView):
     @property
     def genre_vocab(self):
         if self._genre_vocab is None:
-            self._genre_vocab = getUtility(IVocabularyFactory, 'genre_source')(self.context)
+            self._genre_vocab = getUtility(
+                IVocabularyFactory, 'genre_source')(self.context)
         return self._genre_vocab
 
     def genre_list(self):
         selected = self.request.get('datasets.filter.genre', ())
         for genre in self.genre_vocab:
             if genre.value not in (
-                'DataGenreSpeciesOccurrence', 'DataGenreSpeciesAbsence',
-                'DataGenreSpeciesAbundance', 'DataGenreE',
-                'DataGenreCC', 'DataGenreFC', 'DataGenreTraits',
-                'DataGenreSDMModel'):
+                    'DataGenreSpeciesOccurrence', 'DataGenreSpeciesAbsence',
+                    'DataGenreSpeciesAbundance', 'DataGenreE',
+                    'DataGenreCC', 'DataGenreFC', 'DataGenreTraits',
+                    'DataGenreSDMModel'):
                 continue
             yield {
                 'selected': genre.token in selected,
@@ -193,7 +195,8 @@ class DatasetTools(BrowserView):
     @property
     def layer_vocab(self):
         if self._layer_vocab is None:
-            self._layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(self.context)
+            self._layer_vocab = getUtility(
+                IVocabularyFactory, 'layer_source')(self.context)
         return self._layer_vocab
 
     def layer_list(self):
@@ -209,7 +212,8 @@ class DatasetTools(BrowserView):
     @property
     def resolution_vocab(self):
         if self._resolution_vocab is None:
-            self._resolution_vocab = getUtility(IVocabularyFactory, 'resolution_source')(self.context)
+            self._resolution_vocab = getUtility(
+                IVocabularyFactory, 'resolution_source')(self.context)
         return self._resolution_vocab
 
     def resolution_list(self):
@@ -225,7 +229,8 @@ class DatasetTools(BrowserView):
     @property
     def emsc_vocab(self):
         if self._emsc_vocab is None:
-            self._emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(self.context)
+            self._emsc_vocab = getUtility(
+                IVocabularyFactory, 'emsc_source')(self.context)
         return self._emsc_vocab
 
     def emsc_list(self):
@@ -241,7 +246,8 @@ class DatasetTools(BrowserView):
     @property
     def gcm_vocab(self):
         if self._gcm_vocab is None:
-            self._gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(self.context)
+            self._gcm_vocab = getUtility(
+                IVocabularyFactory, 'gcm_source')(self.context)
         return self._gcm_vocab
 
     def gcm_list(self):
@@ -265,10 +271,10 @@ class DatasetTools(BrowserView):
                     SimpleTerm('user', 'user', u'My Datasets'),
                     SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
                     SimpleTerm('shared', 'shared', 'Shared')),
-                      (SimpleTerm(item.getPhysicalPath(), '-'.join((group.getId(), item.getId())), item.Title())
-                       for group in dsfolder.values()
-                       for item in group.values())
-            ))
+                    (SimpleTerm(item.getPhysicalPath(), '-'.join((group.getId(), item.getId())), item.Title())
+                     for group in dsfolder.values()
+                     for item in group.values())
+                ))
         return self._source_vocab
 
     def source_list(self):
@@ -279,24 +285,25 @@ class DatasetTools(BrowserView):
         yield {
             'label': 'Collection by Users',
             'items': [
-                { 'selected': genre.token in selected,
-                  'disabled': False,
-                  'token': genre.token,
-                  'label': genre.title
-                } for genre in (SimpleTerm('user', 'user', u'My Datasets'),
-                                SimpleTerm('admin', 'admin', u'Provided by BCCVL'),
-                                SimpleTerm('shared', 'shared', 'Shared'))]
+                {'selected': genre.token in selected,
+                 'disabled': False,
+                 'token': genre.token,
+                 'label': genre.title
+                 } for genre in (SimpleTerm('user', 'user', u'My Datasets'),
+                                 SimpleTerm('admin', 'admin',
+                                            u'Provided by BCCVL'),
+                                 SimpleTerm('shared', 'shared', 'Shared'))]
         }
         # yield collections
         for group in dsfolder.values():
             yield {
                 'label': group.title,
                 'items': [
-                    { 'selected': '-'.join((group.getId(), item.getId())) in selected,
-                      'disabled': False,
-                      'token': '-'.join((group.getId(), item.getId())),
-                      'label': item.title,
-                    } for item in group.values()]
+                    {'selected': '-'.join((group.getId(), item.getId())) in selected,
+                     'disabled': False,
+                     'token': '-'.join((group.getId(), item.getId())),
+                     'label': item.title,
+                     } for item in group.values()]
             }
         # for genre in self.source_vocab:
         #     yield {
@@ -364,7 +371,9 @@ class DatasetTools(BrowserView):
             yield brain
 
     # FIXME: this method should be merged with experiment_results above
-    # TODO: both methods are good candidates for ajax API methods and template API methods (also should be more generic like finding results from different experiments / results)
+    # TODO: both methods are good candidates for ajax API methods and template
+    # API methods (also should be more generic like finding results from
+    # different experiments / results)
     def experiment_plots(self, context=None):
         # return visualisable results for experiment
         # - used in overlay and compare
@@ -375,7 +384,8 @@ class DatasetTools(BrowserView):
         # context should be a result folder
         for brain in pc.searchResults(path='/'.join(context.getPhysicalPath()),
                                       BCCDataGenre=genres):
-            # FIXME: this check is very inefficient but we are lacking a contentype index field
+            # FIXME: this check is very inefficient but we are lacking a
+            # contentype index field
             dlinfo = IDownloadInfo(brain.getObject())
             if not dlinfo['contenttype'].startswith('image/'):
                 continue
@@ -426,7 +436,8 @@ class DatasetTools(BrowserView):
         brains = pc.searchResults(**query)
         index = pc._catalog.getIndex('BCCEnviroLayer')
         # get all layers for all datasets
-        layers = set((l for brain in brains for l in (index.getEntryForObject(brain.getRID()) or ())))
+        layers = set((l for brain in brains for l in (
+            index.getEntryForObject(brain.getRID()) or ())))
         layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(context)
         for layer in sorted(layers):
             try:
