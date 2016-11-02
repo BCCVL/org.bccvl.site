@@ -20,7 +20,7 @@ from org.bccvl.site.api import dataset
 from org.bccvl.site.api.base import BaseService
 from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import IDMService
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker
+from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 
@@ -353,3 +353,81 @@ class DMService(BaseService):
             'message': message,
             'jobid': IJobTracker(ds).get_job().id
         }
+
+    def export_to_ala(self):
+        uuid = self.request.form.get('uuid', None)
+        try:
+            if uuid:
+                brain = uuidToCatalogBrain(uuid)
+                if brain is None:
+                    raise Exception("Brain not found")
+
+                obj = brain.getObject()
+            else:
+                obj = self.context
+
+            # get username
+            member = ploneapi.user.get_current()
+            if member.getId():
+                user = {
+                    'id': member.getUserName(),
+                    'email': member.getProperty('email'),
+                    'fullname': member.getProperty('fullname')
+                }
+            else:
+                raise Exception("Invalid user")
+
+            # verify dataset
+            if obj.portal_type not in ('org.bccvl.content.dataset',
+                                       'org.bccvl.content.remotedataset',
+                                       'org.bccvl.content.multispeciesdataset'):
+                raise Exception("Invalid UUID (content type)")
+            md = IBCCVLMetadata(obj)
+            if md.get('genre') not in ('DataGenreSpeciesOccurrence',
+                                       'DataGenreTraits'):
+                raise Exception("Invalid UUID (data type)")
+            # get download url
+            dlinfo = IDownloadInfo(obj)
+
+            # download file
+            from org.bccvl import movelib
+            from org.bccvl.movelib.utils import build_source, build_destination
+            import tempfile
+            destdir = tempfile.mkdtemp(prefix='export_to_ala')
+            import ipdb
+            ipdb.set_trace()
+            try:
+                from org.bccvl.tasks.celery import app
+                settings = app.conf.get('bccvl', {})
+                movelib.move(build_source(dlinfo['url'], user['id'], settings),
+                             build_destination('file://{}'.format(destdir)))
+                dest = os.path.join(destdir, os.path.basename(dlinfo['url']))
+
+                csvfile = None
+
+                if dlinfo['contenttype'] == 'application/zip':
+                    # loox at 'layers' to find file within zip
+                    arc = md['layers'].keys()[0]
+
+                    import zipfile
+                    zf = zipfile.ZipFile(dest, 'r')
+                    csvfile = zf.open(arc, 'r')
+                else:
+                    csvfile = open(dest, 'rb')
+
+                import requests
+                url = 'http://devt.ala.org.au/sandbox/api/uploadFile'
+                # "Accept:application/json" "Origin:http://example.com"
+                res = requests.post(url,
+                                    files={'myFile': csvfile},
+                                    data={'apikey': 'alaapikey'})
+                if res.statuscode != 200:
+                    raise Exception('Upload failed')
+                retval = res.json()
+                self.request.response.redirect(retval['sandboxurl'])
+            finally:
+                import shutil
+                shutil.rmtree(destdir)
+
+        except:
+            raise

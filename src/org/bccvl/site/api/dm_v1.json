@@ -158,6 +158,24 @@
                     }
                 }
             }
+        },
+        {
+            "title": "export_to_ala",
+            "description": "Export chosen dataset to ALA sandbox and redirect to user to returned URL",
+            "rel": "export_to_ala",
+            "href": "{id}/export_to_ala",
+            "method": "POST",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "proprties": {
+                    "uuid": {
+                        "title": "Dataset uuid",
+                        "description": "Dataset to export to ALA",
+                        "type": "string"
+                    }
+                }
+            }
         }
     ]
 }
