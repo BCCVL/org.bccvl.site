@@ -22,7 +22,7 @@ from org.bccvl.site.interfaces import (
     IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker)
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.utils import (
-    build_ala_import_task, build_traits_import_task)
+    build_ala_import_task, build_traits_import_task, build_ala_import_qid_task)
 from org.bccvl.tasks.plone import after_commit_task
 
 
@@ -1270,13 +1270,17 @@ class ALAJobTracker(MultiJobTracker):
             # job reindex happens in next call
             jt.set_progress('PENDING', u'Data import pending')
         else:
-            lsid = md['species']['taxonID']
+            if hasattr(self.context, 'import_params'):
+                ala_import_task = build_ala_import_qid_task(
+                    self.context.import_params, self.context, self.context.REQUEST)
+            else:
+                lsid = md['species']['taxonID']
 
-            # ala_import will be submitted after commit, so we won't get a
-            # result here
-            # FIXME: hacky way to get to request
-            ala_import_task = build_ala_import_task(
-                lsid, self.context, self.context.REQUEST)
+                # ala_import will be submitted after commit, so we won't get a
+                # result here
+                # FIXME: hacky way to get to request
+                ala_import_task = build_ala_import_task(
+                    lsid, self.context, self.context.REQUEST)
             # TODO: add title, and url for dataset? (like with experiments?)
             # update provenance
             self._createProvenance(self.context)

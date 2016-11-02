@@ -318,15 +318,16 @@ class DMService(BaseService):
         ds = createContentInContainer(context, portal_type, title=title)
         ds.dataSource = 'ala'
         ds.description = u' '.join([title, u' imported from ALA'])
+        ds.import_params = params
         md = IBCCVLMetadata(ds)
         # TODO: should determine somewhere, whether this is going to be a multi
         # species dataset
         md['genre'] = 'DataGenreSpeciesOccurrence'
         md['categories'] = ['occurrence']
         # TODO: populate this correctly as well
-        # md['species'] = [{
-        #     'scientificName': spec,
-        #     'taxonID': spec} for spec in species]
+        md['species'] = [{
+            'scientificName': 'qid',
+            'taxonID': 'qid'}]
         # FIXME: IStatusMessage should not be in API call
         from Products.statusmessages.interfaces import IStatusMessage
         IStatusMessage(self.request).add('New Dataset created',

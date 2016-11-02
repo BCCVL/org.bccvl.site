@@ -171,3 +171,28 @@ def build_traits_import_task(dataset, request):
             envvars=md['environ'],
             dest_url=results_dir,
             context=context)
+
+
+def build_ala_import_qid_task(params, dataset, request):
+    # creates task chain to import ala dataset
+    """
+    params .. [{name, qid, url}, ...]
+    context ... a dictionary with keys:
+      - context: path to context object
+      - userid: zope userid
+    """
+    # we need site-path, context-path and lsid for this job
+    dataset_path = '/'.join(dataset.getPhysicalPath())
+    member = api.user.get_current()
+    context = {
+        'context': dataset_path,
+        'user': {
+            'id': member.getUserName(),
+            'email': member.getProperty('email'),
+            'fullname': member.getProperty('fullname')
+        }
+    }
+
+    results_dir = get_results_dir(dataset, request)
+    return datamover.pull_qid_occurrences_from_ala.si(params,
+                                                      results_dir, context)
