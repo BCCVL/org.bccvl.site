@@ -98,16 +98,63 @@
                         "title": "data source"
                     },
                     "species": {
-                        "type": "list",
-                        "title": "List of source specific species identifiers"
+                        "type": "array",
+                        "title": "List of source specific species identifiers",
+                        "items": {
+                            "type": "string"
+                        }
                     },
                     "traits": {
-                        "type": "list",
-                        "title": "List of source specific trait identifiers"
+                        "type": "array",
+                        "title": "List of source specific trait identifiers",
+                        "items": {
+                            "type": "string"
+                        }
                     },
                     "environ": {
-                        "type": "list",
-                        "title": "List of source specific environment variables"
+                        "type": "array",
+                        "title": "List of source specific environment variables",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title": "import_ala_data",
+            "description": "Trigger import of species occurrence data from ALA",
+            "rel": "import_ala_data",
+            "href": "{id}/import_ala_data",
+            "method": "POST",
+            "encType": "application/json",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "data",
+                        "description": "List of datasets to import",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "title": "Layer name",
+                                    "description": "Layer name as defined in ALA Spatial Portal or species name"
+                                },
+                                "query": {
+                                    "type": "string",
+                                    "title": "Query Parameter",
+                                    "description": "query parameter to send to ALA occurrence data download web service"
+                                },
+                                "url": {
+                                    "type": "name",
+                                    "title": "Biocache URL",
+                                    "description": "URL to biocache instance to use for data download"
+                                }
+                            }
+                        }
                     }
                 }
             }

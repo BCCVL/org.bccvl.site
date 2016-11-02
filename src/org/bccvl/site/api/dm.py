@@ -256,3 +256,100 @@ class DMService(BaseService):
             'message': message,
             'jobid': IJobTracker(ds).get_job().id
         }
+
+    def import_ala_data(self):
+        if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
+            self.record_error('Request must be POST', 400)
+            raise BadRequest('Request must be POST')
+
+        context = None
+        # get import context
+        if ISiteRoot.providedBy(self.context):
+            # we have been called at site root... let's traverse to default
+            # import location
+            context = self.context.restrictedTraverse(
+                "/".join((defaults.DATASETS_FOLDER_ID,
+                          defaults.DATASETS_SPECIES_FOLDER_ID,
+                          'ala')))
+        else:
+            # custom context.... let's use in
+            context = self.context
+        # do user check first
+        member = ploneapi.user.get_current()
+        if member.getId():
+            user = {
+                'id': member.getUserName(),
+                'email': member.getProperty('email'),
+                'fullname': member.getProperty('fullname')
+            }
+        else:
+            # We need at least a valid user
+            raise Unauthorized("Invalid user")
+        # check permission
+        if not checkPermission('org.bccvl.AddDataset', context):
+            raise Unauthorized("User not allowed in this context")
+
+        params = self.request.form.get('data')
+
+        if not params:
+            raise BadRequest("At least on of traits or environ has to be set")
+
+        if params is None:
+            self.record_error('Bad Request', 400,
+                              'Missing parameter data',
+                              {'parameter': 'data'})
+        if not params:
+            self.record_error('Bad Request', 400,
+                              'Empty parameter data',
+                              {'parameter': 'data'})
+        # TODO: should validate objects inside as well? (or use json schema
+        # validation?)
+
+        # all good so far
+        # pull dataset from aekos
+        # TODO: get better name here
+        title = params[0].get('name', 'ALA import')
+        # determine dataset type
+        portal_type = 'org.bccvl.content.dataset'
+        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+        if swiftsettings.storage_url:
+            portal_type = 'org.bccvl.content.remotedataset'
+        # create content
+        ds = createContentInContainer(context, portal_type, title=title)
+        ds.dataSource = 'ala'
+        ds.description = u' '.join([title, u' imported from ALA'])
+        md = IBCCVLMetadata(ds)
+        # TODO: should determine somewhere, whether this is going to be a multi
+        # species dataset
+        md['genre'] = 'DataGenreSpeciesOccurrence'
+        md['categories'] = ['occurrence']
+        # TODO: populate this correctly as well
+        # md['species'] = [{
+        #     'scientificName': spec,
+        #     'taxonID': spec} for spec in species]
+        # FIXME: IStatusMessage should not be in API call
+        from Products.statusmessages.interfaces import IStatusMessage
+        IStatusMessage(self.request).add('New Dataset created',
+                                         type='info')
+        # start import job
+        jt = IExperimentJobTracker(ds)
+        status, message = jt.start_job()
+        # reindex ojebct to make sure everything is up to date
+        ds.reindexObject()
+        # FIXME: IStatutsMessage should not be in API call
+        IStatusMessage(self.request).add(message, type=status)
+
+        # FIXME: API should not return a redirect
+        #        201: new resource created ... location may point to resource
+        from Products.CMFCore.utils import getToolByName
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        nexturl = portal[defaults.DATASETS_FOLDER_ID].absolute_url()
+        self.request.response.setStatus(201)
+        self.request.response.setHeader('Location', nexturl)
+        self.request.response.redirect(nexturl)
+        # FIXME: should return a nice json representation of success or error
+        return {
+            'status': status,
+            'message': message,
+            'jobid': IJobTracker(ds).get_job().id
+        }
