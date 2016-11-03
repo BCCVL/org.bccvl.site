@@ -347,7 +347,6 @@ class DMService(BaseService):
         nexturl = portal[defaults.DATASETS_FOLDER_ID].absolute_url()
         self.request.response.setStatus(201)
         self.request.response.setHeader('Location', nexturl)
-        self.request.response.redirect(nexturl)
         # FIXME: should return a nice json representation of success or error
         return {
             'status': status,
