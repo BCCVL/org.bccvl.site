@@ -21,6 +21,7 @@ from zope.component import getMultiAdapter
 from plone.app.uuid.utils import uuidToCatalogBrain, uuidToObject
 from decimal import Decimal
 from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.vocabulary import SimpleTerm
 from zope.component import getUtility
 import logging
 
@@ -77,7 +78,8 @@ class ParamGroupMixin(object):
         # shall be fixed.
         vocab = getUtility(
             IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
-        groups = OrderedDict((cat.value, []) for cat in vocab)
+        groups = OrderedDict((cat.value, [])
+                             for cat in chain((SimpleTerm(None),), vocab))
 
         # TODO: only sdms have functions at the moment ,... maybe sptraits as
         # well?
@@ -96,10 +98,6 @@ class ParamGroupMixin(object):
                 parameters_model = loadString(toolkit.schema)
             except Exception as e:
                 LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
-                continue
-
-            # Skip if algorithm does not have a category or unknown category
-            if toolkit.algorithm_category is None or toolkit.algorithm_category not in groups:
                 continue
 
             parameters_schema = parameters_model.schema
@@ -121,7 +119,8 @@ class ParamGroupMixin(object):
 
         # join the lists in that order
         self.param_groups = {
-            self.func_select_field: (tuple(groups['profile'])
+            self.func_select_field: (tuple(groups[None])
+                                     + tuple(groups['profile'])
                                      + tuple(groups['machineLearning'])
                                      + tuple(groups['statistical'])
                                      + tuple(groups['geographic']))
@@ -186,7 +185,8 @@ class MultiParamGroupMixin(object):
         # shall be fixed.
         vocab = getUtility(
             IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
-        groups = OrderedDict((cat.value, []) for cat in vocab)
+        groups = OrderedDict((cat.value, [])
+                             for cat in chain((SimpleTerm(None),), vocab))
 
         # TODO: only sdms have functions at the moment ,... maybe sptraits as
         # well?
@@ -207,10 +207,6 @@ class MultiParamGroupMixin(object):
                 LOG.fatal("couldn't parse schema for %s: %s", toolkit.id, e)
                 continue
 
-            # Skip if algorithm does not have a category or unknown category
-            if toolkit.algorithm_category is None or toolkit.algorithm_category not in groups:
-                continue
-
             parameters_schema = parameters_model.schema
 
             param_group = ExperimentParamGroup(
@@ -229,7 +225,8 @@ class MultiParamGroupMixin(object):
             groups[toolkit.algorithm_category].append(param_group)
 
         # join the lists in that order
-        return (tuple(groups['profile'])
+        return (tuple(groups[None]),
+                + tuple(groups['profile'])
                 + tuple(groups['machineLearning'])
                 + tuple(groups['statistical'])
                 + tuple(groups['geographic']))
