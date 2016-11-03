@@ -225,7 +225,7 @@ class MultiParamGroupMixin(object):
             groups[toolkit.algorithm_category].append(param_group)
 
         # join the lists in that order
-        return (tuple(groups[None]),
+        return (tuple(groups[None])
                 + tuple(groups['profile'])
                 + tuple(groups['machineLearning'])
                 + tuple(groups['statistical'])
