@@ -146,7 +146,7 @@ traits_functions_species_source = CatalogVocabularyFactory(
         # },
         'object_provides': 'org.bccvl.site.content.function.IFunction',
         # FIXME: find another way to separate SDM and traits "functions"
-        'id': ['speciestrait_cta', 'speciestrait_glm', 'speciestrait_gam']
+        'id': ['speciestrait_cta', 'speciestrait_glm', 'speciestrait_gam'],
         'sort_on': 'sortable_title',
     },
 )
