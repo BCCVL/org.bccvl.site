@@ -417,14 +417,14 @@ class DMService(BaseService):
                     csvfile = open(dest, 'rb')
 
                 import requests
-                url = 'http://devt.ala.org.au/sandbox/api/uploadFile'
                 # "Accept:application/json" "Origin:http://example.com"
-                res = requests.post(url,
+                res = requests.post(settings['ala']['sandboxurl'],
                                     files={'myFile': csvfile},
-                                    data={'apikey': 'alaapikey'})
+                                    data={'apikey': settings['ala']['apikey']})
                 if res.statuscode != 200:
                     raise Exception('Upload failed')
                 retval = res.json()
+                # TODO: do error checking
                 self.request.response.redirect(retval['sandboxurl'])
             finally:
                 import shutil
