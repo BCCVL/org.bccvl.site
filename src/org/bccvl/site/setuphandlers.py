@@ -693,6 +693,13 @@ def upgrade_260_270_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     # update initial site content and r scripts
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
+    # remove old trait scripts
+    toolkits = portal[defaults.TOOLKITS_FOLDER_ID]
+    for algo_id in ('lm', 'gamlss', 'aov', 'manova'):
+        if algo_id in toolkits:
+            toolkits.manage_delObjects(algo_id)
+
     # rename traits dataset facet
     from org.bccvl.site.faceted.interfaces import IFacetConfigUtility
     facet_tool = getUtility(IFacetConfigUtility)
