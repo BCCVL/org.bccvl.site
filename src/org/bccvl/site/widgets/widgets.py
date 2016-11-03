@@ -2,6 +2,7 @@ import logging
 from zope.component import getMultiAdapter, getUtility
 from zope.interface import implementer, implementer_only
 from zope.schema.interfaces import ITitledTokenizedTerm, IVocabularyFactory
+from zope.schema.vocabulary import SimpleTerm
 from z3c.form import util
 from z3c.form.interfaces import (IFieldWidget, NO_VALUE)
 from z3c.form.widget import FieldWidget, Widget, SequenceWidget
@@ -53,27 +54,33 @@ class FunctionsRadioWidget(HTMLInputWidget, SequenceWidget):
         # TODO: check if we should cache the return list
         if self.terms is None:  # update() not yet called
             return ()
-        vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
-        items = OrderedDict((cat.value,[]) for cat in vocab)
+        vocab = getUtility(
+            IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        items = OrderedDict((cat.value, [])
+                            for cat in chain((SimpleTerm(None),), vocab))
         for count, term in enumerate(self.terms):
             alg = term.brain.getObject()
             # skip algorithm without category
-            if alg.algorithm_category is None or alg.algorithm_category not in items:
-                continue
+            # if alg.algorithm_category is None or alg.algorithm_category not in items:
+            #     continue
             itemList = items[alg.algorithm_category]
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             if ITitledTokenizedTerm.providedBy(term):
-                label = translate(term.title, context=self.request, default=term.title)
+                label = translate(
+                    term.title, context=self.request, default=term.title)
             else:
                 label = util.toUnicode(term.value)
 
-            itemList.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
-                   'label':label, 'checked': checked,
-                   'subject': term.brain.Subject,
-                   'description': term.brain.Description,
-                   'category': vocab.getTerm(alg.algorithm_category),
-                   'pos': len(itemList) })
+            catterm = SimpleTerm(None)
+            if alg.algorithm_category in vocab:
+                catterm = vocab.getTerm(alg.algorithm_category)
+            itemList.append({'id': id, 'name': self.name + ':list', 'value': term.token,
+                             'label': label, 'checked': checked,
+                             'subject': term.brain.Subject,
+                             'description': term.brain.Description,
+                             'category': catterm,
+                             'pos': len(itemList)})
         return items.values()
 
 
@@ -105,27 +112,33 @@ class FunctionsWidget(HTMLInputWidget, SequenceWidget):
         # TODO: check if we should cache the return list
         if self.terms is None:  # update() not yet called
             return ()
-        vocab = getUtility(IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
-        items = OrderedDict((cat.value,[]) for cat in vocab)
+        vocab = getUtility(
+            IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+        items = OrderedDict((cat.value, [])
+                            for cat in chain((SimpleTerm(None),), vocab))
         for count, term in enumerate(self.terms):
             alg = term.brain.getObject()
             # skip algorithm without category
-            if alg.algorithm_category is None or alg.algorithm_category not in items:
-                continue
+            # if alg.algorithm_category is None or alg.algorithm_category not in items:
+            #     continue
             itemList = items[alg.algorithm_category]
             checked = self.isChecked(term)
             id = '%s-%i' % (self.id, count)
             if ITitledTokenizedTerm.providedBy(term):
-                label = translate(term.title, context=self.request, default=term.title)
+                label = translate(
+                    term.title, context=self.request, default=term.title)
             else:
                 label = util.toUnicode(term.value)
 
-            itemList.append ({'id': id, 'name': self.name + ':list', 'value':term.token,
-                   'label':label, 'checked': checked,
-                   'subject': term.brain.Subject,
-                   'description': term.brain.Description,
-                   'category': vocab.getTerm(alg.algorithm_category),
-                   'pos': len(itemList) })
+            catterm = SimpleTerm(None)
+            if alg.algorithm_category in vocab:
+                catterm = vocab.getTerm(alg.algorithm_category)
+            itemList.append({'id': id, 'name': self.name + ':list', 'value': term.token,
+                             'label': label, 'checked': checked,
+                             'subject': term.brain.Subject,
+                             'description': term.brain.Description,
+                             'category': catterm,
+                             'pos': len(itemList)})
         return items.values()
 
 
@@ -192,7 +205,8 @@ class DatasetDictWidget(HTMLFormElement, Widget):
             return set(unicode(b['BCCResolution']) for b in brains)
         return []
 
-    # TODO: move this into subclass, make this a base class with a NotImplementedError
+    # TODO: move this into subclass, make this a base class with a
+    # NotImplementedError
     def subitems(self, dsbrain):
         # return a generator of selectable items within dataset
         md = IBCCVLMetadata(dsbrain.getObject())
@@ -235,7 +249,8 @@ class DatasetDictWidget(HTMLFormElement, Widget):
                     # FIXME: inform user that dateset no longer exists
                     #        make sure template works with made up info as well
                     #        for now exclude data
-                    LOG.warn("Dataset not found: %s for experiment %s", dsuuid, self.context.absolute_url())
+                    LOG.warn("Dataset not found: %s for experiment %s",
+                             dsuuid, self.context.absolute_url())
 
     def extract(self):
         # extract the value for the widget from the request and return
@@ -251,7 +266,8 @@ class DatasetDictWidget(HTMLFormElement, Widget):
         # try to find up to count items (layers)
         for idx in range(0, count):
             uuid = self.request.get('{}.item.{}'.format(self.name, idx))
-            subuuid = self.request.get('{}.item.{}.item'.format(self.name, idx))
+            subuuid = self.request.get(
+                '{}.item.{}.item'.format(self.name, idx))
             if uuid:
                 if not subuuid:
                     subuuid = set()  # FIXME: whether set or list should depend on field
@@ -319,7 +335,8 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             item['subitems'] = []
             for brain in brains:
                 # get algorithm term
-                algoid = getattr(brain.getObject(), 'job_params', {}).get('function')
+                algoid = getattr(brain.getObject(), 'job_params',
+                                 {}).get('function')
                 algobrain = self.algo_dict.get(algoid, None)
                 # Filter out geographic models
                 if algobrain.getObject().algorithm_category == 'geographic':
@@ -330,7 +347,7 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
                      'title': brain.Title,
                      'selected': brain.UID in self.value[experiment_uuid],
                      'algorithm': algobrain
-                    }
+                     }
                 )
         return item
 
@@ -349,14 +366,16 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
         # try to find up to count items (datasets)
         for idx in range(0, count):
             uuid = self.request.get('{}.item.{}'.format(self.name, idx))
-            subuuid = self.request.get('{}.item.{}.item'.format(self.name, idx))
+            subuuid = self.request.get(
+                '{}.item.{}.item'.format(self.name, idx))
             if uuid:
                 if not subuuid:
                     subuuid = list()  # FIXME: whether set or list should depend on field
                 value.setdefault(uuid, list()).extend(subuuid)
         if not value:
             return NO_VALUE
-        # FIXME: we support only one experiment at the moment, so let's grap first one from dict
+        # FIXME: we support only one experiment at the moment, so let's grap
+        # first one from dict
         uuid = value.keys()[0]
         modeluuids = value[uuid]
         return {uuid: modeluuids}
@@ -450,7 +469,7 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                                      'obj': brain.getObject(),
                                      'md': IBCCVLMetadata(brain.getObject()),
                                      'selected': brain.UID in self.value[experiment_uuid]}
-                                                 for brain in brains]
+                                    for brain in brains]
                 yield item
 
     def extract(self):
@@ -467,7 +486,8 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
         # try to find count experiments
         for idx in range(0, count):
             uuid = self.request.get('{}.item.{}'.format(self.name, idx))
-            models = self.request.get('{}.item.{}.item'.format(self.name, idx), [])
+            models = self.request.get(
+                '{}.item.{}.item'.format(self.name, idx), [])
             if uuid:
                 value[uuid] = models
         if not value:
@@ -520,7 +540,9 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                 # TODO: maybe as generator?
                 item['subitems'] = []
                 for brain in brains:
-                    # FIXME: I need a different list of thresholds for display; esp. don't look up threshold, but take vales (threshold id and value) from field as is
+                    # FIXME: I need a different list of thresholds for display;
+                    # esp. don't look up threshold, but take vales (threshold
+                    # id and value) from field as is
                     thresholds = dataset.getThresholds(brain.UID)[brain.UID]
                     threshold = self.value[experiment_uuid].get(brain.UID)
                     # is threshold in list?
@@ -531,16 +553,16 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                     dsobj = brain.getObject()
                     dsmd = IBCCVLMetadata(dsobj)
                     item['subitems'].append({
-                         'uuid': brain.UID,
-                         'title': brain.Title,
-                         'selected': brain.UID in self.value[experiment_uuid],
-                         'threshold': threshold,
-                         'thresholds': thresholds,
-                         'brain': brain,
-                         'md': dsmd,
-                         'obj': dsobj,
-                         # TODO: this correct? only one layer ever?
-                         'layermd': dsmd['layers'].values()[0]
+                        'uuid': brain.UID,
+                        'title': brain.Title,
+                        'selected': brain.UID in self.value[experiment_uuid],
+                        'threshold': threshold,
+                        'thresholds': thresholds,
+                        'brain': brain,
+                        'md': dsmd,
+                        'obj': dsobj,
+                        # TODO: this correct? only one layer ever?
+                        'layermd': dsmd['layers'].values()[0]
                     })
                 yield item
 
@@ -563,12 +585,15 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
                 continue
             value[uuid] = {}
             try:
-                dscount = int(self.request.get('{}.item.{}.count'.format(self.name, idx)))
+                dscount = int(self.request.get(
+                    '{}.item.{}.count'.format(self.name, idx)))
             except:
                 dscount = 0
             for dsidx in range(0, dscount):
-                dsuuid = self.request.get('{}.item.{}.item.{}.uuid'.format(self.name, idx, dsidx))
-                dsth = self.request.get('{}.item.{}.item.{}.threshold'.format(self.name, idx, dsidx))
+                dsuuid = self.request.get(
+                    '{}.item.{}.item.{}.uuid'.format(self.name, idx, dsidx))
+                dsth = self.request.get(
+                    '{}.item.{}.item.{}.threshold'.format(self.name, idx, dsidx))
                 if dsuuid:
                     value[uuid][dsuuid] = {'label': dsth}
         if not value:
@@ -587,7 +612,8 @@ class CustomBoolTerms(BoolTerms):
     def __init__(self, context, request, form, field, widget):
         self.trueLabel = widget.true_label
         self.falseLabel = widget.false_label
-        super(CustomBoolTerms, self).__init__(context, request, form, field, widget)
+        super(CustomBoolTerms, self).__init__(
+            context, request, form, field, widget)
 
 
 @implementer(IBoolRadioWidget)
