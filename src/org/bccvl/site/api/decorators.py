@@ -164,8 +164,8 @@ def api_method(f):
             }
         # TODO: extract correct link if multiple encodings are supported
 
-        # No body on GET, HEAD, DELETE
-        if view.request['method'] not in ('GET', 'HEAD', 'DELET'):
+        # No body on GET, HEAD, DELETE, OPTIONS
+        if view.request['method'] not in ('GET', 'HEAD', 'DELETE', 'OPTIONS'):
             # parse body
             ct = contenttype.parse.parse(view.request['CONTENT_TYPE'])
             if ct[0:2] == ('application', 'json'):
@@ -174,6 +174,30 @@ def api_method(f):
                 data = json.load(view.request.BODYFILE)
                 # TODO: validate against schema?
                 view.request.form.update(data)
+
+        # DO CORS PROCESSING HERE
+        # usually a CORS preflight test?
+        # 1. check allowed origin ....
+        # 2. check Access-Control-Request-Method
+        # 3. check Access-Control-Request-Headers
+        # 4. check origin and credentials
+        #    set Access-Control-Allow-Origin
+        #    set Access-Control-Allow-Credentials
+        #    set Vary: Origin
+        # 5. set Access-Control-Max-Age
+        # 6. set Access-Control-Allow-Methods
+        # FIXME: use plone.rest.service base class
+        from plone.rest.interfaces import ICORSPolicy
+        from zope.component import queryMultiAdapter
+        policy = queryMultiAdapter(
+            (view.context, view.request), ICORSPolicy)
+        if policy is not None:
+            if view.request._rest_cors_preflight:
+                policy.process_preflight_request()
+                return
+            else:
+                policy.process_simple_request()
+
         # all other content types and methods should be handled by Zope
         # already
 

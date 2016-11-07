@@ -57,6 +57,7 @@ setup(
         'requests-oauthlib',
         'rdflib',
         'eea.facetednavigation',
+        'plone.restapi',
         # TODO: deprecated, but needed here due to zcml autoinclude
         'Products.AdvancedQuery',  # optional anyway but hard import atm
     ],
