@@ -232,8 +232,8 @@
       allow_origin="*"
       allow_methods="DELETE,GET,POST"
       allow_credentials="true"
-      expose_headers="Content-Length"
-      allow_headers="Accept,Authorization,Content-Type"
+      expose_headers="Accept,Accept-Encoding,Cache-Control,Content-Length,Content-Type,Expires,Last-Modified,Location,Pragma"
+      allow_headers="Accept,Accept-Encoding,Authorization,Content-Length,Content-Type"
       max_age="3600"
       />
   
