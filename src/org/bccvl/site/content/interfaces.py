@@ -326,7 +326,7 @@ class ISpeciesTraitsExperiment(IExperiment):
         title=u'Climate & Environmental Datasets',
         key_type=TextLine(),
         value_type=Set(value_type=TextLine()),
-        required=True,
+        required=False,
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
@@ -342,7 +342,7 @@ class ISpeciesTraitsExperiment(IExperiment):
     algorithms_species = List(
         title=u'Algorithm',
         value_type=Choice(vocabulary='traits_functions_species_source'),
-        required=True,
+        required=False,
         default=None,
     )
 
@@ -352,7 +352,7 @@ class ISpeciesTraitsExperiment(IExperiment):
     algorithms_diff = List(
         title=u'Algorithm',
         value_type=Choice(vocabulary='traits_functions_diff_source'),
-        required=True,
+        required=False,
         default=None,
     )
 
