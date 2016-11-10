@@ -163,12 +163,12 @@ class SdmFunctionsSourceTest(unittest.TestCase):
         self.assertEqual(len(source), 17)
 
 
-class TraitsFunctionsSourceTest(unittest.TestCase):
+class TraitsFunctionsSpeciesSourceTest(unittest.TestCase):
 
     layer = BCCVL_INTEGRATION_TESTING
 
     def _get_class(self):
-        return getUtility(IVocabularyFactory, name='traits_functions_source')
+        return getUtility(IVocabularyFactory, name='traits_functions_species_source')
 
     def _make_one(self):
         return self._get_class()(self.layer['portal'])
@@ -180,12 +180,37 @@ class TraitsFunctionsSourceTest(unittest.TestCase):
     def test_elements(self):
         source = self._make_one()
         ds = self.layer['portal'][defaults.TOOLKITS_FOLDER_ID]
-        data = ds['lm']
+        data = ds['speciestrait_glm']
         data_uuid = IUUID(data)
         self.assertIn(data_uuid, source)
         # TODO: this test depends on whatever is setup in
         # org.bccvl.compute:content
-        self.assertEqual(len(source), 6)
+        self.assertEqual(len(source), 3)
+
+
+class TraitsFunctionsDiffSourceTest(unittest.TestCase):
+
+    layer = BCCVL_INTEGRATION_TESTING
+
+    def _get_class(self):
+        return getUtility(IVocabularyFactory, name='traits_functions_diff_source')
+
+    def _make_one(self):
+        return self._get_class()(self.layer['portal'])
+
+    def test_interfaces(self):
+        self.assertTrue(IVocabularyFactory.providedBy(self._get_class()))
+        self.assertTrue(IVocabulary.providedBy(self._make_one()))
+
+    def test_elements(self):
+        source = self._make_one()
+        ds = self.layer['portal'][defaults.TOOLKITS_FOLDER_ID]
+        data = ds['traitdiff_glm']
+        data_uuid = IUUID(data)
+        self.assertIn(data_uuid, source)
+        # TODO: this test depends on whatever is setup in
+        # org.bccvl.compute:content
+        self.assertEqual(len(source), 1)
 
 
 class GenreSourceTest(unittest.TestCase):
