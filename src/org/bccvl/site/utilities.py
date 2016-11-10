@@ -1086,6 +1086,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                 # FIXME: look for dict params in other experiment types as well
                 # value is a dictionary, where keys are dataset uuids and
                 # values are a set of selected layers
+                if not value:
+                    continue
                 for uuid, layers in value.items():
                     param.add(BCCVL['value'], LOCAL[uuid])
                     for layer in layers:
@@ -1126,7 +1128,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             # link with activity
             activity.add(PROV['used'], dsprov)
 
-        for uuid, layers in result.job_params['environmental_datasets'].items():
+        envds = result.job_params.get('environmental_datasets') or {}
+        for uuid, layers in envds.items():
             key = 'environmental_datasets'
             ds = uuidToObject(uuid)
             dsprov = Resource(graph, LOCAL[key])
