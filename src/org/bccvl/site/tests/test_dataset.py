@@ -214,9 +214,9 @@ class TestDatasetImport(unittest.TestCase):
     def test_import_view_ala_import(self, mock_move=None):
         # TODO: this test needs a running DataMover. (see below))
         testdata = {
-            'taxonID': 'urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5',
-            'scientificName': 'Pteria penguin',
-            'vernacularName': 'Black Banded Winged Pearl Shell'
+            'taxonID': u'urn:lsid:biodiversity.org.au:afd.taxon:0f02f7b5-d9a1-4b2a-924e-ffeaf122e69c',
+            'scientificName': u'Pteria penguin',
+            'vernacularName': u'penguin wing oyster'
         }
         view = self.getview()
         view.request.form.update({
@@ -256,27 +256,23 @@ class TestDatasetImport(unittest.TestCase):
         mock_move.side_effect = move_ala_data
         # commit transaction to start job
         transaction.commit()
+
         # verify call
+        ala_call = "ala://ala?url=http://biocache.ala.org.au/ws/occurrences/index/download&query=lsid:urn:lsid:biodiversity.org.au:afd.taxon:0f02f7b5-d9a1-4b2a-924e-ffeaf122e69c&filter=zeroCoordinates,badlyFormedBasisOfRecord,detectedOutlier,decimalLatLongCalculationFromEastingNorthingFailed,missingBasisOfRecord,decimalLatLongCalculationFromVerbatimFailed,coordinatesCentreOfCountry,geospatialIssue,coordinatesOutOfRange,speciesOutsideExpertRange,userVerified,processingError,decimalLatLongConverionFailed,coordinatesCentreOfStateProvince,habitatMismatch&email="
         self.assertEqual(mock_move.call_args_list[0][0][0][
-                         'url'], 'ala://ala?lsid=urn:lsid:biodiversity.org.au:afd.taxon:dadb5555-d286-4862-b1dd-ea549b1c05a5')
+                         'url'], ala_call)
         # celery should run in eager mode so our job state should be up to date
         # as well
         self.assertEqual(jt.state, 'COMPLETED')
         # expand testdata with additional metadata fetched from ala
         testdata.update({
-            'clazz': 'BIVALVIA',
-            'clazzGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:0c18b965-d1e9-4518-8c21-72045a340a4b',
-            'family': 'PTERIIDAE',
-            'familyGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:d6300a23-1386-4620-9cb8-0ce481ab4988',
-            'genus': 'Pteria',
-            'genusGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:3a97cb93-351e-443f-addd-624eb5b2278c',
-            'kingdom': 'ANIMALIA',
-            'kingdomGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:4647863b-760d-4b59-aaa1-502c8cdf8d3c',
-            'order': 'PTERIOIDA',
-            'orderGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:f4d97823-14fb-4eb2-a980-9a62d5ee8f08',
-            'phylum': 'MOLLUSCA',
-            'phylumGuid': 'urn:lsid:biodiversity.org.au:afd.taxon:4fb59020-e4a8-4973-adca-a4f662c4645c',
-            'rank': 'species',
+            'clazz': u'BIVALVIA',
+            'family': u'PTERIIDAE',
+            'genus': u'Pteria',
+            'kingdom': u'ANIMALIA',
+            'order': u'OSTREIDA',
+            'phylum': u'MOLLUSCA',
+            'rank': u'species',
         })
         # we should have a bit more metadat and still the same as before import
         self.assertEqual(md['species'], testdata)
