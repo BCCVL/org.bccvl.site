@@ -483,7 +483,7 @@ class ExportResult(BrowserView):
                     }
                 }
             },
-            options={'immutable': True})
+            immutable=True)
 
         # queue job submission
         after_commit_task(export_task)

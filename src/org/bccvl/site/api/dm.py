@@ -145,7 +145,7 @@ class DMService(BaseService):
                         'user': user,
                     }
                 },
-                options={'immutable': True})
+                immutable=True)
 
             from org.bccvl.tasks.plone import after_commit_task
             after_commit_task(update_task)

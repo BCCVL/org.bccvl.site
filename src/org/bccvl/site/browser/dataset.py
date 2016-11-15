@@ -1,4 +1,5 @@
-#from plone.dexaterity.browser.view import DefaultView (template override in plone.app.dexterity.browser)
+# from plone.dexaterity.browser.view import DefaultView (template override
+# in plone.app.dexterity.browser)
 import binascii
 
 from AccessControl import Unauthorized
@@ -19,7 +20,7 @@ from zope.lifecycleevent import modified
 from zope.publisher.interfaces import IPublishTraverse, NotFound
 from zope.security import checkPermission
 from org.bccvl.site.interfaces import IBCCVLMetadata
-#from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
+# from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftUtility
 
@@ -30,7 +31,7 @@ class DatasetRemoveView(form.Form):
     view in that the dataset object is not actually deleted.
     """
 
-    label= u"Do you really want to remove this item?"
+    label = u"Do you really want to remove this item?"
     fields = field.Fields()
     enableCSRFProtection = True
 
@@ -38,7 +39,7 @@ class DatasetRemoveView(form.Form):
     def handle_delete(self, action):
         title = self.context.Title()
         parent = aq_parent(aq_inner(self.context))
-        ## removed file working on frontend Javascript
+        # removed file working on frontend Javascript
         if hasattr(self.context, "file"):
             self.context.file = None
         # FIXME: we should probably delete it instead of marking it as REMOVED
@@ -46,7 +47,8 @@ class DatasetRemoveView(form.Form):
         jt.state = 'REMOVED'
         self.context.reindexObject()
         #####
-        IStatusMessage(self.request).add(u'{0[title]} has been removed.'.format({u'title': title}))
+        IStatusMessage(self.request).add(
+            u'{0[title]} has been removed.'.format({u'title': title}))
         self.request.response.redirect(parent.absolute_url())
 
     @button.buttonAndHandler(u'Cancel')
@@ -87,7 +89,8 @@ class RemoteDatasetDownload(BrowserView):
             return True
         # check if current user ticket has required token
         # TODO: maybe use local roles? http://docs.plone.org/develop/plone/security/dynamic_roles.html
-        # assumes, that the cookie name is __ac and that it has already been verified by PAS
+        # assumes, that the cookie name is __ac and that it has already been
+        # verified by PAS
         ticket = binascii.a2b_base64(self.request.get('__ac', '')).strip()
         try:
             (digest, userid, tokens, user_data, timestamp) = splitTicket(ticket)
@@ -102,7 +105,7 @@ class RemoteDatasetDownload(BrowserView):
     def __call__(self):
         # respect field level security as defined in plone.autoform
         # check if attribute access would be allowed!
-        #url = guarded_getattr(self.context, 'remoteUrl', None)
+        # url = guarded_getattr(self.context, 'remoteUrl', None)
         remoteUrl = getattr(self.context, 'remoteUrl', None)
         if remoteUrl is None:
             raise NotFound(self, 'remoteUrl', self.request)
@@ -141,7 +144,8 @@ class DatasetDownload(Download):
             return True
         # check if current user ticket has required token
         # TODO: maybe use local roles? http://docs.plone.org/develop/plone/security/dynamic_roles.html
-        # assumes, that the cookie name is __ac and that it has already been verified by PAS
+        # assumes, that the cookie name is __ac and that it has already been
+        # verified by PAS
         ticket = binascii.a2b_base64(self.request.get('__ac', '')).strip()
         try:
             (digest, userid, tokens, user_data, timestamp) = splitTicket(ticket)
@@ -164,7 +168,6 @@ class DatasetDownload(Download):
         return self.__call__()
 
 
-
 # FIXME: Turn this whole form into something re-usable
 #        e.g. could be used within a widget that renders a button
 #             and won't show up on add forms.
@@ -181,34 +184,19 @@ class IFileItemMetadata(Interface):
 
     # FIXME: adapter to IBCCVLMetadata required?
     # FIXME: fieldnames to match BCCVLMetadata dict keys
-    name = schema.TextLine(
+    filename = schema.TextLine(
         title=u"File name",
         description=u'The file name within the archive',
         readonly=True)
 
-    bioclim = schema.Choice(
-        title=u"Bioclimatic Variable",
-        vocabulary='layer_source')
+    layer = schema.Choice(
+        title=u"Layer",
+        vocabulary='layer_source',
+        required=False)
 
-
-def getFileGraph(context):
-    """
-    create a new set of graphs to hold general file information for
-    files within an archive
-
-    """
-    file = context.file.open('r')
-    zip = zipfile.ZipFile(file)
-    ret = []
-    for zipinfo in zip.infolist():
-        if zipinfo.filename.endswith('/'):
-            # skip directories
-            continue
-        info = {}
-        info['fileName'] = zipinfo.filename
-        info['fileSize'] = zipinfo.file_size()
-        ret.append(info)
-    return ret
+    datatype = schema.Choice(
+        title=u"Data type",
+        vocabulary='datatype_source')
 
 
 class EditSubForm(crud.EditSubForm):
@@ -249,7 +237,7 @@ class EditFileMetadataForm(crud.EditForm):
                     status = partly_success
                 continue
             # Wo have no select field in our editsubform
-            #del data['select']
+            # del data['select']
             self.context.before_update(subform.content, data)
             changes = subform.applyChanges(data)
             if changes:
@@ -264,31 +252,31 @@ class EditFileMetadataForm(crud.EditForm):
                     if widget.mode == DISPLAY_MODE:
                         widget.update()
                         notify(AfterWidgetUpdateEvent(widget))
-        # don't forget to update our property we manage
 
-        urilist = []
+        # update IBCCVLMetadata['layers'] with current entered values
+        ds = self.context.context
+        md = IBCCVLMetadata(ds)
+        layers = md.get('layers', {})
+        # map filenames to layers
+        file_map = {}
+        for layer in layers.values():
+            file_map[layer['filename']] = layer
+        # rebuild layers dict with correct keys and datatypes
+        layers = {}
         for subform in self.subforms:
-            # TODO: this would handle adds?
-            #if not subform.content_id: # we had no filename
-            #    import ipdb; ipdb.set_trace()
-            urilist.append(subform.content.identifier)
-            if IResource.providedBy(subform.content):
-                handler.put(subform.content.graph)
+            if subform.content['layer']:
+                layer_id = subform.content['layer']
             else:
-                handler.put(subform.content)
-        data = {self.context.property: urilist}
-        # here we applyData to the context (actually Crud context)
-        # should be fine but cleaner solution would be better?
-        # also applyChanges needs self.field which we don't have here
-        content = self.context.getContent()
-        content.remove((content.identifier, self.context.property, None))
-        for uri in urilist:
-            content.add((content.identifier, self.context.property, uri))
-        # TODO: do only if things have changed
-        #      - put current graph into changed queue, to persist changes
-        #      - got ordf tool and push graph
-        handler.put(content)
-        # TODO: update status if necessary
+                layer_id = subform.content['filename']
+
+            layer = file_map[subform.content['filename']]
+            layer['datatype'] = subform.content['datatype']
+            layer['layer'] = layer_id
+
+            layers[layer_id] = layer
+        # write changes back
+        md['layers'] = layers
+
         modified(self.context.context)
         self.status = status
         self.context.redirect()
@@ -311,8 +299,8 @@ class CrudFileMetadataForm(crud.CrudForm):
     # TODO generalise this
     property = 'layers'
 
-    update_schema = field.Fields(IFileItemMetadata).omit('name')
-    view_schema = field.Fields(IFileItemMetadata).select('name')
+    update_schema = field.Fields(IFileItemMetadata).omit('filename')
+    view_schema = field.Fields(IFileItemMetadata).select('filename')
     editform_factory = EditFileMetadataForm
     addform_factory = crud.NullForm
 
@@ -342,32 +330,24 @@ class CrudFileMetadataForm(crud.CrudForm):
         return self._content
 
     def get_items(self):
-        g = self.getContent()
-        r = Resource(g, g.identifier)
+        layers = self.getContent().get('layers', {})
         if not self._items:
-            handler = getUtility(IORDF).getHandler()
             items = {}
-            try:
-                for ref in r.objects(self.property):
-                    obj = next(ref.objects(), None)
-                    if obj is None:
-                        ref = Resource(handler.get(ref.identifier), ref.identifier)
-                    itemid = ref.value(NFO['fileName']).toPython()
-                    items[str(itemid)] = ref
-            except:
-                # something wrong with file metadata ... regenerate it
-                items = {}
-            if not items:  # was empty
-                # FIXME: remove this, not practicable with remote datasets
-                items = getFileGraph(self.context)
+            for key in layers:
+                # key ... layer identifier
+                layer = layers[key]
+                items[layer.get('filename', key).encode('utf-8')] = {
+                    'layer': layer.get('layer', key),
+                    'filename': layer.get('filename', key),
+                    'datatype': layer.get('datatype', 'continuous')
+                }
             self._items = items
-        # TODO: sort key configurable
         return sorted(self._items.items(),
                       key=lambda x: x[0])
 
     def add(self, data):
-        #import ipdb; ipdb.set_trace()
-        #super(CrudFileMetadataForm, self).add(data)
+        # import ipdb; ipdb.set_trace()
+        # super(CrudFileMetadataForm, self).add(data)
         # TODO: implement this someday
         pass
 
@@ -382,9 +362,6 @@ class CrudFileMetadataForm(crud.CrudForm):
     #     super(CrudFileMetadataForm, self).before_update(item, data)
 
 
-
-
-
 # DataSetView ... if mime type show file content? or just coverage
 #                 if data gence climate layers?
 
@@ -392,4 +369,5 @@ class CrudFileMetadataForm(crud.CrudForm):
 
 # DataSetEdit?  (add button to edit zip file metadata if climate layer)
 # ->  DataSet Climate Layer Edit:
-#       for to edit  layers ... better to keep separate from standard edit,  as it needs the file available (or at least the file list)
+# for to edit  layers ... better to keep separate from standard edit,  as
+# it needs the file available (or at least the file list)
