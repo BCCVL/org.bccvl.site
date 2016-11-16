@@ -1274,14 +1274,14 @@ class ALAJobTracker(MultiJobTracker):
             jt.set_progress('PENDING', u'Data import pending')
         else:
             if hasattr(self.context, 'import_params'):
-                # ala_import_task = build_ala_import_qid_task(
-                # self.context.import_params, self.context,
-                # self.context.REQUEST)
+                ala_import_task = build_ala_import_qid_task(
+                        self.context.import_params, self.context,
+                        self.context.REQUEST)
 
                 # TODO: add title, and url for dataset? (like with experiments?)
                 # update provenance
                 self._createProvenance(self.context)
-                # after_commit_task(ala_import_task)
+                after_commit_task(ala_import_task)
 
                 # FIXME: we don't have a backend task id here as it will be started
                 #        after commit, when we shouldn't write anything to the db
