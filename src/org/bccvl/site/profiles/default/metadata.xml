@@ -14,6 +14,7 @@
       
       <dependency>profile-plone.app.caching:default</dependency>
       <dependency>profile-plone.app.caching:with-caching-proxy-splitviews</dependency>
+      <dependency>profile-plone.restapi:default</dependency>
       <dependency>profile-eea.facetednavigation:default</dependency>
 
       <dependency>profile-collective.emailconfirmationregistration:default</dependency>
