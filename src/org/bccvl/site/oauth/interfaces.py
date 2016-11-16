@@ -1,5 +1,5 @@
 from zope.interface import Interface
-from zope.schema import ASCIILine, TextLine, URI, Bool, List
+from zope.schema import ASCIILine, TextLine, URI, Bool, List, Choice
 
 
 class IOAuth1Settings(Interface):
@@ -119,4 +119,32 @@ class IOAuth2Settings(Interface):
         title=u"Revoke url",
         description=u"Url to revoke authorization",
         required=False,
+    )
+
+
+class IOAuth2Client(Interface):
+    """
+    Interface to desicreb OAuth clients.
+    """
+
+    client_id = TextLine(
+        title=u"client_id",
+    )
+
+    type = Choice(
+        title=u"type",
+        values=(u"public", u"confidential"),
+        default=u"public",
+    )
+
+    redirect_uri = URI(
+        title=u"Redirect URI",
+    )
+
+    title = TextLine(
+        title=u"title",
+    )
+
+    description = TextLine(
+        title=u"description",
     )

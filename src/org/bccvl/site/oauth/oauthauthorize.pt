@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone"
+      metal:use-macro="context/main_template/macros/master">
+
+  <metal:block fill-slot="content">
+
+    <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+      Portal status message
+    </div>
+
+    <div id="content">
+      <h1 class="documentFirstHeading" tal:content="view/label | nothing" />
+      
+      <div id="content-core">
+        <fieldset
+            tal:define="navigation_root_url context/@@plone_portal_state/navigation_root_url;">
+          <legend><tal:replace tal:replace="view/client/title">Service</tal:replace> wants to access BCCVL on your behalf</legend>
+          <p><tal:replace tal:replace="view/client/title">Service</tal:replace> wants to access BCCVL on your behalf</p>
+          <div>
+            <p tal:content="view/client/description">Whatever this service wants to do</p>
+            <p>Explain to user what this means</p>
+            <!-- TODO: good place to put logo here and other client stuff-->
+            <form>
+              <input type="hidden" name="client_id" value=""
+                     tal:attributes="value request/client_id|nothing"/>
+              <input type="hidden" name="response_type" value=""
+                     tal:attributes="value request/response_type|nothing"/>
+              <input type="hidden" name="redirect_uri" value=""
+                     tal:attributes="value request/redirect_uri|nothing"/>
+              <input type="hidden" name="scope" value=""
+                     tal:attributes="value request/scope|nothing"/>
+              <input type="hidden" name="state" value=""
+                     tal:attributes="value request/state|nothing"/>
+              <span tal:replace="structure context/@@authenticator/authenticator"/>
+              <input type="submit" name="action" value="authorize"/>
+              <input type="submit" name="action" value="deny"/>
+            </form>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    
+  </metal:block>
+  
+</html>

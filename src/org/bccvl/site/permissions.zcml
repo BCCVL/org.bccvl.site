@@ -32,5 +32,10 @@
       id="org.bccvl.DownloadDataset"
       title="org.bccvl: Download Dataset"
       />
+
+  <permission
+      id="org.bccvl.OAuth"
+      title="org.bccvl: OAuth"
+      />
   
 </configure>

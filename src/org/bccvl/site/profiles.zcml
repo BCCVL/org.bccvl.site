@@ -175,5 +175,17 @@
 
   </genericsetup:upgradeSteps>
 
-  
+  <genericsetup:upgradeSteps
+      source="270"
+      destination="280"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 280"
+        description="Add OAuth provider"
+        handler=".setuphandlers.upgrade_270_280_1"
+        />
+
+  </genericsetup:upgradeSteps>
+    
 </configure>

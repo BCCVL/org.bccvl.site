@@ -1,18 +1,21 @@
 #
 import json
 import logging
-from urlparse import urljoin
+from urllib import urlencode
+from urlparse import urljoin, urlsplit
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin  # noqa
 from plone import api
 from plone.registry.interfaces import IRegistry
-from zope.component import getUtility
+from zope.component import getUtility, getMultiAdapter
 from zope.interface import implementer
 from zope.publisher.interfaces import NotFound, BadRequest, Unauthorized
 from zope.publisher.interfaces import IPublishTraverse
 from zope.schema.interfaces import IVocabularyFactory
 from zope.security import checkPermission
-from .interfaces import IOAuth1Settings, IOAuth2Settings
+from .interfaces import IOAuth1Settings, IOAuth2Settings, IOAuth2Client
 from .googledrive import IGoogleDrive
 
 from org.bccvl.site.userannotation.interfaces import IUserAnnotationsUtility
@@ -59,8 +62,9 @@ class OAuthBaseView(BrowserView):
     def getToken(self):
         # get token for current user
         member = api.user.get_current()
-        token = IUserAnnotation(member).get('{0}_oauth_token'.format(self.config.id), "")
-        #LOG.info('Found stored token: %s', token)
+        token = IUserAnnotation(member).get(
+            '{0}_oauth_token'.format(self.config.id), "")
+        # LOG.info('Found stored token: %s', token)
         if token:
             token = json.loads(token)
         return token
@@ -69,7 +73,8 @@ class OAuthBaseView(BrowserView):
         # permanently store token for user.
         # creates new memberdata property if necesarry
         member = api.user.get_current()
-        IUserAnnotation(member)['{0}_oauth_token'.format(self.config.id)] = json.dumps(token)
+        IUserAnnotation(member)['{0}_oauth_token'.format(
+            self.config.id)] = json.dumps(token)
 
     def hasToken(self):
         try:
@@ -114,13 +119,13 @@ class OAuth2View(OAuthBaseView):
         oauth = self.oauth_session()
         if IGoogleDrive.providedBy(self.config):
             authorization_url, state = oauth.authorization_url(
-                    self.config.authorization_url,
-                    # access_type and approval_prompt are Google specific extra
-                    # parameters.
-                    access_type=access_type, approval_prompt=approval_prompt)
+                self.config.authorization_url,
+                # access_type and approval_prompt are Google specific extra
+                # parameters.
+                access_type=access_type, approval_prompt=approval_prompt)
         else:
             authorization_url, state = oauth.authorization_url(
-                    self.config.authorization_url)
+                self.config.authorization_url)
         # state ... roundtripped by oauth, can be used to verify response
         return_url = self.request.get('HTTP_REFERER')
         self.session[self._skey] = (state, return_url)
@@ -146,7 +151,8 @@ class OAuth2View(OAuthBaseView):
         oauth = self.oauth_session(state=state)
 
         # TODO: there should be a better way to get the full request url
-        authorization_response = self.request.getURL() + '?' + self.request['QUERY_STRING']
+        authorization_response = self.request.getURL() + '?' + \
+            self.request['QUERY_STRING']
 
         # the request must have some auth_response somewhere?
         # NOTE: since oauthlib 0.7.2 which correctly compares scope
@@ -173,7 +179,8 @@ class OAuth2View(OAuthBaseView):
             # we are admin ... check if user is set
             username = self.request.form.get('user')
             member = api.user.get(username=username)
-            access_token = IUserAnnotation(member).get('{0}_oauth_token'.format(self.config.id), "")
+            access_token = IUserAnnotation(member).get(
+                '{0}_oauth_token'.format(self.config.id), "")
             if access_token:
                 access_token = json.loads(access_token)
         else:
@@ -198,14 +205,16 @@ class OAuth2View(OAuthBaseView):
             'auto_refresh_url': self.config.refresh_url
         })
 
-
     def validate(self):
         """Validate a token with the OAuth provider Google.
         """
-        # TODO: OAuth2Session has attribute .authorized ... it only checks for presence of various tokens, but should be a good indicator of successfull authorisation
+        # TODO: OAuth2Session has attribute .authorized ... it only checks for
+        # presence of various tokens, but should be a good indicator of
+        # successfull authorisation
         token = self.getToken()
         try:
-            # Defined at https://developers.google.com/accounts/docs/OAuth2LoginV1#validatingtoken
+            # Defined at
+            # https://developers.google.com/accounts/docs/OAuth2LoginV1#validatingtoken
             validate_url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?'
                             'access_token=%s' % token['access_token'])
             # No OAuth2Session is needed, just a plain GET request
@@ -232,12 +241,14 @@ class OAuth2View(OAuthBaseView):
 
     # GOOGLE specific methods
     def userinfo(self):
-        # fetch some info about our oauth connection and render them in template
+        # fetch some info about our oauth connection and render them in
+        # template
         token = self.getToken()
         google = self.oauth_session(token=token)
         userinfo_url = 'https://www.googleapis.com/oauth2/v2/userinfo'
         # TODO: may throw requests ConnectionError in: requests.adapters:415
-        # TODO: this returns the requests response object.. shall we retrun somethin else?
+        # TODO: this returns the requests response object.. shall we retrun
+        # somethin else?
         result = google.get(userinfo_url)
         return result.text
 
@@ -255,11 +266,13 @@ class OAuth1View(OAuthBaseView):
         if not redirect_url:
             redirect_url = urljoin(self.request.getURL(), 'callback')
 
-        # TODO: for ourselves we need to put static token key into resource_owner_xx
+        # TODO: for ourselves we need to put static token key into
+        # resource_owner_xx
         oauth = OAuth1Session(client_key=self.config.client_key,
                               client_secret=self.config.client_secret,
                               resource_owner_key=token.get('oauth_token'),
-                              resource_owner_secret=token.get('oauth_token_secret'),
+                              resource_owner_secret=token.get(
+                                  'oauth_token_secret'),
                               verifier=token.get('oauth_verifier'),
                               callback_uri=redirect_url,
                               signature_type='auth_header')
@@ -272,7 +285,8 @@ class OAuth1View(OAuthBaseView):
         # get a request token for ourselves
         request_token = oauth.fetch_request_token(self.config.request_url)
         # get the authorization url and redirect user to it
-        authorization_url = oauth.authorization_url(self.config.authorization_url)
+        authorization_url = oauth.authorization_url(
+            self.config.authorization_url)
         # state ... roundtripped by oauth, can be used to verify response
         return_url = self.request.get("HTTP_REFERER")
         self.session[self._skey] = (request_token, return_url)
@@ -283,7 +297,7 @@ class OAuth1View(OAuthBaseView):
     def is_callback(self):
         return ('oauth_verifier' in self.request.form
                 and 'oauth_token' in self.request.form)
-        #        and self.config.oauth_url in self.request.environ['HTTP_REFERER'])
+        # and self.config.oauth_url in self.request.environ['HTTP_REFERER'])
 
     @check_authenticated
     def callback(self):
@@ -297,9 +311,11 @@ class OAuth1View(OAuthBaseView):
         oauth = self.oauth_session(token=token)  # should return token
         # now we can update our session with the authorize response
         # TODO: there should be a better way to get the full request url
-        authorization_response = self.request.getURL() + '?' + self.request['QUERY_STRING']
+        authorization_response = self.request.getURL() + '?' + \
+            self.request['QUERY_STRING']
         # Parsing the url, updates the state of oauth session as well
-        request_token = oauth.parse_authorization_response(authorization_response)
+        request_token = oauth.parse_authorization_response(
+            authorization_response)
         # TODO: verify request_token somehow?
         # We have got a request token with verifier. (already set in oauth session)
         # Fetch the final access token
@@ -319,7 +335,8 @@ class OAuth1View(OAuthBaseView):
             # we are admin ... check if user is set
             username = self.request.form.get('user')
             member = api.user.get(username=username)
-            access_token = IUserAnnotation(member).get('{0}_oauth_token'.format(self.config.id), "")
+            access_token = IUserAnnotation(member).get(
+                '{0}_oauth_token'.format(self.config.id), "")
             if access_token:
                 access_token = json.loads(access_token)
         else:
@@ -345,7 +362,9 @@ class OAuth1View(OAuthBaseView):
     # FIXME: figshare specific
     # Figshare API
     def validate(self):
-        # TODO: OAuth2Session has attribute .authorized ... it only checks for presence of various tokens, but should be a good indicator of successfull authorisation
+        # TODO: OAuth2Session has attribute .authorized ... it only checks for
+        # presence of various tokens, but should be a good indicator of
+        # successfull authorisation
         token = self.getToken()
         try:
             oauth = self.oauth_session(token=token)
@@ -356,8 +375,9 @@ class OAuth1View(OAuthBaseView):
             # }
             params = None
 
-            response = oauth.get('http://api.figshare.com/v1/my_data/articles', params=params)
-            #data=json.dumps(body), headers=headers)
+            response = oauth.get(
+                'http://api.figshare.com/v1/my_data/articles', params=params)
+            # data=json.dumps(body), headers=headers)
             #/articles
             return response.status_code == 200
         except Exception as e:
@@ -376,7 +396,8 @@ class OAuthTraverser(BrowserView):
     def publishTraverse(self, context, name):
         # no serviceid yet ? .... name should be it
         if not self._serviceid:
-            providers = getUtility(IVocabularyFactory, 'org.bccvl.site.oauth.providers')(self.context)
+            providers = getUtility(
+                IVocabularyFactory, 'org.bccvl.site.oauth.providers')(self.context)
             registry = getUtility(IRegistry)
             for term in providers:
                 coll = registry.collectionOfInterface(term.value)
@@ -384,9 +405,11 @@ class OAuthTraverser(BrowserView):
                     config = coll[name]
                     self._serviceid = name
                     if IOAuth1Settings.providedBy(config):
-                        self._view = OAuth1View(self.context, self.request, config)
+                        self._view = OAuth1View(
+                            self.context, self.request, config)
                     elif IOAuth2Settings.providedBy(config):
-                        self._view = OAuth2View(self.context, self.request, config)
+                        self._view = OAuth2View(
+                            self.context, self.request, config)
                     else:
                         # give other providers a chance
                         continue
@@ -401,3 +424,156 @@ class OAuthTraverser(BrowserView):
 
     def __call__(self):
         raise BadRequest('Missing parameter')
+
+
+# TODO: always the sam e.... IPublishTraverse or ITraverse?
+@implementer(IPublishTraverse)
+class OAuthProvider(BrowserView):
+    # parse urls like oauth/<serviceid>/<command>
+
+    label = u"Authorize Access"
+
+    _action = None
+
+    client = None
+
+    auth_template = ViewPageTemplateFile('oauthauthorize.pt')
+
+    def publishTraverse(self, context, name):
+        if not self._action and name is not None and name:
+            self._action = name
+            return self
+        raise NotFound(self, name, self.request)
+
+    def __call__(self):
+        # TODO: could implement policy here to remember users
+        #       authorisation and skip verification if requested
+        # TODO: if round tripping via form is not a good idea use a session
+        # sdm = getToolByName(self.context, 'session_data_manager')
+        # session = sdm.getSessionData(create=True)
+        if self._action == 'authorize':
+            # check request:
+            # 1. ensure https / GET?
+            import ipdb
+            ipdb.set_trace()
+
+            if 'action' in self.request.form:
+                # We try to action something ... so let's check whether we came
+                # from our form
+                authenticator = getMultiAdapter(
+                    (self.context, self.request), name=u"authenticator")
+                if not authenticator.verify():
+                    raise Unauthorized
+
+            # 2. check parameters:
+            client_id = self.request.form.get('client_id')
+            response_type = self.request.form.get('response_type')
+            redirect_uri = self.request.form.get('redirect_uri')
+            scope = self.request.form.get('scope')
+            state = self.request.form.get('state')
+            action = self.request.form.get('action')
+
+            registry = getUtility(IRegistry)
+            coll = registry.collectionOfInterface(IOAuth2Client)
+            if client_id not in coll:
+                # FIXME: should return proper oauth error redirect
+                #    unknown client_id
+                raise Unauthorized()
+
+            self.client = coll[client_id]
+            # check request_token
+            if self.client.type == 'public':
+                if response_type != 'token':
+                    # FIXME: error response
+                    #       wrong response_type
+                    raise Unauthorized()
+            # check redirect_uri
+            curl = urlsplit(self.client.redirect_uri)
+            rurl = urlsplit(redirect_uri)
+            if curl.scheme != rurl.scheme:
+                # FIXME: error
+                raise Unauthorized()
+            if not rurl.netloc.endswith('.{}'.format(curl.netloc)):
+                # FIXME: error
+                raise Unauthorized()
+            # get restapi PAS plugin
+            plugin = None
+            acl_users = getToolByName(self.context, "acl_users")
+            plugins = acl_users._getOb('plugins')
+            authenticators = plugins.listPlugins(IAuthenticationPlugin)
+            for id_, authenticator in authenticators:
+                if authenticator.meta_type == "JWT Authentication Plugin":
+                    plugin = authenticator
+                    break
+
+            if plugin is None:
+                # FIXME: internal error
+                raise Unauthorized()
+
+            if action == 'authorize':
+                # user agrees
+                member = api.user.get_current()
+                payload = {}
+                payload['fullname'] = member.getProperty('fullname')
+                token = plugin.create_token(
+                    member.getId(), timeout=3600, data=payload)
+                # create token response and redirect to source
+                response = {
+                    'access_token': token,
+                    'token_type': 'Bearer',
+                    'expires_in': 3600,
+                }
+                # scope is optional if unchanged
+                if state:
+                    response['state'] = state
+                self.request.response.redirect('{}#{}'.format(
+                    redirect_uri,
+                    urlencode(response)
+                ))
+                return
+            elif action == 'deny':
+                # FIXME: user disagrees
+                raise Unauthorized()
+            else:
+                # render form
+                # ask user to confirm authorization
+                return self.auth_template()
+
+        raise NotFound(self, self._action, self.request)
+
+
+# Client ... entity that requests access on behalf of user
+#     - type:
+#         public / confidential
+#     - identifier:
+#         uuid to identify this client
+#     - authentication:
+#         (sort of password if type=confidential)
+# basic auth preferred, or maybe request body paramaters(clienti_id,
+# client_secret) must not be url parameters(auth requires TLS)
+
+# Endpoints:
+#     - authorization:
+#         client asks auth from user
+#         - response_type:
+#             code, token
+#         - redirect_uri:
+#             ... optional, or required
+#         - 'scope'
+#         - state:
+#             ... opaque data
+#         GET request ... all url parameters
+
+#         response:
+#             - access_token
+#             - token_type(Bearer)
+#             - expires_in(in seconds)
+#             - scope(required if different to request)
+#             - state(required if passed in originally)
+
+#         error response:
+#             - error:
+#                 invalid_request, unauthorized_client, access_denied, unsupported_response_type, invalid_scope, server_error, temporarily_unavailable
+#             - error_description
+#             - error_uri
+#             - state

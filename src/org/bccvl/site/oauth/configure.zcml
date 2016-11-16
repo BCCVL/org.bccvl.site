@@ -47,5 +47,12 @@
       class=".oauthselect.OAuthSelectModal"
       permission="zope2.View"
       />
+
+  <browser:page
+      name="oauth2"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      class=".oauth.OAuthProvider"
+      permission="org.bccvl.OAuth"
+      />
   
 </configure>

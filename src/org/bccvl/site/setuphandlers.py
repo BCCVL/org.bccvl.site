@@ -712,3 +712,13 @@ def upgrade_260_270_1(context, logger=None):
             # rename old one
             facet_tool.context.manage_renameObject(
                 'data_table', 'species_traits_dataset')
+
+
+def upgrade_270_280_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = api.portal.get_tool('portal_setup')
+    # update vocabularies
+    setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
