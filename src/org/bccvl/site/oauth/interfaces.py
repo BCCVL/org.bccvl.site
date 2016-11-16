@@ -137,8 +137,9 @@ class IOAuth2Client(Interface):
         default=u"public",
     )
 
-    redirect_uri = URI(
-        title=u"Redirect URI",
+    redirect_uris = List(
+        title=u"Redirect URIs",
+        value_type=URI()
     )
 
     title = TextLine(

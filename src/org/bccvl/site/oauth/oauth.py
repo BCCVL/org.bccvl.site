@@ -472,6 +472,7 @@ class OAuthProvider(BrowserView):
 
             registry = getUtility(IRegistry)
             coll = registry.collectionOfInterface(IOAuth2Client)
+            # FIXME: raises TypeError
             if client_id not in coll:
                 # FIXME: should return proper oauth error redirect
                 #    unknown client_id
@@ -485,13 +486,15 @@ class OAuthProvider(BrowserView):
                     #       wrong response_type
                     raise Unauthorized()
             # check redirect_uri
-            curl = urlsplit(self.client.redirect_uri)
+            valid_redirect_uri = False
             rurl = urlsplit(redirect_uri)
-            if curl.scheme != rurl.scheme:
-                # FIXME: error
-                raise Unauthorized()
-            if not rurl.netloc.endswith('.{}'.format(curl.netloc)):
-                # FIXME: error
+            for curl in self.client.redirect_uris:
+                curl = urlsplit(curl)
+                if curl.scheme != rurl.scheme or curl.netloc != rurl.netloc or curl.path != rurl.path:
+                    continue
+                valid_redirect_uri = True
+                break
+            if not valid_redirect_uri:
                 raise Unauthorized()
             # get restapi PAS plugin
             plugin = None
