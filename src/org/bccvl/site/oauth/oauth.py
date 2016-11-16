@@ -454,9 +454,6 @@ class OAuthProvider(BrowserView):
         if self._action == 'authorize':
             # check request:
             # 1. ensure https / GET?
-            import ipdb
-            ipdb.set_trace()
-
             if 'action' in self.request.form:
                 # We try to action something ... so let's check whether we came
                 # from our form
