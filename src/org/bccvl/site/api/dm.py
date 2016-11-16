@@ -394,8 +394,6 @@ class DMService(BaseService):
             from org.bccvl.movelib.utils import build_source, build_destination
             import tempfile
             destdir = tempfile.mkdtemp(prefix='export_to_ala')
-            import ipdb
-            ipdb.set_trace()
             try:
                 from org.bccvl.tasks.celery import app
                 settings = app.conf.get('bccvl', {})
@@ -418,16 +416,22 @@ class DMService(BaseService):
                 import requests
                 # "Accept:application/json" "Origin:http://example.com"
                 res = requests.post(settings['ala']['sandboxurl'],
-                                    files={'myFile': csvfile},
-                                    data={'apikey': settings['ala']['apikey']})
-                if res.statuscode != 200:
+                                    files={'file': csvfile},
+                                    headers={
+                                        'apikey': settings['ala']['apikey'],
+                                        'Accept': 'application/json'
+                })
+                if res.status_code != 200:
+                    self.record_error(res.reason, res.status_code)
                     raise Exception('Upload failed')
                 retval = res.json()
                 # TODO: do error checking
-                self.request.response.redirect(retval['sandboxurl'])
+                #  keys: sandboxUrl, fileName, message, error: Bool, fileId
+                return retval
             finally:
                 import shutil
                 shutil.rmtree(destdir)
 
-        except:
+        except Exception as e:
+            self.record_error(str(e), 500)
             raise
