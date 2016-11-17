@@ -291,10 +291,10 @@ class SpeciesAbsenceAddForm(BCCVLUploadForm):
     title = u"Upload Species Absence Data"
     description = (
         u"<p>Upload absence data for single species</p>"
-        u"<p>An absence dataset is expected to be in CSV format."
-        u"Your longitude and latitude must be in decimal degrees."
-        u"The BCCVL will only try to interpret columns with labels "
-        u"'lon' and 'lat', so ensure your headings match these labels.</p>"
+        u"<h4>Instructions:</h4>"
+        u"<ul><li>Format needs to be .csv</li>"
+        u"<li>Two columns with exact labels ‘lat’ and ‘lon’</li>"
+        u"<li>Coordinates in decimal degrees</li></p>"
     )
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
@@ -325,11 +325,11 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
 
     title = u"Upload Species Occurrence Data"
     description = (
-        u"<p>Upload occurrences data for single species</p>"
-        u"<p>An occurrence dataset is expected to be in CSV format."
-        u"Your longitude and latitude must be in decimal degrees."
-        u"The BCCVL will only try to interpret columns with labels "
-        u"'lon' and 'lat', so ensure your headings match these labels.</p>"
+        u"<p>Upload absence data for single species</p>"
+        u"<h4>Instructions:</h4>"
+        u"<ul><li>Format needs to be .csv</li>"
+        u"<li>Two columns with exact labels ‘lat’ and ‘lon’</li>"
+        u"<li>Coordinates in decimal degrees</li></p>"
     )
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(
         'file', 'title', 'description', 'scientificName', 'taxonID',
@@ -344,11 +344,10 @@ class MultiSpeciesOccurrenceAddForm(BCCVLUploadForm):
     title = u"Upload Multiple Species Occurence Data"
     description = (
         u"<p>Upload occurrences data for multiple species</p>"
-        u"<p>A multi species occurrence dataset is expected to be in CSV format."
-        u"Your longitude and latitude must be in decimal degrees."
-        u"The species name is expected to be in a column named 'species'."
-        u"The BCCVL will only try to interpret columns with labels "
-        u"'species', 'lon' and 'lat', so ensure your headings match these labels.</p>"
+        u"<h4>Instructions:</h4>"
+        u"<ul><li>Format needs to be .csv</li>"
+        u"<li>Three columns with exact labels 'species', ‘lat’ and ‘lon’</li>"
+        u"<li>Coordinates in decimal degrees</li></p>"
     )
     fields = Fields(IMultiSpeciesDataset, IDublinCore, ISpeciesCollection).select(
         'file', 'title', 'description', 'rights')
@@ -423,11 +422,12 @@ class SpeciesTraitAddForm(BCCVLUploadForm):
 
     title = u"Upload Species Traits"
     description = (
-        u"<p>Upload CSV file to use for species traits modelling.</p>"
-        u"<p>A species traits dataset is expected to be in CSV format."
-        u"Your longitude and latitude must be in decimal degrees."
-        u"The BCCVL will only try to interpret columns with labels "
-        u"'lon' and 'lat', so ensure your headings match these labels.</p>"
+        u"<p>Upload trait data for one or multiple species.</p>"
+        u"<h4>Instructions:</h4>"
+        u"<ul><li>Format needs to be .csv</li>"
+        u"<li>Three columns with exact labels 'species', ‘lat’ and ‘lon’</li>"
+        u"<li>Additional columns with trait and (optionally) environmental data</li>"
+        u"<li>Coordinates in decimal degrees</li></p>"
     )
 
     fields = Fields(IBlobDataset, IDublinCore, ITraitsDataset).select(
