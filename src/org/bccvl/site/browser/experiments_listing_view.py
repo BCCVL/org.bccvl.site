@@ -269,12 +269,29 @@ def ensemble_listing_details(expbrain):
 
 def speciestraits_listing_details(expbrain):
     # FIXME: implement this
+    exp = expbrain.getObject()
+    species_occ = get_title_from_uuid(exp.species_traits_dataset)
+
+    toolkits_species = exp.algorithm_species or []
+    toolkits_diff = exp.algorithm_diff or []
+    toolkits = ', '.join(uuidToCatalogBrain(uuid).Title for uuid in
+                         chain(toolkits_species, toolkits_diff))
+
+    envlayers = []
+    for envuuid, layers in sorted(getattr(exp, 'environmental_datasets', {}).items()):
+        envbrain = uuidToCatalogBrain(envuuid)
+        envtitle = envbrain.Title if envbrain else u'Missing dataset'
+        envlayers.append({
+            'title': envtitle,
+            'layers': sorted(layers)
+        })
+
     details = {}
     details.update({
         'type': 'SPECIES TRAITS',
-        'functions': '',
-        'species_occurrence': '',
+        'functions': toolkits,
+        'species_occurrence': species_occ,
         'species_absence': '',
-        'environmental_layers': '',
+        'environmental_layers': envlayers,
     })
     return details
