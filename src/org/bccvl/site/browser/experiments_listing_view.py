@@ -28,6 +28,7 @@ def get_title_from_uuid(uuid):
         pass
     return None
 
+
 @implementer(IExperimentTools)
 class ExperimentTools(BrowserView):
 
@@ -48,7 +49,8 @@ class ExperimentTools(BrowserView):
             itemob = itemob or self.context
             return checkPermission('cmf.ModifyPortalContent', itemob)
         except Exception as e:
-            import pdb; pdb.set_trace()
+            import pdb
+            pdb.set_trace()
 
     def get_state_css(self, itemob=None):
         itemob = itemob or self.context
@@ -146,7 +148,7 @@ def sdm_listing_details(expbrain):
             'environmental_layers': ({
                 'title': get_title_from_uuid(dataset),
                 'layers': sorted(layers)
-                } for dataset, layers in exp.environmental_datasets.items()
+            } for dataset, layers in exp.environmental_datasets.items()
             ),
         })
     return details
@@ -170,11 +172,10 @@ def msdm_listing_details(expbrain):
             'environmental_layers': ({
                 'title': get_title_from_uuid(dataset),
                 'layers': sorted(layers)
-                } for dataset, layers in exp.environmental_datasets.items()
+            } for dataset, layers in exp.environmental_datasets.items()
             ),
         })
     return details
-
 
 
 def projection_listing_details(expbrain):
@@ -197,7 +198,8 @@ def projection_listing_details(expbrain):
                     'layers': sorted(layers)
                 })
                 # TODO: job_params has only id of function not uuid ... not sure how to get to the title
-                toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params['function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
+                toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params[
+                                     'function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
                 species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
         else:
             toolkits = 'missing experiment'
