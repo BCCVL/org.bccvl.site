@@ -290,6 +290,13 @@ class ExperimentService(BaseService):
         props['scale_down'] = params.get('scale_down', False)
         # env data is optional
         props['environmental_datasets'] = params.get('environmental_data', None)
+        if not (props['environmental_datasets']
+                or 'env_var_con' not in props['species_traits_dataset_params'].values()
+                or 'env_var_cat' not in props['species_traits_dataset_params'].values()):
+            self.record_error('Bad Request', 400,
+                              'No Environmental data selected',
+                              {'parameter': 'environmental_datasets'})
+
         if params.get('modelling_region', ''):
             props['modelling_region'] = json.dumps(
                 params['modelling_region'])
