@@ -20,9 +20,9 @@ class TestRequest(TestRequestBase):
     """Zope 3's TestRequest doesn't support item assignment, but Zope 2's
     request does.
     """
+
     def __setitem__(self, key, value):
         pass
-
 
 
 class SDMExperimentHelper(object):
@@ -40,7 +40,8 @@ class SDMExperimentHelper(object):
         abt = self.datasets[defaults.DATASETS_SPECIES_FOLDER_ID]['ABT']
         self.occur = abt['occurrence.csv']
         self.absen = abt['absence.csv']
-        self.current = self.datasets[defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
+        self.current = self.datasets[
+            defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID]['current']
 
     def get_form(self):
         """
@@ -53,24 +54,28 @@ class SDMExperimentHelper(object):
                                name="newSpeciesDistribution")
         # update the form once to initialise all widgets
         form.update()
-        # go through all widgets on the form  and update the request with default values
+        # go through all widgets on the form  and update the request with
+        # default values
         data = {}
         for widget in chain(
                 # form fields
                 form.widgets.values(),
                 # param group fields
-                chain.from_iterable(g.widgets.values() for g in form.param_groups),
+                chain.from_iterable(g.widgets.values()
+                                    for param_group in form.param_groups.values() for g in param_group),
                 # param group fieldset fields
-                chain.from_iterable(sg.widgets.values() for g in form.param_groups for sg in g.groups)):
+                chain.from_iterable(sg.widgets.values() for param_group in form.param_groups.values() for g in param_group for sg in g.groups)):
             data[widget.name] = widget.value
         data.update({
             'form.widgets.IDublinCore.title': u"My Experiment",
             'form.widgets.IDublinCore.description': u'This is my experiment description',
             'form.widgets.functions': [self.algorithm.UID()],  # BIOCLIM
-            'form.widgets.species_occurrence_dataset': [unicode(self.occur.UID())],  # ABT
+            # ABT
+            'form.widgets.species_occurrence_dataset': [unicode(self.occur.UID())],
             'form.widgets.species_absence_dataset': [unicode(self.absen.UID())],
             'form.widgets.resolution': ('Resolution2_5m', ),
-            # FIXME: shouldn't be necessary to use unicode here,... widget converter should take care of it
+            # FIXME: shouldn't be necessary to use unicode here,... widget
+            # converter should take care of it
             'form.widgets.environmental_datasets.item.0': unicode(self.current.UID()),
             'form.widgets.environmental_datasets.item.0.item': [u'B01'],
             'form.widgets.environmental_datasets.item.1': unicode(self.current.UID()),
@@ -130,8 +135,10 @@ class SDMExperimentHelper(object):
                     'layermd': {'files': {'proj_test.tif': {'layer': 'projection_probability', 'data_type': 'Continuous'}}}
                 }
             ]
-            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
-            import_result_job(items, params['result']['results_dir'], context).delay()
+            # TODO: tasks called dierctly here; maybe call them as tasks as
+            # well? (chain?)
+            import_result_job(items, params['result'][
+                              'results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
             set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
@@ -140,7 +147,6 @@ class SDMExperimentHelper(object):
             import_cleanup(params['result']['results_dir'], context)
             set_progress('FAILED', 'Test Task failed', None, context)
             raise
-
 
 
 class ProjectionExperimentHelper(object):
@@ -156,7 +162,8 @@ class ProjectionExperimentHelper(object):
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
         # get some dataset shortcuts
         self.datasets = self.portal[defaults.DATASETS_FOLDER_ID]
-        self.future = self.datasets[defaults.DATASETS_CLIMATE_FOLDER_ID]['future']
+        self.future = self.datasets[
+            defaults.DATASETS_CLIMATE_FOLDER_ID]['future']
 
     def get_form(self):
         """
@@ -169,7 +176,8 @@ class ProjectionExperimentHelper(object):
                                name="newProjection")
         # update the form once to initialise all widgets
         form.update()
-        # go through all widgets on the form  and update the request with default values
+        # go through all widgets on the form  and update the request with
+        # default values
         data = {}
         for widget in form.widgets.values():
             data[widget.name] = widget.value
@@ -219,8 +227,10 @@ class ProjectionExperimentHelper(object):
                     'layermd': {'files': {'proj_test.tif': {'layer': 'projection_probability', 'data_type': 'Continuous'}}}
                 }
             ]
-            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
-            import_result_job(items, params['result']['results_dir'], context).delay()
+            # TODO: tasks called dierctly here; maybe call them as tasks as
+            # well? (chain?)
+            import_result_job(items, params['result'][
+                              'results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
             set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
@@ -243,7 +253,6 @@ class BiodiverseExperimentHelper(object):
         self.sdmproj = sdmexp.values()[0]['proj_test.tif']
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
 
-
     def get_form(self):
         """
         fill out common stuff when creating a new experiment
@@ -255,7 +264,8 @@ class BiodiverseExperimentHelper(object):
                                name="newBiodiverse")
         # update the form once to initialise all widgets
         form.update()
-        # go through all widgets on the form  and update the request with default values
+        # go through all widgets on the form  and update the request with
+        # default values
         data = {}
         for widget in form.widgets.values():
             data[widget.name] = widget.value
@@ -307,8 +317,10 @@ class BiodiverseExperimentHelper(object):
                     'layermd': {},
                 }
             ]
-            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
-            import_result_job(items, params['result']['results_dir'], context).delay()
+            # TODO: tasks called dierctly here; maybe call them as tasks as
+            # well? (chain?)
+            import_result_job(items, params['result'][
+                              'results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
             set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
@@ -342,7 +354,8 @@ class EnsembleExperimentHelper(object):
                                name="newEnsemble")
         # update the form once to initialise all widgets
         form.update()
-        # go through all widgets on the form  and update the request with default values
+        # go through all widgets on the form  and update the request with
+        # default values
         data = {}
         for widget in form.widgets.values():
             data[widget.name] = widget.value
@@ -392,8 +405,10 @@ class EnsembleExperimentHelper(object):
                     'layermd': {},
                 }
             ]
-            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
-            import_result_job(items, params['result']['results_dir'], context).delay()
+            # TODO: tasks called dierctly here; maybe call them as tasks as
+            # well? (chain?)
+            import_result_job(items, params['result'][
+                              'results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
             set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:
@@ -413,7 +428,8 @@ class SpeciesTraitsExperimentHelper(object):
         # configure local variables on instance
         self.portal = portal
         self.experiments = self.portal[defaults.EXPERIMENTS_FOLDER_ID]
-        self.algorithm = self.portal[defaults.TOOLKITS_FOLDER_ID]['lm']
+        self.algorithm = self.portal[
+            defaults.TOOLKITS_FOLDER_ID]['speciestrait_glm']
         # get some dataset shortcuts
         self.datasets = self.portal[defaults.DATASETS_FOLDER_ID]
         self.traitsds = self.datasets['traits.csv']
@@ -429,22 +445,32 @@ class SpeciesTraitsExperimentHelper(object):
                                name="newSpeciesTraits")
         # update the form once to initialise all widgets
         form.update()
-        # go through all widgets on the form  and update the request with default values
+        # go through all widgets on the form  and update the request with
+        # default values
         data = {}
         for widget in chain(
                 # form fields
                 form.widgets.values(),
                 # param group fields
-                chain.from_iterable(g.widgets.values() for g in form.param_groups),
+                chain.from_iterable(g.widgets.values()
+                                    for param_group in form.param_groups.values() for g in param_group),
                 # param group fieldset fields
-                chain.from_iterable(sg.widgets.values() for g in form.param_groups for sg in g.groups)):
+                chain.from_iterable(sg.widgets.values() for param_group in form.param_groups.values() for g in param_group for sg in g.groups)):
             data[widget.name] = widget.value
         data.update({
             'form.widgets.IDublinCore.title': u"My ST Experiment",
             'form.widgets.IDublinCore.description': u'This is my experiment description',
-            'form.widgets.algorithm': [self.algorithm.UID()],
-            'form.widgets.formula': u'Z ~ X + Y',
-            'form.widgets.data_table': [unicode(self.traitsds.UID())]
+            'form.widgets.algorithms_species': [self.algorithm.UID()],
+            'form.widgets.species_traits_dataset': [unicode(self.traitsds.UID())],
+            'form.widgets.species_traits_dataset_params': {
+                u'species': u'species',
+                u'lon': u'lon',
+                u'lat': u'lat',
+                u't1': u'trait_con',
+                u't2': u'trait_cat',
+                u'e1': u'env_var_con',
+                u'e2': u'env_var_cat',
+            }
         })
         self.request.form.update(data)
         form = getMultiAdapter((self.experiments, self.request),
@@ -491,8 +517,10 @@ class SpeciesTraitsExperimentHelper(object):
                     'layermd': {},
                 }
             ]
-            # TODO: tasks called dierctly here; maybe call them as tasks as well? (chain?)
-            import_result_job(items, params['result']['results_dir'], context).delay()
+            # TODO: tasks called dierctly here; maybe call them as tasks as
+            # well? (chain?)
+            import_result_job(items, params['result'][
+                              'results_dir'], context).delay()
             import_cleanup(params['result']['results_dir'], context)
             set_progress('COMPLETED', 'Test Task succeeded', None, context)
         except Exception as e:

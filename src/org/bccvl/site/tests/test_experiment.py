@@ -501,9 +501,10 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         self.assertIn('my-st-experiment', self.experiments)
         exp = self.experiments['my-st-experiment']
         # TODO: update asserts
-        self.assertEqual(exp.data_table, unicode(self.form.traitsds.UID()))
-        self.assertEqual(exp.algorithm, unicode(self.form.algorithm.UID()))
-        self.assertEqual(exp.formula, u'Z ~ X + Y')
+        self.assertEqual(exp.species_traits_dataset,
+                         unicode(self.form.traitsds.UID()))
+        self.assertEqual(exp.algorithms_species,
+                         [unicode(self.form.algorithm.UID())])
         # FIXME: submitting with an empty model list doesn't cause form to fail
         # get result container: (there is only one)
         self.assertEqual(len(exp.objectIds()), 1)
@@ -511,7 +512,7 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         # FIXME: test result.job_params
         self.assertEqual(result.job_params[
                          'algorithm'], self.form.algorithm.getId())
-        self.assertEqual(result.job_params['data_table'], unicode(
+        self.assertEqual(result.job_params['traits_dataset'], unicode(
             self.form.traitsds.UID()))
         # no result files yet
         self.assertEqual(len(result.keys()), 0)

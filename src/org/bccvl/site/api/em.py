@@ -279,7 +279,7 @@ class ExperimentService(BaseService):
 
         props['species_traits_dataset_params'] = {}
         for col_name, col_val in params.get("columns", {}).items():
-            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'trait_cat', 'env_var_con', 'env_var_cat'):
+            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'trait_ord', 'trait_nom', 'env_var_con', 'env_var_cat'):
                 continue
             props['species_traits_dataset_params'][col_name] = col_val
         if not props['species_traits_dataset_params']:
@@ -288,12 +288,15 @@ class ExperimentService(BaseService):
                               {'parameter': 'columns'})
 
         props['scale_down'] = params.get('scale_down', False)
-        if not params.get('environmental_data', None):
+        # env data is optional
+        props['environmental_datasets'] = params.get('environmental_data', None)
+        if not (props['environmental_datasets']
+                or 'env_var_con' not in props['species_traits_dataset_params'].values()
+                or 'env_var_cat' not in props['species_traits_dataset_params'].values()):
             self.record_error('Bad Request', 400,
-                              'Missing parameter environmental_data',
-                              {'parameter': 'environmental_data'})
-        else:
-            props['environmental_datasets'] = params['environmental_data']
+                              'No Environmental data selected',
+                              {'parameter': 'environmental_datasets'})
+
         if params.get('modelling_region', ''):
             props['modelling_region'] = json.dumps(
                 params['modelling_region'])

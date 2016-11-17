@@ -1,4 +1,7 @@
 import logging
+import pwd
+import shutil
+import tempfile
 
 from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
@@ -10,20 +13,24 @@ from plone import api
 from plone.app.dexterity.behaviors.metadata import IDublinCore
 from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.utils import addContentToContainer
+from plone.registry.interfaces import IRegistry
+from plone.uuid.interfaces import IUUID
 from z3c.form import button
 from z3c.form.field import Fields
+from zope.component import getUtility
 from zope.schema import Bool
 
 from org.bccvl.site import defaults
-from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
 from org.bccvl.site.content.interfaces import IBlobDataset
 from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
 from org.bccvl.site.content.dataset import (
-                                            ISpeciesDataset,
-                                            ISpeciesCollection,
-                                            ILayerDataset,
-                                            ITraitsDataset)
-from org.bccvl.site.utils import get_results_dir
+    ISpeciesDataset,
+    ISpeciesCollection,
+    ILayerDataset,
+    ITraitsDataset)
+from org.bccvl.site.swift.interfaces import ISwiftSettings
+from org.bccvl.site.utils import get_results_dir, get_hostname
 from org.bccvl.tasks.celery import app
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.tasks.plone import after_commit_task
@@ -47,19 +54,29 @@ class BCCVLUploadForm(DefaultAddForm):
 
     datagenre = None
 
+    def create(self, data):
+        if self.portal_type == 'org.bccvl.content.remotedataset':
+            # we are going to create a remote dataset from an upload
+            # 1. put upload information aside
+            self._upload = {'file': data['file']}
+            del data['file']
+            data['remoteUrl'] = None
+        return super(BCCVLUploadForm, self).create(data)
+
     def add(self, object):
         # FIXME: this is a workaround, which is fine for small uploaded files.
         #        large uploads should go through another process anyway
         # TODO: re implementing this method is the only way to know
         #       the full path of the object. We need the path to apply
         #       the transmogrifier chain.
-        #fti = getUtility(IDexterityFTI, name=self.portal_type)
+        # fti = getUtility(IDexterityFTI, name=self.portal_type)
         container = aq_inner(self.context)
         try:
             # traverse to subfolder if possible
             container = container.restrictedTraverse('/'.join(self.subpath))
         except Exception as e:
-            LOG.warn('Could not traverse to %s/%s', '/'.join(container.getPhysicalPath()), '/'.join(self.subpath))
+            LOG.warn('Could not traverse to %s/%s',
+                     '/'.join(container.getPhysicalPath()), '/'.join(self.subpath))
         new_object = addContentToContainer(container, object)
         # set data genre:
         if self.datagenre:
@@ -102,22 +119,41 @@ class BCCVLUploadForm(DefaultAddForm):
                         }
                     }
                 },
-                options={'immutable': True}
-            );
+                immutable=True)
             after_commit_task(import_task)
             # create job tracking object
             jt = IJobTracker(new_object)
-            job = jt.new_job('TODO: generate id', 'generate taskname: import_multi_species_csv')
+            job = jt.new_job('TODO: generate id',
+                             'generate taskname: import_multi_species_csv')
             job.type = new_object.portal_type
             jt.set_progress('PENDING', u'Multi species import pending')
         else:
+            if hasattr(self, '_upload'):
+                file = self._upload['file']
+                new_object.format = file.contentType
+                uid = IUUID(new_object)
+                swiftsettings = getUtility(
+                    IRegistry).forInterface(ISwiftSettings)
+                import os.path
+                swift_url = '{storage_url}/{container}/{path}/{name}'.format(
+                    storage_url=swiftsettings.storage_url,
+                    container=swiftsettings.result_container,
+                    path=uid,
+                    name=os.path.basename(file.filename))
+                new_object.remoteUrl = swift_url
+            else:
+                file = new_object.file
+                new_object.format = file.contentType
+
+            dlinfo = IDownloadInfo(new_object)
+
             # single species upload
             update_task = app.signature(
                 "org.bccvl.tasks.datamover.tasks.update_metadata",
                 kwargs={
-                    'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
-                    'filename': new_object.file.filename,
-                    'contenttype': new_object.file.contentType,
+                    'url': dlinfo['url'],
+                    'filename': dlinfo['filename'],
+                    'contenttype': dlinfo['contenttype'],
                     'context': {
                         'context': context_path,
                         'user': {
@@ -127,15 +163,73 @@ class BCCVLUploadForm(DefaultAddForm):
                         }
                     }
                 },
-                options={'immutable': True});
-            # queue job submission
+                immutable=True)
+            # create upload task in case we upload to external store
+            if hasattr(self, '_upload'):
+                # There is an upload ... we have to make sure the uploaded data ends up in external storage
+                # 3. put temp file aside
+                tmpdir = tempfile.mkdtemp(prefix='bccvl_upload')
+                tmpfile = os.path.join(tmpdir, os.path.basename(file.filename))
+                blobf = file.open()
+                try:
+                    # try rename
+                    os.rename(blobf.name, tmpfile)
+                except OSError:
+                    # try copy
+                    shutil.copy(blobf.name, tmpfile)
+                # 4. update task chain
+                src_url = 'scp://{uid}@{ip}:{port}{file}'.format(
+                    uid=pwd.getpwuid(os.getuid()).pw_name,
+                    ip=get_hostname(self.request),
+                    port=os.environ.get('SSH_PORT', 22),
+                    file=tmpfile)
+                dest_url = 'swift+{}'.format(new_object.remoteUrl)
+                move_task = app.signature(
+                    'org.bccvl.tasks.datamover.tasks.move',
+                    kwargs={
+                        'move_args': [(src_url, dest_url)],
+                        'context': {
+                            'context': context_path,
+                            'user': {
+                                'id': member.getUserName(),
+                                'email': member.getProperty('email'),
+                                'fullname': member.getProperty('fullname')
+                            }
+                        }
+                    },
+                    immutable=True)
+                cleanup_task = app.signature(
+                    'org.bccvl.tasks.plone.import_cleanup',
+                    kwargs={
+                        'path': os.path.dirname(tmpfile),
+                        'context': {
+                            'context': context_path,
+                            'user': {
+                                'id': member.getUserName(),
+                                'email': member.getProperty('email'),
+                                'fullname': member.getProperty('fullname')
+                            }
+                        }
+                    },
+                    immutable=True)
+
+                update_task = move_task | update_task | cleanup_task
+
+                # need some more workflow states here to support e.g. zip file upload (multiple rasters),
+                #      give user a chance to better define metadata
+                # make sure update_metadata does not change user edited metadata
+                #      -> layer, unit, projection, whatever
+
+                # FIXME: clean up tmp upload directory as well
+
+                # queue job submission
             after_commit_task(update_task)
             # create job tracking object
             jt = IJobTracker(new_object)
-            job = jt.new_job('TODO: generate id', 'generate taskname: update_metadata')
+            job = jt.new_job('TODO: generate id',
+                             'generate taskname: update_metadata')
             job.type = new_object.portal_type
             jt.set_progress('PENDING', u'Metadata update pending')
-
 
         # We have to reindex after updating the object
         new_object.reindexObject()
@@ -148,7 +242,7 @@ class BCCVLUploadForm(DefaultAddForm):
     def updateWidgets(self):
         super(BCCVLUploadForm, self).updateWidgets()
         self.widgets['description'].rows = 6
-        #self.widgets['rights'].rows = 6
+        # self.widgets['rights'].rows = 6
 
     def updateActions(self):
         super(BCCVLUploadForm, self).updateActions()
@@ -158,13 +252,13 @@ class BCCVLUploadForm(DefaultAddForm):
         # don't fetch plone default fields'
         self.fields += Fields(
             Bool(
-                __name__ = 'legalcheckbox',
-                title = u'I agree to the <a href="http://www.bccvl.org.au/bccvl/legals/" target="_blank">Terms and Conditions</a>',
+                __name__='legalcheckbox',
+                title=u'I agree to the <a href="http://www.bccvl.org.au/bccvl/legals/" target="_blank">Terms and Conditions</a>',
                 required=True,
                 default=False
             )
         )
-            # ITermsAndConditions, ignoreContext=True)
+        # ITermsAndConditions, ignoreContext=True)
 
     @button.buttonAndHandler(u'Save', name='save')
     def handleAdd(self, action):
@@ -173,7 +267,8 @@ class BCCVLUploadForm(DefaultAddForm):
             self.status = self.formErrorsMessage
             return
         # FIXME: here is a good place to validate TermsAndConditions
-        # FIXME: legalcheckbox should probably not be in self.fields, but rather a manually created and validated checkbox in the form template
+        # FIXME: legalcheckbox should probably not be in self.fields, but
+        # rather a manually created and validated checkbox in the form template
         del data['legalcheckbox']
         obj = self.createAndAdd(data)
         if obj is not None:
@@ -185,8 +280,10 @@ class BCCVLUploadForm(DefaultAddForm):
 
     @button.buttonAndHandler(u'Cancel', name='cancel')
     def handleCancel(self, action):
-        # We call a ButtonHandler not a method on super, so we have to pass in self as well
-        super(BCCVLUploadForm, self).handleCancel(self, action)  # self, form, action
+        # We call a ButtonHandler not a method on super, so we have to pass in
+        # self as well
+        super(BCCVLUploadForm, self).handleCancel(
+            self, action)  # self, form, action
 
 
 class SpeciesAbsenceAddForm(BCCVLUploadForm):
@@ -298,6 +395,7 @@ class EnvironmentalAddForm(BCCVLUploadForm):
     # datatype, gcm, emissionscenario
     subpath = [defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, 'user']
 
+
 class ClimateFutureAddForm(BCCVLUploadForm):
 
     title = u"Upload Future Climate Data"
@@ -362,15 +460,22 @@ class DatasetsUploadView(BrowserView):
         self.subforms = []
         ttool = getToolByName(self.context, 'portal_types')
 
+        # decide whether we store content in db or in object store
+        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+        ds_portal_type = 'org.bccvl.content.dataset'
+        if swiftsettings.storage_url:
+            ds_portal_type = 'org.bccvl.content.remotedataset'
+
         for form_prefix, form_class, portal_type in (
-                ('speciesabsence', SpeciesAbsenceAddForm, 'org.bccvl.content.dataset'),
-                ('speciesabundance', SpeciesAbundanceAddForm, 'org.bccvl.content.dataset'),
-                ('speciesoccurrence', SpeciesOccurrenceAddForm, 'org.bccvl.content.dataset'),
-                ('multispeciesoccurrence', MultiSpeciesOccurrenceAddForm, 'org.bccvl.content.multispeciesdataset'),
-                ('climatecurrent', ClimateCurrentAddForm, 'org.bccvl.content.dataset'),
-                ('environmental', EnvironmentalAddForm, 'org.bccvl.content.dataset'),
-                ('climatefuture', ClimateFutureAddForm, 'org.bccvl.content.dataset'),
-                ('speciestrait', SpeciesTraitAddForm, 'org.bccvl.content.dataset')):
+                ('speciesabsence', SpeciesAbsenceAddForm, ds_portal_type),
+                ('speciesabundance', SpeciesAbundanceAddForm, ds_portal_type),
+                ('speciesoccurrence', SpeciesOccurrenceAddForm, ds_portal_type),
+                ('multispeciesoccurrence', MultiSpeciesOccurrenceAddForm,
+                 'org.bccvl.content.multispeciesdataset'),
+                ('climatecurrent', ClimateCurrentAddForm, ds_portal_type),
+                ('environmental', EnvironmentalAddForm, ds_portal_type),
+                ('climatefuture', ClimateFutureAddForm, ds_portal_type),
+                ('speciestrait', SpeciesTraitAddForm, ds_portal_type)):
             fti = ttool.getTypeInfo(portal_type)
             form = form_class(aq_inner(self.context),
                               self.request, fti)
