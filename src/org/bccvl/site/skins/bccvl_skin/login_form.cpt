@@ -85,12 +85,12 @@
        Site login
     </dt>-->
     <div id="fieldset-aaf-login"
-      tal:define="came_from python:came_from and came_from.replace('+', '%2B').replace('http://','https://');
+      tal:define="came_from python:came_from and came_from.replace('http://', 'http://', 1) if came_from.startswith('http://') else came_from;
                   std modules/Products.PythonScripts.standard;
                   url_quote nocall:std/url_quote;
-                  login_url python:ssl_host_url + '/Shibboleth.sso/Login?target=%s/logged_in' % context.portal_url();
+                  login_url python:ssl_host_url + '/Shibboleth.sso/Login?target=' + url_quote('%s/logged_in' % context.portal_url());
                   login_url python:test(came_from,
-                                        login_url + url_quote('?came_from=' + unicode(came_from)),
+                                        login_url + url_quote('?came_from=' + url_quote(unicode(came_from))),
                                         login_url);">
           <a i18n:translate="description_log_in_here"
              tal:attributes="href login_url"  class="aaf-logo-link btn btn-success">
