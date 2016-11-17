@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin  # noqa
+from Products.statusmessages.interfaces import IStatusMessage
 from plone import api
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility, getMultiAdapter
@@ -445,110 +446,135 @@ class OAuthProvider(BrowserView):
             return self
         raise NotFound(self, name, self.request)
 
+    def _build_response(self, redirect_uri, response, state):
+        if state:
+            response['state'] = state
+        self.request.response.redirect('{}#{}'.format(
+            redirect_uri,
+            urlencode(response)
+        ))
+
     def __call__(self):
         # TODO: could implement policy here to remember users
         #       authorisation and skip verification if requested
-        # TODO: if round tripping via form is not a good idea use a session
-        # sdm = getToolByName(self.context, 'session_data_manager')
-        # session = sdm.getSessionData(create=True)
         if self._action == 'authorize':
-            # check request:
-            # 1. ensure https / GET?
-            if 'action' in self.request.form:
-                # We try to action something ... so let's check whether we came
-                # from our form
-                authenticator = getMultiAdapter(
-                    (self.context, self.request), name=u"authenticator")
-                if not authenticator.verify():
-                    raise Unauthorized
+            try:
+                # check request:
+                # 1. ensure https / GET?
+                if 'action' in self.request.form:
+                    # We try to action something ... so let's check whether we came
+                    # from our form
+                    authenticator = getMultiAdapter(
+                        (self.context, self.request), name=u"authenticator")
+                    if not authenticator.verify():
+                        # TODO: should we redirect with unauthorized_client or access_denied?
+                        raise Unauthorized
 
-            # 2. check parameters:
-            client_id = self.request.form.get('client_id')
-            response_type = self.request.form.get('response_type')
-            redirect_uri = self.request.form.get('redirect_uri')
-            scope = self.request.form.get('scope')
-            state = self.request.form.get('state')
-            action = self.request.form.get('action')
+                # 2. check parameters:
+                client_id = self.request.form.get('client_id')
+                response_type = self.request.form.get('response_type')
+                redirect_uri = self.request.form.get('redirect_uri')
+                scope = self.request.form.get('scope')
+                state = self.request.form.get('state')
+                action = self.request.form.get('action')
 
-            registry = getUtility(IRegistry)
-            coll = registry.collectionOfInterface(IOAuth2Client)
-            # FIXME: raises TypeError
-            if client_id not in coll:
-                # FIXME: should return proper oauth error redirect
-                #    unknown client_id
-                raise Unauthorized()
+                registry = getUtility(IRegistry)
+                coll = registry.collectionOfInterface(IOAuth2Client)
+                # FIXME: raises TypeError
+                try:
+                    self.client = coll[client_id]
+                except:
+                    IStatusMessage(self.request).add(u"Invalid client_id", type=u"error")
+                    return self.auth_template()
 
-            self.client = coll[client_id]
-            # check request_token
-            if self.client.type == 'public':
-                if response_type != 'token':
-                    # FIXME: error response
-                    #       wrong response_type
-                    raise Unauthorized()
-            # check redirect_uri
-            valid_redirect_uri = False
-            rurl = urlsplit(redirect_uri)
-            for curl in self.client.redirect_uris:
-                curl = urlsplit(curl)
-                if curl.scheme != rurl.scheme or curl.netloc != rurl.netloc or curl.path != rurl.path:
-                    continue
-                valid_redirect_uri = True
-                break
-            if not valid_redirect_uri:
-                raise Unauthorized()
-            # get restapi PAS plugin
-            plugin = None
-            acl_users = getToolByName(self.context, "acl_users")
-            plugins = acl_users._getOb('plugins')
-            authenticators = plugins.listPlugins(IAuthenticationPlugin)
-            for id_, authenticator in authenticators:
-                if authenticator.meta_type == "JWT Authentication Plugin":
-                    plugin = authenticator
+                # check redirect_uri
+                valid_redirect_uri = False
+                rurl = urlsplit(redirect_uri)
+                for curl in self.client.redirect_uris:
+                    curl = urlsplit(curl)
+                    if curl.scheme != rurl.scheme or curl.netloc != rurl.netloc or curl.path != rurl.path:
+                        continue
+                    valid_redirect_uri = True
                     break
+                if not valid_redirect_uri:
+                    IStatusMessage(self.request).add(u"Redirect URI does not match", type=u"error")
+                    return self.auth_template()
 
-            if plugin is None:
-                # FIXME: internal error
-                raise Unauthorized()
+                # check request_token
+                if self.client.type == 'public':
+                    if response_type != 'token':
+                        self._build_response(
+                            redirect_uri,
+                            {'error': 'unsupported_response_type',
+                             'error-description': 'Invalid response type',
+                             },
+                            state
+                        )
+                        return
 
-            if action == 'authorize':
-                # user agrees
-                member = api.user.get_current()
-                payload = {}
-                payload['fullname'] = member.getProperty('fullname')
-                token = plugin.create_token(
-                    member.getId(), timeout=3600, data=payload)
-                # create token response and redirect to source
-                response = {
-                    'access_token': token,
-                    'token_type': 'Bearer',
-                    'expires_in': 3600,
-                }
-                # scope is optional if unchanged
-                if state:
-                    response['state'] = state
-                self.request.response.redirect('{}#{}'.format(
-                    redirect_uri,
-                    urlencode(response)
-                ))
-                return
-            elif action == 'deny':
-                # FIXME: user disagrees
-                response = {
-                    'error': 'access_denied',
-                    'error-description': 'User denied access',
-                }
-                if state:
-                    response['state'] = state
-                self.request.response.redirect('{}#{}'.format(
-                    redirect_uri,
-                    urlencode(response)
-                ))
-                return
-            else:
-                # render form
-                # ask user to confirm authorization
+                # get restapi PAS plugin
+                plugin = None
+                acl_users = getToolByName(self.context, "acl_users")
+                plugins = acl_users._getOb('plugins')
+                authenticators = plugins.listPlugins(IAuthenticationPlugin)
+                for id_, authenticator in authenticators:
+                    if authenticator.meta_type == "JWT Authentication Plugin":
+                        plugin = authenticator
+                        break
+
+                if plugin is None:
+                    self._build_response(
+                        redirect_uri,
+                        {'error': 'server_error',
+                         'error-description': 'Unable to generate token',
+                         },
+                        state
+                    )
+                    return
+
+                if action == 'authorize':
+                    # user agrees
+                    member = api.user.get_current()
+                    payload = {}
+                    payload['fullname'] = member.getProperty('fullname')
+                    token = plugin.create_token(
+                        member.getId(), timeout=3600, data=payload)
+                    # create token response and redirect to source
+                    response = {
+                        'access_token': token,
+                        'token_type': 'Bearer',
+                        'expires_in': 3600,
+                    }
+                    # scope is optional if unchanged
+                    if state:
+                        response['state'] = state
+                    self.request.response.redirect('{}#{}'.format(
+                        redirect_uri,
+                        urlencode(response)
+                    ))
+                    return
+                elif action == 'deny':
+                    # FIXME: user disagrees
+                    response = {
+                        'error': 'access_denied',
+                        'error-description': 'User denied access',
+                    }
+                    if state:
+                        response['state'] = state
+                    self.request.response.redirect('{}#{}'.format(
+                        redirect_uri,
+                        urlencode(response)
+                    ))
+                    return
+                else:
+                    # render form
+                    # ask user to confirm authorization
+                    return self.auth_template()
+            except Exception as e:
+                # some bad thing happened
+                IStatusMessage(self.request).add(unicode(e), type=u"error")
                 return self.auth_template()
-
+            # FIXME: on exception redirect with server_error
         raise NotFound(self, self._action, self.request)
 
 
