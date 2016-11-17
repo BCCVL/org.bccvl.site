@@ -533,7 +533,17 @@ class OAuthProvider(BrowserView):
                 return
             elif action == 'deny':
                 # FIXME: user disagrees
-                raise Unauthorized()
+                response = {
+                    'error': 'access_denied',
+                    'error-description': 'User denied access',
+                }
+                if state:
+                    response['state'] = state
+                self.request.response.redirect('{}#{}'.format(
+                    redirect_uri,
+                    urlencode(response)
+                ))
+                return
             else:
                 # render form
                 # ask user to confirm authorization
