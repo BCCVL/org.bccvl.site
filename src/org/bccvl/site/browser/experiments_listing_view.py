@@ -272,13 +272,14 @@ def speciestraits_listing_details(expbrain):
     exp = expbrain.getObject()
     species_occ = get_title_from_uuid(exp.species_traits_dataset)
 
-    toolkits_species = exp.algorithm_species or []
-    toolkits_diff = exp.algorithm_diff or []
+    toolkits_species = exp.algorithms_species or []
+    toolkits_diff = exp.algorithms_diff or []
     toolkits = ', '.join(uuidToCatalogBrain(uuid).Title for uuid in
                          chain(toolkits_species, toolkits_diff))
 
+    envds = exp.environmental_datasets or {}
     envlayers = []
-    for envuuid, layers in sorted(getattr(exp, 'environmental_datasets', {}).items()):
+    for envuuid, layers in sorted(envds.items()):
         envbrain = uuidToCatalogBrain(envuuid)
         envtitle = envbrain.Title if envbrain else u'Missing dataset'
         envlayers.append({
