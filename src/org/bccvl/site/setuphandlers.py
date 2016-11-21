@@ -722,6 +722,7 @@ def upgrade_270_280_1(context, logger=None):
     setup = api.portal.get_tool('portal_setup')
     # update vocabularies
     setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
+    setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
     # install plone.restapi
     qi = getToolByName(portal, 'portal_quickinstaller')
     installable = [p['id'] for p in qi.listInstallableProducts()]

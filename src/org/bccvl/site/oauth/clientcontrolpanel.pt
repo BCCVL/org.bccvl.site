@@ -1,0 +1,30 @@
+<!-- assumes it is a wrapped form -->
+<div class="row">
+  <tal:block tal:condition="python: view.state == 'listing'">
+    <form method="POST">
+      <tal:loop tal:repeat="item view/clients">
+        <div class="row">
+          <input type="radio" name="item_id" value="item_id"
+                 tal:attributes="value item/id"/>
+          <span class="width-1:4" tal:content="item/client/title"></span>
+        </div>
+      </tal:loop>
+      <input class="context" type="submit" name="item_action" value="Add"/>
+      <input class="standalone" type="submit" name="item_action" value="Edit"/>
+      <input class="standalone" type="submit" name="item_action" value="Delete"/>      
+    </form>
+  </tal:block>
+
+  <tal:block tal:condition="python: view.state != 'listing'">
+  
+    <metal:use use-macro="context/@@ploneform-macros/titlelessform">
+      <tal:formbottom metal:fill-slot="formbottom">
+        <input type="hidden" name="item_id" value=""
+               tal:attributes="value view/item_id"/>
+        <input type="hidden" name="item_action" value=""
+               tal:attributes="value view/item_action"/>
+      </tal:formbottom>
+    </metal:use>
+  </tal:block>
+  
+</div>

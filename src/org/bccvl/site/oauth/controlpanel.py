@@ -1,4 +1,6 @@
 #
+import uuid
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.registry.browser.controlpanel import RegistryEditForm
 from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
@@ -12,6 +14,8 @@ from zope.interface import implementer
 from zope.location import locate
 from zope.schema import Choice, TextLine
 from zope.schema.interfaces import IVocabularyFactory
+
+from org.bccvl.site.oauth.interfaces import IOAuth2Client
 
 
 @implementer(IGroup)
@@ -178,3 +182,87 @@ class OAuthControlPanelForm(RegistryEditForm):
 OAuthControlPanelView = layout.wrap_form(OAuthControlPanelForm,
                                          ControlPanelFormWrapper)
 OAuthControlPanelView.label = u"OAuth settings"
+
+
+class OAuthClientControlPanelForm(RegistryEditForm):
+
+    form.extends(RegistryEditForm)
+
+    template = ViewPageTemplateFile('clientcontrolpanel.pt')
+
+    # no schema needed to drive this form
+    schema = IOAuth2Client
+    schema_prefix = None
+
+    # form states ....
+    #   listing: show list of existing clients, and allow crud operations
+    #   edit:    show single client by id and allow editing
+    #   view:    show settings for single client (easy copy/paste of settings?)
+    state = 'listing'
+
+    def __init__(self, context, request):
+        super(OAuthClientControlPanelForm, self).__init__(context, request)
+
+    def getContent(self):
+        return getUtility(IRegistry).forInterface(
+            self.schema,
+            check=False,
+            prefix=self.schema_prefix)
+
+    def clients(self):
+        coll = getUtility(IRegistry).collectionOfInterface(IOAuth2Client)
+        # TODO: sort by id or key (coll is a dictionary)?
+        for key, value in coll.items():
+            yield {
+                'id': key,
+                'client': value
+            }
+
+    def _create_new_id(self):
+        new_id = unicode(uuid.uuid4())
+        if not new_id[0].isalpha():
+            new_id = u'{}{}'.format(
+                chr(ord('a') + int(new_id[0])),
+                new_id[1:]
+            )
+        return new_id
+
+    def create_new_item(self):
+        coll = getUtility(IRegistry).collectionOfInterface(IOAuth2Client)
+        new_id = self._create_new_id()
+
+        while new_id in coll:
+            new_id = self._create_new_id()
+
+        new_rec = coll.add(new_id)
+        new_rec.client_id = new_id
+        new_rec.title = u'New Client'
+        return new_id
+
+    def update(self):
+        self.item_action = self.request.get('item_action')
+        if self.item_action not in ('Add', 'Edit', 'Delete'):
+            return
+        if self.item_action == 'Add':
+            self.item_id = self.create_new_item()
+            self.item_action = 'Edit'
+        else:
+            self.item_id = self.request.get('item_id')
+        if not self.item_id:
+            return
+        if self.item_action == 'Delete':
+            coll = getUtility(IRegistry).collectionOfInterface(self.schema)
+            del coll[self.item_id]
+            return
+        self.state = 'item'
+        self.schema_prefix = '{}/{}.'.format(self.schema.__identifier__, self.item_id)
+        super(OAuthClientControlPanelForm, self).update()
+
+    def updateFields(self):
+        super(OAuthClientControlPanelForm, self).updateFields()
+
+
+# Wrap form into a view class
+OAuthClientControlPanelView = layout.wrap_form(OAuthClientControlPanelForm,
+                                               ControlPanelFormWrapper)
+OAuthClientControlPanelView.label = u"OAuth Clients"

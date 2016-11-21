@@ -28,6 +28,13 @@
     />  
 
   <browser:page
+      name="oauth-client-controlpanel"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      permission="cmf.ManagePortal"
+      class=".controlpanel.OAuthClientControlPanelView"
+    />  
+  
+  <browser:page
       for="plone.app.layout.navigation.interfaces.INavigationRoot"
       name="oauth-preferences"
       class=".oauthpanel.OAuthPreferencePanel"

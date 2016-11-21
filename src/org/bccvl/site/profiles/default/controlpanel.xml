@@ -11,7 +11,20 @@
         category="Products"
         condition_expr=""
         url_expr="string:${portal_url}/@@oauth-controlpanel"
-        icon_expr="string:$portal_url/++resource++fingerprint.png"
+        icon_expr="string:${portal_url}/++resource++fingerprint.png"
+        visible="True"
+        i18n:attributes="title">
+      <permission>Manage portal</permission>
+    </configlet>
+
+    <configlet
+        title="BCCVL OAuth Clients"
+        action_id="org.bccvl.oauth.clientsettings"
+        appId="org.bccvl"
+        category="Products"
+        condition_expr=""
+        url_expr="string:${portal_url}/@@oauth-client-controlpanel"
+        icon_expr="string:${portal_url}/++resource++fingerprint.png"
         visible="True"
         i18n:attributes="title">
       <permission>Manage portal</permission>
@@ -23,8 +36,8 @@
         appId="org.bccvl"
         category="Products"
         condition_expr="python:getattr(portal, 'portal_facetconfig', None)"
-        url_expr="string:$portal_url/portal_facetconfig/"
-        icon_expr="string:$portal_url/++resource++fingerprint.png"
+        url_expr="string:${portal_url}/portal_facetconfig/"
+        icon_expr="string:${portal_url}/++resource++fingerprint.png"
         visible="True"
         i18n:attributes="title">
       <permission>Manage portal</permission>
@@ -37,7 +50,7 @@
         category="Products"
         condition_expl=""
         url_expr="string:${portal_url}/@@swift-settings"
-        icon_expr="string:$portal_url/++resource++swift.png"
+        icon_expr="string:${portal_url}/++resource++swift.png"
         visible="True"
         i18n:attributes="title">
       <permission>Manage portal</permission>

@@ -480,7 +480,8 @@ class OAuthProvider(BrowserView):
 
                 registry = getUtility(IRegistry)
                 coll = registry.collectionOfInterface(IOAuth2Client)
-                # FIXME: raises TypeError
+                # FIXME: assumes key in dictionary and client_id are the same
+                #        renders client_id field useless and unchangeable
                 try:
                     self.client = coll[client_id]
                 except:
