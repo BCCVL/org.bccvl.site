@@ -19,14 +19,14 @@ from org.bccvl.site.browser.interfaces import IExperimentTools
 from zope.security import checkPermission
 
 
-def get_title_from_uuid(uuid):
+def get_title_from_uuid(uuid, default=None):
     try:
         obj = uuidToCatalogBrain(uuid)
         if obj:
             return obj.Title
     except Exception as e:
         pass
-    return None
+    return default
 
 
 @implementer(IExperimentTools)
@@ -139,14 +139,14 @@ def sdm_listing_details(expbrain):
         details.update({
             'type': 'SDM',
             'functions': ', '.join(
-                get_title_from_uuid(func) for func in exp.functions
+                get_title_from_uuid(func, u'(Unavailable)') for func in exp.functions
             ),
             'species_occurrence': get_title_from_uuid(
-                exp.species_occurrence_dataset),
+                exp.species_occurrence_dataset, u'(Unavailable)'),
             'species_absence': get_title_from_uuid(
-                exp.species_absence_dataset),
+                exp.species_absence_dataset, u'(Unavailable)'),
             'environmental_layers': ({
-                'title': get_title_from_uuid(dataset),
+                'title': get_title_from_uuid(dataset, u'(Unavailable)'),
                 'layers': sorted(layers)
             } for dataset, layers in exp.environmental_datasets.items()
             ),
@@ -161,16 +161,17 @@ def msdm_listing_details(expbrain):
     exp = expbrain.getObject()
     if exp.environmental_datasets:
         try:
-            species_titles = ', '.join(get_title_from_uuid(ds) for ds in exp.species_occurrence_collections)
+            species_titles = ', '.join(get_title_from_uuid(ds, u'(Unavailable)')
+                                       for ds in exp.species_occurrence_collections)
         except Exception as e:
             species_titles = ''
         details.update({
             'type': 'MSDM',
-            'functions': get_title_from_uuid(exp.function),
+            'functions': get_title_from_uuid(exp.function, u'(Unavailable)'),
             'species_occurrence': species_titles,
             'species_absence': '',
             'environmental_layers': ({
-                'title': get_title_from_uuid(dataset),
+                'title': get_title_from_uuid(dataset, u'(Unavailable)'),
                 'layers': sorted(layers)
             } for dataset, layers in exp.environmental_datasets.items()
             ),
@@ -200,7 +201,7 @@ def projection_listing_details(expbrain):
                 # TODO: job_params has only id of function not uuid ... not sure how to get to the title
                 toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params[
                                      'function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
-                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset)
+                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset, u'(Unavailable)')
         else:
             toolkits = 'missing experiment'
             species_occ = ''
@@ -229,7 +230,7 @@ def biodiverse_listing_details(expbrain):
         # TODO: should inform user about missing dataset
         if dsobj:
             md = IBCCVLMetadata(dsobj)
-            species.add(md.get('species', {}).get('scientificName', ''))
+            species.add(md.get('species', {}).get('scientificName', u'(Unavailable)'))
             year = md.get('year')
             if year:
                 years.add(year)
@@ -270,11 +271,11 @@ def ensemble_listing_details(expbrain):
 def speciestraits_listing_details(expbrain):
     # FIXME: implement this
     exp = expbrain.getObject()
-    species_occ = get_title_from_uuid(exp.species_traits_dataset)
+    species_occ = get_title_from_uuid(exp.species_traits_dataset, u'(Unavailable)')
 
     toolkits_species = exp.algorithms_species or []
     toolkits_diff = exp.algorithms_diff or []
-    toolkits = ', '.join(uuidToCatalogBrain(uuid).Title for uuid in
+    toolkits = ', '.join(get_title_from_uuid(uuid, u'(Unavailable)') for uuid in
                          chain(toolkits_species, toolkits_diff))
 
     envds = exp.environmental_datasets or {}
