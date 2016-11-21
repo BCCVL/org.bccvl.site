@@ -7,5 +7,5 @@
     "attribution": ["Vanderwal, Jeremy. (2012). All future climate layers for Australia - 5km resolution. James Cook University."],
     "categories": ["climate"],
     "BCCDataGenre": ["DataGenreCC", "DataGenreFC"],
-    "_transitions": ["show_internally", "publish_internally"]
+    "_transitions": ["show_internally", "publish_externally"]
 }

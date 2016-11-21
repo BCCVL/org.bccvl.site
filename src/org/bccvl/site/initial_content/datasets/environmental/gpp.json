@@ -5,5 +5,5 @@
     "rights": "CC-BY Attribution 3.0",
     "categories": ["environmental"],
     "BCCDataGenre": ["DataGenreE"],
-    "_transitions": ["show_internally", "publish_internally"]
+    "_transitions": ["show_internally", "publish_externally"]
 }

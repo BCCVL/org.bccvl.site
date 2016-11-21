@@ -7,5 +7,5 @@
     "attribution": ["This raster product is modelled from data originally supplied by the states and territories. The department acknowledges the following departments/organisations: Environment and Planning Directorate, ACT, Office of Environment and Heritage, NSW, Department of Land Resource Management, Northern Territory, Queensland Herbarium, Department of Science, Information Technology and Innovation, Department for Environment, Water and Natural Resources, South Australia, Department of Primary Industries, Parks, Water and Environment, Tasmania, Department of Environment, Land, Water and Planning, Victoria, Department of Agriculture and Food, Western Australia, Geoscience Australia"],
     "categories": ["environmental"],
     "BCCDataGenre": ["DataGenreE"],
-    "_transitions": ["show_internally", "publish_internally"]
+    "_transitions": ["show_internally", "publish_externally"]
 }
