@@ -149,13 +149,21 @@ class DatasetTools(BrowserView):
             return IContentListingObject(brain)
         return None
 
-    def get_viz_class(self, itemobj=None):
+    def get_viz_class(self, itemobj=None, view='result'):
         md = self.bccvlmd(itemobj)
-        return {
+        default = {
             'DataGenreSpeciesOccurrence': 'bccvl-occurrence-viz',
             'DataGenreSpeciesAbsence': 'bccvl-absence-viz',
-            'DataGenreBiodiverseOutput': 'bccvl-biodiverse-viz',
-        }.get(md.get('genre'), 'bccvl-auto-viz')
+        }
+        views = {
+            'result': default,
+            'biodiverse-viz': {
+                'DataGenreSpeciesOccurrence': 'bccvl-occurrence-viz',
+                'DataGenreSpeciesAbsence': 'bccvl-absence-viz',
+                'DataGenreBiodiverseOutput': 'bccvl-biodiverse-viz',
+            }
+        }
+        return views.get(view, default).get(md.get('genre'), 'bccvl-auto-viz')
 
     @property
     def genre_vocab(self):
