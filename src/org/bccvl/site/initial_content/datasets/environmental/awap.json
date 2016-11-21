@@ -11,5 +11,5 @@
     "external_description": "See <a href=\"http://www.csiro.au/awap\">http://www.csiro.au/awap</a> and for full quality and source information see <a href=\"http://www.csiro.au/awap/doc/AWAP_readme_v9.txt\">http://www.csiro.au/awap/doc/AWAP_readme_v9.txt</a>",
     "categories": ["environmental"],
     "BCCDataGenre": ["DataGenreE"],
-    "_transitions": ["show_internally", "publish_internally"]
+    "_transitions": ["show_internally", "publish_externally"]
 }

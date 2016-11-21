@@ -7,5 +7,5 @@
     "attribution": ["Corney, S. P., J. J. Katzfey, J. L. McGregor, M. R. Grose, J. C. Bennett, C. J. White, G. K. Holz, S. Gaynor, and N. L. Bindoff, 2010: Climate Futures for Tasmania: climate modelling. Antarctic Climate and Ecosystems Cooperative Research Centre, Hobart, Tasmania."],
     "categories": ["climate"],
     "BCCDataGenre": ["DataGenreCC", "DataGenreFC"],
-    "_transitions": ["show_internally", "publish_internally"]
+    "_transitions": ["show_internally", "publish_externally"]
 }

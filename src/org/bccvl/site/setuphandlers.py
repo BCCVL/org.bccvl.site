@@ -723,6 +723,7 @@ def upgrade_270_280_1(context, logger=None):
     # update vocabularies
     setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
     setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     # install plone.restapi
     qi = getToolByName(portal, 'portal_quickinstaller')
     installable = [p['id'] for p in qi.listInstallableProducts()]

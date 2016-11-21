@@ -10,5 +10,5 @@
     "external_description": "See <a href=\"http://data.daff.gov.au/data/warehouse/pe_brs90000004193/VASTv2Data_20100320_ap14.pdf\">http://data.daff.gov.au/data/warehouse/pe_brs90000004193/VASTv2Data_20100320_ap14.pdf</a>",
     "categories": ["environmental"],
     "BCCDataGenre": ["DataGenreE"],
-    "_transitions": ["show_internally", "publish_internally"]
+    "_transitions": ["show_internally", "publish_externally"]
 }
