@@ -130,6 +130,8 @@ class OAuthControlPanelForm(RegistryEditForm):
 
     form.extends(RegistryEditForm)
 
+    control_panel_view = "@@oauth-controlpanel"
+
     template = ViewPageTemplateFile('controlpanel.pt')
 
     # no schema needed to drive this form
@@ -187,6 +189,8 @@ OAuthControlPanelView.label = u"OAuth settings"
 class OAuthClientControlPanelForm(RegistryEditForm):
 
     form.extends(RegistryEditForm)
+
+    control_panel_view = "@@oauth-client-controlpanel"
 
     template = ViewPageTemplateFile('clientcontrolpanel.pt')
 
