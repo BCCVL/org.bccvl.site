@@ -1275,8 +1275,8 @@ class ALAJobTracker(MultiJobTracker):
         else:
             if hasattr(self.context, 'import_params'):
                 ala_import_task = build_ala_import_qid_task(
-                        self.context.import_params, self.context,
-                        self.context.REQUEST)
+                    self.context.import_params, self.context,
+                    self.context.REQUEST)
 
                 # TODO: add title, and url for dataset? (like with experiments?)
                 # update provenance
