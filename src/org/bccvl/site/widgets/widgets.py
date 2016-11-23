@@ -434,7 +434,7 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
     Gives user the ability to select an experiment and pick a number of sdm models from within.
     """
 
-    genre = ['DataGenreCP', 'DataGenreFP',
+    genre = ['DataGenreCP', 'DataGenreCP_ENVLOP', 'DataGenreFP',
              'DataGenreENDW_CWE', 'DataGenreENDW_WE',
              'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
              'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',

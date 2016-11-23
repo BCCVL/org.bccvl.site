@@ -84,7 +84,7 @@ def getThresholds(datasets, thresholds=None):
             sdmuuid = dataobj.__parent__.job_params['species_distribution_models']
             # get sdm result container
             sdmresult = uuidToObject(sdmuuid).__parent__
-        elif datamd['genre'] == 'DataGenreCP':
+        elif datamd['genre'] in ['DataGenreCP', 'DataGenreCP_ENVLOP']:
             # we have a current projection ...
             sdmresult = dataobj.__parent__
         else:

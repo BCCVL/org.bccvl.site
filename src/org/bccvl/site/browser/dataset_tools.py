@@ -145,7 +145,7 @@ class DatasetTools(BrowserView):
             resultobj = self.context
         pc = api.portal.get_tool('portal_catalog')
         for brain in pc.searchResults(path={'query': resultobj.getPath(), 'depth': 1},
-                                      BCCDataGenre=('DataGenreCP', 'DataGenceFP', 'DataGenreBiodiverseOutput')):
+                                      BCCDataGenre=('DataGenreCP', 'DataGenreCP_ENVLOP', 'DataGenceFP', 'DataGenreBiodiverseOutput')):
             return IContentListingObject(brain)
         return None
 
@@ -357,7 +357,7 @@ class DatasetTools(BrowserView):
                         continue
                     res_path = model_brain.getPath().rsplit('/', 1)
                     for projection in pc.searchResults(path=res_path,
-                                                       BCCDataGenre='DataGenreCP'):
+                                                       BCCDataGenre=('DataGenreCP', 'DataGenreCP_ENVLOP')):
                         yield projection
 
     def experiment_results(self, context=None):
@@ -366,7 +366,8 @@ class DatasetTools(BrowserView):
         if context is None:
             context = self.context
         pc = getToolByName(self.context, 'portal_catalog')
-        genres = ('DataGenreFP', 'DataGenreCP', 'DataGenreBinaryImage',
+        genres = ('DataGenreFP', 'DataGenreCP', 
+                  'DataGenreCP_ENVLOP', 'DataGenreBinaryImage',
                   'DataGenreENDW_CWE', 'DataGenreENDW_WE',
                   'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
                   'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
