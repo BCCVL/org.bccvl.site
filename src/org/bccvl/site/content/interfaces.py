@@ -305,17 +305,6 @@ class ISpeciesTraitsExperiment(IExperiment):
         required=False
     )
 
-    directives.widget('scale_down',
-                      BoolRadioFieldWidget,
-                      true_label=u"Scale to highest resolution",
-                      false_label=u"Scale to lowest resolution")
-    scale_down = Bool(
-        title=u'Select common resolution',
-        description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
-        default=False,
-        required=True
-    )
-
     directives.widget('environmental_datasets',
                       DatasetDictFieldWidget,
                       multiple='multiple',

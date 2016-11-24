@@ -140,11 +140,11 @@ def sdm_listing_details(expbrain):
             'type': 'SDM',
             'functions': ', '.join(
                 get_title_from_uuid(func, u'(Unavailable)') for func in exp.functions
-            ),
+                if func),
             'species_occurrence': get_title_from_uuid(
-                exp.species_occurrence_dataset, u'(Unavailable)'),
+                exp.species_occurrence_dataset, u'(Unavailable)') if exp.species_occurrence_dataset else '',
             'species_absence': get_title_from_uuid(
-                exp.species_absence_dataset, u'(Unavailable)'),
+                exp.species_absence_dataset, u'(Unavailable)') if exp.species_absence_dataset else '',
             'environmental_layers': ({
                 'title': get_title_from_uuid(dataset, u'(Unavailable)'),
                 'layers': sorted(layers)
@@ -162,12 +162,13 @@ def msdm_listing_details(expbrain):
     if exp.environmental_datasets:
         try:
             species_titles = ', '.join(get_title_from_uuid(ds, u'(Unavailable)')
-                                       for ds in exp.species_occurrence_collections)
+                                       for ds in exp.species_occurrence_collections
+                                       if ds)
         except Exception as e:
             species_titles = ''
         details.update({
             'type': 'MSDM',
-            'functions': get_title_from_uuid(exp.function, u'(Unavailable)'),
+            'functions': get_title_from_uuid(exp.function, u'(Unavailable)') if exp.function else '',
             'species_occurrence': species_titles,
             'species_absence': '',
             'environmental_layers': ({
@@ -201,7 +202,8 @@ def projection_listing_details(expbrain):
                 # TODO: job_params has only id of function not uuid ... not sure how to get to the title
                 toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params[
                                      'function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
-                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset, u'(Unavailable)')
+                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset,
+                                                  u'(Unavailable)') if sdmexp.species_occurrence_dataset else ''
         else:
             toolkits = 'missing experiment'
             species_occ = ''
@@ -271,12 +273,13 @@ def ensemble_listing_details(expbrain):
 def speciestraits_listing_details(expbrain):
     # FIXME: implement this
     exp = expbrain.getObject()
-    species_occ = get_title_from_uuid(exp.species_traits_dataset, u'(Unavailable)')
+    species_occ = get_title_from_uuid(exp.species_traits_dataset,
+                                      u'(Unavailable)') if exp.species_traits_dataset else ''
 
     toolkits_species = exp.algorithms_species or []
     toolkits_diff = exp.algorithms_diff or []
     toolkits = ', '.join(get_title_from_uuid(uuid, u'(Unavailable)') for uuid in
-                         chain(toolkits_species, toolkits_diff))
+                         chain(toolkits_species, toolkits_diff) if uuid)
 
     envds = exp.environmental_datasets or {}
     envlayers = []

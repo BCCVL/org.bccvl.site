@@ -444,7 +444,7 @@ def upgrade_200_210_1(context, logger=None):
 
     LOG.info('Updating layer metadata for projection outputs')
     from org.bccvl.site.interfaces import IBCCVLMetadata
-    for brain in pc.searchResults(BCCDataGenre=('DataGenreCP', 'DataGenreFP', 'DataGenreClampingMask')):
+    for brain in pc.searchResults(BCCDataGenre=('DataGenreCP', 'DataGenreCP_ENVLOP', 'DataGenreFP', 'DataGenreClampingMask')):
         ds = brain.getObject()
         md = IBCCVLMetadata(ds)
         # md['layers'][ds.file.filename] ... there should be only one key
