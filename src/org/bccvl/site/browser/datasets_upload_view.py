@@ -89,7 +89,6 @@ class BCCVLUploadForm(DefaultAddForm):
         #     self.immediate_view = "%s/%s/%s" % (container.absolute_url(), new_object.id, fti.immediate_view,)
         # else:
         #     self.immediate_view = "%s/%s" % (container.absolute_url(), new_object.id)
-        # TODO: upload to swift somehow?
         # start background import process (just a metadata update)
 
         # run transmogrify md extraction here

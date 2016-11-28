@@ -1,5 +1,9 @@
+import copy
 import logging
 import os
+from urlparse import parse_qs
+
+import requests
 
 from AccessControl import Unauthorized
 from Products.CMFCore.interfaces import ISiteRoot
@@ -20,6 +24,7 @@ from org.bccvl.site.api import dataset
 from org.bccvl.site.api.base import BaseService
 from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import IDMService
+from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
 from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
@@ -310,19 +315,42 @@ class DMService(BaseService):
         # TODO: get better name here
         title = params[0].get('name', 'ALA import')
         # determine dataset type
-        portal_type = 'org.bccvl.content.dataset'
-        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
-        if swiftsettings.storage_url:
-            portal_type = 'org.bccvl.content.remotedataset'
+        # 1. test if it is a multi species import
+        species = set()
+        for query in params:
+            biocache_url = '{}/occurrences/search'.format(query['url'])
+            query = {
+                'q': query['query'],
+                'pageSize': 0,
+                'limit': 2,
+                'facets': 'species_guid',
+                'fq': 'species_guid:*'    # skip results without species guid
+            }
+            res = requests.get(biocache_url, params=query)
+            res = res.json()
+            # FIXME: do we need to treat sandbox downloads differently?
+            if res['facetResults']:  # do we have some results at all?
+                for guid in res['facetResults'][0]['fieldResult']:
+                    species.add(guid['label'])
+        if len(species) > 1:
+            portal_type = 'org.bccvl.content.multispeciesdataset'
+
+        else:
+            portal_type = 'org.bccvl.content.dataset'
+            swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+            if swiftsettings.storage_url:
+                portal_type = 'org.bccvl.content.remotedataset'
         # create content
         ds = createContentInContainer(context, portal_type, title=title)
         ds.dataSource = 'ala'
         ds.description = u' '.join([title, u' imported from ALA'])
         ds.import_params = params
         md = IBCCVLMetadata(ds)
-        # TODO: should determine somewhere, whether this is going to be a multi
-        # species dataset
-        md['genre'] = 'DataGenreSpeciesOccurrence'
+        if IMultiSpeciesDataset.providedBy(ds):
+            md['genre'] = 'DataGenreSpeciesCollection'
+        else:
+            # species dataset
+            md['genre'] = 'DataGenreSpeciesOccurrence'
         md['categories'] = ['occurrence']
         # TODO: populate this correctly as well
         md['species'] = [{

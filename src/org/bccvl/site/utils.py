@@ -5,14 +5,17 @@ import pwd
 import socket
 import tempfile
 
+from Acquisition import aq_inner, aq_parent
 from plone import api
 from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
 from zope.component import getUtility
 
-from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
+from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.tasks import datamover
+from org.bccvl.tasks.celery import app
 
 
 LOG = logging.getLogger(__name__)
@@ -194,5 +197,34 @@ def build_ala_import_qid_task(params, dataset, request):
     }
 
     results_dir = get_results_dir(dataset, request)
-    return datamover.pull_qid_occurrences_from_ala.si(params,
+    task = datamover.pull_qid_occurrences_from_ala.si(params,
                                                       results_dir, context)
+    if IMultiSpeciesDataset.providedBy(dataset):
+        dlinfo = IDownloadInfo(dataset)
+        container = aq_parent(aq_inner(dataset))
+        import_task = app.signature(
+            "org.bccvl.tasks.datamover.tasks.import_multi_species_csv",
+            kwargs={
+                'url': dlinfo['url'],
+                'results_dir': get_results_dir(container, request),
+                'import_context': {
+                    'context': '/'.join(container.getPhysicalPath()),
+                    'user': {
+                        'id': member.getUserName(),
+                        'email': member.getProperty('email'),
+                        'fullname': member.getProperty('fullname')
+                    }
+                },
+                'context': {
+                    'context': dataset_path,
+                    'user': {
+                        'id': member.getUserName(),
+                        'email': member.getProperty('email'),
+                        'fullname': member.getProperty('fullname')
+                    }
+                }
+            },
+            immutable=True)
+        task = task | import_task
+
+    return task
