@@ -102,7 +102,7 @@ class DMService(BaseService):
 
     def rat(self):
         uuid = self.request.form.get('uuid')
-        layer = self.requset.form.get('layer')
+        layer = self.request.form.get('layer')
         brain = None
         try:
             brain = uuidToCatalogBrain(uuid)
