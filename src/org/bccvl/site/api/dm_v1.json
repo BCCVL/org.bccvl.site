@@ -85,8 +85,7 @@
                         "title": "Layer identifier to determine specific layer within dataset"
                     }
                 }
-            },
-            "mediaType": "text/xml"            
+            }
         },        
         {
             "title": "update_metadata",
