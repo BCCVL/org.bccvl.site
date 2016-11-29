@@ -67,6 +67,28 @@
             "mediaType": "text/xml"            
         },
         {
+            "title": "rat",
+            "description": "Retrieve RAT for a dataset",
+            "rel": "rat",
+            "href": "{id}/rat",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "title": "Dataset uuid"
+                    },
+                    "layer": {
+                        "type": "string",
+                        "title": "Layer identifier to determine specific layer within dataset"
+                    }
+                }
+            },
+            "mediaType": "text/xml"            
+        },        
+        {
             "title": "update_metadata",
             "description": "Trigger update metadata background job",
             "rel": "update_metadata",
