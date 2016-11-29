@@ -237,6 +237,23 @@
             }
         },
         {
+            "title": "status",
+            "description": "Retrieve status for an experiment",
+            "rel": "status",
+            "href": "{id}/status",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "title": "Experiment uuid"
+                    }
+                }
+            }
+        },
+        {
             "title": "demosdm",
             "description": "Run demosdm",
             "rel": "demosdm",
