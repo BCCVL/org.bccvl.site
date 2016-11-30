@@ -208,7 +208,6 @@ def build_ala_import_qid_task(params, dataset, request):
         }
     }
 
-    import ipdb; ipdb.set_trace()
     results_dir = get_results_dir(dataset, request)
     task = datamover.pull_qid_occurrences_from_ala.si(params,
                                                       results_dir, context)
