@@ -12,7 +12,7 @@ from plone.uuid.interfaces import IUUID
 from zope.component import getUtility
 
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
-from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
+from org.bccvl.site.content.interfaces import IMultiSpeciesDataset, IBlobDataset, IRemoteDataset
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.tasks import datamover
 from org.bccvl.tasks.celery import app
@@ -91,12 +91,23 @@ def get_username():
 
 def get_results_dir(result, request):
     swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
-    if swiftsettings.storage_url:
-        results_dir = 'swift+{storage_url}/{container}/{path}/'.format(
-            storage_url=swiftsettings.storage_url,
-            container=swiftsettings.result_container,
-            path=IUUID(result)
-        )
+
+    # swift only if it is remote dataset. For blob and multi-species dataset, store locally.
+    # For other dataset type, store at swift if possible.
+    do_swift = IRemoteDataset.providedBy(result) or \
+               (not IMultiSpeciesDataset.providedBy(result) and \
+                not IBlobDataset.providedBy(result) and \
+                swiftsettings.storage_url)
+
+    if do_swift:
+        if swiftsettings.storage_url:
+            results_dir = 'swift+{storage_url}/{container}/{path}/'.format(
+                storage_url=swiftsettings.storage_url,
+                container=swiftsettings.result_container,
+                path=IUUID(result)
+            )
+        else:
+            raise Exception("Remote dataset requires swift url to be set")
     else:
         # if swift is not setup we use local storage
         results_dir = 'scp://{uid}@{ip}:{port}{path}/'.format(
@@ -111,6 +122,7 @@ def get_results_dir(result, request):
             port=os.environ.get('SSH_PORT', 22),
             path=tempfile.mkdtemp(prefix='result_import_')
         )
+
     return results_dir
 
 
@@ -196,6 +208,7 @@ def build_ala_import_qid_task(params, dataset, request):
         }
     }
 
+    import ipdb; ipdb.set_trace()
     results_dir = get_results_dir(dataset, request)
     task = datamover.pull_qid_occurrences_from_ala.si(params,
                                                       results_dir, context)
