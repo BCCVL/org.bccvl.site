@@ -272,7 +272,7 @@ class IBiodiverseExperiment(IExperiment):
         description=u'x/y cell size in meter',
         default=5000,
         required=True,
-        values=(5000, 10000, 20000, 50000),
+        values=(1000, 5000, 10000, 20000, 50000),
     )
 
     # ->  interface,  content class? , profile,  add / edit / display / result view
