@@ -1,4 +1,5 @@
 import copy
+import json
 import logging
 import os
 from urlparse import parse_qs
@@ -98,6 +99,35 @@ class DMService(BaseService):
         self.record_error('Not Found', '404', 'dataset not found', {
                           'parameter': 'uuid'})
         raise NotFound(self, 'metadata', self.request)
+
+    def rat(self):
+        uuid = self.request.form.get('uuid')
+        layer = self.request.form.get('layer')
+        brain = None
+        try:
+            brain = uuidToCatalogBrain(uuid)
+        except Exception as e:
+            LOG.error('Caught exception %s', e)
+
+        if not brain:
+            self.record_error('Not Found', 404,
+                              'dataset not found',
+                              {'parameter': 'uuid'})
+            raise NotFound(self, 'metadata', self.request)
+        md = IBCCVLMetadata(brain.getObject())
+        if not layer and layer not in md.get('layers', {}):
+            self.record_error('Bad Request', 400,
+                              'Missing parameter layer',
+                              {'parameter': 'layer'})
+            raise BadRequest('Missing parameter layer')
+        try:
+            rat = md.get('layers', {}).get(layer, {}).get('rat')
+            rat = json.loads(unicode(rat))
+            return rat
+        except Exception as e:
+            LOG.warning(
+                "Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
+        raise NotFound('No RAT found for dataset')
 
     def update_metadata(self):
         uuid = self.request.form.get('uuid', None)
