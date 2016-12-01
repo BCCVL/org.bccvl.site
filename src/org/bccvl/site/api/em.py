@@ -197,7 +197,7 @@ class ExperimentService(BaseService):
                               'Missing parameter future_climate_datasets',
                               {'parameter': 'future_climate_datasets'})
         else:
-            props['future_climate_datasetssets'] = params[
+            props['future_climate_datasetsets'] = params[
                 'future_climate_datasets']
         if params.get('projection_region', ''):
             props['projection_region'] = json.dumps(
