@@ -1,6 +1,7 @@
 
 First import some necessary stuff.
 
+    >>> import requests
     >>> import xmlrpclib
     >>> from pprint import pprint
     >>> from org.bccvl.site import defaults
@@ -19,8 +20,7 @@ Once we have a XMLRPC proxy we can just call the available methods.
 
     >>> abt.absolute_url()
     'http://localhost:.../plone/datasets/species/ABT/occurrence.csv'
-    >>> proxy = xmlrpclib.ServerProxy(abt.absolute_url() + '/dm')
-    >>> res = proxy.getMetadata()
+    >>> res = xmlrpc.loads(requests.get(abt.absolute_url() + '/API/dm/v1/metadata?uuid=' + abtuid))
     >>> pprint(res)
     {'@id': '...',
      '@type': 'org.bccvl.content.dataset',
@@ -46,8 +46,8 @@ located at the site root url + '/dm' appended to it.
 As this dataset manager has no other context than the site object, we
 have to pass in a parameter to tell it in which object we are interested.
 
-    >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
-    >>> res = proxy.getMetadata(abtuid)
+
+    >>> res = xmlrpc.loads(requests.get(portal.absolute_url() + '/API/dm/v1/metadata?uuid=' + abtuid))
     >>> pprint(res)
     {'@id': '...',
      '@type': 'org.bccvl.content.dataset',
@@ -72,8 +72,8 @@ have to pass in a parameter to tell it in which object we are interested.
 Vocabulary endpoint:
 ====================
 
-   >>> proxy = xmlrpclib.ServerProxy(portal.absolute_url() + '/dm')
-   >>> pprint(proxy.getVocabulary('gcm_source'))
+   >>> res = xmlrpc.loads(requests.get(portal.absolute_url() + '/API/dm/v1/vocabulary?name=' + gcm_source))
+   >>> pprint(res)
     [{'title': 'Coupled Global Climate Model (CGCM3)', 'token': 'cccma-cgcm31'},
      {'title': 'MIROC3.2 (hires)', 'token': 'ccsr-miroc32hi'},
      {'title': 'MIROC3.2 (medres)', 'token': 'ccsr-miroc32med'},
@@ -125,7 +125,8 @@ Vocabulary endpoint:
      {'title': "Mean of 5 GCM's: ECHAM5, GFDL-CM2.0, GFDL-CM2.1, MICRO3.2_MEDRES & UKMO-HadCM",
       'token': 'gcm-mean-5'}]
 
-   >>> pprint(proxy.getVocabulary('emsc_source'))
+   >>> res = xmlrpc.loads(requests.get(portal.absolute_url() + '/API/dm/v1/vocabulary?name=' + emsc_source))
+   >>> pprint(res)
     [{'title': 'RCP2.6', 'token': 'RCP3PD'},
      {'title': 'RCP4.5', 'token': 'RCP45'},
      {'title': 'RCP6.0', 'token': 'RCP6'},
@@ -136,7 +137,8 @@ Vocabulary endpoint:
      {'title': 'SRESB1', 'token': 'SRESB1'},
      {'title': 'SRESB2', 'token': 'SRESB2'}]
 
-   >>> pprint(proxy.getVocabulary('layer_source'))
+   >>> res = xmlrpc.loads(requests.get(portal.absolute_url() + '/API/dm/v1/vocabulary?name=' + layer_source))
+   >>> pprint(res)
     [{'legend': 'temperature',
       'title': 'B01 - Annual Mean Temperature',
       'token': 'B01',
