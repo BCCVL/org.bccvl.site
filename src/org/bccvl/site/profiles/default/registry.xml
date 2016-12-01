@@ -53,6 +53,7 @@
       <element key="jm">plone.content.folderView</element>
       <element key="sitemap">plone.content.itemView</element>
       <element key="RSS">plone.content.feed</element>
+      <element key="bccvl-raven.js">plone.resource</element>
     </value>
   </record>
   <!-- plone.app.discussion settings -->
@@ -2963,5 +2964,7 @@
   </record>
 
   <records interface="org.bccvl.site.swift.interfaces.ISwiftSettings" />
+
+  <records interface="org.bccvl.site.browser.interfaces.IRavenConfig" />
   
 </registry>
