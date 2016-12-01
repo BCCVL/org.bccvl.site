@@ -554,9 +554,9 @@ class TestDatasetUpload(unittest.TestCase):
             src, dst = (urlsplit(x['url']) for x in args)
             if src.scheme == 'http' and dst.scheme == 'file':
                 # copy test.csv to dst
-
+                dest_file = os.path.join(dst.path, 'somerandomfilename')
                 shutil.copyfileobj(resource_stream(__name__, 'mock_data/multi_occurrence.csv'),
-                                   open(dst.path, 'w'))
+                                   open(dest_file, 'w'))
             elif src.scheme == 'file' and dst.scheme == 'scp':
                 # copy result back
                 shutil.copyfile(src.path, dst.path)
@@ -630,9 +630,9 @@ class TestDatasetUpload(unittest.TestCase):
             src, dst = (urlsplit(x['url']) for x in args)
             if src.scheme == 'http' and dst.scheme == 'file':
                 # copy test.csv to dst
-
+                dest_file = os.path.join(dst.path, 'somerandomfilename')
                 shutil.copyfileobj(resource_stream(__name__, 'mock_data/multi_occurrence_mac.csv'),
-                                   open(dst.path, 'w'))
+                                   open(dest_file, 'w'))
             elif src.scheme == 'file' and dst.scheme == 'scp':
                 # copy result back
                 shutil.copyfile(src.path, dst.path)
