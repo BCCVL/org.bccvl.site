@@ -22,7 +22,7 @@ class SwiftUtility(object):
 
         if url:
             url = urlsplit(url)
-            if storage_url.netloc != url.netloc:
+            if storage_url.netloc.rsplit(':', 1)[0] != url.netloc.rsplit(':', 1)[0]:
                 # not our swift store
                 return url.geturl()
         elif path:
