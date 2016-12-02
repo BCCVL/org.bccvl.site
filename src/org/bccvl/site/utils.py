@@ -154,8 +154,12 @@ def build_ala_import_task(lsid, dataset, request):
         return datamover.pull_occurrences_from_aekos.si(lsid,
                                                         results_dir, context)
     else:
-        return datamover.pull_occurrences_from_ala.si(lsid,
-                                                      results_dir, context)
+        params = [{
+            'query': 'lsid:{}'.format(lsid),
+            'url': 'http://biocache.ala.org.au/ws'
+        }]
+        return datamover.pull_occurrences_from_ala.si(params,
+                                                      results_dir, context, {})
 
 
 def build_traits_import_task(dataset, request):
@@ -224,7 +228,7 @@ def build_ala_import_qid_task(params, dataset, request):
         }
 
     results_dir = get_results_dir(dataset, request)
-    task = datamover.pull_qid_occurrences_from_ala.si(params,
+    task = datamover.pull_occurrences_from_ala.si(params,
                                                       results_dir, context,
                                                       import_multispecies_params)
     return task
