@@ -3,25 +3,19 @@ import logging
 
 from decorator import decorator
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 from plone import api
 from plone.dexterity.utils import createContentInContainer
 from plone.registry.interfaces import IRegistry
 from zope import contenttype
-from zope.component import getUtility, queryUtility
+from zope.component import getUtility
 from zope.publisher.interfaces import NotFound, BadRequest
-from zope.schema.vocabulary import getVocabularyRegistry
-from zope.schema.interfaces import IContextSourceBinder
 
 from org.bccvl.site import defaults
-from org.bccvl.site.api import dataset
 from org.bccvl.site.browser.ws import IALAService, IGBIFService
-from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo)
-from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.site.utils import decimal_encoder
 

@@ -7,37 +7,6 @@ from Products.ZCatalog.interfaces import ICatalogBrain
 from plone.app.uuid.utils import uuidToObject
 
 
-# TODO: brains=True would be more useful for internal API?
-def query(context=None, brains=False, **kw):
-    """Query catalog for datasets.
-
-    Queries the catalog with context as path (or navigation root if None),
-    and returns a generator with dataset specific metadat about each indexed
-    dataset.
-
-    brains ... if True, this method returns the catalog brains directly.
-               if False additional metadata about each item is generated
-    """
-    if context is None:
-        # FIXME: lookup site root from nothing
-        raise NotImplementedError()
-    # assume we have a context
-    query = kw
-    query.update({
-        'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
-        #'object_provides': IDataset.__identifier__,
-        'path': '/'.join(context.getPhysicalPath()),
-    })
-
-    # TODO: should optimise this. e.g. return generator,
-    pc = getToolByName(context, 'portal_catalog')
-    for brain in pc.searchResults(query):
-        if brains:
-            yield brain
-        else:
-            yield getdsmetadata(brain)
-
-
 def getdsmetadata(ds):
     # TODO: support brain, obj and uuid string (URI as well?)
     # extract info about files
