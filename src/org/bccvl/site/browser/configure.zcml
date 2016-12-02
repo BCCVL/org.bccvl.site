@@ -80,6 +80,13 @@
         permission="zope2.View"
         />
 
+    <browser:page
+        name="bccvl-raven.js"
+        for="*"
+        class=".raven.Raven"
+        permission="zope2.Public"
+        />
+
     <browser:pages
         for="*"
         class=".tinymce.TinyMCECustomBrowserView"

@@ -3,25 +3,19 @@ import logging
 
 from decorator import decorator
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 from plone import api
 from plone.dexterity.utils import createContentInContainer
 from plone.registry.interfaces import IRegistry
 from zope import contenttype
-from zope.component import getUtility, queryUtility
+from zope.component import getUtility
 from zope.publisher.interfaces import NotFound, BadRequest
-from zope.schema.vocabulary import getVocabularyRegistry
-from zope.schema.interfaces import IContextSourceBinder
 
 from org.bccvl.site import defaults
-from org.bccvl.site.api import dataset
 from org.bccvl.site.browser.ws import IALAService, IGBIFService
-from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo)
-from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.site.utils import decimal_encoder
 
@@ -85,163 +79,6 @@ def returnwrapper(f, *args, **kw):
     # FIXME: chaching headers should be more selective
     # prevent caching of ajax results... should be more selective here
     return ret
-
-
-class DataSetManager(BrowserView):
-    # DS Manager API on Site Root
-
-    @returnwrapper
-    # TODO: this method can be removed and use query(UID='') instead
-    def metadata(self, datasetid):
-        query = {'UID': datasetid}
-        ds = dataset.query(self.context, **query)
-        if ds:
-            # we have a generator, let's pick the first result
-            # metadata is extracted by query
-            ds = next(ds, None)
-        if ds is None:
-            raise NotFound(self.context,  datasetid,  self.request)
-        return ds
-
-    # TODO: backwards compatible name
-    @returnwrapper
-    def getMetadata(self, datasetid):
-        return self.metadata(datasetid)
-
-    @returnwrapper
-    def getRAT(self, datasetid, layer=None):
-        query = {'UID': datasetid}
-        dsbrain = dataset.query(self.context, brains=True, **query)
-        if dsbrain:
-            # get first brain from list
-            dsbrain = next(dsbrain, None)
-        if not dsbrain:
-            raise NotFound(self.context, datasetid, self.request)
-        md = IBCCVLMetadata(dsbrain.getObject())
-        rat = md.get('layers', {}).get(layer, {}).get('rat')
-        # if we have a rat, let's try and parse it
-        if rat:
-            try:
-                rat = json.loads(unicode(rat))
-            except Exception as e:
-                LOG.warning(
-                    "Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
-                rat = None
-        return rat
-
-    @returnwrapper
-    def query(self):
-        # TODO: remove some parameters from request?
-        #       e.g only matching with catalog indices
-        #           only certain indices
-        #       remove batching and internal parameters like brains
-        query = self.request.form
-        # TODO: should optimise this. e.g. return generator,
-        objs = []
-        for item in dataset.query(self.context, **query):
-            objs.append(item)
-        return objs
-
-    @returnwrapper
-    # TODO: need a replacement for this. it's a convenience function for UI
-    def queryDataset(self, genre=None, layers=None):
-        params = {'object_provides': IDataset.__identifier__}
-        if genre:
-            if not isinstance(genre, (tuple, list)):
-                genre = (genre, )
-            params['BCCDataGenre'] = {'query': genre,
-                                      'operator': 'or'}
-        if layers:
-            if not isinstance(layers, (tuple, list)):
-                layers = (layers, )
-            params['BCCEnviroLayer'] = {'query': layers,
-                                        'operator': 'and'}
-        result = []
-        for brain in dataset.query(self.context, True, **params):
-            result.append({'uuid': brain.UID,
-                           'title': brain.Title})
-        return result
-
-    # TODO: this is generic api ....
-    @returnwrapper
-    def getVocabulary(self, name):
-        # TODO: check if there are vocabularies that need to be protected
-        vocab = ()
-        try:
-            # TODO: getUtility(IVocabularyFactory???)
-            vr = getVocabularyRegistry()
-            vocab = vr.get(self.context, name)
-        except:
-            # eat all exceptions
-            pass
-        if not vocab:
-            # try IContextSourceBinder
-            vocab = queryUtility(IContextSourceBinder, name=name)
-            if vocab is None:
-                return []
-            vocab = vocab(self.context)
-        result = []
-        for term in vocab:
-            data = {'token': term.token,
-                    'title': term.title}
-            if hasattr(term, 'data'):
-                data.update(term.data)
-            result.append(data)
-        return result
-
-
-class DataSetAPI(BrowserView):
-    # DS Manager API on Dataset
-
-    @returnwrapper
-    def getMetadata(self):
-        return dataset.getdsmetadata(self.context)
-
-    @returnwrapper
-    def share(self):
-        # TODO: status message and redirect are not useful for ajax
-        msg = u"Status changed"
-        msg_type = 'info'
-        try:
-            wtool = getToolByName(self.context, 'portal_workflow')
-            wtool.doActionFor(self.context,  'publish')
-        except WorkflowException as e:
-            msg = u"Status change failed"
-            msg_type = 'error'
-        IStatusMessage(self.request).add(msg, type=msg_type)
-        next = self.request['HTTP_REFERER']
-        if not next or next == self.request['URL']:
-            next = self.context.absolute_url()
-        self.request.response.redirect(next)
-
-    @returnwrapper
-    def unshare(self):
-        # TODO: status message and redirect are not useful for ajax
-        msg = u"Status changed"
-        msg_type = 'info'
-        try:
-            wtool = getToolByName(self.context, 'portal_workflow')
-            wtool.doActionFor(self.context,  'retract')
-        except WorkflowException as e:
-            msg = u"Status change failed"
-            msg_type = 'error'
-        IStatusMessage(self.request).add(msg, type=msg_type)
-        next = self.request['HTTP_REFERER']
-        if not next or next == self.request['URL']:
-            next = self.context.absolute_url()
-        self.request.response.redirect(next)
-
-
-class JobManagerAPI(BrowserView):
-    # job manager on experiment
-
-    @returnwrapper
-    def getJobStatus(self):
-        return IJobTracker(self.context).state
-
-    @returnwrapper
-    def getJobStates(self):
-        return IExperimentJobTracker(self.context).states
 
 
 from ZPublisher.Iterators import IStreamIterator

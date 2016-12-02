@@ -2,6 +2,7 @@
 First import some necessary stuff.
 
     >>> import xmlrpclib
+    >>> import requests
     >>> from pprint import pprint
     >>> from org.bccvl.site import defaults
     >>> from plone.uuid.interfaces import IUUID
@@ -13,14 +14,12 @@ Get our dataset object set up in the test fixture.
     >>> abtuid = IUUID(abt)
 
 
-Now we can call some methods on the dataset object. We can access the
-API at the absolute url of the object + '/dm' appended to it.
-Once we have a XMLRPC proxy we can just call the available methods.
+Now we can call some methods on the dataset object. 
 
     >>> abt.absolute_url()
     'http://localhost:.../plone/datasets/species/ABT/occurrence.csv'
-    >>> proxy = xmlrpclib.ServerProxy(abt.absolute_url() + '/dm')
-    >>> res = proxy.getMetadata()
+    >>> res = requests.get(abt.absolute_url() + '/API/dm/v1/metadata?uuid=' + abtuid)
+    >>> res = xmlrpclib.loads(res.content)[0][0]
     >>> pprint(res)
     {'@id': '...',
      '@type': 'org.bccvl.content.dataset',

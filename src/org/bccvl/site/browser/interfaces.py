@@ -1,4 +1,5 @@
 from zope.interface import Interface
+from zope.schema import URI
 
 
 class IDatasetTools(Interface):
@@ -26,6 +27,7 @@ class IDatasetTools(Interface):
         ("Sharing Options")
         """
 
+
 class IExperimentTools(Interface):
 
     def check_if_used(itemob=None):
@@ -50,3 +52,11 @@ class IExperimentTools(Interface):
         """
         return a dictionary with some details about the experiment
         """
+
+
+class IRavenConfig(Interface):
+
+    public_dsn = URI(
+        title=u"Sentry public DSN for Raven-js",
+        required=False
+    )
