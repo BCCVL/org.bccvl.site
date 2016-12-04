@@ -1,5 +1,10 @@
+import copy
+import json
 import logging
 import os
+from urlparse import parse_qs
+
+import requests
 
 from AccessControl import Unauthorized
 from Products.CMFCore.interfaces import ISiteRoot
@@ -20,6 +25,7 @@ from org.bccvl.site.api import dataset
 from org.bccvl.site.api.base import BaseService
 from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import IDMService
+from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
 from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
@@ -93,6 +99,35 @@ class DMService(BaseService):
         self.record_error('Not Found', '404', 'dataset not found', {
                           'parameter': 'uuid'})
         raise NotFound(self, 'metadata', self.request)
+
+    def rat(self):
+        uuid = self.request.form.get('uuid')
+        layer = self.request.form.get('layer')
+        brain = None
+        try:
+            brain = uuidToCatalogBrain(uuid)
+        except Exception as e:
+            LOG.error('Caught exception %s', e)
+
+        if not brain:
+            self.record_error('Not Found', 404,
+                              'dataset not found',
+                              {'parameter': 'uuid'})
+            raise NotFound(self, 'metadata', self.request)
+        md = IBCCVLMetadata(brain.getObject())
+        if not layer and layer not in md.get('layers', {}):
+            self.record_error('Bad Request', 400,
+                              'Missing parameter layer',
+                              {'parameter': 'layer'})
+            raise BadRequest('Missing parameter layer')
+        try:
+            rat = md.get('layers', {}).get(layer, {}).get('rat')
+            rat = json.loads(unicode(rat))
+            return rat
+        except Exception as e:
+            LOG.warning(
+                "Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
+        raise NotFound('No RAT found for dataset')
 
     def update_metadata(self):
         uuid = self.request.form.get('uuid', None)
@@ -310,19 +345,42 @@ class DMService(BaseService):
         # TODO: get better name here
         title = params[0].get('name', 'ALA import')
         # determine dataset type
-        portal_type = 'org.bccvl.content.dataset'
-        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
-        if swiftsettings.storage_url:
-            portal_type = 'org.bccvl.content.remotedataset'
+        # 1. test if it is a multi species import
+        species = set()
+        for query in params:
+            biocache_url = '{}/occurrences/search'.format(query['url'])
+            query = {
+                'q': query['query'],
+                'pageSize': 0,
+                'limit': 2,
+                'facets': 'species_guid',
+                'fq': 'species_guid:*'    # skip results without species guid
+            }
+            res = requests.get(biocache_url, params=query)
+            res = res.json()
+            # FIXME: do we need to treat sandbox downloads differently?
+            if res['facetResults']:  # do we have some results at all?
+                for guid in res['facetResults'][0]['fieldResult']:
+                    species.add(guid['label'])
+        if len(species) > 1:
+            portal_type = 'org.bccvl.content.multispeciesdataset'
+
+        else:
+            portal_type = 'org.bccvl.content.dataset'
+            swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+            if swiftsettings.storage_url:
+                portal_type = 'org.bccvl.content.remotedataset'
         # create content
         ds = createContentInContainer(context, portal_type, title=title)
         ds.dataSource = 'ala'
         ds.description = u' '.join([title, u' imported from ALA'])
         ds.import_params = params
         md = IBCCVLMetadata(ds)
-        # TODO: should determine somewhere, whether this is going to be a multi
-        # species dataset
-        md['genre'] = 'DataGenreSpeciesOccurrence'
+        if IMultiSpeciesDataset.providedBy(ds):
+            md['genre'] = 'DataGenreSpeciesCollection'
+        else:
+            # species dataset
+            md['genre'] = 'DataGenreSpeciesOccurrence'
         md['categories'] = ['occurrence']
         # TODO: populate this correctly as well
         md['species'] = [{

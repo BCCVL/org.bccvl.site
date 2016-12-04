@@ -5,14 +5,17 @@ import pwd
 import socket
 import tempfile
 
+from Acquisition import aq_inner, aq_parent
 from plone import api
 from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
 from zope.component import getUtility
 
-from org.bccvl.site.interfaces import IBCCVLMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
+from org.bccvl.site.content.interfaces import IMultiSpeciesDataset, IBlobDataset, IRemoteDataset
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.tasks import datamover
+from org.bccvl.tasks.celery import app
 
 
 LOG = logging.getLogger(__name__)
@@ -88,12 +91,23 @@ def get_username():
 
 def get_results_dir(result, request):
     swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
-    if swiftsettings.storage_url:
-        results_dir = 'swift+{storage_url}/{container}/{path}/'.format(
-            storage_url=swiftsettings.storage_url,
-            container=swiftsettings.result_container,
-            path=IUUID(result)
-        )
+
+    # swift only if it is remote dataset. For blob and multi-species dataset, store locally.
+    # For other dataset type, store at swift if possible.
+    do_swift = IRemoteDataset.providedBy(result) or \
+               (not IMultiSpeciesDataset.providedBy(result) and \
+                not IBlobDataset.providedBy(result) and \
+                swiftsettings.storage_url)
+
+    if do_swift:
+        if swiftsettings.storage_url:
+            results_dir = 'swift+{storage_url}/{container}/{path}/'.format(
+                storage_url=swiftsettings.storage_url,
+                container=swiftsettings.result_container,
+                path=IUUID(result)
+            )
+        else:
+            raise Exception("Remote dataset requires swift url to be set")
     else:
         # if swift is not setup we use local storage
         results_dir = 'scp://{uid}@{ip}:{port}{path}/'.format(
@@ -108,6 +122,7 @@ def get_results_dir(result, request):
             port=os.environ.get('SSH_PORT', 22),
             path=tempfile.mkdtemp(prefix='result_import_')
         )
+
     return results_dir
 
 
@@ -139,8 +154,12 @@ def build_ala_import_task(lsid, dataset, request):
         return datamover.pull_occurrences_from_aekos.si(lsid,
                                                         results_dir, context)
     else:
-        return datamover.pull_occurrences_from_ala.si(lsid,
-                                                      results_dir, context)
+        params = [{
+            'query': 'lsid:{}'.format(lsid),
+            'url': 'http://biocache.ala.org.au/ws'
+        }]
+        return datamover.pull_occurrences_from_ala.si(params,
+                                                      results_dir, context, {})
 
 
 def build_traits_import_task(dataset, request):
@@ -193,6 +212,23 @@ def build_ala_import_qid_task(params, dataset, request):
         }
     }
 
+    import_multispecies_params = {}
+    if IMultiSpeciesDataset.providedBy(dataset):
+        container = aq_parent(aq_inner(dataset))
+        import_multispecies_params = {
+            'results_dir': get_results_dir(container, request),
+            'import_context': {
+                'context': '/'.join(container.getPhysicalPath()),
+                'user': {
+                    'id': member.getUserName(),
+                    'email': member.getProperty('email'),
+                    'fullname': member.getProperty('fullname')
+                }
+            }    
+        }
+
     results_dir = get_results_dir(dataset, request)
-    return datamover.pull_qid_occurrences_from_ala.si(params,
-                                                      results_dir, context)
+    task = datamover.pull_occurrences_from_ala.si(params,
+                                                      results_dir, context,
+                                                      import_multispecies_params)
+    return task

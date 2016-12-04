@@ -5,9 +5,10 @@ import urllib
 from pkg_resources import resource_string
 
 from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFCore.utils import getToolByName
 
 from plone import api as ploneapi
-from plone.app.uuid.utils import uuidToObject
+from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.registry.interfaces import IRegistry
 from plone.supermodel import loadString
 from plone.uuid.interfaces import IUUID
@@ -196,7 +197,7 @@ class ExperimentService(BaseService):
                               'Missing parameter future_climate_datasets',
                               {'parameter': 'future_climate_datasets'})
         else:
-            props['future_climate_datasetssets'] = params[
+            props['future_climate_datasets'] = params[
                 'future_climate_datasets']
         if params.get('projection_region', ''):
             props['projection_region'] = json.dumps(
@@ -415,6 +416,22 @@ class ExperimentService(BaseService):
                 'url': result.absolute_url()
             })
         return retval
+
+    def status(self):
+        # redundant? ... see metadata
+        uuid = self.request.form.get('uuid')
+        exp = uuidToCatalogBrain(uuid)
+        if not exp:
+            self.record_error('Not Found', 404,
+                              'Experiment not found',
+                              {'parameter': 'uuid'})
+            raise NotFound(self, 'status', self.request)
+
+        jt = IExperimentJobTracker(exp.getObject())
+        return {
+            'status': jt.state,
+            'results': jt.states
+        }
 
     def demosdm(self):
         lsid = self.request.form.get('lsid')

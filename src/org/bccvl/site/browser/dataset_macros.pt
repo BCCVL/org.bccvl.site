@@ -90,24 +90,6 @@
       <td tal:condition="show_about">
         <span tal:replace="item/job_state"></span>
       </td>
-      <!-- Actions -->
-      <!-- TODO: expects simple publication workflow
-           publish/retract -->
-      <!-- TODO: change this to some sort of popup to let user change review_state
-           and show review_state here ... would need permissions again to check if link is available to user :(
-           TODO: check review_state and permission ... need permission here
-           TODO: indexing won't work as this is per user
-      -->
-      <td tal:define="action item_obj/dataset_tools/get_transition"
-          tal:condition="show_about">
-        <a href="#"
-           tal:attributes="href string:${item_url}/dm/share"
-           tal:condition="python: 'publish' in action">Share</a>
-        <a href="#"
-           tal:attributes="href string:${item_url}/dm/unshare"
-           tal:condition="python: 'retract' in action">Un-share</a>
-        <i tal:content="item/review_state"></i>
-      </td>
       <!-- Download -->
       <td>
         <a href="#"
