@@ -1,5 +1,5 @@
 from zope.interface import Interface
-from zope.schema import ASCIILine, TextLine, URI, Bool, List, Choice
+from zope.schema import ASCIILine, TextLine, Text, URI, Bool, List, Choice
 
 
 class IOAuth1Settings(Interface):
@@ -146,6 +146,11 @@ class IOAuth2Client(Interface):
         title=u"title",
     )
 
-    description = TextLine(
+    description = Text(
         title=u"description",
+    )
+
+    logo_url = TextLine(
+        title=u"logo url",
+        required=False
     )

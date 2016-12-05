@@ -5,6 +5,7 @@ from eea.facetednavigation.layout.interfaces import IFacetedLayout
 from plone import api
 from plone.uuid.interfaces import IUUID
 from plone.app.uuid.utils import uuidToObject
+from plone.registry.interfaces import IRegistry
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getUtility, getMultiAdapter
 from org.bccvl.site import defaults
@@ -279,7 +280,6 @@ def upgrade_190_200_1(context, logger=None):
 
     # migrate OAuth configuration registry to use new interfaces
     from zope.schema import getFieldNames
-    from plone.registry.interfaces import IRegistry
     from .oauth.interfaces import IOAuth1Settings
     from .oauth.figshare import IFigshare
     registry = getUtility(IRegistry)
@@ -321,7 +321,6 @@ def upgrade_200_210_1(context, logger=None):
     portal = api.portal.get()
 
     # Do some registry cleanup:
-    from plone.registry.interfaces import IRegistry
     registry = getUtility(IRegistry)
     for key in list(registry.records.keys()):
         if (key.startswith('plone.app.folderui')
@@ -723,7 +722,14 @@ def upgrade_270_280_1(context, logger=None):
     # update vocabularies
     setup.runImportStepFromProfile(PROFILE_ID, 'rolemap')
     setup.runImportStepFromProfile(PROFILE_ID, 'controlpanel')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    # search for all IOAuth2Client settings in the registry and make sure all fields are defined
+    registry = getUtility(IRegistry)
+    from org.bccvl.site.oauth.interfaces import IOAuth2Client
+    coll = registry.collectionOfInterface(IOAuth2Client, check=False)
+    # update all items with new interface
+    coll.update(coll)
     # install plone.restapi
     qi = getToolByName(portal, 'portal_quickinstaller')
     installable = [p['id'] for p in qi.listInstallableProducts()]

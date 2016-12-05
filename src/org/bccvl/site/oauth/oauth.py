@@ -479,7 +479,7 @@ class OAuthProvider(BrowserView):
                 action = self.request.form.get('action')
 
                 registry = getUtility(IRegistry)
-                coll = registry.collectionOfInterface(IOAuth2Client)
+                coll = registry.collectionOfInterface(IOAuth2Client, check=False)
                 # FIXME: assumes key in dictionary and client_id are the same
                 #        renders client_id field useless and unchangeable
                 try:
