@@ -455,9 +455,9 @@ class DMService(BaseService):
             try:
                 from org.bccvl.tasks.celery import app
                 settings = app.conf.get('bccvl', {})
-                movelib.move(build_source(dlinfo['url'], user['id'], settings),
-                             build_destination('file://{}'.format(destdir)))
                 dest = os.path.join(destdir, os.path.basename(dlinfo['url']))
+                movelib.move(build_source(dlinfo['url'], user['id'], settings),
+                             build_destination('file://{}'.format(dest)))
 
                 csvfile = None
 
