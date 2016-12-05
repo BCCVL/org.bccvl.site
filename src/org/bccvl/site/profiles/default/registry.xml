@@ -54,6 +54,8 @@
       <element key="sitemap">plone.content.itemView</element>
       <element key="RSS">plone.content.feed</element>
       <element key="bccvl-raven.js">plone.resource</element>
+      <element key="modal_remove">plone.content.itemView</element>
+      <element key="modal_sharing">plone.content.itemView</element>            
     </value>
   </record>
   <!-- plone.app.discussion settings -->
