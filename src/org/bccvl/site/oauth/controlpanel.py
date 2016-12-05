@@ -207,6 +207,12 @@ class OAuthClientControlPanelForm(RegistryEditForm):
     def __init__(self, context, request):
         super(OAuthClientControlPanelForm, self).__init__(context, request)
 
+    def updateWidgets(self, prefix=None):
+        super(OAuthClientControlPanelForm, self).updateWidgets(prefix)
+        descr = self.widgets['description']
+        descr.rows = 10
+        #descr.style = u'width:80%;'
+
     def getContent(self):
         return getUtility(IRegistry).forInterface(
             self.schema,
@@ -214,7 +220,7 @@ class OAuthClientControlPanelForm(RegistryEditForm):
             prefix=self.schema_prefix)
 
     def clients(self):
-        coll = getUtility(IRegistry).collectionOfInterface(IOAuth2Client)
+        coll = getUtility(IRegistry).collectionOfInterface(IOAuth2Client, check=False)
         # TODO: sort by id or key (coll is a dictionary)?
         for key, value in coll.items():
             yield {
@@ -255,7 +261,7 @@ class OAuthClientControlPanelForm(RegistryEditForm):
         if not self.item_id:
             return
         if self.item_action == 'Delete':
-            coll = getUtility(IRegistry).collectionOfInterface(self.schema)
+            coll = getUtility(IRegistry).collectionOfInterface(self.schema, check=False)
             del coll[self.item_id]
             return
         self.state = 'item'
