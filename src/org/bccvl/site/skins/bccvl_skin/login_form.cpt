@@ -85,7 +85,7 @@
        Site login
     </dt>-->
     <div id="fieldset-aaf-login"
-      tal:define="came_from python:came_from and came_from.replace('http://', 'http://', 1) if came_from.startswith('http://') else came_from;
+      tal:define="came_from python:came_from and came_from.replace('http://', 'http://', 1) if (came_from and came_from.startswith('http://')) else came_from;
                   std modules/Products.PythonScripts.standard;
                   url_quote nocall:std/url_quote;
                   login_url python:ssl_host_url + '/Shibboleth.sso/Login?target=' + url_quote('%s/logged_in' % context.portal_url());

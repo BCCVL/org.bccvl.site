@@ -176,9 +176,9 @@ class OAuth2View(OAuthBaseView):
     @check_authenticated
     def accesstoken(self):
         # FIXME: this is a quick workaround, user parameter should not be here
-        if checkPermission('cmf.ManagePortal', self.context):
-            # we are admin ... check if user is set
-            username = self.request.form.get('user')
+        username = self.request.form.get('user')
+        if checkPermission('cmf.ManagePortal', self.context) and username:
+            # we are admin and username is set, so let's fetch token for user
             member = api.user.get(username=username)
             access_token = IUserAnnotation(member).get(
                 '{0}_oauth_token'.format(self.config.id), "")
@@ -332,9 +332,9 @@ class OAuth1View(OAuthBaseView):
     def accesstoken(self):
         # FIXME: this is a quick workaround, user parameter should not be here
         # allow for user parameter in case we are admin
-        if checkPermission('cmf.ManagePortal', self.context):
-            # we are admin ... check if user is set
-            username = self.request.form.get('user')
+        username = self.request.form.get('user')
+        if checkPermission('cmf.ManagePortal', self.context) and username:
+            # we are admin and username is set, so let's fetch token for user
             member = api.user.get(username=username)
             access_token = IUserAnnotation(member).get(
                 '{0}_oauth_token'.format(self.config.id), "")
