@@ -18,7 +18,9 @@ from ..content.interfaces import (
     IRemoteDataset,
 )
 
+
 class StatisticsView(BrowserView):
+
     def __call__(self):
         self.func_obj_cache = {}
         _search = getToolByName(self.context, 'portal_catalog').unrestrictedSearchResults
@@ -59,14 +61,13 @@ class StatisticsView(BrowserView):
         )
 
         EXP_TYPES = ['org.bccvl.content.sdmexperiment',
-                 'org.bccvl.content.projectionexperiment',
-                 'org.bccvl.content.biodiverseexperiment',
-                 'org.bccvl.content.ensemble',
-                 'org.bccvl.content.speciestraitsexperiment'
-        ]
+                     'org.bccvl.content.projectionexperiment',
+                     'org.bccvl.content.biodiverseexperiment',
+                     'org.bccvl.content.ensemble',
+                     'org.bccvl.content.speciestraitsexperiment'
+                     ]
         self._jobtool = getUtility(IJobUtility)
         self._jobs = self._jobtool.query(type=EXP_TYPES)
- 
 
         self._users = api.user.get_users()
         emails = (u.getProperty('email') for u in self._users)
@@ -92,7 +93,7 @@ class StatisticsView(BrowserView):
         )
 
     def institutions(self):
-        by_institution = itemgetter(0) # sort by key
+        by_institution = itemgetter(0)  # sort by key
         return sorted(self._institutions.iteritems(), key=by_institution)
 
     def institutions_total(self):
@@ -114,7 +115,7 @@ class StatisticsView(BrowserView):
         datasets = (x._unrestrictedGetObject() for x in self._datasets_added)
         owners = (x.getOwner() for x in datasets)
         return len(
-            [ x for x in owners if x.getUserName() not in ('admin', 'bccvl',) ]
+            [x for x in owners if x.getUserName() not in ('admin', 'bccvl',)]
         )
 
     def datasets_added_failed(self):
@@ -153,11 +154,11 @@ class StatisticsView(BrowserView):
                 runtime[x.portal_type]['success'] += 1
             else:
                 runtime[x.portal_type]['failed'] += 1
-                
+
         for i in runtime.keys():
             if runtime[i]['count']:
                 runtime[i]['runtime'] /= runtime[i]['count']
-                runtime[i]['runtime'] = "%.1f" %(runtime[i]['runtime'])
+                runtime[i]['runtime'] = "%.1f" % (runtime[i]['runtime'])
             else:
                 runtime[i]['runtime'] = "n/a"
         return runtime
@@ -180,7 +181,8 @@ class StatisticsView(BrowserView):
                 continue
 
             if not stats.has_key(algid):
-                stats[algid] = {'runtime' : 0.0, 'count' : 0, 'mean' : 0.0, 'success' : 0, 'failed' : 0, 'nodata_count' : 0, 'nodata_success' : 0, 'nodata_failed' : 0}
+                stats[algid] = {'runtime': 0.0, 'count': 0, 'mean': 0.0, 'success': 0,
+                                'failed': 0, 'nodata_count': 0, 'nodata_success': 0, 'nodata_failed': 0}
 
             runtime = -1.0
             if hasattr(job, 'rusage') and job.rusage is not None:
@@ -200,9 +202,9 @@ class StatisticsView(BrowserView):
                     stats[algid]['nodata_failed'] += 1
 
         for i in stats.keys():
-            stats[i]['mean'] = "%.1f" %(stats[i]['runtime']/stats[i]['count'])
+            stats[i]['mean'] = "%.1f" % (stats[i]['runtime'] / stats[i]['count'])
             stats[i]['count'] += stats[i]['nodata_count']
-            stats[i]['success'] += stats[i]['nodata_success'] 
+            stats[i]['success'] += stats[i]['nodata_success']
             stats[i]['failed'] += stats[i]['nodata_failed']
         return stats
 
@@ -218,12 +220,16 @@ class StatisticsView(BrowserView):
         # FIXME: this counts experiment objects... the number of result objects per algorithm
         #        may be different (esp. if experiment has been saved but not started or has
         #        been re-run multiple times)
-        algorithm_types = Counter(self.get_func_obj(x).getId for x in func_ids())
+        # FIXME: we ignore removed func objects here... they should probably still show up somehow?
+        func_obs = (self.get_func_obj(x) for x in func_ids())
+        algorithm_types = Counter(func_ob.getId for func_ob in func_obs if func_ob)
         return algorithm_types.most_common()
 
     def get_func_obj(self, uuid=None, funcid=None):
         if (funcid is None or funcid in self.func_obj_cache) and uuid is not None:
             brain = uuidToCatalogBrain(uuid)
+            if brain is None:
+                return None
             self.func_obj_cache[brain.getId] = brain
             return self.func_obj_cache[brain.getId]
         return self.func_obj_cache[funcid]
