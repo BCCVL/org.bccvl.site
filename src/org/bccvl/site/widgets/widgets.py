@@ -215,7 +215,7 @@ class DatasetDictWidget(HTMLFormElement, Widget):
         for layer in sorted(md.get('layers', ())):
             subitem = {
                 'id': layer,
-                'title': layer_vocab.getTerm(layer).title,
+                'title': layer_vocab.getTerm(layer).title if layer in layer_vocab else layer,
                 'selected': not selectedsubitems or layer in selectedsubitems,
             }
             yield subitem
