@@ -410,6 +410,7 @@ genre_vocabulary = SimpleVocabulary([
     SimpleTerm("DataGenreEnsembleResult",
                "DataGenreEnsembleResult", "Ensembling output"),
     SimpleTerm("JobScript", "JobScript", "Job script"),
+    SimpleTerm("InputParams", "InputParams", "Input parameters"),
 ])
 
 
