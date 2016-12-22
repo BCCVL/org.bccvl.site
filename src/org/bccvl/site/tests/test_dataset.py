@@ -151,7 +151,7 @@ class TestDatasetTools(unittest.TestCase):
     def test_genre_vocab(self):
         view = self.getview()
         data = view.genre_vocab
-        self.assertEqual(len(data), 32)
+        self.assertEqual(len(data), 33)
         item = next(iter(data))
         self.assertEqual(item.title, 'Species Occurrence')
         self.assertEqual(item.value, 'DataGenreSpeciesOccurrence')
