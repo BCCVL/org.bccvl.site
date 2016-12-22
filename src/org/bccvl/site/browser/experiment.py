@@ -579,6 +579,8 @@ class ProjectionAdd(Add):
             IVocabularyFactory, 'resolution_source')(self.context)
         resolution_idx = -1
         for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+            # FIXME: vocabulary lookup may fail if there is no resolution or
+            # resolution is undefined (LookupError in getTerm)
             idx = res_vocab._terms.index(
                 res_vocab.getTerm(dsbrain.BCCResolution))
             if idx > resolution_idx:
