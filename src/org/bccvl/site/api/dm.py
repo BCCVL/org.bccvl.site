@@ -127,7 +127,7 @@ class DMService(BaseService):
         except Exception as e:
             LOG.warning(
                 "Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
-        raise NotFound('No RAT found for dataset')
+        raise NotFound(self, 'rat', self.request)
 
     def update_metadata(self):
         uuid = self.request.form.get('uuid', None)
