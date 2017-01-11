@@ -378,10 +378,11 @@ class DMService(BaseService):
         md = IBCCVLMetadata(ds)
         if IMultiSpeciesDataset.providedBy(ds):
             md['genre'] = 'DataGenreSpeciesCollection'
+            md['categories'] = ['multispecies']
         else:
             # species dataset
             md['genre'] = 'DataGenreSpeciesOccurrence'
-        md['categories'] = ['occurrence']
+            md['categories'] = ['occurrence']
         # TODO: populate this correctly as well
         md['species'] = [{
             'scientificName': 'qid',
