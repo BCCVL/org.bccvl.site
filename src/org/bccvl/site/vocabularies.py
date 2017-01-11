@@ -437,6 +437,7 @@ def job_state_source(context):
 scientific_category_vocabulary = TreeVocabulary(OrderedDict([
     (SimpleTerm('biological', 'biological', u'Biological'), OrderedDict([
         (SimpleTerm('occurrence', 'occurrence', u'Occurrence'), {}),
+        (SimpleTerm('multispecies', 'multispecies', u'Multispecies'), {}),
         (SimpleTerm('absence', 'absence', u'Absence'), {}),
         (SimpleTerm('abundance', 'abundance', u'Abundance'), {}),
         (SimpleTerm('traits', 'traits', u'Traits'), {}),

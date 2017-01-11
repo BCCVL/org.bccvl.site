@@ -352,7 +352,7 @@ class MultiSpeciesOccurrenceAddForm(BCCVLUploadForm):
     fields = Fields(IMultiSpeciesDataset, IDublinCore, ISpeciesCollection).select(
         'file', 'title', 'description', 'rights')
     datagenre = 'DataGenreSpeciesCollection'
-    categories = ['occurrence']
+    categories = ['multispecies']
     subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
 
 
