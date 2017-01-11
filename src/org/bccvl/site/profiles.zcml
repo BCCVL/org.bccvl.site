@@ -187,5 +187,18 @@
         />
 
   </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="280"
+      destination="290"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 290"
+        description="Assign new category to Multispecies dataset"
+        handler=".setuphandlers.upgrade_280_290_1"
+        />
+
+  </genericsetup:upgradeSteps>
     
 </configure>

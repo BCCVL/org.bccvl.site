@@ -736,3 +736,20 @@ def upgrade_270_280_1(context, logger=None):
     for product in ['plone.restapi']:
         if product in installable:
             qi.installProduct(product)
+
+def upgrade_280_290_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
+    pc = getToolByName(context, 'portal_catalog')
+    # update category of multispecies dataset to 'multispecies'
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    for brain in pc(BCCDataGenre='DataGenreSpeciesCollection'):
+        obj = brain.getObject()
+        md = IBCCVLMetadata(obj)
+        md['categories'] = ['multispecies']
+        obj.reindexObject()
