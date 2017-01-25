@@ -102,6 +102,7 @@ class ExperimentsListingView(FolderView):
     def new_experiment_actions(self):
         experimenttypes = ('org.bccvl.content.sdmexperiment',
                            'org.bccvl.content.msdmexperiment',
+                           'org.bccvl.content.mmexperiment',
                            'org.bccvl.content.projectionexperiment',
                            'org.bccvl.content.ensemble',
                            'org.bccvl.content.biodiverseexperiment',

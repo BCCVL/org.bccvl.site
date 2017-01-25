@@ -531,6 +531,73 @@ class MSDMAdd(ParamGroupMixin, Add):
                 if idx > resolution_idx:
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
+            
+
+class MMEAdd(ParamGroupMixin, Add):
+    """
+    Add Migratory Modelling Experiment
+    """
+
+    portal_type = "org.bccvl.content.mmexperiment"
+
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'sdm_functions_source'
+    func_select_field = 'functions'
+
+    def is_toolkit_selected(self, tid, data):
+        return tid in data
+
+    def create(self, data):
+        # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
+        # we'll have to override it to find a place to apply our algo_group
+        # data'
+        newob = super(MSDMAdd, self).create(data)
+        # apply values to algo dict manually to make sure we don't write data
+        # on read
+        new_params = {}
+        for group in self.param_groups[self.func_select_field]:
+            if group.toolkit == data['function']:
+                group.applyChanges(data)
+                new_params[group.toolkit] = group.getContent()
+        newob.parameters = new_params
+        IBCCVLMetadata(newob)['resolution'] = data['resolution']
+        return newob
+
+    def validateAction(self, data):
+        # ActionExecutionError ... form wide error
+        # WidgetActionExecutionError ... widget specific
+        # TODO: validate all sort of extra info- new object does not exist yet
+        # data contains already field values
+        datasets = data.get('environmental_datasets', {}).keys()
+        if not datasets:
+            # FIXME: Make this a widget error, currently shown as form wide
+            # error
+            raise ActionExecutionError(
+                Invalid('No environmental dataset selected.'))
+
+        # Determine highest resolution
+        # FIXME: this is slow and needs improvements
+        #        and accessing _terms is not ideal
+        res_vocab = getUtility(
+            IVocabularyFactory, 'resolution_source')(self.context)
+        if data.get('scale_down', False):
+            # ... find highest resolution
+            resolution_idx = 99  # Arbitrary choice of upper index limit
+            for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+                idx = res_vocab._terms.index(
+                    res_vocab.getTerm(dsbrain.BCCResolution))
+                if idx < resolution_idx:
+                    resolution_idx = idx
+            data['resolution'] = res_vocab._terms[resolution_idx].value
+        else:
+            # ... find lowest resolution
+            resolution_idx = -1
+            for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+                idx = res_vocab._terms.index(
+                    res_vocab.getTerm(dsbrain.BCCResolution))
+                if idx > resolution_idx:
+                    resolution_idx = idx
+            data['resolution'] = res_vocab._terms[resolution_idx].value
 
 
 class ProjectionAdd(Add):

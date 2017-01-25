@@ -92,6 +92,13 @@
         class=".experiment.MSDMAdd"
         permission="org.bccvl.AddExperiment"
     />
+    
+    <browser:page
+        name="newMigratoryModelling"
+        for="Products.CMFCore.interfaces.IFolderish"
+        class=".experiment.MMEAdd"
+        permission="org.bccvl.AddExperiment"
+    />
 
     <browser:page
         name="newProjection"

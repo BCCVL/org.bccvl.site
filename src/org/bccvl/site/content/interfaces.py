@@ -206,6 +206,63 @@ class IMSDMExperiment(IExperiment):
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
     )
+    
+class IMMExperiment(IExperiment):
+
+    directives.widget('function', FunctionsRadioFieldWidget)
+    function = Choice(
+        title=u'Algorithm',
+        vocabulary='sdm_functions_source',
+        default=None,
+        required=True,
+    )
+
+    directives.widget('species_occurrence_collections',
+                      DatasetDictFieldWidget,
+                      multiple='multiple',
+                      genre=['DataGenreSpeciesCollection'],
+                      errmsg=u"Please select at least 1 occurrence dataset.",
+                      vizclass=u'bccvl-occurrence-viz')
+    species_occurrence_collections = Dict(
+        title=u'Species Occurrence Collections',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        default=None,
+        required=True,
+        min_length=1,
+        max_length=5,
+    )
+
+    directives.widget('scale_down',
+                      BoolRadioFieldWidget,
+                      true_label=u"Scale to highest resolution",
+                      false_label=u"Scale to lowest resolution")
+    scale_down = Bool(
+        title=u'Select common resolution',
+        description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
+        default=False,
+        required=True
+    )
+
+    directives.widget('environmental_datasets',
+                      DatasetDictFieldWidget,
+                      multiple='multiple',
+                      genre=['DataGenreCC', 'DataGenreE'],
+                      filters=['text', 'source', 'layer', 'resolution'],
+                      errmsg=u"Please select at least 1 layer.")
+    environmental_datasets = Dict(
+        title=u'Climate & Environmental Datasets',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        required=True,
+    )
+
+    directives.mode(modelling_region=HIDDEN_MODE)
+    modelling_region = Text(
+        title=u"Modelling Region",
+        description=u"GEOJson describing the geographic region which is used to generate the model.",
+        required=False,
+    )
 
 
 class IProjectionExperiment(IExperiment):
