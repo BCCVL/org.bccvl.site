@@ -23,6 +23,7 @@ from decimal import Decimal
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.component import getUtility
+from z3c.form.interfaces import IDataConverter
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -74,7 +75,7 @@ class ParamGroupMixin(object):
     param_groups = None
 
     def addToolkitFields(self):
-        # FIXME: This relies on the order the vicabularies are returned, which
+        # FIXME: This relies on the order the vocabularies are returned, which
         # shall be fixed.
         vocab = getUtility(
             IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
@@ -133,9 +134,27 @@ class ParamGroupMixin(object):
     def updateWidgets(self):
         super(ParamGroupMixin, self).updateWidgets()
         # update groups here
+        uuid = self.request.get('uuid')
+        expobj = None
+        if uuid:
+            expobj = uuidToObject(uuid)
         for group in self.param_groups[self.func_select_field]:
             try:
                 group.update()
+
+                # copy algorithm group parameters from the specified SDM experiment if any
+                if not expobj or group.toolkit not in expobj.parameters:
+                    continue
+
+                # There are 3 groups of algorithm parameters: invisible, pseudo absence, and others.
+                # Copy parameters from the pseudo absence, and others only.
+                exp_params = expobj.parameters.get(group.toolkit, {})
+                for param_group in group.groups:
+                    for name in tuple(param_group.widgets):
+                        pname = name.split(group.toolkit+'.')[1]
+                        if pname in exp_params:
+                            conv = getMultiAdapter((param_group.fields[name].field, param_group.widgets[name]), IDataConverter)
+                            param_group.widgets[name].value = conv.toWidgetValue(exp_params.get(pname))
             except Exception as e:
                 LOG.info("Group %s failed: %s", group.__name__, e)
         # should group generation happen here in updateFields or in update?
@@ -398,6 +417,21 @@ class Add(add.DefaultAddForm):
         IStatusMessage(self.request).addStatusMessage(_(u"Item created"),
                                                       "info")
 
+    def updateWidgets(self):
+        super(Add, self).updateWidgets()
+        #self.updateWidgets()
+
+        # Pre-fill widget fields with field values from the specified SDM.
+        uuid = self.request.get('uuid')
+        if uuid:
+            expobj = uuidToObject(uuid)
+            self.widgets["IDublinCore.title"].value = expobj.title
+            self.widgets["IDublinCore.description"].value = expobj.description
+            for name in self.widgets.keys():
+                if name not in ["IDublinCore.title", "IDublinCore.description"]:
+                    conv = getMultiAdapter((self.fields[name].field, self.widgets[name]), IDataConverter)
+                    self.widgets[name].value = conv.toWidgetValue(getattr(expobj, name))
+
 
 class SDMAdd(ParamGroupMixin, Add):
     """
@@ -464,7 +498,6 @@ class SDMAdd(ParamGroupMixin, Add):
                 if idx > resolution_idx:
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
-
 
 class MSDMAdd(ParamGroupMixin, Add):
     """
