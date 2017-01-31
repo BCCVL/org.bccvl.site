@@ -256,10 +256,33 @@ class MultiParamGroupMixin(object):
 
     def updateWidgets(self):
         super(MultiParamGroupMixin, self).updateWidgets()
+
+        # Copy parameters from an experiment selected if any
+        uuid = self.request.get('uuid')
+        expobj = None
+        if uuid:
+            expobj = uuidToObject(uuid)
+
         # update groups here
         for group in (g for groups in self.param_groups.values() for g in groups):
             try:
                 group.update()
+
+                # copy algorithm group parameters from the specified SDM experiment if any
+                if not expobj or group.toolkit not in expobj.parameters:
+                    continue
+
+                # There are 3 groups of algorithm parameters: invisible, pseudo absence, and others.
+                # Copy parameters from the pseudo absence, and others only.
+                exp_params = expobj.parameters.get(group.toolkit, {})
+                for param_group in group.groups:
+                    for name in tuple(param_group.widgets):
+                        pname = name.split(group.toolkit+'.')[1]
+                        if pname in exp_params:
+                            conv = getMultiAdapter((param_group.fields[name].field, param_group.widgets[name]), IDataConverter)
+                            param_group.widgets[name].value = conv.toWidgetValue(exp_params.get(pname))
+
+
             except Exception as e:
                 LOG.info("Group %s failed: %s", group.__name__, e)
         # should group generation happen here in updateFields or in update?
@@ -419,7 +442,6 @@ class Add(add.DefaultAddForm):
 
     def updateWidgets(self):
         super(Add, self).updateWidgets()
-        #self.updateWidgets()
 
         # Pre-fill widget fields with field values from the specified SDM.
         uuid = self.request.get('uuid')
