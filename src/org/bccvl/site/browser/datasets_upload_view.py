@@ -41,7 +41,7 @@ LOG = logging.getLogger(__name__)
 
 
 # TODO: provenance field:
-#       -> created by experiment, imorted from ALA, uploaded by user,
+#       -> created by experiment, imported from ALA, uploaded by user,
 #          provided by system
 
 class BCCVLUploadForm(DefaultAddForm):
