@@ -187,10 +187,17 @@ def projection_listing_details(expbrain):
     # TODO: whata about future datasets?
     details = {}
     exp = expbrain.getObject()
+    inputexps = set()
+    futureenvs = set()
+    for env_uuid in exp.future_climate_datasets:
+        ds = uuidToObject(env_uuid)
+        futureenvs.add(ds.title)
+
     for sdmuuid in exp.species_distribution_models:
         sdmexp = uuidToObject(sdmuuid)
         if sdmexp is not None:
             # TODO: absence data
+            inputexps.add(sdmexp.title)
             envlayers = []
             for envuuid, layers in sorted(sdmexp.environmental_datasets.items()):
                 envbrain = uuidToCatalogBrain(envuuid)
@@ -214,7 +221,9 @@ def projection_listing_details(expbrain):
             'functions': toolkits,
             'species_occurrence': species_occ,
             'species_absence': '',
-            'environmental_layers': envlayers
+            'environmental_layers': envlayers,
+            'input_experiments': inputexps,
+            'future_env_datasets': futureenvs
         })
     return details
 
@@ -227,24 +236,28 @@ def biodiverse_listing_details(expbrain):
     months = set()
     emscs = set()
     gcms = set()
-    for dsuuid in chain.from_iterable(map(lambda x: x.keys(), exp.projection.itervalues())):
-        dsobj = uuidToObject(dsuuid)
-        # TODO: should inform user about missing dataset
-        if dsobj:
-            md = IBCCVLMetadata(dsobj)
-            species.add(md.get('species', {}).get('scientificName', u'(Unavailable)'))
-            year = md.get('year')
-            if year:
-                years.add(year)
-            month = md.get('month')
-            if month:
-                months.add(month)
-            gcm = md.get('gcm')
-            if gcm:
-                gcms.add(gcm)
-            emsc = md.get('emsc')
-            if emsc:
-                emscs.add(emsc)
+    projds = set()
+    for p, val in exp.projection.iteritems():
+        for dsuuid in val:
+            dsobj = uuidToObject(dsuuid)
+            # TODO: should inform user about missing dataset
+            if dsobj:
+                projstr = "%s %s %.3f" %(dsobj.title, val[dsuuid].get('label'), val[dsuuid].get('value'))
+                projds.add(projstr)
+                md = IBCCVLMetadata(dsobj)
+                species.add(md.get('species', {}).get('scientificName', u'(Unavailable)'))
+                year = md.get('year')
+                if year:
+                    years.add(year)
+                month = md.get('month')
+                if month:
+                    months.add(month)
+                gcm = md.get('gcm')
+                if gcm:
+                    gcms.add(gcm)
+                emsc = md.get('emsc')
+                if emsc:
+                    emscs.add(emsc)
     details.update({
         'type': 'BIODIVERSE',
         'functions': 'endemism, redundancy',
@@ -252,7 +265,8 @@ def biodiverse_listing_details(expbrain):
         'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
                                            ', '.join(sorted(gcms))),
         'years': ', '.join(sorted(years)),
-        'months': ', '.join(sorted(months))
+        'months': ', '.join(sorted(months)),
+        'input_experiments': projds
     })
     return details
 
@@ -260,12 +274,20 @@ def biodiverse_listing_details(expbrain):
 def ensemble_listing_details(expbrain):
     # FIXME: implement this
     details = {}
+    exp = expbrain.getObject()
+    inputexps = set()
+    for sdmuuid in exp.datasets:
+        sdmexp = uuidToObject(sdmuuid)
+        if sdmexp is not None:
+            inputexps.add(sdmexp.title)
+
     details.update({
         'type': 'ENSEMBLE',
         'functions': '',
         'species_occurrence': '',
         'species_absence': '',
         'environmental_layers': '',
+        'input_experiments': inputexps
     })
     return details
 
