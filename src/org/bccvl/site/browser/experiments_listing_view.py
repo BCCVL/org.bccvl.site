@@ -190,14 +190,13 @@ def projection_listing_details(expbrain):
     inputexps = set()
     futureenvs = set()
     for env_uuid in exp.future_climate_datasets:
-        ds = uuidToObject(env_uuid)
-        futureenvs.add(ds.title)
+        futureenvs.add(get_title_from_uuid(env_uuid, u'(Unavailable)'))
 
     for sdmuuid in exp.species_distribution_models:
+        inputexps.add(get_title_from_uuid(sdmuuid, u'(Unavailable)'))
         sdmexp = uuidToObject(sdmuuid)
         if sdmexp is not None:
             # TODO: absence data
-            inputexps.add(sdmexp.title)
             envlayers = []
             for envuuid, layers in sorted(sdmexp.environmental_datasets.items()):
                 envbrain = uuidToCatalogBrain(envuuid)
@@ -238,9 +237,7 @@ def biodiverse_listing_details(expbrain):
     gcms = set()
     inputexps = set()
     for expuuid, val in exp.projection.iteritems():
-        expobj = uuidToObject(expuuid)
-        if expobj is not None:
-            inputexps.add(expobj.title)
+        inputexps.add(get_title_from_uuid(expuuid, u'(Unavailable)'))
         for dsuuid in val:
             dsobj = uuidToObject(dsuuid)
             # TODO: should inform user about missing dataset
@@ -277,10 +274,8 @@ def ensemble_listing_details(expbrain):
     details = {}
     exp = expbrain.getObject()
     inputexps = set()
-    for sdmuuid in exp.datasets:
-        sdmexp = uuidToObject(sdmuuid)
-        if sdmexp is not None:
-            inputexps.add(sdmexp.title)
+    for  sdmuuid in exp.datasets:
+        inputexps.add(get_title_from_uuid(sdmuuid, u'(Unavailable)'))
 
     details.update({
         'type': 'ENSEMBLE',
