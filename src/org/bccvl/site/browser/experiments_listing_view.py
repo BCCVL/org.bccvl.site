@@ -236,14 +236,15 @@ def biodiverse_listing_details(expbrain):
     months = set()
     emscs = set()
     gcms = set()
-    projds = set()
-    for p, val in exp.projection.iteritems():
+    inputexps = set()
+    for expuuid, val in exp.projection.iteritems():
+        expobj = uuidToObject(expuuid)
+        if expobj is not None:
+            inputexps.add(expobj.title)
         for dsuuid in val:
             dsobj = uuidToObject(dsuuid)
             # TODO: should inform user about missing dataset
             if dsobj:
-                projstr = "%s %s %.3f" %(dsobj.title, val[dsuuid].get('label'), val[dsuuid].get('value'))
-                projds.add(projstr)
                 md = IBCCVLMetadata(dsobj)
                 species.add(md.get('species', {}).get('scientificName', u'(Unavailable)'))
                 year = md.get('year')
@@ -266,7 +267,7 @@ def biodiverse_listing_details(expbrain):
                                            ', '.join(sorted(gcms))),
         'years': ', '.join(sorted(years)),
         'months': ', '.join(sorted(months)),
-        'input_experiments': projds
+        'input_experiments': inputexps
     })
     return details
 
