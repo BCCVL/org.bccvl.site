@@ -535,7 +535,10 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
 
                 # now search all datasets within and add infos
                 pc = getToolByName(self.context, 'portal_catalog')
-                brains = pc.searchResults(path=expbrain.getPath(),
+                results = pc.searchResults(path=expbrain.getPath(),
+                                           portal_type='Folder',
+                                           job_state='COMPLETED')
+                brains = pc.searchResults(path=[r.getPath() for r in results],
                                           BCCDataGenre=self.genre)
                 # TODO: maybe as generator?
                 item['subitems'] = []
