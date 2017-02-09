@@ -3,7 +3,7 @@ from zope.interface import implementer
 # BBB: backwards compatible import
 from .interfaces import (
     ISDMExperiment, IMSDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
-    IEnsembleExperiment, ISpeciesTraitsExperiment)
+    IEnsembleExperiment, ISpeciesTraitsExperiment, IMigratoryExperiment)
 
 
 @implementer(ISDMExperiment)
@@ -14,6 +14,12 @@ class SDMExperiment(Container):
 
 @implementer(IMSDMExperiment)
 class MSDMExperiment(Container):
+
+    pass
+
+
+@implementer(IMigratoryExperiment)
+class MigratoryExperiment(Container):
 
     pass
 

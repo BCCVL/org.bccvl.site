@@ -178,6 +178,8 @@ experiment_type_vocabulary = SimpleVocabulary([
                "org.bccvl.content.speciestraitsexperiment", u"Species Trait Modelling Experiment"),
     SimpleTerm("org.bccvl.content.ensemble",
                "org.bccvl.content.ensemble", u"Ensemble Analysis"),
+    SimpleTerm("org.bccvl.content.migratoryexperiment", "org.bccvl.content.migratoryexperiment",
+               u"Migratory Modelling Experiment"),
     SimpleTerm(None, "None", u"Unknown")
 ])
 

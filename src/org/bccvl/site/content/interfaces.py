@@ -207,6 +207,80 @@ class IMSDMExperiment(IExperiment):
         required=False,
     )
 
+class IMigratoryExperiment(IExperiment):
+
+    directives.widget('function', FunctionsRadioFieldWidget)
+    function = Choice(
+        title=u'Algorithm',
+        vocabulary='sdm_functions_source',
+        default=None,
+        required=True,
+    )
+
+    directives.widget('species_occurrence_dataset',
+                      DatasetFieldWidget,
+                      genre=['DataGenreSpeciesOccurrence'],
+                      errmsg=u"Please select at least 1 occurrence dataset.",
+                      vizclass=u'bccvl-occurrence-viz')
+    species_occurrence_dataset = TextLine(
+        title=u'Species Occurrence Datasets',
+        default=None,
+        required=True,
+    )
+
+    directives.widget('scale_down',
+                      BoolRadioFieldWidget,
+                      true_label=u"Scale to highest resolution",
+                      false_label=u"Scale to lowest resolution")
+    scale_down = Bool(
+        title=u'Select common resolution',
+        description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
+        default=False,
+        required=True
+    )
+
+    # Widgets for the month selection
+    directives.widget('species_occurrence_subsets',
+                      DatasetDictFieldWidget,
+                      multiple='multiple',
+                      genre=['DataGenreSpeciesOccurrence'],
+                      filters=['text', 'layer'],
+                      errmsg=u"Please select at least 1 layer.")
+    species_occurrence_subsets = List(
+        title=u'Species Occurrence subsets',
+        value_type=Dict(
+            key_type=TextLine(),
+            value_type=Dict()
+        ),
+        required=True,      
+    )
+
+    environmental_datasets = Dict(
+        title=u'Species occurrence subsets',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        required=True,
+    )
+
+    directives.widget('environmental_datasets',
+                      DatasetDictFieldWidget,
+                      multiple='multiple',
+                      genre=['DataGenreCC', 'DataGenreE'],
+                      filters=['text', 'source', 'layer', 'resolution'],
+                      errmsg=u"Please select at least 1 layer.")
+    environmental_datasets = Dict(
+        title=u'Climate & Environmental Datasets',
+        key_type=TextLine(),
+        value_type=Set(value_type=TextLine()),
+        required=True,
+    )
+
+    directives.mode(modelling_region=HIDDEN_MODE)
+    modelling_region = Text(
+        title=u"Modelling Region",
+        description=u"GEOJson describing the geographic region which is used to generate the model.",
+        required=False,
+    )
 
 class IProjectionExperiment(IExperiment):
 
