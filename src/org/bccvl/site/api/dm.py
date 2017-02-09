@@ -228,7 +228,7 @@ class DMService(BaseService):
             raise Unauthorized("User not allowed in this context")
         # check parameters
         if not source or source not in ('aekos'):
-            raise BadRequest("source parameter bust be 'aekos'")
+            raise BadRequest("source parameter must be 'aekos'")
         if not species or not isinstance(species, (basestring, list)):
             raise BadRequest("Missing or invalid species parameter")
         elif isinstance(species, basestring):
