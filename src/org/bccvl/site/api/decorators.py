@@ -224,7 +224,7 @@ def api_method(f):
 
         else:
             # this really should not happen and is a programming error
-            raise Exception('Server Error ... unkown return media type')
+            raise Exception('Server Error ... unknown return media type')
         view.request.response['CONTENT-TYPE'] = ctype
         # FIXME: caching headers should be more selective
         # prevent caching of ajax results... should be more selective here

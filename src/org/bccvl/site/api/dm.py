@@ -234,7 +234,7 @@ class DMService(BaseService):
         elif isinstance(species, basestring):
             species = [species]
         if not traits and not environ:
-            raise BadRequest("At least on of traits or environ has to be set")
+            raise BadRequest("At least one of traits or environ has to be set")
         if not traits:
             traits = []
         elif isinstance(traits, basestring):
@@ -494,3 +494,101 @@ class DMService(BaseService):
         except Exception as e:
             self.record_error(str(e), 500)
             raise
+
+    def import_zoatrack_data(self):
+        if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
+            self.record_error('Request must be POST', 400)
+            raise BadRequest('Request must be POST')
+
+        context = None
+        # get import context
+        if ISiteRoot.providedBy(self.context):
+            # we have been called at site root... let's traverse to default
+            # import location
+            context = self.context.restrictedTraverse(
+                "/".join((defaults.DATASETS_FOLDER_ID,
+                          defaults.DATASETS_SPECIES_FOLDER_ID,
+                          'zoatrack')))
+        else:
+            # custom context.... let's use in
+            context = self.context
+        # do user check first
+        member = ploneapi.user.get_current()
+        if member.getId():
+            user = {
+                'id': member.getUserName(),
+                'email': member.getProperty('email'),
+                'fullname': member.getProperty('fullname')
+            }
+        else:
+            # We need at least a valid user
+            raise Unauthorized("Invalid user")
+        # check permission
+        if not checkPermission('org.bccvl.AddDataset', context):
+            raise Unauthorized("User not allowed in this context")
+
+        # Expect data field with a dataset urls
+        url = self.request.form.get('url', None)
+        source = self.request.form.get('source', None)
+        species = self.request.form.get('species', None)
+
+
+        # check parameters
+        if not url:
+            raise BadRequest("At least one dataset URL has to be set")
+        if not source or source not in ('zoatrack'):
+            raise BadRequest("source parameter must be 'zoatrack'")
+        if not species or not isinstance(species, (basestring, list)):
+            raise BadRequest("Missing or invalid species parameter")
+        elif isinstance(species, basestring):
+            species = [species]
+
+        # TODO: should validate objects inside as well? (or use json schema
+        # validation?)
+
+        # i.e. get name of species
+        title = ' '.join(species)
+        portal_type = 'org.bccvl.content.dataset'
+        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+        if swiftsettings.storage_url:
+            portal_type = 'org.bccvl.content.remotedataset'
+
+        # create content
+        ds = createContentInContainer(context, portal_type, title=title)
+        ds.dataSource = source
+        ds.description = u' '.join([title, u' imported from ZoaTrack'])
+
+
+        md = IBCCVLMetadata(ds)
+        md['genre'] = 'DataGenreTraits'
+        md['categories'] = ['traits']
+        md['species'] = [{
+            'scientificName': spec,
+            'taxonID': spec} for spec in species]
+
+        # FIXME: IStatusMessage should not be in API call
+        from Products.statusmessages.interfaces import IStatusMessage
+        IStatusMessage(self.request).add('New Dataset created',
+                                         type='info')
+
+        # start import job
+        jt = IExperimentJobTracker(ds)
+        status, message = jt.start_job()
+        # reindex ojebct to make sure everything is up to date
+        ds.reindexObject()
+        # FIXME: IStatutsMessage should not be in API call
+        IStatusMessage(self.request).add(message, type=status)
+
+        # FIXME: API should not return a redirect
+        #        201: new resource created ... location may point to resource
+        from Products.CMFCore.utils import getToolByName
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        nexturl = portal[defaults.DATASETS_FOLDER_ID].absolute_url()
+        self.request.response.setStatus(201)
+        self.request.response.setHeader('Location', nexturl)
+        # FIXME: should return a nice json representation of success or error
+        return {
+            'status': status,
+            'message': message,
+            'jobid': IJobTracker(ds).get_job().id
+        }

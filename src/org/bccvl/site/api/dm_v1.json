@@ -197,7 +197,32 @@
                     }
                 }
             }
-        }
+        },
+        {
+            "title": "import_zoatrack_data",
+            "description": "Trigger import of zoatrack data from external data repository",
+            "rel": "import_zoatrack_data",
+            "href": "{id}/import_zoatrack_data",
+            "method": "POST",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "source": {
+                        "type": "string",
+                        "title": "data source"
+                    },
+                    "species": {
+                        "type": "string",
+                        "title": "Source species identifiers"
+                    },
+                    "url": {
+                        "type": "name",
+                        "title": "dataset URL"
+                    }
+                }
+            }
+        }        
     ]
 }
     
