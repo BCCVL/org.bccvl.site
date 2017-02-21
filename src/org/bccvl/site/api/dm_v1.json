@@ -138,6 +138,10 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "url": {
+                        "type": "string",
+                        "title": "data url"
                     }
                 }
             }

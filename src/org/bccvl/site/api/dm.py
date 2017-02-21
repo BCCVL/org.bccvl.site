@@ -196,11 +196,20 @@ class DMService(BaseService):
         raise NotFound(self, 'update_metadata', self.request)
 
     def import_trait_data(self):
+        if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
+            self.record_error('Request must be POST', 400)
+            raise BadRequest('Request must be POST')        
+
         source = self.request.form.get('source', None)
         species = self.request.form.get('species', None)
         traits = self.request.form.get('traits', None)
         environ = self.request.form.get('environ', None)
+        dataurl = self.request.form.get('url', None)
         context = None
+
+        if not source or source not in ('aekos', 'zoatrack'):
+            raise BadRequest("source parameter must be 'aekos' or 'zoatrack'")
+
         # get import context
         if ISiteRoot.providedBy(self.context):
             # we have been called at site root... let's traverse to default
@@ -208,7 +217,7 @@ class DMService(BaseService):
             context = self.context.restrictedTraverse(
                 "/".join((defaults.DATASETS_FOLDER_ID,
                           defaults.DATASETS_SPECIES_FOLDER_ID,
-                          'aekos')))
+                          source)))
         else:
             # custom context.... let's use in
             context = self.context
@@ -226,15 +235,19 @@ class DMService(BaseService):
         # check permission
         if not checkPermission('org.bccvl.AddDataset', context):
             raise Unauthorized("User not allowed in this context")
+
         # check parameters
-        if not source or source not in ('aekos'):
-            raise BadRequest("source parameter must be 'aekos'")
         if not species or not isinstance(species, (basestring, list)):
             raise BadRequest("Missing or invalid species parameter")
         elif isinstance(species, basestring):
             species = [species]
-        if not traits and not environ:
-            raise BadRequest("At least on of traits or environ has to be set")
+
+        # for zoatrack, url needs to be set
+        if source == 'zoatrack' and not dataurl:
+            raise BadRequest("url has to be set")
+        # for aekos, at least a trait or environment variable must be specified.
+        if source == 'aekos' and not traits and not environ:
+            raise BadRequest("At least a trait or environent variable has to be set")
         if not traits:
             traits = []
         elif isinstance(traits, basestring):
@@ -266,6 +279,7 @@ class DMService(BaseService):
             'taxonID': spec} for spec in species]
         md['traits'] = traits
         md['environ'] = environ
+        md['dataurl'] = dataurl
         # FIXME: IStatusMessage should not be in API call
         from Products.statusmessages.interfaces import IStatusMessage
         IStatusMessage(self.request).add('New Dataset created',
