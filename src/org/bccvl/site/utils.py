@@ -190,6 +190,13 @@ def build_traits_import_task(dataset, request):
             envvars=md['environ'],
             dest_url=results_dir,
             context=context)
+    elif dataset.dataSource == 'zoatrack':
+        md = IBCCVLMetadata(dataset)
+        return datamover.pull_traits_from_zoatrack.si(
+            species=[sp['scientificName'] for sp in md['species']],
+            src_url=md['dataurl'],
+            dest_url=results_dir,
+            context=context)
 
 
 def build_ala_import_qid_task(params, dataset, request):
