@@ -1,0 +1,11 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "Species trait data from ZoaTrack",
+    "description": "ZoaTrack provides an online repository for ecological data with tracking information collected in Australia.",
+    "attribution": [
+        "Refer to <a href=\"https://zoatrack.org/toolkit/datamgt\">https://zoatrack.org/toolkit/datamgt</a> for licensing and attribution.</p>"
+    ],
+    "external_description": "See <a href=\"https://zoatrack.org\">https://zoatrack.org</a>",
+    "categories": ["biological"],
+    "_transitions": ["show_internally", "publish_internally"]
+}

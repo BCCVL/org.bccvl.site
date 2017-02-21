@@ -217,7 +217,7 @@ class DMService(BaseService):
             context = self.context.restrictedTraverse(
                 "/".join((defaults.DATASETS_FOLDER_ID,
                           defaults.DATASETS_SPECIES_FOLDER_ID,
-                          source)))
+                          str(source))))
         else:
             # custom context.... let's use in
             context = self.context
