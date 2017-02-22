@@ -753,3 +753,20 @@ def upgrade_280_290_1(context, logger=None):
         md = IBCCVLMetadata(obj)
         md['categories'] = ['multispecies']
         obj.reindexObject()
+
+def upgrade_290_300_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
+    pc = getToolByName(context, 'portal_catalog')
+    # Add parent dataset to the derived datasets of multispecies
+    for brain in pc(BCCDataGenre='DataGenreSpeciesCollection'):
+        obj = brain.getObject()
+        for part_uuid in obj.parts:
+            part_obj = uuidToObject(part_uuid)
+            part_obj.part_of = IUUID(obj)
+            part_obj.reindexObject()
