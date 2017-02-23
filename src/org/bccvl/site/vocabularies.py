@@ -439,7 +439,6 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
         (SimpleTerm('occurrence', 'occurrence', u'Occurrence'), {}),
         (SimpleTerm('multispecies', 'multispecies', u'Multispecies'), {}),
         (SimpleTerm('absence', 'absence', u'Absence'), {}),
-        (SimpleTerm('abundance', 'abundance', u'Abundance'), {}),
         (SimpleTerm('traits', 'traits', u'Traits'), {}),
     ])),
     (SimpleTerm('climate', 'climate', u'Climate'), OrderedDict([
