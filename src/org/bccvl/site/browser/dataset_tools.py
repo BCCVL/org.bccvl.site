@@ -419,7 +419,7 @@ class DatasetTools(BrowserView):
         md = IBCCVLMetadata(context)
         if 'layers' in md:
             layers = []
-            for layer in md.get('layers', ()):
+            for layer in sorted(md.get('layers', ())):
                 try:
                     layers.append(self.layer_vocab.getTerm(layer))
                 except:

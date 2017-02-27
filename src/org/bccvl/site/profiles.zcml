@@ -200,5 +200,18 @@
         />
 
   </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="290"
+      destination="300"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 300"
+        description="Assign parent dataset to species dataset"
+        handler=".setuphandlers.upgrade_290_300_1"
+        />
+
+  </genericsetup:upgradeSteps>
     
 </configure>
