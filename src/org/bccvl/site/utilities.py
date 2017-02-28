@@ -543,7 +543,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'function': algorithm,
             'projection_region': self.context.projection_region,
             # TO DO: This shall be input from user??
-            'generate_convexhull': True,
+            'generate_convexhull': False,
         }
         return result
 
