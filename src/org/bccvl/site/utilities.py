@@ -17,7 +17,7 @@ from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
-    IEnsembleExperiment, ISpeciesTraitsExperiment, IMSDMExperiment)
+    IEnsembleExperiment, ISpeciesTraitsExperiment, IMSDMExperiment, IMMExperiment)
 from org.bccvl.site.interfaces import (
     IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker)
 from org.bccvl.site.job.interfaces import IJobTracker
@@ -481,6 +481,190 @@ class MSDMJobTracker(MultiJobTracker):
                         'function': func.getId(),
                         'species_occurrence_dataset': occur_ds,
                         'environmental_datasets': self.context.environmental_datasets,
+                        'scale_down': self.context.scale_down,
+                        'modelling_region': self.context.modelling_region,
+                        # TO DO: This shall be input from user??
+                        'generate_convexhull': True,
+                    }
+
+                    # add toolkit params:
+                    result.job_params.update(
+                        self.context.parameters[IUUID(func)])
+                    self._createProvenance(result)
+                    # submit job
+                    LOG.info("Submit JOB %s to queue", func.getId())
+                    method(result, func)
+                    resultjt = IJobTracker(result)
+                    job = resultjt.new_job('TODO: generate id',
+                                           'generate taskname: sdm_experiment')
+                    job.type = self.context.portal_type
+                    job.function = func.getId()
+                    job.toolkit = IUUID(func)
+                    # reindex job object here ... next call should do that
+                    resultjt.set_progress('PENDING',
+                                          u'{} pending'.format(func.getId()))
+            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+        else:
+            return 'error', u'Current Job is still running'
+
+
+# TODO: should this be named adapter as well in case there are multiple
+#       different jobs for experiments
+@adapter(IMMExperiment)
+class MMJobTracker(MultiJobTracker):
+
+    def _create_result_container(self, title):
+        result = createContentInContainer(
+            self.context, 'Folder', title=title)
+        return result
+
+    def _createProvenance(self, result):
+        provdata = IProvenanceData(result)
+        from rdflib import URIRef, Literal, Namespace, Graph
+        from rdflib.namespace import RDF, RDFS, FOAF, DCTERMS, XSD
+        from rdflib.resource import Resource
+        PROV = Namespace(u"http://www.w3.org/ns/prov#")
+        BCCVL = Namespace(u"http://ns.bccvl.org.au/")
+        LOCAL = Namespace(u"urn:bccvl:")
+        graph = Graph()
+        # the user is our agent
+
+        member = api.user.get_current()
+        username = member.getProperty('fullname') or member.getId()
+        user = Resource(graph, LOCAL['user'])
+        user.add(RDF['type'], PROV['Agent'])
+        user.add(RDF['type'], FOAF['Person'])
+        user.add(FOAF['name'], Literal(username))
+        user.add(FOAF['mbox'],
+                 URIRef('mailto:{}'.format(member.getProperty('email'))))
+        # add software as agent
+        software = Resource(graph, LOCAL['software'])
+        software.add(RDF['type'], PROV['Agent'])
+        software.add(RDF['type'], PROV['SoftwareAgent'])
+        software.add(FOAF['name'], Literal('BCCVL Job Script'))
+        # script content is stored somewhere on result and will be exported with zip?
+        #   ... or store along with pstats.json ? hidden from user
+
+        # -> execenvironment after import -> log output?
+        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        activity = Resource(graph, LOCAL['activity'])
+        activity.add(RDF['type'], PROV['Activity'])
+        # TODO: this is rather queued or created time for this activity ...
+        # could capture real start time on running status update (or start
+        # transfer)
+        now = datetime.now().replace(microsecond=0)
+        activity.add(PROV['startedAtTime'],
+                     Literal(now.isoformat(), datatype=XSD['dateTime']))
+        activity.add(PROV['hasAssociationWith'], user)
+        activity.add(PROV['hasAssociationWith'], software)
+        # add job parameters to activity
+        for idx, (key, value) in enumerate(result.job_params.items()):
+            param = Resource(graph, LOCAL[u'param_{}'.format(idx)])
+            activity.add(BCCVL['algoparam'], param)
+            param.add(BCCVL['name'], Literal(key))
+            if key in ('species_occurrence_dataset', 'species_absence_dataset'):
+                if not result.job_params[key]:
+                    # skip empty values
+                    continue
+                param.add(BCCVL['value'], LOCAL[value])
+            elif key in ('environmental_datasets',):
+                # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
+                # FIXME: look for dict params in other experiment types as well
+                # value is a dictionary, where keys are dataset uuids and
+                # values are a set of selected layers
+                for uuid, layers in value.items():
+                    param.add(BCCVL['value'], LOCAL[uuid])
+                    for layer in layers:
+                        # TODO: maybe URIRef?
+                        param.add(BCCVL['layer'], LOCAL[layer])
+            else:
+                param.add(BCCVL['value'], Literal(value))
+
+        # iterate over all input datasets and add them as entities
+        for key in ('species_occurrence_dataset', ):
+            dsbrain = uuidToCatalogBrain(result.job_params[key])
+            if not dsbrain:
+                continue
+            ds = dsbrain.getObject()
+            dsprov = Resource(graph, LOCAL[dsbrain.UID])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            #dsprov.add(PROV['..'], Literal(''))
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
+            # location / source
+            # graph.add(uri, DCTERMS['source'], Literal(''))
+            # TODO: genre ...
+            # TODO: resolution
+            # species metadata
+            md = IBCCVLMetadata(ds)
+            dsprov.add(BCCVL['scientificName'], Literal(
+                md['species']['scientificName']))
+            if md['species'].get('taxonID'):
+                dsprov.add(BCCVL['taxonID'], Literal(md['species']['taxonID']))
+            dsprov.add(DCTERMS['extent'], Literal(
+                '{} rows'.format(md.get('rows', 'N/A'))))
+            # ... species data, ... species id
+
+            # link with activity
+            activity.add(PROV['used'], dsprov)
+
+        for uuid, layers in result.job_params['environmental_datasets'].items():
+            key = 'environmental_datasets'
+            ds = uuidToObject(uuid)
+            dsprov = Resource(graph, LOCAL[key])
+            dsprov.add(RDF['type'], PROV['Entity'])
+            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
+            dsprov.add(DCTERMS['title'], Literal(ds.title))
+            dsprov.add(DCTERMS['description'], Literal(ds.description))
+            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
+            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
+                    or
+                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
+                dsprov.add(DCTERMS['format'], Literal(ds.format))
+            # TODO: genre ...
+            for layer in layers:
+                dsprov.add(BCCVL['layer'], LOCAL[layer])
+            # location / source
+            # layers selected + layer metadata
+            # ... raster data, .. layers
+
+            # link with activity
+            activity.add(PROV['used'], dsprov)
+
+        provdata.data = graph.serialize(format="turtle")
+
+    def start_job(self, request):
+        # split sdm jobs across multiple algorithms,
+        # and across multiple input species datasets
+        if not self.is_active():
+            func = uuidToObject(self.context.function)
+            for occur_coll in self.context.species_occurrence_collections:
+                for occur_ds in self.context.species_occurrence_collections[occur_coll]:
+                    for subset_title, env_subset in self.context.environmental_datasets.items():
+                    # get utility to execute this experiment
+                    method = queryUtility(IComputeMethod,
+                                          name=ISDMExperiment.__identifier__)
+                    if method is None:
+                        return ('error',
+                                u"Can't find method to run SDM Experiment")
+                    # create result object:
+                    # TODO: refactor this out into helper method
+                    title = u'{} - {} {} {}'.format(self.context.title, func.getId(), subset_title,
+                                                 datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                    result = self._create_result_container(title)
+                    # Build job_params store them on result and submit job
+                    result.job_params = {
+                        'resolution': IBCCVLMetadata(self.context)['resolution'],
+                        'function': func.getId(),
+                        'species_occurrence_dataset': occur_ds,
+                        'environmental_datasets': env_subset.get('datasets'),
+                        'species_filter': env_subset.get('subset', []),
                         'scale_down': self.context.scale_down,
                         'modelling_region': self.context.modelling_region,
                         # TO DO: This shall be input from user??
