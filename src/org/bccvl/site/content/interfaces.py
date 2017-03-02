@@ -33,6 +33,14 @@ class IDataset(model.Schema):
         default=True
     )
 
+    directives.mode(part_of=HIDDEN_MODE)
+    part_of = TextLine(
+        title=_(u'Part of Dataset Collection'),
+        description=u'',
+        required=False,
+        default=None
+    )
+
 
 class IBlobDataset(IDataset):
 

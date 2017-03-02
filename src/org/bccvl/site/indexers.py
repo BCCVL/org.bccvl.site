@@ -173,7 +173,10 @@ def year(obj, **kw):
     # FIXME: this indexer is meant for future projection only ....
     # - make sure we don't index any other datasets. i.e. environmental and current datasets, which may have a date attached to it, but it is meaningless for future projections
     md = IBCCVLMetadata(obj)
-    return md.get('year', None)
+    year = md.get('year', None)
+    if year:
+        year = str(year)
+    return year
 
 
 @indexer(IDataset)

@@ -188,7 +188,13 @@ def projection_listing_details(expbrain):
     # TODO: whata about future datasets?
     details = {}
     exp = expbrain.getObject()
+    inputexps = set()
+    futureenvs = set()
+    for env_uuid in exp.future_climate_datasets:
+        futureenvs.add(get_title_from_uuid(env_uuid, u'(Unavailable)'))
+
     for sdmuuid in exp.species_distribution_models:
+        inputexps.add(get_title_from_uuid(sdmuuid, u'(Unavailable)'))
         sdmexp = uuidToObject(sdmuuid)
         if sdmexp is not None:
             # TODO: absence data
@@ -203,8 +209,9 @@ def projection_listing_details(expbrain):
                 # TODO: job_params has only id of function not uuid ... not sure how to get to the title
                 toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params[
                                      'function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
-                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset,
-                                                  u'(Unavailable)') if sdmexp.species_occurrence_dataset else ''
+                sdmuuid = sdmexp.species_occurrence_dataset if sdmexp.portal_type == 'org.bccvl.content.sdmexperiment' \
+                                                            else sdmexp.species_occurrence_collections
+                species_occ = get_title_from_uuid(sdmuuid, u'(Unavailable)') if sdmuuid else ''
         else:
             toolkits = 'missing experiment'
             species_occ = ''
@@ -215,7 +222,9 @@ def projection_listing_details(expbrain):
             'functions': toolkits,
             'species_occurrence': species_occ,
             'species_absence': '',
-            'environmental_layers': envlayers
+            'environmental_layers': envlayers,
+            'input_experiments': inputexps,
+            'future_env_datasets': futureenvs
         })
     return details
 
@@ -228,24 +237,27 @@ def biodiverse_listing_details(expbrain):
     months = set()
     emscs = set()
     gcms = set()
-    for dsuuid in chain.from_iterable(map(lambda x: x.keys(), exp.projection.itervalues())):
-        dsobj = uuidToObject(dsuuid)
-        # TODO: should inform user about missing dataset
-        if dsobj:
-            md = IBCCVLMetadata(dsobj)
-            species.add(md.get('species', {}).get('scientificName', u'(Unavailable)'))
-            year = md.get('year')
-            if year:
-                years.add(year)
-            month = md.get('month')
-            if month:
-                months.add(month)
-            gcm = md.get('gcm')
-            if gcm:
-                gcms.add(gcm)
-            emsc = md.get('emsc')
-            if emsc:
-                emscs.add(emsc)
+    inputexps = set()
+    for expuuid, val in exp.projection.iteritems():
+        inputexps.add(get_title_from_uuid(expuuid, u'(Unavailable)'))
+        for dsuuid in val:
+            dsobj = uuidToObject(dsuuid)
+            # TODO: should inform user about missing dataset
+            if dsobj:
+                md = IBCCVLMetadata(dsobj)
+                species.add(md.get('species', {}).get('scientificName', u'(Unavailable)'))
+                year = md.get('year')
+                if year:
+                    years.add(year)
+                month = md.get('month')
+                if month:
+                    months.add(month)
+                gcm = md.get('gcm')
+                if gcm:
+                    gcms.add(gcm)
+                emsc = md.get('emsc')
+                if emsc:
+                    emscs.add(emsc)
     details.update({
         'type': 'BIODIVERSE',
         'functions': 'endemism, redundancy',
@@ -253,7 +265,8 @@ def biodiverse_listing_details(expbrain):
         'species_absence': '{}, {}'.format(', '.join(sorted(emscs)),
                                            ', '.join(sorted(gcms))),
         'years': ', '.join(sorted(years)),
-        'months': ', '.join(sorted(months))
+        'months': ', '.join(sorted(months)),
+        'input_experiments': inputexps
     })
     return details
 
@@ -261,12 +274,18 @@ def biodiverse_listing_details(expbrain):
 def ensemble_listing_details(expbrain):
     # FIXME: implement this
     details = {}
+    exp = expbrain.getObject()
+    inputexps = set()
+    for  sdmuuid in exp.datasets:
+        inputexps.add(get_title_from_uuid(sdmuuid, u'(Unavailable)'))
+
     details.update({
         'type': 'ENSEMBLE',
         'functions': '',
         'species_occurrence': '',
         'species_absence': '',
         'environmental_layers': '',
+        'input_experiments': inputexps
     })
     return details
 
