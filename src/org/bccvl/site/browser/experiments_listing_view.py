@@ -208,8 +208,9 @@ def projection_listing_details(expbrain):
                 # TODO: job_params has only id of function not uuid ... not sure how to get to the title
                 toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params[
                                      'function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
-                species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset,
-                                                  u'(Unavailable)') if sdmexp.species_occurrence_dataset else ''
+                sdmuuid = sdmexp.species_occurrence_dataset if sdmexp.portal_type == 'org.bccvl.content.sdmexperiment' \
+                                                            else sdmexp.species_occurrence_collections
+                species_occ = get_title_from_uuid(sdmuuid, u'(Unavailable)') if sdmuuid else ''
         else:
             toolkits = 'missing experiment'
             species_occ = ''
