@@ -48,7 +48,7 @@
       original="createTicket"
       replacement=".patch.createTicket"
       />
-  
+
   <i18n:registerTranslations directory="locales" />
 
   <includeDependencies package="."/>
@@ -125,7 +125,7 @@
       factory=".indexers.DatasetSearchableText"
       name="SearchableText"
       />
-  
+
   <adapter
       factory=".indexers.experiment_reference_indexer"
       name="experiment_reference"
@@ -171,11 +171,13 @@
       factory=".indexers.month"
       name="BCCMonth"
       />
-  
+
   <adapter factory=".utilities.SDMJobTracker"/>
 
   <adapter factory=".utilities.MSDMJobTracker"/>
-  
+
+  <adapter factory=".utilities.MMJobTracker"/>
+
   <adapter factory=".utilities.ProjectionJobTracker"/>
 
   <adapter factory=".utilities.BiodiverseJobTracker"/>
@@ -230,7 +232,7 @@
       component=".vocabularies.traits_functions_diff_source"
       name="traits_functions_diff_source"
       />
-  
+
   <utility
       component=".vocabularies.experiment_type_source"
       name="experiment_type_source"
@@ -315,7 +317,7 @@
         for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
         handler=".subscribers.logged_in_handler"
         />
-  
+
   <transmogrifier:registerConfig
       name="org.bccvl.site.dataimport"
       title="Import data"
