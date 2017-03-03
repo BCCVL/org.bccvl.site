@@ -8,6 +8,7 @@ from z3c.form.interfaces import (IFieldWidget, NO_VALUE)
 from z3c.form.widget import FieldWidget, Widget, SequenceWidget
 from z3c.form.browser.widget import (HTMLFormElement, HTMLInputWidget,
                                      addFieldClass)
+from z3c.form.browser.textarea import TextAreaWidget
 from z3c.form.browser.radio import RadioWidget
 from z3c.form.term import BoolTerms
 from zope.i18n import translate
@@ -19,7 +20,8 @@ from .interfaces import (IDatasetWidget,
                          IFutureDatasetsWidget,
                          IExperimentResultWidget,
                          IExperimentResultProjectionWidget,
-                         IBoolRadioWidget)
+                         IBoolRadioWidget,
+                         IDataSubsetsWidget)
 from plone.app.uuid.utils import uuidToCatalogBrain
 from Products.CMFCore.utils import getToolByName
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
@@ -636,3 +638,14 @@ class BoolRadioWidget(RadioWidget):
 @implementer(IFieldWidget)
 def BoolRadioFieldWidget(field, request):
     return FieldWidget(field, BoolRadioWidget(request))
+
+
+@implementer(IDataSubsetsWidget)
+class DataSubsetsWidget(TextAreaWidget):
+
+    pass
+
+
+@implementer(IFieldWidget)
+def DataSubsetsFieldWidget(field, request):
+    return FieldWidget(field, DataSubsetsWidget(request))

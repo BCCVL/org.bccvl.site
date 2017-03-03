@@ -1,6 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"    
+    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="org.bccvl">
 
@@ -8,8 +8,8 @@
 
   <adapter factory=".converter.DatasetListConverter"/>
 
-  <adapter factory=".converter.DatasetDictConverter"/>    
-  
+  <adapter factory=".converter.DatasetDictConverter"/>
+
   <adapter factory=".converter.ExperimentsSDMConverter"/>
 
   <adapter factory=".converter.ExperimentsResultConverter"/>
@@ -17,6 +17,8 @@
   <adapter factory=".converter.FutureDatasetsConverter"/>
 
   <adapter factory=".converter.ExperimentResultProjectionConverter"/>
+
+  <adapter factory=".converter.JSONConverter"/>
 
     <z3c:widgetTemplate
       mode="input"
@@ -45,7 +47,7 @@
       layer="z3c.form.interfaces.IFormLayer"
       template="datasetdict_display.pt"
       />
-    
+
     <z3c:widgetTemplate
       mode="input"
       widget=".interfaces.IExperimentSDMWidget"
@@ -131,6 +133,6 @@
         class="plone.app.z3cform.templates.RenderWidget"
         template="radio_widget.pt"
         permission="zope.Public"
-        />    
-    
+        />
+
 </configure>

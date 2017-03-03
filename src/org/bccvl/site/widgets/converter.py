@@ -1,9 +1,11 @@
+from decimal import Decimal
+import json
+
 from zope.component import adapter
 from zope.schema.interfaces import IDict, IList, ITextLine
-from .interfaces import IExperimentSDMWidget, IFutureDatasetsWidget, IExperimentResultWidget, IExperimentResultProjectionWidget, IDatasetWidget, IDatasetDictWidget
+from .interfaces import IExperimentSDMWidget, IFutureDatasetsWidget, IExperimentResultWidget, IExperimentResultProjectionWidget, IDatasetWidget, IDatasetDictWidget, IDataSubsetsWidget
 from z3c.form.converter import BaseDataConverter
 from org.bccvl.site.api import dataset
-from decimal import Decimal
 
 
 @adapter(ITextLine, IDatasetWidget)
@@ -176,3 +178,50 @@ class ExperimentResultProjectionConverter(BaseDataConverter):
                 else:
                     threshold['value'] = thresholds[threshold['label']]
         return value
+
+
+@adapter(IList, IDataSubsetsWidget)
+class JSONConverter(BaseDataConverter):
+
+    def toWidgetValue(self, value):
+        import ipdb; ipdb.set_trace()
+        if value is self.field.missing_value:
+            return None
+        return json.dumps(value)
+
+    def toFieldValue(self, value):
+        if not len(value):
+            return self.field.missing_value
+
+        # TODO: do I need to return a copy?
+        #       or convert texline, set?
+        data = json.loads(value)
+        tmpdata = {}
+        for key, value in data.items():
+            # key ... subset widget id
+            idx = int(key[len(self.widget.name):])
+            if idx not in tmpdata:
+                tmpdata[idx] = {
+                    'environmental_datasets': {},
+                    'subset': {}
+                }
+            for dslkey, dslvalue in value.items():
+                if dslkey.startswith('form-widgets'):
+                    # skip these
+                    continue
+                if dslkey.startswith('subset_title'):
+                    # subset title
+                    tmpdata[idx]['subset']['title'] = dslvalue
+                    continue
+                if dslkey.startswith('subset_'):
+                    tmpdata[idx]['subset']['value'] = dslvalue.split()
+                    continue
+                if not dslvalue:
+                    # only layers left <uuid>_<layerid>
+                    continue
+                uuid, layer = dslkey.split('_', 1)
+                if uuid not in tmpdata[idx]['environmental_datasets']:
+                    tmpdata[idx]['environmental_datasets'][uuid] = []
+                tmpdata[idx]['environmental_datasets'][uuid].append(layer)
+        # return sorted list
+        return [item[1] for item in sorted(tmpdata.items())]

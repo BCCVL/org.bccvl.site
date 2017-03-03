@@ -1,4 +1,4 @@
-from z3c.form.interfaces import IWidget, ICheckBoxWidget, IRadioWidget
+from z3c.form.interfaces import IWidget, ICheckBoxWidget, IRadioWidget, ITextAreaWidget
 
 
 class IFunctionsWidget(ICheckBoxWidget):
@@ -42,5 +42,9 @@ class IExperimentResultProjectionWidget(IWidget):
 
 
 class IBoolRadioWidget(IRadioWidget):
+
+    pass
+
+class IDataSubsetsWidget(ITextAreaWidget):
 
     pass
