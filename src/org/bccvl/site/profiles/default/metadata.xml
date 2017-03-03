@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <metadata>
-    <version>280</version>
+    <version>310</version>
     <dependencies>
       <dependency>profile-Products.CMFPlacefulWorkflow:base</dependency>
       <!-- <dependency>profile-Products.AutoUserMakerPASPlugin:default</dependency> -->
       <!-- <dependency>profile-org.bccvl.theme:default</dependency> -->
       <dependency>profile-plone.app.contenttypes:default</dependency>
-      
+
       <dependency>profile-plone.app.theming:default</dependency>
       <dependency>profile-plone.app.dexterity:default</dependency>
       <!-- <dependency>profile-plone.app.collection:default</dependency> -->
       <dependency>profile-plone.formwidget.autocomplete:default</dependency>
-      
+
       <dependency>profile-plone.app.caching:default</dependency>
       <dependency>profile-plone.app.caching:with-caching-proxy-splitviews</dependency>
       <dependency>profile-plone.restapi:default</dependency>
@@ -20,7 +20,7 @@
       <dependency>profile-collective.emailconfirmationregistration:default</dependency>
       <dependency>profile-plone.formwidget.captcha:default</dependency>
       <dependency>profile-collective.z3cform.norobots:default</dependency>
-      
+
     </dependencies>
 </metadata>
 <!-- stuff todo on install:

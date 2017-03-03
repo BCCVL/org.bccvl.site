@@ -27,7 +27,7 @@
       handler="org.bccvl.site.setuphandlers.setupTools">
     <depends name="content"/>
   </genericsetup:importStep>
-  
+
   <genericsetup:importStep
       name="org.bccvl.site.content"
       title="Import BCCVL content from filesystem."
@@ -213,5 +213,18 @@
         />
 
   </genericsetup:upgradeSteps>
-    
+
+  <genericsetup:upgradeSteps
+      source="300"
+      destination="310"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 300"
+        description="Migratory Modelling"
+        handler=".setuphandlers.upgrade_300_310_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

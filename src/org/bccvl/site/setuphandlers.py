@@ -737,6 +737,7 @@ def upgrade_270_280_1(context, logger=None):
         if product in installable:
             qi.installProduct(product)
 
+
 def upgrade_280_290_1(context, logger=None):
     if logger is None:
         logger = LOG
@@ -754,6 +755,7 @@ def upgrade_280_290_1(context, logger=None):
         md['categories'] = ['multispecies']
         obj.reindexObject()
 
+
 def upgrade_290_300_1(context, logger=None):
     if logger is None:
         logger = LOG
@@ -770,3 +772,13 @@ def upgrade_290_300_1(context, logger=None):
             part_obj = uuidToObject(part_uuid)
             part_obj.part_of = IUUID(obj)
             part_obj.reindexObject()
+
+
+def upgrade_300_310_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
