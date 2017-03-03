@@ -646,7 +646,9 @@ class MMJobTracker(MultiJobTracker):
             func = uuidToObject(self.context.function)
             for occur_coll in self.context.species_occurrence_collections:
                 for occur_ds in self.context.species_occurrence_collections[occur_coll]:
-                    for subset_title, env_subset in self.context.environmental_datasets.items():
+                    for datasubset in self.context.datasubsets:
+                        subset = datasubset['subset']
+                        environmental_datasets = datasubset['environmental_datasets']
                         # get utility to execute this experiment
                         method = queryUtility(IComputeMethod,
                                               name=ISDMExperiment.__identifier__)
@@ -655,16 +657,18 @@ class MMJobTracker(MultiJobTracker):
                                     u"Can't find method to run SDM Experiment")
                         # create result object:
                         # TODO: refactor this out into helper method
-                        title = u'{} - {} {} {}'.format(self.context.title, func.getId(), subset_title,
+                        title = u'{} - {} {} {}'.format(self.context.title, func.getId(), subset['title'],
                                                      datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                         result = self._create_result_container(title)
                         # Build job_params store them on result and submit job
                         result.job_params = {
-                            'resolution': IBCCVLMetadata(self.context)['resolution'],
+                            #'resolution': IBCCVLMetadata(self.context)['resolution'],
                             'function': func.getId(),
                             'species_occurrence_dataset': occur_ds,
-                            'environmental_datasets': env_subset.get('datasets'),
-                            'species_filter': env_subset.get('subset', []),
+                            'environmental_datasets': environmental_datasets,
+                            # TODO: this sholud rather be a filter expression?
+                            #       -> <csv column> in <subset values>
+                            'species_filter': subset['value'],
                             'scale_down': self.context.scale_down,
                             'modelling_region': self.context.modelling_region,
                             # TO DO: This shall be input from user??

@@ -17,6 +17,7 @@ from org.bccvl.site.widgets.widgets import ExperimentResultFieldWidget
 from org.bccvl.site.widgets.widgets import FutureDatasetsFieldWidget
 from org.bccvl.site.widgets.widgets import ExperimentResultProjectionFieldWidget
 from org.bccvl.site.widgets.widgets import BoolRadioFieldWidget
+from org.bccvl.site.widgets.widgets import DataSubsetsFieldWidget
 
 
 class IDataset(model.Schema):
@@ -214,7 +215,7 @@ class IMSDMExperiment(IExperiment):
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
     )
-    
+
 class IMMExperiment(IExperiment):
 
     directives.widget('function', FunctionsRadioFieldWidget)
@@ -249,19 +250,14 @@ class IMMExperiment(IExperiment):
         title=u'Select common resolution',
         description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
         default=False,
-        required=True
+        required=False
     )
 
-    directives.widget('environmental_datasets',
-                      DatasetDictFieldWidget,
-                      multiple='multiple',
-                      genre=['DataGenreCC', 'DataGenreE'],
-                      filters=['text', 'source', 'layer', 'resolution'],
-                      errmsg=u"Please select at least 1 layer.")
-    environmental_datasets = Dict(
-        title=u'Climate & Environmental Datasets',
-        key_type=TextLine(),
-        value_type=Set(value_type=TextLine()),
+    directives.widget('datasubsets',
+                      DataSubsetsFieldWidget)
+    datasubsets = List(
+        title=u'Climate & Environmental Data Subsets',
+        value_type=Dict(),
         required=True,
     )
 
