@@ -184,7 +184,6 @@ class ExperimentResultProjectionConverter(BaseDataConverter):
 class JSONConverter(BaseDataConverter):
 
     def toWidgetValue(self, value):
-        import ipdb; ipdb.set_trace()
         if value is self.field.missing_value:
             return None
         return json.dumps(value)
