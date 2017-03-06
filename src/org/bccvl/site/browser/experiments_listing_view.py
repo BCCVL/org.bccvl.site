@@ -78,6 +78,8 @@ class ExperimentTools(BrowserView):
         elif expbrain.portal_type == 'org.bccvl.content.msdmexperiment':
             # FIXME: ... need msdm listing details here
             details = msdm_listing_details(expbrain)
+        elif expbrain.portal_type == 'org.bccvl.content.mmexperiment':
+            details = mme_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.biodiverseexperiment':
             details = biodiverse_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.ensemble':
@@ -318,5 +320,18 @@ def speciestraits_listing_details(expbrain):
         'species_occurrence': species_occ,
         'species_absence': '',
         'environmental_layers': envlayers,
+    })
+    return details
+
+
+def mme_listing_details(expbrain):
+    exp = expbrain.getObject()
+    details = {}
+    details.update({
+        'type': 'Migratory Modelling',
+        'functions': get_title_from_uuid(exp.function, u'(Unavailable)'),
+        'species_occurrence': '',
+        'species_absence': '',
+        'environmental_layers': ''
     })
     return details
