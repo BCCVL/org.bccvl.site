@@ -643,7 +643,10 @@ def BoolRadioFieldWidget(field, request):
 @implementer(IDataSubsetsWidget)
 class DataSubsetsWidget(TextAreaWidget):
 
-    pass
+    def subsets(self):
+        # TODO: consider producing a datastructue that is more suited for display
+        #       rather than returning the raw data
+        return self.field.get(self.context)
 
 
 @implementer(IFieldWidget)

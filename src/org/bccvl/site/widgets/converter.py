@@ -192,35 +192,4 @@ class JSONConverter(BaseDataConverter):
         if not len(value):
             return self.field.missing_value
 
-        # TODO: do I need to return a copy?
-        #       or convert texline, set?
-        data = json.loads(value)
-        tmpdata = {}
-        for key, value in data.items():
-            # key ... subset widget id
-            idx = int(key[len(self.widget.name):])
-            if idx not in tmpdata:
-                tmpdata[idx] = {
-                    'environmental_datasets': {},
-                    'subset': {}
-                }
-            for dslkey, dslvalue in value.items():
-                if dslkey.startswith('form-widgets'):
-                    # skip these
-                    continue
-                if dslkey.startswith('subset_title'):
-                    # subset title
-                    tmpdata[idx]['subset']['title'] = dslvalue
-                    continue
-                if dslkey.startswith('subset_'):
-                    tmpdata[idx]['subset']['value'] = dslvalue.split()
-                    continue
-                if not dslvalue:
-                    # only layers left <uuid>_<layerid>
-                    continue
-                uuid, layer = dslkey.split('_', 1)
-                if uuid not in tmpdata[idx]['environmental_datasets']:
-                    tmpdata[idx]['environmental_datasets'][uuid] = []
-                tmpdata[idx]['environmental_datasets'][uuid].append(layer)
-        # return sorted list
-        return [item[1] for item in sorted(tmpdata.items())]
+        return json.loads(value)
