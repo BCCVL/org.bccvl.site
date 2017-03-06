@@ -3,7 +3,7 @@ import os
 
 setup(
     name='org.bccvl.site',
-    setup_requires='guscmversion',
+    setup_requires=['guscmversion'],
     guscmversion=True,
     description="BCCVL Policy Product",
     # long_description=open("README.txt").read() + "\n" +
