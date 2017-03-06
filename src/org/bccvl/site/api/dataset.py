@@ -5,6 +5,8 @@ from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from Products.ZCatalog.interfaces import ICatalogBrain
 from plone.app.uuid.utils import uuidToObject
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
 
 
 def getdsmetadata(ds):
@@ -27,6 +29,14 @@ def getdsmetadata(ds):
         'description': ds.description,
     }
     md.update(IBCCVLMetadata(ds))
+    # add layer titles
+    layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(ds)
+    for layer in md.get('layers', {}).values():
+        if layer['layer'] in layer_vocab:
+            layer['title'] = layer_vocab.getTerm(layer['layer']).title
+        else:
+            layer['title'] = layer['layer']
+
     dlinfo = IDownloadInfo(ds)
     md.update({
         'mimetype': dlinfo['contenttype'],
