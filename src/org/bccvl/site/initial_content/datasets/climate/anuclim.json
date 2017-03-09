@@ -1,0 +1,12 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "ANUClim climate data",
+    "description": "Monthly climate data for the Australian continent between 1976-2005, generated using ANUClimate 1.0. This dataset includes 5 variables: monthly mean precipitation, mean daily minimum and maximum temperature of the month, mean daily vapour pressure of the month and monthly total class A pan evaporation. The monthly anomalies were interpolated by trivariate thin plate smoothing spline functions of longitude, latitude and vertically exaggerated elevation using ANUSPLIN Version 4.5. Monthly data values were calculated from Bureau of Meteorology daily data at stations where there were no missing observations and any accumulated records were wholly within the month.",
+    "rights": "CC-BY Attribution 4.0",
+    "external_description": "See <a href=\"http://www.emast.org.au/our-infrastructure/observations/anuclimate_data/\">http://www.emast.org.au/our-infrastructure/observations/anuclimate_data/</a>",
+    "attribution": ["Hutchinson M, Kesteven J, Xu T (2014) Monthly climate data: ANUClimate 1.0, 0.01 degree, Australian Coverage, 1976-2005. Australian National University, Canberra, Australia. Made available by the Ecosystem Modelling and Scaling Infrastructure (eMAST, http://www.emast.org.au) of the Terrestrial Ecosystem Research Network (TERN, http://www.tern.org.au)."
+],
+    "categories": ["climate"],
+    "BCCDataGenre": ["DataGenreCC"],
+    "_transitions": ["show_internally", "publish_externally"]
+}
