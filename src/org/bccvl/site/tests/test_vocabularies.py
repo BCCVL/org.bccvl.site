@@ -25,7 +25,7 @@ class LayerSourceTest(unittest.TestCase):
         self.assertIn(u'B01', source)
         term = source.getTerm(u'B01')
         self.assertEqual(term.value, u'B01')
-        self.assertEqual(len(source), 303)
+        self.assertEqual(len(source), 327)
 
 
 class GCMSourceTest(unittest.TestCase):
