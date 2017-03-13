@@ -641,56 +641,54 @@ class MMJobTracker(MultiJobTracker):
 
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
-        # and across multiple input species datasets
+        # and across multiple subset of species according to months
         if not self.is_active():
             func = uuidToObject(self.context.function)
-            for occur_coll in self.context.species_occurrence_collections:
-                for occur_ds in self.context.species_occurrence_collections[occur_coll]:
-                    for datasubset in self.context.datasubsets:
-                        subset = datasubset['subset']
-                        environmental_datasets = datasubset['environmental_datasets']
-                        # get utility to execute this experiment
-                        method = queryUtility(IComputeMethod,
-                                              name=ISDMExperiment.__identifier__)
-                        if method is None:
-                            return ('error',
-                                    u"Can't find method to run SDM Experiment")
-                        # create result object:
-                        # TODO: refactor this out into helper method
-                        title = u'{} - {} {} {}'.format(self.context.title, func.getId(), subset['title'],
-                                                     datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
-                        result = self._create_result_container(title)
-                        # Build job_params store them on result and submit job
-                        result.job_params = {
-                            #'resolution': IBCCVLMetadata(self.context)['resolution'],
-                            'function': func.getId(),
-                            'species_occurrence_dataset': occur_ds,
-                            'environmental_datasets': environmental_datasets,
-                            # TODO: this sholud rather be a filter expression?
-                            #       -> <csv column> in <subset values>
-                            'species_filter': subset['value'],
-                            'scale_down': self.context.scale_down,
-                            'modelling_region': self.context.modelling_region,
-                            # TO DO: This shall be input from user??
-                            'generate_convexhull': True,
-                        }
+            for datasubset in self.context.datasubsets:
+                subset = datasubset['subset']
+                environmental_datasets = datasubset['environmental_datasets']
+                # get utility to execute this experiment
+                method = queryUtility(IComputeMethod,
+                                      name=ISDMExperiment.__identifier__)
+                if method is None:
+                    return ('error',
+                            u"Can't find method to run SDM Experiment")
+                # create result object:
+                # TODO: refactor this out into helper method
+                title = u'{} - {} {} {}'.format(self.context.title, func.getId(), subset['title'],
+                                             datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                result = self._create_result_container(title)
+                # Build job_params store them on result and submit job
+                result.job_params = {
+                    #'resolution': IBCCVLMetadata(self.context)['resolution'],
+                    'function': func.getId(),
+                    'species_occurrence_dataset': self.context.species_occurrence_dataset,
+                    'environmental_datasets': environmental_datasets,
+                    # TODO: this sholud rather be a filter expression?
+                    #       -> <csv column> in <subset values>
+                    'species_filter': subset['value'],
+                    'scale_down': self.context.scale_down,
+                    'modelling_region': self.context.modelling_region,
+                    # TO DO: This shall be input from user??
+                    'generate_convexhull': True,
+                }
 
-                        # add toolkit params:
-                        result.job_params.update(
-                            self.context.parameters[IUUID(func)])
-                        self._createProvenance(result)
-                        # submit job
-                        LOG.info("Submit JOB %s to queue", func.getId())
-                        method(result, func)
-                        resultjt = IJobTracker(result)
-                        job = resultjt.new_job('TODO: generate id',
-                                               'generate taskname: sdm_experiment')
-                        job.type = self.context.portal_type
-                        job.function = func.getId()
-                        job.toolkit = IUUID(func)
-                        # reindex job object here ... next call should do that
-                        resultjt.set_progress('PENDING',
-                                              u'{} pending'.format(func.getId()))
+                # add toolkit params:
+                result.job_params.update(
+                    self.context.parameters[IUUID(func)])
+                self._createProvenance(result)
+                # submit job
+                LOG.info("Submit JOB %s to queue", func.getId())
+                method(result, func)
+                resultjt = IJobTracker(result)
+                job = resultjt.new_job('TODO: generate id',
+                                       'generate taskname: sdm_experiment')
+                job.type = self.context.portal_type
+                job.function = func.getId()
+                job.toolkit = IUUID(func)
+                # reindex job object here ... next call should do that
+                resultjt.set_progress('PENDING',
+                                      u'{} pending'.format(func.getId()))
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'

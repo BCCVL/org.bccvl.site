@@ -226,20 +226,15 @@ class IMMExperiment(IExperiment):
         required=True,
     )
 
-    directives.widget('species_occurrence_collections',
-                      DatasetDictFieldWidget,
-                      multiple='multiple',
-                      genre=['DataGenreSpeciesCollection'],
+    directives.widget('species_occurrence_dataset',
+                      DatasetFieldWidget,
+                      genre=['DataGenreSpeciesOccurrence'],
                       errmsg=u"Please select at least 1 occurrence dataset.",
                       vizclass=u'bccvl-occurrence-viz')
-    species_occurrence_collections = Dict(
-        title=u'Species Occurrence Collections',
-        key_type=TextLine(),
-        value_type=Set(value_type=TextLine()),
+    species_occurrence_dataset = TextLine(
+        title=u'Species Occurrence Datasets',
         default=None,
         required=True,
-        min_length=1,
-        max_length=5,
     )
 
     directives.widget('scale_down',
