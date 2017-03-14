@@ -210,7 +210,7 @@ def projection_listing_details(expbrain):
                                      'function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
                 if sdmexp.portal_type == 'org.bccvl.content.sdmexperiment':
                     species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset,
-   -                                                  u'(Unavailable)') if sdmexp.species_occurrence_dataset else ''
+                                                      u'(Unavailable)') if sdmexp.species_occurrence_dataset else ''
                 else:
                     # not sdm,... probably msdm?
                     species_occ = get_title_from_uuid(sdmexp.species_occurrence_collections,
