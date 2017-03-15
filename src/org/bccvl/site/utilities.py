@@ -24,6 +24,8 @@ from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.utils import (
     build_ala_import_task, build_traits_import_task, build_ala_import_qid_task)
 from org.bccvl.tasks.plone import after_commit_task
+from zope.schema.interfaces import IVocabularyFactory
+from zope.component import getUtility
 
 
 LOG = logging.getLogger(__name__)
@@ -639,6 +641,18 @@ class MMJobTracker(MultiJobTracker):
 
         provdata.data = graph.serialize(format="turtle")
 
+    def _get_resolution(self, datasets):
+        res_vocab = getUtility(
+            IVocabularyFactory, 'resolution_source')(self.context)
+        resolution_idx = -1
+        for dsbrain in (uuidToCatalogBrain(d) for d in datasets):
+            idx = res_vocab._terms.index(
+                res_vocab.getTerm(dsbrain.BCCResolution))
+            if idx > resolution_idx:
+                resolution_idx = idx
+        return res_vocab._terms[resolution_idx].value
+
+
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and across multiple subset of species according to months
@@ -660,7 +674,7 @@ class MMJobTracker(MultiJobTracker):
                 result = self._create_result_container(title)
                 # Build job_params store them on result and submit job
                 result.job_params = {
-                    #'resolution': IBCCVLMetadata(self.context)['resolution'],
+                    'resolution': self._get_resolution(environmental_datasets),
                     'function': func.getId(),
                     'species_occurrence_dataset': self.context.species_occurrence_dataset,
                     'environmental_datasets': environmental_datasets,
