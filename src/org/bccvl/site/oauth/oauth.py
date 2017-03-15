@@ -493,7 +493,11 @@ class OAuthProvider(BrowserView):
                 rurl = urlsplit(redirect_uri)
                 for curl in self.client.redirect_uris:
                     curl = urlsplit(curl)
-                    if curl.scheme != rurl.scheme or curl.netloc != rurl.netloc or curl.path != rurl.path:
+                    if curl.scheme != rurl.scheme or curl.netloc != rurl.netloc:
+                        continue
+                    # we match the url based on subpath
+                    # -> if requested path is subpath of registered url we accept it
+                    if ! rurl.path.startswith(curl.path):
                         continue
                     valid_redirect_uri = True
                     break
