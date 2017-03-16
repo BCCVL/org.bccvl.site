@@ -497,7 +497,7 @@ class OAuthProvider(BrowserView):
                         continue
                     # we match the url based on subpath
                     # -> if requested path is subpath of registered url we accept it
-                    if ! rurl.path.startswith(curl.path):
+                    if not curl.path.startswith(curl.path):
                         continue
                     valid_redirect_uri = True
                     break
