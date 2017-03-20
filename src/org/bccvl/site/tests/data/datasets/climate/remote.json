@@ -20,5 +20,18 @@
         "fileName": "remote/data/file3.tif"
       }
     }
+  },
+  "_filemetadata": {
+    "https://swift.rc.nectar.org.au:8888/v1/AUTH_0bc40c2c2ff94a0b9404e6f960ae5677/australia_5km/RCP3PD_cccma-cgcm31_2015.zip": {
+        "remote/data/file1.tif": {
+
+        },
+        "remote/data/file2.tif": {
+
+        },
+        "remote/data/file3.tif": {
+
+        }
+    }
   }
 }
