@@ -266,7 +266,7 @@ class IBiodiverseExperiment(IExperiment):
                                        IProjectionExperiment.__identifier__],
                       errmsg=u"Please select at least 1 dataset.")
     projection = Dict(
-        title=u'Projection Datasets',
+        title=u'Source Experiments',
         key_type=TextLine(),
         value_type=Dict(
             key_type=TextLine(),
