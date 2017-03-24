@@ -252,7 +252,8 @@ class FileMetadataToBCCVL(object):
             filemd = item.setdefault(self.filemetadatakey, {}).get(fileid, {})
             if not filemd:
                 # no filemetadata (delete or leave untouched?)
-                if (IBCCVLMetadata(content)['genre'] in 
+                genre = IBCCVLMetadata(content).get('genre', None)
+                if (genre and genre in 
                         ['DataGenreSpeciesOccurrence', 
                          'DataGenreSpeciesAbundance', 
                          'DataGenreSpeciesAbsence', 
