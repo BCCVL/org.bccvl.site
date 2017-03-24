@@ -21,7 +21,7 @@
   <a id="fieldname-popup" href="#"
      tal:attributes="id string:${view/field/__name__}-popup;
                      href string:${portal_url}/portal_facetconfig/${view/field/__name__}"
-     tal:content="string:Select ${view/label}">Select SDM Experiment</a>
+     tal:content="string:Select ${view/label}">Select Experiment</a>
   <div id="form-widgets-fieldname"
        tal:attributes="id string:${view/id};
                        data-multiple view/multiple|string:">
