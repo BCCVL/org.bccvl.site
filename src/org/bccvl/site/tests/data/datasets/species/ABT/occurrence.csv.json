@@ -19,8 +19,13 @@
             "bottom": 1,
             "left": 1,
             "top": 3,
-            "right": 3            
+            "right": 3
         },
         "headers": ["Name", "lon", "lat"]
+    },
+    "_filemetadata": {
+        "occurrence.csv": {
+            "headers": []
+        }
     }
 }
