@@ -512,6 +512,11 @@ class MSDMJobTracker(MultiJobTracker):
 @adapter(IProjectionExperiment)
 class ProjectionJobTracker(MultiJobTracker):
 
+    def _get_sdm_results(self, sdmdsObj):
+        # return the projection geotif results of SDM
+        sdmexp = sdmdsObj.__parent__
+        return [IUUID(sdmexp[res]) for res in sdmexp.keys() if res.endswith('.tif') and res.startswith('proj_current_')]
+
     def _create_result_container(self, sdmuuid, dsbrain, projlayers):
         # create result object:
         # Get the algorithm used in SDM experiment
@@ -534,6 +539,7 @@ class ProjectionJobTracker(MultiJobTracker):
             title=title)
         result.job_params = {
             'species_distribution_models': sdmuuid,
+            'sdm_projections': self._get_sdm_results(sdmdsObj),
             'year': year,
             'month': month,
             'emsc': dsmd['emsc'],
