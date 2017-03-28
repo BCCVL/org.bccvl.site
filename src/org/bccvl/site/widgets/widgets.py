@@ -218,7 +218,7 @@ class DatasetDictWidget(HTMLFormElement, Widget):
             subitem = {
                 'id': layer,
                 'title': layer_vocab.getTerm(layer).title if layer in layer_vocab else layer,
-                'selected': not selectedsubitems or layer in selectedsubitems,
+                'selected': layer in selectedsubitems,
             }
             yield subitem
         for subdsid in sorted(getattr(dsbrain.getObject(), 'parts', ())):
@@ -229,7 +229,7 @@ class DatasetDictWidget(HTMLFormElement, Widget):
             subitem = {
                 'id': subdsid,
                 'title': part.Title,
-                'selected': not selectedsubitems or subdsid in selectedsubitems
+                'selected': subdsid in selectedsubitems
             }
             yield subitem
 
