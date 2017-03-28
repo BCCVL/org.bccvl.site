@@ -1311,109 +1311,109 @@
       <element>
         <element key="value">mon_evap1</element>
         <element key="title">Total Monthly Evaporation (Jan)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap2</element>
         <element key="title">Total Monthly Evaporation (Feb)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap3</element>
         <element key="title">Total Monthly Evaporation (Mar)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap4</element>
         <element key="title">Total Monthly Evaporation (Apr)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap5</element>
         <element key="title">Total Monthly Evaporation (May)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap6</element>
         <element key="title">Total Monthly Evaporation (Jun)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap7</element>
         <element key="title">Total Monthly Evaporation (Jul)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap8</element>
         <element key="title">Total Monthly Evaporation (Aug)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres/element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap9</element>
         <element key="title">Total Monthly Evaporation (Sep)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap10</element>
         <element key="title">Total Monthly Evaporation (Oct)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap11</element>
         <element key="title">Total Monthly Evaporation (Nov)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
         <element key="value">mon_evap12</element>
         <element key="title">Total Monthly Evaporation (Dec)</element>
-        <element key="unit">mm/month</element>
-        <element key="unitfull">millimetres per month</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
       </element>
       <element>
@@ -1422,7 +1422,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1431,7 +1431,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1440,7 +1440,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1449,7 +1449,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1458,7 +1458,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1467,7 +1467,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1476,7 +1476,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1485,7 +1485,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1494,7 +1494,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1503,7 +1503,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1512,7 +1512,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
@@ -1521,7 +1521,7 @@
         <element key="unit">HPa</element>
         <element key="unitfull">Hectopascal</element>
         <element key="legend">default</element>
-        <element key="type">hydrology</element>
+        <element key="type">climate</element>
         <element key="tooltip">Mean of daily vapour pressure for the month. Vapour pressure regulates evaporation rates and water need and use.</element>
       </element>
       <element>
