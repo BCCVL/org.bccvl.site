@@ -1375,7 +1375,7 @@
         <element key="value">mon_evap8</element>
         <element key="title">Total Monthly Evaporation (Aug)</element>
         <element key="unit">mm</element>
-        <element key="unitfull">millimetres/element>
+        <element key="unitfull">millimetres</element>
         <element key="legend">default</element>
         <element key="type">climate</element>
         <element key="tooltip">Monthly total class A pan evaporation. Pan evaporation is a measurement that combines or integrates the effects of several climate elements: temperature, humidity, rain fall, drought dispersion, solar radiation, and wind, and is useful for estimating water need and use.</element>
