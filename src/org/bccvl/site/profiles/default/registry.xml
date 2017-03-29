@@ -197,7 +197,7 @@
         <element key="title">B13 - Precipitation of Wettest Month</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">The wettest month is useful if extreme precipitation conditions during the year influence a species potential range.</element>
       </element>
@@ -206,7 +206,7 @@
         <element key="title">B14 - Precipitation of Driest Month</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">The driest month is useful if extreme precipitation conditions during the year influence a species potential range.</element>
       </element>
@@ -1205,7 +1205,7 @@
         <element key="title">Average Monthly Precipitation (Jan)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1214,7 +1214,7 @@
         <element key="title">Average Monthly Precipitation (Feb)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1223,7 +1223,7 @@
         <element key="title">Average Monthly Precipitation (Mar)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1232,7 +1232,7 @@
         <element key="title">Average Monthly Precipitation (Apr)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1241,7 +1241,7 @@
         <element key="title">Average Monthly Precipitation (May)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1250,7 +1250,7 @@
         <element key="title">Average Monthly Precipitation (Jun)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1259,7 +1259,7 @@
         <element key="title">Average Monthly Precipitation (Jul)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1268,7 +1268,7 @@
         <element key="title">Average Monthly Precipitation (Aug)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1277,7 +1277,7 @@
         <element key="title">Average Monthly Precipitation (Sep)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1286,7 +1286,7 @@
         <element key="title">Average Monthly Precipitation (Oct)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1295,7 +1295,7 @@
         <element key="title">Average Monthly Precipitation (Nov)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
@@ -1304,7 +1304,7 @@
         <element key="title">Average Monthly Precipitation (Dec)</element>
         <element key="unit">mm</element>
         <element key="unitfull">millimetres</element>
-        <element key="legend">rainfall</element>
+        <element key="legend">monrainfall</element>
         <element key="type">climate</element>
         <element key="tooltip">This layer approximates the total water inputs and is therefore useful when ascertaining the importance of water availability at specific months throughout the year to a species distribution . Good information for modelling migratory species distributions.</element>
       </element>
