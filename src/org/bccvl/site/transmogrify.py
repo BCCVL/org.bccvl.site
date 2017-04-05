@@ -269,6 +269,9 @@ class FileMetadataToBCCVL(object):
             # TODO: probably needs a different check for multi layer files in future
             # store metadata in self.bccvlmdkey
             bccvlmd = item.setdefault(self.bccvlmdkey, {})
+            # Replace existing layers with new layers
+            if bccvlmd.has_key('layers'):
+                bccvlmd['layers'] = {}
             self._update_bccvl_metadata(bccvlmd, filemd)
             if content.format in ('application/zip', ):
                 # TODO: we also have metadata about the file itself, like filesize
