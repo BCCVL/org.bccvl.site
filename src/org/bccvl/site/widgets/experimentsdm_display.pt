@@ -28,6 +28,8 @@
           <li tal:repeat="subitem python: (subitem for subitem in item['subitems'] if subitem['selected'])">
             <tal:r tal:replace="subitem/title">Model Title</tal:r><br/>
             <tal:r tal:replace="subitem/algorithm/Title|nothing">Algo Title</tal:r>
+            <tal:r tal:replace="subitem/threshold/label">Threshold label:</tal:r>
+            <tal:r tal:replace="subitem/threshold/value">Threshold value</tal:r>
           </li>
         </ul>
       </li>

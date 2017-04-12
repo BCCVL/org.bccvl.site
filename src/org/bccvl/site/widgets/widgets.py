@@ -329,6 +329,7 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             item['resolution'] = expmd['resolution']
             # now search all models within and add infos
             pc = getToolByName(self.context, 'portal_catalog')
+            # SDM model
             brains = pc.searchResults(path=expbrain.getPath(),
                                       BCCDataGenre=self.genre)
             # TODO: maybe as generator?
@@ -341,12 +342,31 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
                 # Filter out geographic models
                 if algobrain.getObject().algorithm_category == 'geographic':
                     continue
+                # FIXME: I need a different list of thresholds for display;
+                # esp. don't look up threshold, but take vales (threshold
+                # id and value) from field as is
+                thresholds = dataset.getThresholds(brain.UID)[brain.UID]
+                threshold = self.value[experiment_uuid].get(brain.UID)
+                # is threshold in list?
+                if threshold and threshold['label'] not in thresholds:
+                    # maybe a custom entered number?
+                    # ... I guess we don't really care as long as we produce the same the user entered. (validate?)
+                    thresholds[threshold['label']] = threshold['label']
+
+                # current projection tiff file, and its metadata
+                cpbrains = pc.searchResults(path=expbrain.getPath(),
+                                          BCCDataGenre=['DataGenreCP'])
+                cpmd = IBCCVLMetadata(cpbrains[0].getObject())
+
                 item['subitems'].append(
                     {'item': brain,
                      'uuid': brain.UID,
                      'title': brain.Title,
                      'selected': brain.UID in self.value[experiment_uuid],
-                     'algorithm': algobrain
+                     'algorithm': algobrain,
+                     'threshold': threshold,
+                     'thresholds': thresholds,
+                     'layermd': cpmd['layers'].values()[0]
                      }
                 )
         return item
@@ -366,19 +386,26 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
         # try to find up to count items (datasets)
         for idx in range(0, count):
             uuid = self.request.get('{}.item.{}'.format(self.name, idx))
+            if not uuid:
+                continue
+            value.setdefault(uuid, {})
+
             subuuid = self.request.get(
                 '{}.item.{}.item'.format(self.name, idx))
-            if uuid:
-                if not subuuid:
-                    subuuid = list()  # FIXME: whether set or list should depend on field
-                value.setdefault(uuid, list()).extend(subuuid)
+            if not subuuid:
+                continue
+            subuuid = subuuid[0]
+            dsth = self.request.get(
+                '{}.item.{}.item.0.threshold'.format(self.name, idx))
+            value[uuid][subuuid] = {'label': dsth}
         if not value:
             return NO_VALUE
         # FIXME: we support only one experiment at the moment, so let's grap
         # first one from dict
-        uuid = value.keys()[0]
-        modeluuids = value[uuid]
-        return {uuid: modeluuids}
+        modeluuids= value[uuid].keys()
+        if modeluuids:
+            return {uuid: {modeluuids[0]: value[uuid][modeluuids[0]]} }
+        return {uuid: {}}
 
 
 @implementer(IFieldWidget)

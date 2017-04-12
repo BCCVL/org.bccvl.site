@@ -43,12 +43,26 @@
                                name string:${view/name}.item.0;"/>
         <!-- List of Models within experiment -->
         <tal:repeat tal:repeat="subitem item/subitems">
-          <div class="selectedmodels">
+          <div class="selectedmodels"
+               tal:define="index repeat/subitem/index;>
             <input type="checkbox" value=""
                    name="form.widgets.fieldname.item.0.item:list"
                    tal:attributes="value subitem/uuid;
                                    name string:${view/name}.item.0.item:list;
                                    checked subitem/selected;"/>
+            <select name="form.widgets.fieldname.item.0.item.0.threshold"
+                    class="span3"
+                    tal:attributes="name string:${view/name}.item.${index}.item.0.threshold;
+                                    id string:${view/id}-item-${index}-item-0-threshold;">
+              <tal:block tal:repeat="threshold subitem/thresholds">
+                <option value=""
+                        tal:define="value python:subitem['thresholds'][threshold];
+                                    thlabel subitem/threshold/label|nothing;"
+                        tal:attributes="value threshold;
+                                        selected python:thlabel == threshold"
+                        tal:content="string:${threshold} (${value})"/>
+              </tal:block>
+            </select>                                   
             <span tal:content="subitem/title">Model Title</span>
           </div>
         </tal:repeat>
