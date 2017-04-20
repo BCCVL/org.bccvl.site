@@ -681,6 +681,7 @@ class MMJobTracker(MultiJobTracker):
                     # TODO: this sholud rather be a filter expression?
                     #       -> <csv column> in <subset values>
                     'species_filter': map(int, subset['value']),
+                    'subset': subset['title'],
                     'scale_down': self.context.scale_down,
                     'modelling_region': self.context.modelling_region,
                     # TO DO: This shall be input from user??
