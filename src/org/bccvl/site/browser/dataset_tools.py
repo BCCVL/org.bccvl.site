@@ -4,7 +4,7 @@ from zope.interface import implementer
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.app.contentlisting.interfaces import IContentListingObject
 from plone import api
-from org.bccvl.site.content.interfaces import ISDMExperiment, IMSDMExperiment, IProjectionExperiment
+from org.bccvl.site.content.interfaces import ISDMExperiment, IMSDMExperiment, IProjectionExperiment, IMMExperiment
 from org.bccvl.site.interfaces import IDownloadInfo, IBCCVLMetadata
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.browser.interfaces import IDatasetTools
@@ -332,6 +332,13 @@ class DatasetTools(BrowserView):
             # TODO: once available include pesudo absences from result
             for dsuuid in (context.species_occurrence_dataset,
                            context.species_absence_dataset):
+                brain = uuidToCatalogBrain(dsuuid)
+                if brain:
+                    yield brain
+        elif IMMExperiment.providedBy(context):
+            # for mme we return selected occurrence dataset only
+            # TODO: once available include pesudo absences from result
+            for dsuuid in (context.species_occurrence_dataset,):
                 brain = uuidToCatalogBrain(dsuuid)
                 if brain:
                     yield brain
