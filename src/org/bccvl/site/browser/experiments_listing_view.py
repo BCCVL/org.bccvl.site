@@ -329,13 +329,30 @@ def speciestraits_listing_details(expbrain):
 
 
 def mme_listing_details(expbrain):
-    exp = expbrain.getObject()
     details = {}
-    details.update({
-        'type': 'Migratory Modelling',
-        'functions': get_title_from_uuid(exp.function, u'(Unavailable)'),
-        'species_occurrence': '',
-        'species_absence': '',
-        'environmental_layers': ''
-    })
+    exp = expbrain.getObject()
+    if exp.datasubsets:
+        subsets = []
+        for subset in exp.datasubsets:
+            subsetdata = subset.get('subset')
+            if not subsetdata:
+                continue
+            title = subsetdata.get('title', u'missing data-subset') + ' - ' + ','.join(subsetdata.get('value'))
+            envlayers = []
+            for envuuid, layers in subset.get('environmental_datasets', {'': ['']}).items():
+                envlayers.append({
+                    'title': get_title_from_uuid(envuuid, u'(Unavailable)'),
+                    'layers': sorted(layers)
+                })
+            subsets.append({'title': title, 'layers': envlayers})
+
+        details.update({
+            'type': 'Migratory Modelling',
+            'functions': get_title_from_uuid(exp.function, u'(Unavailable)'),
+            'species_occurrence': get_title_from_uuid(
+                exp.species_occurrence_dataset, u'(Unavailable)') if exp.species_occurrence_dataset else '',
+            'species_absence': '',
+            'environmental_layers': subsets
+        })
     return details
+
