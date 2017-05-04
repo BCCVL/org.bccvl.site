@@ -5,6 +5,7 @@ import os.path
 from urlparse import urlsplit
 
 from Products.ZCatalog.interfaces import ICatalogBrain
+from Products.CMFCore.utils import getToolByName
 from plone import api
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.dexterity.utils import createContentInContainer
@@ -713,15 +714,22 @@ class MMJobTracker(MultiJobTracker):
 @adapter(IProjectionExperiment)
 class ProjectionJobTracker(MultiJobTracker):
 
-    def _create_result_container(self, sdmuuid, dsbrain, projlayers):
+    def _get_sdm_projection_result(self, sdmdsObj):
+        # return the unconstraint projection geotif results of SDM
+        pc = getToolByName(self.context, 'portal_catalog')
+        projbrains = pc.searchResults(path='/'.join(sdmdsObj.__parent__.getPhysicalPath()),
+                                      BCCDataGenre=['DataGenreCP'])
+        return [projbrains[0].UID]
+
+    def _create_result_container(self, sdmthreshold, dsbrain, projlayers):
         # create result object:
         # Get the algorithm used in SDM experiment
+        sdmuuid, threshold = sdmthreshold
         sdmdsObj = uuidToCatalogBrain(sdmuuid).getObject()
         algorithm = sdmdsObj.__parent__.job_params['function']
 
         # get more metadata about dataset
         dsmd = IBCCVLMetadata(dsbrain.getObject())
-
         year = dsmd.get('year', None)
         month = dsmd.get('month', None)
         # TODO: get proper labels for emsc, gcm
@@ -735,6 +743,7 @@ class ProjectionJobTracker(MultiJobTracker):
             title=title)
         result.job_params = {
             'species_distribution_models': sdmuuid,
+            'sdm_projections': self._get_sdm_projection_result(sdmdsObj),
             'year': year,
             'month': month,
             'emsc': dsmd['emsc'],
@@ -745,6 +754,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'projection_region': self.context.projection_region,
             # TO DO: This shall be input from user??
             'generate_convexhull': False,
+            'threshold': threshold.get('value')
         }
         return result
 
@@ -874,7 +884,7 @@ class ProjectionJobTracker(MultiJobTracker):
             exp = uuidToObject(expuuid)
             # TODO: what if two datasets provide the same layer?
             # start a new job for each sdm and future dataset
-            for sdmuuid in self.context.species_distribution_models[expuuid]:
+            for sdm_threshold in self.context.species_distribution_models[expuuid].items():
                 for dsuuid in self.context.future_climate_datasets:
                     dsbrain = uuidToCatalogBrain(dsuuid)
                     dsobj = dsbrain.getObject()
@@ -894,7 +904,7 @@ class ProjectionJobTracker(MultiJobTracker):
                             del projlayers[ds]
                     # create result
                     result = self._create_result_container(
-                        sdmuuid, dsbrain, projlayers)
+                        sdm_threshold, dsbrain, projlayers)
                     # update provenance
                     self._createProvenance(result)
                     # submit job

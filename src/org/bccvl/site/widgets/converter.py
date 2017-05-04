@@ -91,7 +91,17 @@ class ExperimentsSDMConverter(BaseDataConverter):
             return self.field.missing_value
 
         # TODO: do I need to return a copy?
-        #       or convert texline, set?
+        for exp in value:
+            for ds, threshold in value[exp].items():
+                thresholds = dataset.getThresholds(ds)[ds]
+                if threshold['label'] not in thresholds:
+                    # label not in list: is it a number?
+                    try:
+                        threshold['value'] = Decimal(threshold['label'])
+                    except:
+                        raise ValueError("Invalid '{0}' value for threshold".format(threshold['label']))
+                else:
+                    threshold['value'] = thresholds[threshold['label']]
         return value
 
 

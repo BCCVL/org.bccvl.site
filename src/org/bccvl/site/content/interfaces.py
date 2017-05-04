@@ -274,7 +274,10 @@ class IProjectionExperiment(IExperiment):
     species_distribution_models = Dict(
         title=u'Species Distribution Models',
         key_type=TextLine(),
-        value_type=List(value_type=TextLine(), required=True),
+        value_type=Dict(
+            key_type=TextLine(),
+            value_type=Dict()
+        ),
         default=None,
         required=True,
     )
