@@ -280,7 +280,7 @@ class ExperimentService(BaseService):
 
         props['species_traits_dataset_params'] = {}
         for col_name, col_val in params.get("columns", {}).items():
-            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'trait_ord', 'trait_nom', 'env_var_con', 'env_var_cat'):
+            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'trait_ord', 'trait_nom', 'env_var_con', 'env_var_cat', 'random_con', 'random_cat'):
                 continue
             props['species_traits_dataset_params'][col_name] = col_val
         if not props['species_traits_dataset_params']:
