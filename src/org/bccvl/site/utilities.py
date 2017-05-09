@@ -718,7 +718,7 @@ class ProjectionJobTracker(MultiJobTracker):
         # return the unconstraint projection geotif results of SDM
         pc = getToolByName(self.context, 'portal_catalog')
         projbrains = pc.searchResults(path='/'.join(sdmdsObj.__parent__.getPhysicalPath()),
-                                      BCCDataGenre=['DataGenreCP'])
+                                      BCCDataGenre=['DataGenreCP_ENVLOP'])
         return [projbrains[0].UID]
 
     def _create_result_container(self, sdmthreshold, dsbrain, projlayers):

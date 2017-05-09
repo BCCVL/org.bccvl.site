@@ -403,6 +403,8 @@ genre_vocabulary = SimpleVocabulary([
                "Rarity whole - Richness used in RAREW_CWE"),
     SimpleTerm("DataGenreRAREW_WE", "DataGenreRAREW_WE",
                "Rarity whole - weighted rarity"),
+    SimpleTerm("DataGenreClimateChangeMetric",
+               "DataGenreClimateChangeMetric", "Climate Change Metric"),
     SimpleTerm("DataGenreBiodiverseModel",
                "DataGenreBiodiverseModel", "Biodiverse output"),
     SimpleTerm("DataGenreBiodiverseOutput",
