@@ -319,7 +319,7 @@ def speciestraits_listing_details(expbrain):
 
     details = {}
     details.update({
-        'type': 'SPECIES TRAITS',
+        'type': 'STM',
         'functions': toolkits,
         'species_occurrence': species_occ,
         'species_absence': '',
@@ -347,7 +347,7 @@ def mme_listing_details(expbrain):
             subsets.append({'title': title, 'layers': envlayers})
 
         details.update({
-            'type': 'Migratory Modelling',
+            'type': 'MIGRATORY',
             'functions': get_title_from_uuid(exp.function, u'(Unavailable)'),
             'species_occurrence': get_title_from_uuid(
                 exp.species_occurrence_dataset, u'(Unavailable)') if exp.species_occurrence_dataset else '',
