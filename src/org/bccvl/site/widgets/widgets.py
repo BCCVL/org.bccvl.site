@@ -434,6 +434,7 @@ class FutureDatasetsWidget(HTMLFormElement, Widget):
                 # md = IBCCVLMetadata(brain.getObject())
                 yield {'title': brain.Title,
                        'uuid': brain.UID,
+                       'brain': brain,
                        }
 
     def extract(self):
