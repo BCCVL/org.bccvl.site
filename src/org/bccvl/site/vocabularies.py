@@ -382,7 +382,7 @@ genre_vocabulary = SimpleVocabulary([
     SimpleTerm("DataGenreSTResult", "DataGenreSTResult",
                "Species Traits Result"),
     SimpleTerm("DataGenreFP", "DataGenreFP", "Future Projection"),
-    SimpleTerm("DataGenreFP", "DataGenreFP_GRAPH", "Future Projection graph"),
+    SimpleTerm("DataGenreFP_GRAPH", "DataGenreFP_GRAPH", "Future Projection graph"),
     SimpleTerm("DataGenreCP", "DataGenreCP", "Current Projection"),
     SimpleTerm("DataGenreCP_ENVLOP", "DataGenreCP_ENVLOP", "Current Projection over Environmental envelope"),
     SimpleTerm("DataGenreLog", "DataGenreLog", "Output log file"),
