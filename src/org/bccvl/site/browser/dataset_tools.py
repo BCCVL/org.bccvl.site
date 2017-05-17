@@ -380,7 +380,7 @@ class DatasetTools(BrowserView):
                   'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
                   'DataGenreREDUNDANCY_ALL', 'DataGenreRAREW_CWE',
                   'DataGenreRAREW_RICHNESS', 'DataGenreRAREW_WE',
-                  'DataGenreEnsembleResult')
+                  'DataGenreEnsembleResult', 'DataGenreClimateChangeMetricMap')
         # context should be a result folder
         for brain in pc.searchResults(path='/'.join(context.getPhysicalPath()),
                                       BCCDataGenre=genres):
