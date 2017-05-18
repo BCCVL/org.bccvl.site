@@ -374,7 +374,7 @@ class DatasetTools(BrowserView):
             context = self.context
         pc = getToolByName(self.context, 'portal_catalog')
         genres = ('DataGenreFP', 'DataGenreCP', 'DataGenreSpeciesAbsence',
-                  'DataGenreCP_ENVLOP', 'DataGenreBinaryImage',
+                  'DataGenreFP_ENVLOP', 'DataGenreCP_ENVLOP', 'DataGenreBinaryImage',
                   'DataGenreENDW_CWE', 'DataGenreENDW_WE',
                   'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
                   'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',

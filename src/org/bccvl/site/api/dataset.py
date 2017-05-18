@@ -59,7 +59,7 @@ def getThresholds(datasets, thresholds=None):
         if dataobj is None:
             continue
         datamd = IBCCVLMetadata(dataobj)
-        if datamd['genre'] == 'DataGenreFP':
+        if datamd['genre'] in ('DataGenreFP', 'DataGenreFP_ENVLOP'):
             # we have a future projection ... go look for thresholds at SDM result
             sdmuuid = dataobj.__parent__.job_params['species_distribution_models']
             # get sdm result container

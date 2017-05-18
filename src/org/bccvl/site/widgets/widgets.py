@@ -464,7 +464,8 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
     Gives user the ability to select an experiment and pick a number of sdm models from within.
     """
 
-    genre = ['DataGenreCP', 'DataGenreCP_ENVLOP', 'DataGenreFP',
+    genre = ['DataGenreCP', 'DataGenreCP_ENVLOP', 
+             'DataGenreFP', 'DataGenreFP_ENVLOP',
              'DataGenreENDW_CWE', 'DataGenreENDW_WE',
              'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
              'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
@@ -539,7 +540,7 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
     """
 
     experiment_type = None
-    genre = ['DataGenreCP', 'DataGenreFP']
+    genre = ['DataGenreCP', 'DataGenreFP', 'DataGenreFP_ENVLOP']
     multiple = 'multiple'
 
     def items(self):
