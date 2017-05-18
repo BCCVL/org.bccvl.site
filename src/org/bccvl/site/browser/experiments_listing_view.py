@@ -324,6 +324,7 @@ def speciestraits_listing_details(expbrain):
         'species_occurrence': species_occ,
         'species_absence': '',
         'environmental_layers': envlayers,
+        'traits_dataset_params': exp.species_traits_dataset_params.items()
     })
     return details
 
