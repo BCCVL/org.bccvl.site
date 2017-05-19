@@ -472,7 +472,7 @@ def scientific_category_source(context):
     return scientific_category_vocabulary
 
 summary_dataset_vocabulary = SimpleVocabulary([
-    SimpleTerm("Summary datasets", "Summarydatasets", u'Summary datasets'),
+    SimpleTerm("Summary datasets", "Summarydatasets", u'Summary datasets (long term)'),
 ])
 
 
