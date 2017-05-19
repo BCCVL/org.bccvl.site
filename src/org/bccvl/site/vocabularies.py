@@ -473,6 +473,7 @@ def scientific_category_source(context):
 
 summary_dataset_vocabulary = SimpleVocabulary([
     SimpleTerm("Summary datasets", "Summarydatasets", u'Summary datasets (long term)'),
+    SimpleTerm("Monthly datasets", "Monthlydatasets", u'Monthly datasets'),
 ])
 
 
