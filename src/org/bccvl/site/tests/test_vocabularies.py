@@ -25,7 +25,7 @@ class LayerSourceTest(unittest.TestCase):
         self.assertIn(u'B01', source)
         term = source.getTerm(u'B01')
         self.assertEqual(term.value, u'B01')
-        self.assertEqual(len(source), 327)
+        self.assertEqual(len(source), 329)
 
 
 class GCMSourceTest(unittest.TestCase):
@@ -185,7 +185,7 @@ class TraitsFunctionsSpeciesSourceTest(unittest.TestCase):
         self.assertIn(data_uuid, source)
         # TODO: this test depends on whatever is setup in
         # org.bccvl.compute:content
-        self.assertEqual(len(source), 3)
+        self.assertEqual(len(source), 4)
 
 
 class TraitsFunctionsDiffSourceTest(unittest.TestCase):
@@ -232,4 +232,4 @@ class GenreSourceTest(unittest.TestCase):
         self.assertIn(u'DataGenreE', source)
         term = source.getTerm(u'DataGenreE')
         self.assertEqual(term.value, u'DataGenreE')
-        self.assertEqual(len(source), 33)
+        self.assertEqual(len(source), 39)
