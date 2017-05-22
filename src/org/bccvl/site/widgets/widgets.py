@@ -392,6 +392,7 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
                 continue
             value.setdefault(uuid, {})
 
+            # FIXME: does this work with multiple sdms? ... no indexing on model uuid?
             subuuid = self.request.get(
                 '{}.item.{}.item'.format(self.name, idx))
             if not subuuid:
