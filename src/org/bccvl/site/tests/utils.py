@@ -133,7 +133,28 @@ class SDMExperimentHelper(object):
                         }]
                     },
                     'layermd': {'files': {'proj_test.tif': {'layer': 'projection_probability', 'data_type': 'Continuous'}}}
+                },
+                {
+                    'file': {
+                        'url': 'file://{}/proj_test.tif'.format(tmpdir),
+                        'contenttype': 'image/tiff',
+                        'filename': 'proj_test.tif',
+                    },
+                    'title': 'Test Envelop Projection',
+                    'description': 'Test Envelop Projection Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreCP_ENVLOP',
+                    },
+                    'filemetadata': {
+                        'band': [{
+                            'min': 0.0,
+                            'STATISTICS_MINIMUM': 0.0,
+                            'max': 1.0
+                        }]
+                    },
+                    'layermd': {'files': {'proj_test.tif': {'layer': 'projection_probability', 'data_type': 'Continuous'}}}
                 }
+
             ]
             # TODO: tasks called dierctly here; maybe call them as tasks as
             # well? (chain?)
