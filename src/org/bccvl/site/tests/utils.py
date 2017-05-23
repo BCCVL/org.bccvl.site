@@ -133,7 +133,28 @@ class SDMExperimentHelper(object):
                         }]
                     },
                     'layermd': {'files': {'proj_test.tif': {'layer': 'projection_probability', 'data_type': 'Continuous'}}}
+                },
+                {
+                    'file': {
+                        'url': 'file://{}/proj_test.tif'.format(tmpdir),
+                        'contenttype': 'image/tiff',
+                        'filename': 'proj_test.tif',
+                    },
+                    'title': 'Test Envelop Projection',
+                    'description': 'Test Envelop Projection Description',
+                    'bccvlmetadata': {
+                        'genre': 'DataGenreCP_ENVLOP',
+                    },
+                    'filemetadata': {
+                        'band': [{
+                            'min': 0.0,
+                            'STATISTICS_MINIMUM': 0.0,
+                            'max': 1.0
+                        }]
+                    },
+                    'layermd': {'files': {'proj_test.tif': {'layer': 'projection_probability', 'data_type': 'Continuous'}}}
                 }
+
             ]
             # TODO: tasks called dierctly here; maybe call them as tasks as
             # well? (chain?)
@@ -186,7 +207,9 @@ class ProjectionExperimentHelper(object):
             'form.widgets.IDublinCore.description': u'This is my experiment description',
             'form.widgets.species_distribution_models.count': 1,
             'form.widgets.species_distribution_models.item.0': unicode(self.sdmexp.UID()),
+            #'form.widgets.species_distribution_models.item.0.item.0.uuid': unicode(self.sdmmodel.UID()),
             'form.widgets.species_distribution_models.item.0.item': [unicode(self.sdmmodel.UID())],
+            'form.widgets.species_distribution_models.item.0.item.0.threshold': u'0.5',
             'form.widgets.future_climate_datasets': [unicode(self.future.UID())]
         })
         self.request.form.update(data)

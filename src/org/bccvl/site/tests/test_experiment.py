@@ -222,7 +222,7 @@ class ExperimentProjectionAddTest(unittest.TestCase):
                          unicode(self.form.future.UID())])
         # FIXME: submitting with an empty model list doesn't cause form to fail
         self.assertEqual(exp.species_distribution_models,
-                         {self.form.sdmexp.UID(): [self.form.sdmmodel.UID()]})
+                         {self.form.sdmexp.UID(): {self.form.sdmmodel.UID(): {'label': u'0.5', 'value': Decimal('0.5')}}})
 
         # get result container: (there is only one)
         self.assertEqual(len(exp.objectIds()), 1)
@@ -233,7 +233,7 @@ class ExperimentProjectionAddTest(unittest.TestCase):
                                                                u'B02'])})
         # only one experiment so we only need to check first model
         self.assertEqual(result.job_params['species_distribution_models'],
-                         exp.species_distribution_models.values()[0][0])
+                         exp.species_distribution_models.values()[0].keys()[0])
         self.assertEqual(result.job_params['resolution'], u'Resolution30m')
         self.assertEqual(result.job_params['emsc'], u'RCP3PD')
         self.assertEqual(result.job_params['gcm'], u'cccma-cgcm31')
