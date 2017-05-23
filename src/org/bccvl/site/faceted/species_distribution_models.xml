@@ -66,6 +66,7 @@
    <property name="maxitems"></property>
    <property name="sortreversed"></property>
    <property name="default">
+    <element value="org.bccvl.content.mmexperiment"/>
     <element value="org.bccvl.content.msdmexperiment"/>
     <element value="org.bccvl.content.sdmexperiment"/>
    </property>

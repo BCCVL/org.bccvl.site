@@ -201,7 +201,12 @@ def projection_listing_details(expbrain):
         if sdmexp is not None:
             # TODO: absence data
             envlayers = []
-            for envuuid, layers in sorted(sdmexp.environmental_datasets.items()):
+            # TODO: list all the subset layers??
+            if sdmexp.portal_type == 'org.bccvl.content.mmexperiment':
+                environmental_datasets = sdmexp.datasubsets[0].get('environmental_datasets')
+            else:
+                environmental_datasets = sdmexp.environmental_datasets
+            for envuuid, layers in sorted(environmental_datasets.items()):
                 envbrain = uuidToCatalogBrain(envuuid)
                 envtitle = envbrain.Title if envbrain else u'Missing dataset'
                 envlayers.append({
@@ -211,7 +216,7 @@ def projection_listing_details(expbrain):
                 # TODO: job_params has only id of function not uuid ... not sure how to get to the title
                 toolkits = ', '.join(uuidToObject(sdmmodel).__parent__.job_params[
                                      'function'] for sdmmodel in exp.species_distribution_models[sdmuuid])
-                if sdmexp.portal_type == 'org.bccvl.content.sdmexperiment':
+                if sdmexp.portal_type in ('org.bccvl.content.sdmexperiment', 'org.bccvl.content.mmexperiment'):
                     species_occ = get_title_from_uuid(sdmexp.species_occurrence_dataset,
                                                       u'(Unavailable)') if sdmexp.species_occurrence_dataset else ''
                 else:

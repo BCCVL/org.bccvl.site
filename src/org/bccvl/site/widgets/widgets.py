@@ -326,9 +326,14 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             item['title'] = expbrain.Title
             item['uuid'] = expbrain.UID
             exp = expbrain.getObject()
-            item['layers'] = set((chain(*exp.environmental_datasets.values())))
+            # TODO: To get layers of all subsets?
+            if getattr(exp, 'datasubsets', None):
+                env_datasets = exp.datasubsets[0].get('environmental_datasets')
+                item['layers'] = set((chain(*env_datasets.values())))
+            else:
+                item['layers'] = set((chain(*exp.environmental_datasets.values())))
             expmd = IBCCVLMetadata(exp)
-            item['resolution'] = expmd['resolution']
+            item['resolution'] = expmd.get('resolution')
             # now search all models within and add infos
             pc = getToolByName(self.context, 'portal_catalog')
             # SDM model

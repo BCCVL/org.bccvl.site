@@ -881,7 +881,6 @@ class ProjectionJobTracker(MultiJobTracker):
                 return ('error',
                         u"Can't find method to run Projection Experiment")
             expuuid = self.context.species_distribution_models.keys()[0]
-            exp = uuidToObject(expuuid)
             # TODO: what if two datasets provide the same layer?
             # start a new job for each sdm and future dataset
             for sdm_threshold in self.context.species_distribution_models[expuuid].items():
@@ -892,7 +891,11 @@ class ProjectionJobTracker(MultiJobTracker):
                     futurelayers = set(dsmd['layers'].keys())
                     # match sdm exp layers with future dataset layers
                     projlayers = {}
-                    for ds, dslayerset in exp.environmental_datasets.items():
+                    # Get the environmental dataset from the job params
+                    sdmdsuuid, threshold = sdm_threshold
+                    sdmdsObj = uuidToCatalogBrain(sdmdsuuid).getObject()
+                    environmental_datasets = sdmdsObj.__parent__.job_params['environmental_datasets']
+                    for ds, dslayerset in environmental_datasets.items():
                         dslayerset = set(dslayerset)
                         # add matching layers
                         projlayers.setdefault(dsuuid, set()).update(
