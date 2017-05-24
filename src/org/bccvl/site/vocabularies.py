@@ -482,6 +482,16 @@ def summary_dataset_source(context):
     return summary_dataset_vocabulary
 
 
+monthly_dataset_vocabulary = SimpleVocabulary([
+    SimpleTerm("Monthly datasets", "Monthlydatasets", u'Monthly datasets'),
+])
+
+
+@provider(IVocabularyFactory)
+def monthly_dataset_source(context):
+    return monthly_dataset_vocabulary
+
+
 @provider(IVocabularyFactory)
 def data_collections_source(context):
     portal_url = getToolByName(context, 'portal_url')
