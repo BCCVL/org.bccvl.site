@@ -447,9 +447,9 @@
       </element>
       <element>
         <element key="value">fert</element>
-        <element key="title">Inherent rock fertility index</element>
-        <element key="unit"></element>
-        <element key="unitfull"></element>
+        <element key="title">Lithology fertility</element>
+        <element key="unit">Index</element>
+        <element key="unitfull">Index</element>
         <element key="legend">default</element>
         <element key="type">substrate</element>
         <element key="tooltip">An index of inherent rock fertility by de Vries (2009) for the 1:1 million geology of Australia (Raymond 2009) based on a scheme from the Broad lassification
@@ -457,35 +457,30 @@
       </element>
       <element>
         <element key="value">geollmeanage</element>
-        <element key="title">Geological age (log10) mean</element>
+        <element key="title">Lithology mean age</element>
         <element key="unit">Log10 M years</element>
-        <element key="unitfull">logarithm to base 10 millions of years before present</element>
+        <element key="unitfull">logarithm to base 10 millions of years</element>
         <element key="legend">default</element>
         <element key="type">substrate</element>
-        <element key="tooltip">Mean geological age (logarithm to base 10 millions of years before present) derived from the 1:1 million surface geology of Australia (Raymond 2009) by
-        combining the descriptive geological age fields with the timescales database (Laurie et al. 2008) to assign numerical ages to each map unit. The mean age values represent the average of the age values in four fields (MIN_TOPAGE, MAX_TOPAGE, MIN_BOTAGE, MAX_BOTAGE). Rock voids without data including lakes were filled by neighbourhood statistics.</element>
+        <element key="tooltip">Mean geological age (logarithm to base 10 millions of years before present) derived from the 1:1 million surface geology of Australia (Raymond 2009) by combining the descriptive geological age fields with the timescales database (Laurie et al. 2008) to assign numerical ages to each map unit.</element>
       </element>      
       <element>
         <element key="value">corg0</element>
-        <element key="title">Pre-European estimate of mean annual store of soil organic carbon</element>
-        <element key="unit">kgC ha^-1</element>
-        <element key="unitfull">kilograms carbon per hectare</element>
+        <element key="title">Carbon store pre-European</element>
+        <element key="unit">kgC/ha</element>
+        <element key="unitfull">Kilograms of Carbon per Hectare</element>
         <element key="legend">default</element>
         <element key="type">substrate</element>
-        <element key="tooltip">This is the basic measure of the store of soil organic matter on the landscape. Like plant and litter carbon stores, the soil carbon stores are strongly 
-        controlled by Net Primary Production (NPP), and hence by rainfall and saturation deficit. All these C stores are also modulated by temperature because low temperatures slow 
-        the decay of plant material and high temperatures promote rapid decay. Typically, most soil carbon occurs in the upper soil layer. Derived from the BiosEquil model by Raupach 
-        et al.</element>
+        <element key="tooltip">Pre-European estimate of mean annual store of soil organic carbon. This is the basic measure of the store of soil organic matter on the landscape. Like plant and litter carbon stores, the soil carbon stores are strongly controlled by Net Primary Production (NPP), and hence by rainfall and saturation deficit. All these C stores are also modulated by temperature because low temperatures slow the decay of plant material and high temperatures promote rapid decay. Typically, most soil carbon occurs in the upper soil layer.</element>
       </element>
       <element>
         <element key="value">ptotn0</element>
-        <element key="title">Pre-European estimate of mean annual store of total plantavailable soil phosphorus</element>
-        <element key="unit">kgP ha^-1</element>
+        <element key="title">Phosphorus plant-available pre-European</element>
+        <element key="unit">kgP/ha</element>
         <element key="unitfull">kilograms phosphorus per hectare</element>
         <element key="legend">default</element>
         <element key="type">substrate</element>
-        <element key="tooltip">Total plant-available soil phosphorus (P) consists of the organic P in litter and soil plus the plant-available mineral P. Plant-available P stores are far 
-        from the total P store in the landscape, because much of the mineral P in the soil is tightly chemically bound to the soil matrix and is therefore only weakly available for plant growth (secondary P) or unavailable in time scales less than centuries (occluded P). However, mineral P values from soil tests include some of this unavailable P. For the plant-available phosphorus budget, the inflows include physical or biological weathering which releases P from inert soil pools, and fertilisation; outflows include leaching, export in runoff (in both dissolved and sedimentbound forms) and removal by harvest. Derived from the BiosEquil model by Raupach et al.</element>
+        <element key="tooltip">Pre-European estimate of mean annual store of total plant-available soil phosphorus.</element>
       </element>
       <element>
         <element key="value">vastgridv2_1k</element>
