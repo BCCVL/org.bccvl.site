@@ -398,21 +398,22 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             value.setdefault(uuid, {})
 
             # FIXME: does this work with multiple sdms? ... no indexing on model uuid?
-            subuuid = self.request.get(
-                '{}.item.{}.item'.format(self.name, idx))
-            if not subuuid:
-                continue
-            subuuid = subuuid[0]
-            dsth = self.request.get(
-                '{}.item.{}.item.0.threshold'.format(self.name, idx))
-            value[uuid][subuuid] = {'label': dsth}
+            subcount = int(self.request.get('{}.item.0.count'.format(self.name), '0'))
+            for i in range(0, subcount):
+                subuuid = self.request.get(
+                    '{}.item.{}.item.{}.uuid'.format(self.name, idx, i))
+                if not subuuid:
+                    continue
+                dsth = self.request.get(
+                    '{}.item.{}.item.{}.threshold'.format(self.name, idx, i))
+                value[uuid][subuuid] = {'label': dsth}
         if not value:
             return NO_VALUE
         # FIXME: we support only one experiment at the moment, so let's grap
         # first one from dict
         modeluuids= value[uuid].keys()
         if modeluuids:
-            return {uuid: {modeluuids[0]: value[uuid][modeluuids[0]]} }
+            return value
         return {uuid: {}}
 
 
