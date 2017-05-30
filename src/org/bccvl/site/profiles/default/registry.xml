@@ -452,8 +452,7 @@
         <element key="unitfull">Index</element>
         <element key="legend">default</element>
         <element key="type">substrate</element>
-        <element key="tooltip">An index of inherent rock fertility by de Vries (2009) for the 1:1 million geology of Australia (Raymond 2009) based on a scheme from the Broad lassification
-         of Parent Material for Pedologic Purposes (Gray and Murphy 1999). The scheme ranks lithological types on a 1 to 6 scale from rocks that are extremely siliceous (&gt;90% silica) with an extremely low base content (&lt;3% Ca, Mg, Fe oxides) to those that are ultramafic (&lt;45% silica and &gt;30% base content). The original data range (1-6) has been multiplied by 2: values now range from very low fertility (2) to very high fertility (12). Rock voids without data including lakes were filled by neighbourhood statistics.</element>
+        <element key="tooltip">An index of inherent rock fertility by de Vries (2009) for the 1:1 million geology of Australia (Raymond 2009) based on a scheme from the Broad classification of Parent Material for Pedologic Purposes (Gray and Murphy 1999). The scheme ranks lithological types on a 1 to 6 scale from rocks that are extremely siliceous (&gt;90% silica) with an extremely low base content (&lt;3% Ca, Mg, Fe oxides) to those that are ultramafic (&lt;45% silica and &gt;30% base content). The original data range (1-6) has been multiplied by 2: values now range from very low fertility (2) to very high fertility (12). Rock voids without data including lakes were filled by neighbourhood statistics.</element>
       </element>
       <element>
         <element key="value">geollmeanage</element>
