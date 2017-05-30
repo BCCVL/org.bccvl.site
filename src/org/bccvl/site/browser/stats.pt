@@ -17,7 +17,7 @@
       }
     </style>
   </metal:styleslot>
-  
+
       <metal:javascriptslot fill-slot="javascript_head_slot">
         <!-- TODO: that grabs bootstrap from theme -->
         <script type="text/javascript"
@@ -48,9 +48,9 @@
               <td>Active (past 90 days)</td>
               <td tal:content="view/users_active" style="text-align:right;"/>
             </tr>
-            
+
             <tr class="blank_row"/>
-            
+
             <tr class="stats_header">
               <td colspan="2"><h4>Users per Institution</h4></td>
             </tr>
@@ -62,7 +62,7 @@
               <td>&nbsp;</td>
               <td tal:content="view/users_total" style="text-align:right;" class="tally"/>
             </tr>
-            
+
             <tr class="blank_row"/>
 
             <tr class="stats_header">
@@ -80,9 +80,9 @@
               <td>&nbsp;</td>
               <td tal:content="view/datasets_added" style="text-align:right;" class="tally"/>
             </tr>
-            
+
             <tr class="blank_row"/>
-            
+
             <tr>
               <td>Added By Users</td>
               <td tal:content="view/datasets_added_users" style="text-align:right;"/>
@@ -91,19 +91,19 @@
               <td>Datasets Generated</td>
               <td tal:content="view/datasets_generated" style="text-align:right;"/>
             </tr>
-            
+
             <tr class="blank_row"/>
-            
+
             <tr class="stats_header">
               <td><h4>Experiments</h4></td>
               <td>Count</td>
               <td>Completed</td>
               <td>Failed</td>
-              <td>Runtime (seconds)</td>  
+              <td>Runtime (seconds)</td>
             </tr>
             <tr tal:repeat="exp_type view/experiment_types"
                 tal:define="exp_run view/experiment_average_runtimes">
-              <td tal:content="python: exp_run[exp_type[0]]['title']"/>
+              <td tal:content="python: view.exp_types[exp_type[0]]"/>
               <td tal:content="python: exp_type[1]" style="text-align:right;"/>
               <td tal:content="python: exp_run[exp_type[0]]['success']" style="text-align:right;"/>
               <td tal:content="python: exp_run[exp_type[0]]['failed']" style="text-align:right;"/>
@@ -113,9 +113,9 @@
               <td>&nbsp;</td>
               <td tal:content="view/experiments_run" style="text-align:right;" class="tally"/>
             </tr>
-            
+
             <tr class="blank_row"/>
-            
+
             <tr>
               <td>Experiments Published</td>
               <td tal:content="view/experiments_published" style="text-align:right;"/>
@@ -124,24 +124,24 @@
               <td>Jobs Run</td>
               <td tal:content="view/jobs" style="text-align:right;"/>
             </tr>
-            
+
             <tr class="blank_row"/>
-            
+
             <tr class="stats_header">
               <td><h4>Algorithms</h4></td>
               <td>Count</td>
               <td>Completed</td>
               <td>Failed</td>
-              <td>Runtime (seconds)</td>              
+              <td>Runtime (seconds)</td>
             </tr>
-            <tal:block tal:repeat="algo_type view/algorithm_types"
+            <tal:block tal:repeat="algo_type view/func_by_uuid"
                        tal:define="algo_run view/algorithm_average_runtimes">
-              <tr tal:condition="python: algo_type[0] in algo_run">
-                <td tal:content="python: view.get_func_obj(funcid=algo_type[0]).Title"/>
-                <td tal:content="python: algo_run[algo_type[0]]['count']" style="text-align:right;"/>
-                <td tal:content="python: algo_run[algo_type[0]]['success']" style="text-align:right;"></td>
-                <td tal:content="python: algo_run[algo_type[0]]['failed']" style="text-align:right;"></td>
-                <td tal:content="python: algo_run[algo_type[0]]['mean']" style="text-align:right;"></td>
+              <tr tal:condition="python: algo_type in algo_run">
+                <td tal:content="python: view.func_by_uuid[algo_type]"/>
+                <td tal:content="python: algo_run[algo_type]['count']" style="text-align:right;"/>
+                <td tal:content="python: algo_run[algo_type]['success']" style="text-align:right;"></td>
+                <td tal:content="python: algo_run[algo_type]['failed']" style="text-align:right;"></td>
+                <td tal:content="python: algo_run[algo_type]['mean']" style="text-align:right;"></td>
               </tr>
             </tal:block>
           </table>
@@ -163,7 +163,7 @@
             </thead>
             <tbody
                 tal:define="users_experiments view/users_experiments">
-              <tr tal:repeat="member view/_users">
+              <tr tal:repeat="member view/gen_user_list">
                 <td tal:content="python: member.getUserName()">Login name</td>
                 <td tal:content="python: member.getProperty('fullname')">User Name</td>
                 <td tal:content="python: member.getProperty('email')">user@email.com</td>
