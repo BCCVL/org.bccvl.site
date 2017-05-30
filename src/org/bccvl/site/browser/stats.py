@@ -1,16 +1,11 @@
 from collections import Counter
-import json
 from operator import itemgetter
 from datetime import datetime, timedelta
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from plone import api
-from plone.app.uuid.utils import uuidToCatalogBrain
-from plone.app.contenttypes.interfaces import IFolder
 from Products.CMFCore.interfaces import ITypeInformation
 from zope.component import getUtility
-from org.bccvl.site.job.interfaces import IJobTracker
-from org.bccvl.site.interfaces import IExperimentJobTracker
+from org.bccvl.site.content.function import IFunction
 from org.bccvl.site.job.interfaces import IJobUtility
 from ..content.interfaces import (
     IExperiment,
@@ -22,217 +17,336 @@ from ..content.interfaces import (
 class StatisticsView(BrowserView):
 
     def __call__(self):
-        self.func_obj_cache = {}
-        _search = getToolByName(self.context, 'portal_catalog').unrestrictedSearchResults
+        # TODO: shouldn't get experiment path via context... could be anything
+        self.experiments_path = dict(query='/'.join(self.context.experiments.getPhysicalPath()))
+        self.datasets_path = dict(query='/'.join(self.context.datasets.getPhysicalPath()))
 
-        experiments_path = dict(query='/'.join(self.context.experiments.getPhysicalPath()))
-        self._experiments = _search(
-            path=experiments_path,
-            object_provides=IExperiment.__identifier__
-        )
-        # self._experiments = [ x._unrestrictedGetObject() for x in _experiments ]
+        self.exp_types = {}
+        for exp_type in ['org.bccvl.content.sdmexperiment',
+                         'org.bccvl.content.projectionexperiment',
+                         'org.bccvl.content.biodiverseexperiment',
+                         'org.bccvl.content.ensemble',
+                         'org.bccvl.content.speciestraitsexperiment',
+                         'org.bccvl.content.mmexperiment',
+                         'org.bccvl.content.msdmexperiment',
+                         ]:
+            self.exp_types[exp_type] = getUtility(ITypeInformation, exp_type).Title()
 
-        self._experiments_pub = _search(
-            path=experiments_path,
-            object_provides=IExperiment.__identifier__,
-            review_state='published',
-        )
+        pc = api.portal.get_tool("portal_catalog")
+        self.func_by_uuid = {}
+        self.func_by_id = {}
+        for func in pc.unrestrictedSearchResults(object_provides=IFunction.__identifier__):
+            self.func_by_uuid[func.UID] = func.Title
+            self.func_by_id[func.getId] = func.UID
 
-        datasets_path = dict(query='/'.join(self.context.datasets.getPhysicalPath()))
-        self._datasets_added = _search(
-            path=datasets_path,
-            object_provides=IDataset.__identifier__,
-            job_state=('COMPLETED', 'QUEUED', 'RUNNING'),
-        )
-        self._datasets_added_remote = _search(
-            path=datasets_path,
-            object_provides=IRemoteDataset.__identifier__,
-            job_state=('COMPLETED', 'QUEUED', 'RUNNING'),
-        )
-        self._datasets_added_failed = _search(
-            path=datasets_path,
-            object_provides=IDataset.__identifier__,
-            job_state='FAILED',
-        )
-
-        self._datasets_gen = _search(
-            path=experiments_path,
-            object_provides=IDataset.__identifier__,
-        )
-
-        EXP_TYPES = ['org.bccvl.content.sdmexperiment',
-                     'org.bccvl.content.projectionexperiment',
-                     'org.bccvl.content.biodiverseexperiment',
-                     'org.bccvl.content.ensemble',
-                     'org.bccvl.content.speciestraitsexperiment'
-                     ]
-        self._jobtool = getUtility(IJobUtility)
-        self._jobs = self._jobtool.query(type=EXP_TYPES)
-
-        self._users = api.user.get_users()
-        emails = (u.getProperty('email') for u in self._users)
-        self._institutions = Counter(e.split('@')[-1] for e in emails)
+        self._user_stats = None
+        self._dataset_stats = None
+        self._experiments_stats = None
+        self._job_stats = None
 
         return super(StatisticsView, self).__call__()
 
+    def gen_user_list(self):
+        portal_membership = api.portal.get_tool('portal_membership')
+        for userid in portal_membership.listMemberIds():
+            yield portal_membership.getMemberById(userid)
+
+    def get_user_stats(self):
+        if self._user_stats:
+            return self._user_stats
+        users_count = 0
+        users_active = 0
+        institutions = Counter()
+
+        # active is if logged in within the last 90 days
+        furthest_login_time = datetime.now() - timedelta(days=90)
+        portal_membership = api.portal.get_tool('portal_membership')
+        for userid in portal_membership.listMemberIds():
+            # load one user at a time to save memory
+            users_count += 1
+            member = portal_membership.getMemberById(userid)
+            if member.getProperty('last_login_time').utcdatetime() > furthest_login_time:
+                users_active += 1
+            institutions[member.getProperty('email').split('@')[-1]] += 1
+
+        # number of experiments run per user:
+        user_experiments = Counter()
+        pc = api.portal.get_tool('portal_catalog')
+        for exp in pc.unrestrictedSearchResults(path=self.experiments_path,
+                                                object_provides=IExperiment.__identifier__):
+            user_experiments[exp.Creator] += 1
+        self._user_stats = {
+            'users': {
+                'count': users_count,
+                'active': users_active
+            },
+            'institutions': {
+                'count': len(institutions),
+                'domains': sorted(institutions.iteritems(), key=itemgetter(0))
+            },
+            'user_experiments': user_experiments
+        }
+        return self._user_stats
+
     def users_total(self):
-        return len(self._users)
+        stats = self.get_user_stats()
+        return stats['users']['count']
 
     def users_new(self):
         return 999999
 
     def users_experiments(self):
-        # returns a dict with user id's as key and number of experiments run
-        return Counter(x.Creator for x in self._experiments)
+        stats = self.get_user_stats()
+        return stats['user_experiments']
 
     def users_active(self):
-        furthest_login_time = datetime.now() - timedelta(days=90)
-        last_login_times = (x.getProperty('last_login_time').utcdatetime() for x in self._users)
-        return len(
-            [x for x in last_login_times if x > furthest_login_time]
-        )
+        stats = self.get_user_stats()
+        return stats['users']['active']
 
     def institutions(self):
-        by_institution = itemgetter(0)  # sort by key
-        return sorted(self._institutions.iteritems(), key=by_institution)
+        stats = self.get_user_stats()
+        return stats['institutions']['domains']
 
     def institutions_total(self):
-        return len(self._institutions)
+        stats = self.get_user_stats()
+        return stats['institutions']['count']
+
+    def get_dataset_stats(self):
+        if self._dataset_stats:
+            return self._dataset_stats
+
+        ds_count = 0
+        ds_added_remote = 0
+        ds_added_local = 0
+        ds_added_users = 0
+        ds_added_failed = 0
+        ds_generated = 0
+
+        pc = api.portal.get_tool('portal_catalog')
+        # stats for all datasets in datasets section
+        for ds in pc.unrestrictedSearchResults(path=self.datasets_path,
+                                               object_provides=IDataset.__identifier__,  #, IRemoteDataset.__identifier)
+                                               job_state=('COMPLETED', 'QUEUED', 'RUNNING', 'FAILED')):
+            ds_count += 1
+            if ds.portal_type == 'org.bccvl.content.remotedataset':
+                ds_added_remote += 1
+            else:
+                ds_added_local += 1
+            # we should rather check ds._unrestrictedGetObject().getOwner().getUser().id ... and ideally any user that has a local role 'Owner' for this object.
+            # but that get's very expensive
+            if ds.Creator not in ('bccvl', 'admin'):
+                ds_added_users += 1
+            if ds.job_state == 'FAILED':
+                ds_added_failed += 1
+        # stats for all datasets in experiments section
+        ds_generated = len(pc.unrestrictedSearchResults(path=self.experiments_path,
+                                                        object_provides=IDataset.__identifier__))
+
+        self._dataset_stats = {
+            'datasets': {
+                'count': ds_count,
+                'generated': ds_generated,
+                'added': {
+                    'remote': ds_added_remote,
+                    'local': ds_added_local,
+                    'users': ds_added_users,
+                    'failed': ds_added_failed
+                }
+            }
+        }
+        return self._dataset_stats
 
     def datasets(self):
-        return self.datasets_added() + self.datasets_generated()
+        stats = self.get_dataset_stats()
+        return stats['datasets']['count']
 
     def datasets_added(self):
-        return len(self._datasets_added)
+        stats = self.get_dataset_stats()
+        return stats['datasets']['added']['remote'] + stats['datasets']['added']['local']
 
     def datasets_added_remote(self):
-        return len(self._datasets_added_remote)
+        stats = self.get_dataset_stats()
+        return stats['datasets']['added']['remote']
 
     def datasets_added_local(self):
-        return self.datasets_added() - self.datasets_added_remote()
+        stats = self.get_dataset_stats()
+        return stats['datasets']['added']['local']
 
     def datasets_added_users(self):
-        datasets = (x._unrestrictedGetObject() for x in self._datasets_added)
-        owners = (x.getOwner() for x in datasets)
-        return len(
-            [x for x in owners if x.getUserName() not in ('admin', 'bccvl',)]
-        )
+        stats = self.get_dataset_stats()
+        return stats['datasets']['added']['users']
 
     def datasets_added_failed(self):
-        return len(self._datasets_added_failed)
+        stats = self.get_dataset_stats()
+        return stats['datasets']['added']['failed']
 
     def datasets_generated(self):
-        return len(self._datasets_gen)
+        stats = self.get_dataset_stats()
+        return stats['datasets']['generated']
+
+    def get_experiments_stats(self):
+        if self._experiments_stats:
+            return self._experiments_stats
+        exps_count = 0
+        exps_count_pub = 0
+        exps_types = Counter()
+        runtime = {}
+        algorithms = Counter()
+
+        pc = api.portal.get_tool('portal_catalog')
+        # stats for all datasets in datasets section
+        for exp in pc.unrestrictedSearchResults(path=self.experiments_path,
+                                                object_provides=IExperiment.__identifier__):
+            exps_count += 1
+            if exp.review_state == 'published':
+                exps_count_pub += 1
+            exps_types[exp.portal_type] += 1
+            # collect runtime stats
+            # portal_type seen first time
+            if exp.portal_type not in runtime:
+                runtime[exp.portal_type] = {
+                    'runtime': 0,
+                    'failed': 0,
+                    'success': 0,
+                    'count': 0
+                }
+            obj = exp._unrestrictedGetObject()
+            if hasattr(obj, 'runtime'):
+                runtime[exp.portal_type]['runtime'] += obj.runtime
+                runtime[exp.portal_type]['count'] += 1
+            if (exp.job_state in (None, 'COMPLETED', 'FINISHED')):
+                runtime[exp.portal_type]['success'] += 1
+            elif (exp.job_state in ('RUNNING',)):
+                # ignore running experiments
+                pass
+            else:
+                runtime[exp.portal_type]['failed'] += 1
+            # collect per algorithm stats
+            algouuids = []
+            if hasattr(obj, 'functions'):
+                algouuids = obj.functions
+            if hasattr(obj, 'algorithm'):
+                algouuids = [obj.algorithm]
+            for algouuid in algouuids:
+                if algouuid not in self.func_by_uuid:
+                    # ignore unknown function uuids
+                    continue
+                algorithms[algouuid] += 1
+
+        # calc runtime summaries
+        for pt in runtime.keys():
+            if runtime[pt]['count']:
+                runtime[pt]['runtime'] /= runtime[pt]['count']
+                runtime[pt]['runtime'] = "{:.1f}".format(runtime[pt]['runtime'])
+            else:
+                runtime[pt]['runtime'] = 'n/a'
+
+        self._experiments_stats = {
+            'count': exps_count,
+            'count_pub': exps_count_pub,
+            'types': exps_types.most_common(),
+            'runtime': runtime,
+            'algorithms': algorithms.most_common()
+        }
+        return self._experiments_stats
 
     def experiments_run(self):
-        return len(self._experiments)
+        stats = self.get_experiments_stats()
+        return stats['count']
 
     def experiments_published(self):
-        return len(self._experiments_pub)
+        stats = self.get_experiments_stats()
+        return stats['count_pub']
 
     def experiment_types(self):
-        experiments = Counter(x.portal_type for x in self._experiments)
-        return experiments.most_common()
-
-    def experiment_type_title(self, portal_type):
-        return getUtility(ITypeInformation, portal_type).Title()
+        stats = self.get_experiments_stats()
+        return stats['types']
 
     def experiment_average_runtimes(self):
-        runtime = {}
-        for x in self._experiments:
-            exp = x._unrestrictedGetObject()
-            jt = IExperimentJobTracker(exp)
-            success = jt.state in (None, 'COMPLETED')
-            if not runtime.has_key(x.portal_type):
-                runtime[x.portal_type] = {'runtime': 0, 'failed': 0, 'success': 0, 'count': 0,
-                                          'title': self.experiment_type_title(x.portal_type)}
-
-            if hasattr(exp, 'runtime'):
-                runtime[x.portal_type]['runtime'] += exp.runtime
-                runtime[x.portal_type]['count'] += 1
-            if success:
-                runtime[x.portal_type]['success'] += 1
-            else:
-                runtime[x.portal_type]['failed'] += 1
-
-        for i in runtime.keys():
-            if runtime[i]['count']:
-                runtime[i]['runtime'] /= runtime[i]['count']
-                runtime[i]['runtime'] = "%.1f" % (runtime[i]['runtime'])
-            else:
-                runtime[i]['runtime'] = "n/a"
-        return runtime
-
-    def algorithm_average_runtimes(self):
-        stats = {}
-
-        for x in self._jobs:
-            job = self._jobtool.get_job_by_id(x.id)
-
-            if job is None or job.state == 'RUNNING' or job.type not in ['org.bccvl.content.sdmexperiment', 'org.bccvl.content.speciestraitsexperiment']:
-                continue
-            # Get the runtime each algorithm for each experiement type.
-            # An algorithm is mutually exclusive for SDM or Species Traits experiement.
-            success = job.state in (None, 'COMPLETED')
-            algid = job.function
-
-            # Initialise statistic variables for each algorithm
-            if not algid:
-                continue
-
-            if not stats.has_key(algid):
-                stats[algid] = {'runtime': 0.0, 'count': 0, 'mean': 0.0, 'success': 0,
-                                'failed': 0, 'nodata_count': 0, 'nodata_success': 0, 'nodata_failed': 0}
-
-            runtime = -1.0
-            if hasattr(job, 'rusage') and job.rusage is not None:
-                runtime = job.rusage['rusage'].get('ru_utime', -1.0) + job.rusage['rusage'].get('ru_stime', -1.0)
-            if runtime >= 0.0:
-                stats[algid]['runtime'] += runtime
-                stats[algid]['count'] += 1
-                if success:
-                    stats[algid]['success'] += 1
-                else:
-                    stats[algid]['failed'] += 1
-            else:
-                stats[algid]['nodata_count'] += 1
-                if success:
-                    stats[algid]['nodata_success'] += 1
-                else:
-                    stats[algid]['nodata_failed'] += 1
-
-        for i in stats.keys():
-            stats[i]['mean'] = "%.1f" % (stats[i]['runtime'] / stats[i]['count'])
-            stats[i]['count'] += stats[i]['nodata_count']
-            stats[i]['success'] += stats[i]['nodata_success']
-            stats[i]['failed'] += stats[i]['nodata_failed']
-        return stats
+        stats = self.get_experiments_stats()
+        return stats['runtime']
 
     def algorithm_types(self):
-        def func_ids():
-            for x in self._experiments:
-                exp = x._unrestrictedGetObject()
-                if hasattr(exp, 'functions'):
-                    for funcid in exp.functions:
-                        yield funcid
-                if hasattr(exp, 'algorithm'):
-                    yield exp.algorithm
-        # FIXME: this counts experiment objects... the number of result objects per algorithm
-        #        may be different (esp. if experiment has been saved but not started or has
-        #        been re-run multiple times)
-        # FIXME: we ignore removed func objects here... they should probably still show up somehow?
-        func_obs = (self.get_func_obj(x) for x in func_ids())
-        algorithm_types = Counter(func_ob.getId for func_ob in func_obs if func_ob)
-        return algorithm_types.most_common()
+        stats = self.get_experiments_stats()
+        return stats['algorithms']
 
-    def get_func_obj(self, uuid=None, funcid=None):
-        if (funcid is None or funcid in self.func_obj_cache) and uuid is not None:
-            brain = uuidToCatalogBrain(uuid)
-            if brain is None:
-                return None
-            self.func_obj_cache[brain.getId] = brain
-            return self.func_obj_cache[brain.getId]
-        return self.func_obj_cache[funcid]
+    def get_job_stats(self):
+        if self._job_stats:
+            return self._job_stats
+        jobtool = getUtility(IJobUtility)
+        count = 0
+        stats = {}
+
+        for job in jobtool.query(type=self.exp_types.keys()):
+            count += 1
+            obj = jobtool.get_job_by_id(job.id)
+            if obj is None or obj.state == 'RUNNING':
+                continue
+
+            success = obj.state in (None, 'COMPLETED', 'FINISHED')
+            running = obj.state in ('RUNNING', )
+            algouuid = self.func_by_id.get(obj.function, None)
+            if not algouuid:
+                # ignore unknown algorithm
+                continue
+            # algo seen first time
+            if not stats.has_key(algouuid):
+                stats[algouuid] = {
+                    'runtime': 0.0,
+                    'count': 0,
+                    'mean': 0,
+                    'success': 0,
+                    'failed': 0,
+                    'nodata_count': 0,
+                    'nodata_success': 0,
+                    'nodata_failed': 0
+                }
+            runtime = -1.0
+            if hasattr(obj, 'rusage') and obj.rusage is not None:
+                rusage = obj.rusage['rusage']
+                if rusage.get('ru_utime') is None or rusage.get('ru_stime') is None:
+                    runtime = -1.0
+                else:
+                    runtime = rusage['ru_utime'] + rusage['ru_stime']
+            if runtime >= 0.0:
+                stats[algouuid]['runtime'] += runtime
+                stats[algouuid]['count'] += 1
+                if success:
+                    stats[algouuid]['success'] += 1
+                elif running:
+                    # ignore running jobs
+                    pass
+                else:
+                    stats[algouuid]['failed'] += 1
+            else:
+                stats[algouuid]['nodata_count'] += 1
+                if success:
+                    stats[algouuid]['nodata_success'] += 1
+                elif running:
+                    # ignore running jobs
+                    pass
+                else:
+                    stats[algouuid]['nodata_failed'] += 1
+        # calc summaries
+        for aid in stats.keys():
+            if stats[aid]['count']:
+                stats[aid]['mean'] = "{:.1f}".format(stats[aid]['runtime'] / stats[aid]['count'])
+            else:
+                stats[aid]['mean'] = 'n/a'
+            stats[aid]['count'] += stats[aid]['nodata_count']
+            stats[aid]['success'] += stats[aid]['nodata_success']
+            stats[aid]['failed'] += stats[aid]['nodata_failed']
+        self._job_stats = {
+            'count': count,
+            'average_runtimes': stats
+        }
+        return self._job_stats
+
+    def algorithm_average_runtimes(self):
+        stats = self.get_job_stats()
+        return stats['average_runtimes']
 
     def jobs(self):
-        return len(self._jobs)
+        # all experiment related jobs
+        stats = self.get_job_stats()
+        return stats['count']
