@@ -21,6 +21,8 @@ from z3c.form.field import Fields
 from zope.component import getUtility
 from zope.schema import Bool
 
+from org.bccvl import movelib
+from org.bccvl.movelib.utils import build_source, build_destination
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo
 from org.bccvl.site.content.interfaces import IBlobDataset
@@ -166,6 +168,8 @@ class BCCVLUploadForm(DefaultAddForm):
                 immutable=True)
             # create upload task in case we upload to external store
             if hasattr(self, '_upload'):
+                # FIXME: we can't use ssh here.... we don't know which container we are in... and
+                #        sshing here is bad as well....
                 # There is an upload ... we have to make sure the uploaded data ends up in external storage
                 # 3. put temp file aside
                 tmpdir = tempfile.mkdtemp(prefix='bccvl_upload')
@@ -177,52 +181,43 @@ class BCCVLUploadForm(DefaultAddForm):
                 except OSError:
                     # try copy
                     shutil.copy(blobf.name, tmpfile)
-                # 4. update task chain
-                src_url = 'scp://{uid}@{ip}:{port}{file}'.format(
-                    uid=pwd.getpwuid(os.getuid()).pw_name,
-                    ip=get_hostname(self.request),
-                    port=os.environ.get('SSH_PORT', 22),
-                    file=tmpfile)
-                dest_url = 'swift+{}'.format(new_object.remoteUrl)
-                move_task = app.signature(
-                    'org.bccvl.tasks.datamover.tasks.move',
-                    kwargs={
-                        'move_args': [(src_url, dest_url)],
-                        'context': {
-                            'context': context_path,
-                            'user': {
-                                'id': member.getUserName(),
-                                'email': member.getProperty('email'),
-                                'fullname': member.getProperty('fullname')
-                            }
-                        }
-                    },
-                    immutable=True)
-                cleanup_task = app.signature(
-                    'org.bccvl.tasks.plone.import_cleanup',
-                    kwargs={
-                        'path': os.path.dirname(tmpfile),
-                        'context': {
-                            'context': context_path,
-                            'user': {
-                                'id': member.getUserName(),
-                                'email': member.getProperty('email'),
-                                'fullname': member.getProperty('fullname')
-                            }
-                        }
-                    },
-                    immutable=True)
 
-                update_task = move_task | update_task | cleanup_task
+                # TODO: we push the uploaded file directly to swift here..
+                #       this really should be a background process
+                #       best solution: ...
+                #           user uploads to some temporary upload service (file never ends up here)
+                #           we have a remote url here, and tell the datamover to pull it from there
+                #           and move it to final destination. (or something like this)
+                #       other good way: ...
+                #           let user upload directly to swift (what about large file uploads?)
+                #           and take care of clean up if necessary
 
-                # need some more workflow states here to support e.g. zip file upload (multiple rasters),
-                #      give user a chance to better define metadata
-                # make sure update_metadata does not change user edited metadata
-                #      -> layer, unit, projection, whatever
+                # 4. move file to swift
+                # TODO: do we have enough information to upload to swift?
+                #       need a temp url?
+                swiftopts = app.conf.get('bccvl', {}).get('swift', {})
+                src_url = build_source('file://{}'.format(tmpfile))
+                dest_url = build_destination('swift+{}'.format(new_object.remoteUrl),
+                    settings={'swift': {
+                        'os_auth_url': swiftopts.get('os_auth_url'),
+                        'os_username': swiftopts.get('os_username'),
+                        'os_password': swiftopts.get('os_password'),
+                        'os_tenant_name': swiftopts.get('os_tenant_name'),
+                        'os_storage_url': swiftopts.get('os_storage_url')
+                    }}
+                )
 
-                # FIXME: clean up tmp upload directory as well
+                try:
+                    movelib.move(src_url, dest_url)
+                except Exception as e:
+                    # do error handling here
+                    raise
+                finally:
+                    # clean up temp location
+                    path = os.path.dirname(tmpfile)
+                    shutil.rmtree(path)
 
-                # queue job submission
+            # queue job submission
             after_commit_task(update_task)
             # create job tracking object
             jt = IJobTracker(new_object)
