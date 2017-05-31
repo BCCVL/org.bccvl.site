@@ -764,8 +764,7 @@ class ProjectionJobTracker(MultiJobTracker):
         # Add subset title
         subsetTitle = sdmdsObj.__parent__.job_params.get('subset', None)
         if subsetTitle:
-            subsetValue = ','.join(str(x) for x in sdmdsObj.__parent__.job_params.get('species_filter'))
-            result.job_params['subset'] = subsetTitle + ' (' + subsetValue + ')'
+            result.job_params['subset'] = subsetTitle
         return result
 
     def _createProvenance(self, result):

@@ -396,10 +396,11 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             if not uuid:
                 continue
             value.setdefault(uuid, {})
+            selections = self.request.get('{}.item.{}.selection'.format(self.name, idx))
+            if not selections:
+                continue
 
-            # FIXME: does this work with multiple sdms? ... no indexing on model uuid?
-            subcount = int(self.request.get('{}.item.0.count'.format(self.name), '0'))
-            for i in range(0, subcount):
+            for i in selections:
                 subuuid = self.request.get(
                     '{}.item.{}.item.{}.uuid'.format(self.name, idx, i))
                 if not subuuid:
