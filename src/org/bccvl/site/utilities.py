@@ -760,6 +760,11 @@ class ProjectionJobTracker(MultiJobTracker):
             'generate_convexhull': False,
             'threshold': threshold.get('value')
         }
+
+        # Add subset title
+        subsetTitle = sdmdsObj.__parent__.job_params.get('subset', None)
+        if subsetTitle:
+            result.job_params['subset'] = subsetTitle
         return result
 
     def _createProvenance(self, result):
