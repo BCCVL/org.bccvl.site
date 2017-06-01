@@ -71,5 +71,26 @@
     <element value="org.bccvl.content.sdmexperiment"/>
    </property>
   </criterion>
+  <criterion name="c5">
+   <property name="widget">checkbox</property>
+   <property name="title">state</property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">1</property>
+   <property name="count"></property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
+   <property name="index">job_state</property>
+   <property name="operator">or</property>
+   <property name="operator_visible"></property>
+   <property name="vocabulary"></property>
+   <property name="catalog">portal_catalog</property>
+   <property name="maxitems"></property>
+   <property name="sortreversed"></property>
+   <property name="default">
+    <element value="COMPLETED"/>
+    <element value="FINISHED"/>
+   </property>
+  </criterion>
  </criteria>
 </object>

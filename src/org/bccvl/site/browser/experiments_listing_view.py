@@ -55,7 +55,9 @@ class ExperimentTools(BrowserView):
     def get_state_css(self, itemob=None):
         itemob = itemob or self.context
         if ICatalogBrain.providedBy(itemob) or IContentListingObject.providedBy(itemob):
-            itemob = itemob.getObject()
+            job_state = itemob.job_state
+        else:
+            job_state = IExperimentJobTracker(itemob).state
         css_map = {
             None: 'success',
             'QUEUED': 'warning',
@@ -66,7 +68,6 @@ class ExperimentTools(BrowserView):
             'FINISHED': 'info'
         }
         # check job_state and return either success, error or block
-        job_state = IExperimentJobTracker(itemob).state
         return css_map.get(job_state, 'info')
 
     def experiment_details(self, expbrain):
