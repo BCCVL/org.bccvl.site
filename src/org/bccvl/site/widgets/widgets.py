@@ -342,6 +342,9 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             # TODO: maybe as generator?
             item['subitems'] = []
             for brain in brains:
+                # Only want SDMs that are completed
+                if brain.job_state != 'COMPLETED':
+                    continue
                 # get algorithm term
                 algoid = getattr(brain.getObject(), 'job_params',
                                  {}).get('function')
