@@ -208,7 +208,7 @@ class ProjectionExperimentHelper(object):
             'form.widgets.species_distribution_models.count': 1,
             'form.widgets.species_distribution_models.item.0': unicode(self.sdmexp.UID()),
             #'form.widgets.species_distribution_models.item.0.item.0.uuid': unicode(self.sdmmodel.UID()),
-            'form.widgets.species_distribution_models.item.0.count': 1,
+            'form.widgets.species_distribution_models.item.0.selection': [u'0',],
             'form.widgets.species_distribution_models.item.0.item.0.uuid': unicode(self.sdmmodel.UID()),
             'form.widgets.species_distribution_models.item.0.item.0.threshold': u'0.5',
             'form.widgets.future_climate_datasets': [unicode(self.future.UID())]
