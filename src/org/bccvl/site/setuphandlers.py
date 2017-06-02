@@ -782,3 +782,10 @@ def upgrade_300_310_1(context, logger=None):
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
+    pc = getToolByName(context, 'portal_catalog')
+    # Update the state of all experiments
+    from org.bccvl.site.content.interfaces import IExperiment
+    for brain in pc.searchResults(object_provides=IExperiment.__identifier__):
+        obj = brain.getObject()
+        obj.reindexObject()

@@ -170,6 +170,10 @@ traits_functions_diff_source = CatalogVocabularyFactory(
 experiment_type_vocabulary = SimpleVocabulary([
     SimpleTerm("org.bccvl.content.sdmexperiment", "org.bccvl.content.sdmexperiment",
                u"Species Distribution Modelling Experiment"),
+    SimpleTerm("org.bccvl.content.msdmexperiment", "org.bccvl.content.msdmexperiment",
+               u"Multi-species Distribution Modelling Experiment"), 
+    SimpleTerm("org.bccvl.content.mmexperiment",
+               "org.bccvl.content.mmexperiment", u"Migratory Modelling Experiment"),
     SimpleTerm("org.bccvl.content.projectionexperiment",
                "org.bccvl.content.projectionexperiment", u"Climate Change Experiment"),
     SimpleTerm("org.bccvl.content.biodiverseexperiment",
