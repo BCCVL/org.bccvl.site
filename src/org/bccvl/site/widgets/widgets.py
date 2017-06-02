@@ -336,15 +336,16 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             item['resolution'] = expmd.get('resolution')
             # now search all models within and add infos
             pc = getToolByName(self.context, 'portal_catalog')
-            # SDM model
-            brains = pc.searchResults(path=expbrain.getPath(),
-                                      BCCDataGenre=self.genre)
+            # only get result folders that are completed
+            brains = pc.searchResults(path={'query': expbrain.getPath(), 'depth': 1}, 
+                                      portal_type='Folder',
+                                      job_state='COMPLETED')
             # TODO: maybe as generator?
             item['subitems'] = []
-            for brain in brains:
-                # Only want SDMs that are completed
-                if brain.job_state != 'COMPLETED':
-                    continue
+            for fldbrain in brains:
+                # Get the SDM model from result folder
+                brain = pc.searchResults(path=fldbrain.getPath(), 
+                                         BCCDataGenre=self.genre)[0]
                 # get algorithm term
                 algoid = getattr(brain.getObject(), 'job_params',
                                  {}).get('function')
