@@ -149,13 +149,13 @@ Vocabulary endpoint:
       u'unit': u'degrees C',
       u'unitfull': u'degrees celsius'},
       ...
-     {u'legend': u'Change in Range',
+     {u'legend': u'range-change',
       u'title': u'Change in Range',
-      u'token': u'range-change',
+      u'token': u'range_change',
       u'tooltip': u'This value indicates whether the range of a species is expanded, contracted or not changed for any given location between current and future projections.',
       u'type': u'range-change',
-      u'unit': u'km ',
-      u'unitfull': u'kilometres'}]
+      u'unit': u' ',
+      u'unitfull': u' '}]
 
 
 TODO: add test cases that fail because of restricted access
