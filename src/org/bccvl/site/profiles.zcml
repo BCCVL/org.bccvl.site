@@ -220,7 +220,7 @@
       profile="org.bccvl.site:default">
 
     <genericsetup:upgradeStep
-        title="Upgrade profile to version 300"
+        title="Upgrade profile to version 310"
         description="Migratory Modelling"
         handler=".setuphandlers.upgrade_300_310_1"
         />
