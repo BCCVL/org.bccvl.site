@@ -719,10 +719,13 @@ class ProjectionJobTracker(MultiJobTracker):
         pc = getToolByName(self.context, 'portal_catalog')
         projbrains = pc.searchResults(path='/'.join(sdmdsObj.__parent__.getPhysicalPath()),
                                       BCCDataGenre=['DataGenreCP_ENVLOP'])
-        # FIXME what do we with old experiments if there is no CP_ENVLOP?
-        #       return None?
-        #       return DataGenreCP?
-        #       certainly don't fail with indexerror 0 (empty search result)
+        # if there is no DataGenrceRP_ENVLOP there should be at least a single DataGenreCP (in case no constraints were specified)
+        if not projbrains:
+            projbrains = pc.searchResults(path='/'.join(sdmdsObj.__parent__.getPhysicalPath()),
+                                          BCCDataGenre=['DataGenreCP'])
+        # FIXME what to do if there is still no projbrains?
+        #       we probably can't run a CC experiment without it.
+        #       we certainly shouldn't fail with indexerror 0 (empty search result)
         return [projbrains[0].UID]
 
     def _create_result_container(self, sdmthreshold, dsbrain, projlayers):

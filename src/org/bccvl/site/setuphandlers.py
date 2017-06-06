@@ -782,6 +782,8 @@ def upgrade_300_310_1(context, logger=None):
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'typeinfo')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
 
     pc = getToolByName(context, 'portal_catalog')
     # Update the state of all experiments
@@ -789,3 +791,27 @@ def upgrade_300_310_1(context, logger=None):
     for brain in pc.searchResults(object_provides=IExperiment.__identifier__):
         obj = brain.getObject()
         obj.reindexObject()
+
+    # fix up Data genres for unconstrained results
+    # 1. get all sdm experiments
+    for brain in pc.searchResults(portal_type='org.bccvl.content.sdmexperiment'):
+        # 2. go through all eresults
+        for result in pc.searchResults(path=brain.getPath()):
+            # 3. find all DataGenreCP per result
+            for dsbrain in pc.searchResults(path=result.getPath(), BCCDataGenre='DataGenreCP'):
+                # if _unconstraint is in the title it should be a DataGenreCP_ENVLOP
+                if '_unconstraint' in dsbrain.Title and dsbrain.BCCDataGenre != 'DataGenreCP_ENVLOP':
+                    obj = dsbrain.getObject()
+                    IBCCVLMetadata(obj)['genre'] = 'DataGenreCP_ENVLOP'
+
+    # fix up data genre for unconstrained results
+    # 1. get all sdm experiments
+    for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
+        # 2. go through all eresults
+        for result in pc.searchResults(path=brain.getPath()):
+            # 3. find all DataGenreCP per result
+            for dsbrain in pc.searchResults(path=result.getPath(), BCCDataGenre='DataGenreFP'):
+                # if _unconstraint is in the title it should be a DataGenreFP_ENVLOP
+                if '_unconstraint' in dsbrain.Title and dsbrain.BCCDataGenre != 'DataGenreFP_ENVLOP':
+                    obj = dsbrain.getObject()
+                    IBCCVLMetadata(obj)['genre'] = 'DataGenreFP_ENVLOP'

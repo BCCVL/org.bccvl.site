@@ -3117,20 +3117,20 @@
         <element key="tooltip">Total area of large streams mapped as watercourse area occurring within the stream segment sub-catchment divided by the length of the stream segment.</element>
       </element>
       <element>
-        <element key="value">probability-difference</element>
+        <element key="value">probability_difference</element>
         <element key="title">Difference in Probability</element>
         <element key="unit"> </element>
         <element key="unitfull">Probability</element>
-        <element key="legend">Difference in Probability</element>
+        <element key="legend">probability-difference</element>
         <element key="type">probability-difference</element>
         <element key="tooltip">This value describes the difference in probability of occurrence for any given location between current and future projections.</element>
       </element>
       <element>
-        <element key="value">range-change</element>
+        <element key="value">range_change</element>
         <element key="title">Change in Range</element>
-        <element key="unit">km </element>
-        <element key="unitfull">kilometres</element>
-        <element key="legend">Change in Range</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
+        <element key="legend">range-change</element>
         <element key="type">range-change</element>
         <element key="tooltip">This value indicates whether the range of a species is expanded, contracted or not changed for any given location between current and future projections.</element>
       </element>
