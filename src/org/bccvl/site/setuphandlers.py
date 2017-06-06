@@ -793,6 +793,7 @@ def upgrade_300_310_1(context, logger=None):
         obj.reindexObject()
 
     # fix up Data genres for unconstrained results
+    from org.bccvl.site.interfaces import IBCCVLMetadata
     # 1. get all sdm experiments
     for brain in pc.searchResults(portal_type='org.bccvl.content.sdmexperiment'):
         # 2. go through all eresults
