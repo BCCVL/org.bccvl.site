@@ -345,7 +345,11 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             for fldbrain in brains:
                 # Get the SDM model from result folder
                 brain = pc.searchResults(path=fldbrain.getPath(), 
-                                         BCCDataGenre=self.genre)[0]
+                                         BCCDataGenre=self.genre)
+                if not brain:
+                    # ignore this folder, as it does not have a result we want
+                    continue
+                brain = brain[0]
                 # get algorithm term
                 algoid = getattr(brain.getObject(), 'job_params',
                                  {}).get('function')
