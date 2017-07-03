@@ -41,7 +41,7 @@ class SwiftUtility(object):
         expires = int(time() + duration)
         hmac_body = u"\n".join((method.upper().encode(),
                                str(expires),
-                               url.path)
+                               url.path))
         sig = hmac.new(key.encode('utf-8'),
                        hmac_body.encode('utf-8'),
                        hashlib.sha1).hexdigest()
