@@ -39,12 +39,12 @@ class SwiftUtility(object):
         if not key:
             return url.geturl()
         expires = int(time() + duration)
-        hmac_body = "\n".join((method.upper().encode(),
+        hmac_body = u"\n".join((method.upper().encode(),
                                str(expires),
-                               url.path.encode()))
-        sig = hmac.new(key.encode(),
-                       hmac_body.encode(),
+                               url.path))
+        sig = hmac.new(key.encode('utf-8'),
+                       hmac_body.encode('utf-8'),
                        hashlib.sha1).hexdigest()
-        temp_url = "{url}?temp_url_sig={sig}&temp_url_expires={expires}".format(
+        temp_url = u"{url}?temp_url_sig={sig}&temp_url_expires={expires}".format(
             url=url.geturl(), sig=sig, expires=expires)
         return temp_url
