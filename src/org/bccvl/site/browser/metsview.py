@@ -2,7 +2,7 @@ from datetime import datetime
 
 from org.bccvl.site.api.dataset import getdsmetadata
 from org.bccvl.site.content.interfaces import IBlobDataset
-from org.bccvl.site.interfaces import IProvenanceData
+from org.bccvl.site.interfaces import IProvenanceData, IExperimentMetadata
 
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
@@ -65,3 +65,12 @@ class ProvView(BrowserView):
         self.request.response.setHeader("Content-type", "text/turtle; charset=utf-8")
         provdata = IProvenanceData(self.context)
         return provdata.data
+
+
+class ExpmdView(BrowserView):
+
+    def __call__(self):
+        self.request.response.setHeader("Content-type", "text/plain; charset=utf-8")
+        self.request.response.setHeader("Content-Disposition", "Attachment")
+        md = IExperimentMetadata(self.context)
+        return md.data

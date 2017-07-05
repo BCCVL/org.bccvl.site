@@ -81,6 +81,13 @@
         />
 
     <browser:page
+        name="expmetadata.txt"
+        for="Products.CMFCore.interfaces.IFolderish"
+        class=".metsview.ExpmdView"
+        permission="zope2.View"
+        />
+
+    <browser:page
         name="bccvl-raven.js"
         for="*"
         class=".raven.Raven"

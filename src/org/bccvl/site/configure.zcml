@@ -77,6 +77,10 @@
       factory=".metadata.ProvenanceData"
       />
 
+  <adapter
+      factory=".metadata.ExperimentMetadata"
+      />
+
   <!-- download info adapters -->
   <adapter
       factory=".utilities.DatasetDownloadInfo"

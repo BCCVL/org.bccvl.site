@@ -1,5 +1,5 @@
 from Products.Five import BrowserView
-from org.bccvl.site.interfaces import IProvenanceData
+from org.bccvl.site.interfaces import IProvenanceData, IExperimentMetadata
 from org.bccvl.site.content.interfaces import IBlobDataset, IRemoteDataset
 from Products.CMFCore.utils import getToolByName
 from ZPublisher.Iterators import filestream_iterator
@@ -95,10 +95,18 @@ class ResultDownloadView(BrowserView):
             if not provdata.data is None:
                 zfile.writestr('/'.join((zfilename, 'prov.ttl')),
                                provdata.data)
+
+            # add exp metadata
+            expmetadata = IExperimentMetadata(self.context)
+            if not expmetadata.data is None:
+                zfile.writestr('/'.join((zfilename, 'expmetadata.txt')),
+                               expmetadata.data)
+
             # add mets.xml
             metsview = getMultiAdapter((self.context, self.request), name="mets.xml")
             zfile.writestr('/'.join((zfilename, 'mets.xml')),
                            metsview.render())
+
             # finish zip file
             zfile.close()
 
