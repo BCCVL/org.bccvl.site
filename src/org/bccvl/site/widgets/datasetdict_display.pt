@@ -10,9 +10,11 @@
                       title view/title;
                       lang view/lang;">
   <tal:block repeat="item view/items">
-    <ul>
+    <ul tal:attributes="data-uuid item/id;">
       <li>
         <span tal:replace="item/title">Dataset</span>
+        <a tal:attributes="href python: item['brain'].getURL() + '/modal_view';"
+          class="dataset-info-btn" data-toggle="InfoModal"><i class="fa fa-info-circle"></i></a>
         <ul>
           <li tal:repeat="subitem python: (subitem for subitem in item['subitems'] if subitem['selected'])"
               tal:content="subitem/title">Layer Title</li>
