@@ -112,7 +112,7 @@ class ExperimentMetadata(object):
                     u"The information below describes some system specifications and information about your model. We aim to provide transparency of processes ",
                     u"and procedures of the BCCVL that will allow users to further utilise research data and modelling outputs.",
                     u"",
-                    u"More information about the procedures of the BCCVL can be found here (will be added to Knowledge Base once finalised):",
+                    u"More information about the procedures of the BCCVL can be found here:",
                     u"https://docs.google.com/document/d/1Wte9hpE41WUueMT6USAEoacFeH6TkYRL5nMPPI1yR4c/edit#",
                     u"",
                     u"If you use the BCCVL in a publication or report we ask you to attribute us as follows:",
