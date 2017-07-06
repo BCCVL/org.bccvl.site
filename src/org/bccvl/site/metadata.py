@@ -153,6 +153,8 @@ class ExperimentMetadata(object):
 
     def __getMetadataText(self, key, md):
         value = md.get(key)
+        if not value:
+            return ""
         if isinstance(value, str) or isinstance(value, unicode):
             return(u"{}\n".format(key) + value + u"\n\n") 
         elif isinstance(value, dict):
@@ -208,10 +210,10 @@ class ExperimentMetadata(object):
             coll = ds
             while not (ISiteRoot.providedBy(coll) or ICollection.providedBy(coll)):
                 coll = coll.__parent__
-            spmd['Description'] = ds.description or coll.description or '',
+            spmd['Description'] = ds.description or coll.description or ''
             attribution = ds.attribution or getattr(coll, 'attribution') or ''
-            if isinstance(attribution, tuple):
-                attribution = attribution[0].raw
+            if isinstance(attribution, list):
+                attribution = '\n'.join([att.raw for att in attribution])
             spmd['Attribution'] = attribution
             self.md['Input datasets:'][key] = spmd
 
@@ -226,53 +228,69 @@ class ExperimentMetadata(object):
             pa_url = pa_file.absolute_url()
             pa_url = '{}/@@download/{}'.format(pa_url, os.path.basename(pa_url))
 
-        pamd = {
-            'Title': pa_title, 
-            'Download URL': pa_url,
-            'Pseudo-absence Strategy': job_params['pa_strategy'] or '',
-            'Pseudo-absence Ratio' : str(job_params['pa_ratio']) or ''
-        }
-        if job_params['pa_strategy'] == 'disc':
-            pamd['Minimum distance'] = str(job_params['pa_disk_min']) or ''
-            pamd['Maximum distance'] = str(job_params['pa_disk_max']) or ''
-        if job_params['pa_strategy'] == 'sre':
-            pamd['Quantile'] = str(job_params['pa_sre_quant']) or ''
-        self.md['Input datasets:'][key] = pamd
+            pamd = {
+                'Title': pa_title, 
+                'Download URL': pa_url,
+                'Pseudo-absence Strategy': job_params['pa_strategy'] or '',
+                'Pseudo-absence Ratio' : str(job_params['pa_ratio']) or ''
+            }
+            if job_params['pa_strategy'] == 'disc':
+                pamd['Minimum distance'] = str(job_params['pa_disk_min']) or ''
+                pamd['Maximum distance'] = str(job_params['pa_disk_max']) or ''
+            if job_params['pa_strategy'] == 'sre':
+                pamd['Quantile'] = str(job_params['pa_sre_quant']) or ''
+            self.md['Input datasets:'][key] = pamd
         
-        key = 'environmental_datasets'
-        env_list = []
-        layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(self.context)
-        for uuid, layers in job_params[key].items():
-            ds = uuidToObject(uuid)
-            coll = ds
-            while not (ISiteRoot.providedBy(coll) or ICollection.providedBy(coll)):
-                coll = coll.__parent__
-            description = ds.description or coll.description,
-            if isinstance(description, tuple):
-                description = description[0]
-            attribution = ds.attribution or getattr(coll, 'attribution') or ''
-            if isinstance(attribution, tuple):
-                attribution = attribution[0].raw
+        for key in ['environmental_datasets', 'future_climate_datasets']:
+            if key not in job_params:
+                continue
+            env_list = []
+            layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(self.context)
+            for uuid, layers in job_params[key].items():
+                ds = uuidToObject(uuid)
+                coll = ds
+                while not (ISiteRoot.providedBy(coll) or ICollection.providedBy(coll)):
+                    coll = coll.__parent__
+                description = ds.description or coll.description
+                attribution = ds.attribution or getattr(coll, 'attribution') or ''
+                if isinstance(attribution, list):
+                    attribution = '\n'.join([att.raw for att in attribution])
 
+                layer_titles = [layer_vocab.getTerm(layer).title for layer in layers]
+                # env_list.append(self.__getMetadataText(ds.title, {
+                #         ds.title: { 
+                #             'layers': u', '.join(layer_titles), 
+                #             'description': description, 
+                #             'attribution': attribution[0].raw
+                #         }
+                #     }))
+                env_list.append({ 
+                   'Title': ds.title, 
+                   'Layers': u'\n'.join(layer_titles), 
+                   'Description': description, 
+                   'Attribution': attribution
+                })
+            self.md['Input datasets:'][key] = env_list
 
-            layer_titles = [layer_vocab.getTerm(layer).title for layer in layers]
-            # env_list.append(self.__getMetadataText(ds.title, {
-            #         ds.title: { 
-            #             'layers': u', '.join(layer_titles), 
-            #             'description': description, 
-            #             'attribution': attribution[0].raw
-            #         }
-            #     }))
-            env_list.append({ 
-               'Title': ds.title, 
-               'Layers': u'\n'.join(layer_titles), 
-               'Description': description, 
-               'Attribution': attribution
-            })
-        self.md['Input datasets:'][key] = env_list
+        key = 'species_distribution_models'
+        if key in job_params:
+            dsbrain = uuidToCatalogBrain(job_params[key])
+            if dsbrain:
+                ds = dsbrain.getObject()
+                self.md['Input datasets:'][key] = {
+                    'Title': ds.title,
+                    'Description': ds.description,
+                    'Download URL': '{}/@@download/file/{}'.format(ds.absolute_url(), os.path.basename(ds.absolute_url()))
+,
+                    'Algorithm': ds.__parent__.job_params.get('function', ''),
+                    'Species': IBCCVLMetadata(ds).get('species', {}).get('scientificName', ''),
+                    'Threshold': job_params.get('threshold', '')
+                }
+
 
         key = 'function'
-        self.md['Algorithm settings:'] = {'Algorithm Name': job_params[key]}
+        if key in job_params:
+            self.md['Algorithm settings:'] = {'Algorithm Name': job_params[key]}
 
         # Construct the text
         mdtext = StringIO.StringIO()
