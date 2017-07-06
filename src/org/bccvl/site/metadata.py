@@ -1,3 +1,5 @@
+import StringIO
+import os, os.path
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from zope.interface import implementer
 from zope.component import adapter, getUtility
@@ -7,7 +9,6 @@ from persistent.dict import PersistentDict
 from Products.CMFCore.interfaces import ISiteRoot
 from org.bccvl.site.behavior.collection import ICollection
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo, IProvenanceData, IExperimentMetadata
-import StringIO
 
 # TODO: this will become future work to enhance performance by
 # reducing the amonut of queries we have to do against the triple
@@ -152,8 +153,6 @@ class ExperimentMetadata(object):
 
     def __getMetadataText(self, key, md):
         value = md.get(key)
-        print key
-        print value
         if isinstance(value, str) or isinstance(value, unicode):
             return(u"{}\n".format(key) + value + u"\n\n") 
         elif isinstance(value, dict):
@@ -185,7 +184,7 @@ class ExperimentMetadata(object):
         self.md['Model specifications'] = {
             'Title': self.context.title, 
             'Date/time run': self.context.creation_date.__str__(),
-            'Description': self.context.description
+            'Description': self.context.description or ''
         }
 
         # iterate over all input datasets and add them as entities
@@ -209,24 +208,35 @@ class ExperimentMetadata(object):
             coll = ds
             while not (ISiteRoot.providedBy(coll) or ICollection.providedBy(coll)):
                 coll = coll.__parent__
-            spmd['Description'] = ds.description or coll.description,
-            spmd['Attribution'] = ds.attribution or getattr(coll, 'attribution')
+            spmd['Description'] = ds.description or coll.description or '',
+            attribution = ds.attribution or getattr(coll, 'attribution') or ''
+            if isinstance(attribution, tuple):
+                attribution = attribution[0].raw
+            spmd['Attribution'] = attribution
             self.md['Input datasets:'][key] = spmd
 
 
         # pseudo-absence metadata.
         key = u"pseudo_absence_dataset"
+        pa_file = self.context.get('pseudo_absences.csv')
+        pa_url = ""
+        pa_title = ""
+        if pa_file:
+            pa_title = pa_file.title
+            pa_url = pa_file.absolute_url()
+            pa_url = '{}/@@download/{}'.format(pa_url, os.path.basename(pa_url))
+
         pamd = {
-            'Title': self.context.get('pseudo_absences.csv').title, 
-            'Download URL': self.context.get('pseudo_absences.csv').absolute_url(),
+            'Title': pa_title, 
+            'Download URL': pa_url,
             'Pseudo-absence Strategy': job_params['pa_strategy'] or '',
-            'Pseudo-absence Ratio' : str(job_params['pa_ratio'] or '')
+            'Pseudo-absence Ratio' : str(job_params['pa_ratio']) or ''
         }
         if job_params['pa_strategy'] == 'disc':
-            pamd['Minimum distance'] = job_params['pa_disk_min'] or ''
-            pamd['Maximum distance'] = job_params['pa_disk_max'] or ''
+            pamd['Minimum distance'] = str(job_params['pa_disk_min']) or ''
+            pamd['Maximum distance'] = str(job_params['pa_disk_max']) or ''
         if job_params['pa_strategy'] == 'sre':
-            pamd['Quantile'] = job_params['pa_sre_quant'] or ''
+            pamd['Quantile'] = str(job_params['pa_sre_quant']) or ''
         self.md['Input datasets:'][key] = pamd
         
         key = 'environmental_datasets'
@@ -272,6 +282,7 @@ class ExperimentMetadata(object):
                         'Online Open Course in SDM:', 
                         'System specifications', 
                         'Input datasets:',
+                        'Algorithm settings:',
                         'Model outputs:']:
             mdtext.write(self.__getMetadataText(heading, self.md))
         return mdtext.getvalue()

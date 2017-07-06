@@ -299,6 +299,8 @@ class ExportResult(BrowserView):
         urllist.append('{}/mets.xml'.format(self.context.absolute_url()))
         # add prov.ttl
         urllist.append('{}/prov.ttl'.format(self.context.absolute_url()))
+        # add experiment metadata
+        urllist.append('{}/expmetadata.txt'.format(self.context.absolute_url()))
 
         from org.bccvl.tasks.celery import app
         from org.bccvl.tasks.plone import after_commit_task
