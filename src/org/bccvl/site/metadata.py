@@ -151,6 +151,152 @@ class ExperimentMetadata(object):
             }
         }    
 
+    def __paramName(self, param):
+        pname = param.strip().replace("_", " ")
+        if param == "prevalence":
+            pname = "weighted response weights"
+        elif param == "var_import":
+            pname = "resampling"
+        elif param == "nbcv":
+            pname = "number of cross validations (NbCV)"
+        elif param == "n_trees":
+            pname = "trees added each cycle (n_trees)"
+        elif param == "control_xval":
+            pname = "cross-validations folds"
+        elif param == "control_minbucket":
+            pname = "minimum bucket"
+        elif param == "control_minsplit":
+            pname = "minimum split"
+        elif param == "control_cp":
+            pname = "complexity parameter"
+        elif param == "control_maxdepth":
+            pname = "maximum depth"
+        elif param == "irls_reg":
+            pname = "irls.reg"
+        elif param == "maxit":
+            pname = "maximum iterations (maxit)"
+        elif param == "mgcv_tol":
+            pname = "convergence tolerance"
+        elif param == "mgcv_half":
+            pname = "number of halvings"
+        elif param == "n_minobsinnode":
+            pname = "terminal node size (n.minobsinnode)"
+        elif param == "control_epsilon":
+            pname = "epsilon"
+        elif param == "control_maxit":
+            pname = "maximum MLE iterations"
+        elif param == "control_trace":
+            pname = "MLE iteration output"
+        elif param == "model":
+            pname = "Model returned"
+        elif param == "x":
+            pname = "x returned"
+        elif param == "y":
+            pname = "y returned"
+        elif param == "qr":
+            pname = "QR returned"
+        elif param == "singular_ok":
+            pname = "Singular fit ok"
+        elif param == "thresh":
+            pname = "threshold"
+        elif param == "maximumiterations":
+            pname = "Maximum iterations"
+        elif param == "ntree":
+            pname = "maximum number of trees"
+        elif param == "mtry":
+            pname = "number of variables at each split (mtry)"
+        elif param == "nodesize":
+            pname = "terminal node size"
+        elif param == "maxnodes":
+            pname = "maximum number of terminal nodes"
+        elif param == "pa_ratio":
+            pname = "absence-presence ratio"
+        elif param == "lq2lqptthreshold":
+            pname = "product/threshold feature threshold"
+        elif param == "lq2lqthreshold":
+            pname = "quadratic feature threshold"
+        elif param == "hingethreshold":
+            pname = "hinge feature threshold"
+        elif param == "beta_threshold":
+            pname = "threshold feature regularization"
+        elif param == "beta_categorical":
+            pname = "categorical feature regularization"
+        elif param == "beta_lqp":
+            pname = 'linear/quadratic/product feature regularization'
+        elif param == "beta_hinge":
+            pname = "hinge feature regularization"
+        elif param == "defaultprevalence":
+            pname = "prevalence"
+        elif param == "nk":
+            pname = "maximum number of terms"
+        elif pname == "degree":
+            pname = "maximum interaction degree"
+        elif param == "shrinkage":
+            pname = "learning rate (shrinkage)"
+        elif param == "cv_folds":
+            pname = "number of subsets used for cross-validation"
+        elif param == "rang":
+            pname = "initial random weights (rang)"
+        return pname
+
+    # To do: Read in the algorthm option parameters from the algorithm config xml file.
+    def __algoConfigOption(self, algo, job_params):
+        params = []
+        if algo == "ann":
+            params = ["prevalence", "var_import", "maxit", "nbcv", "rang", "random_seed"]
+        elif algo == "brt":
+            params = ["tree_complexity", "learning_rate", "bag_fraction", "n_folds", "prev_stratify", \
+                      "family", "n_trees", "max_trees", "tolerance_method", "tolerance_value", "random_seed"]
+        elif algo == "cta":
+            params = ["prevalence", "var_import", "method", "control_xval", "control_minbucket", \
+                      "control_minsplit", "control_cp", "control_maxdepth", "random_seed"]
+        elif algo == "fda":
+            params = ["prevalence", "var_import", "method", "random_seed"]
+        elif algo == "gam":
+            params = ["prevalence", "var_import", "interaction_level", "family", "irls_reg", "epsilon", \
+                      "maxit", "mgcv_tol", "mgcv_half", "random_seed"]
+        elif algo == "gamlss":
+            params = ["sigma_formula", "nu_formula", "tau_formula", "family", "weights", "contrasts", \
+                      "method", "start_from", "mu_start", "sigma_start", "nu_start", "tau_start", \
+                      "mu_fix", "sigma_fix", "nu_fix", "tau_fix", "control", "i_control", "other_args", \
+                      "random_seed"]
+        elif algo == "gbm":
+            params = ["prevalence", "var_import", "distribution", "n_trees", "interaction_depth", \
+                      "n_minobsinnode", "shrinkage", "bag_fraction", "train_fraction", "cv_folds", \
+                      "random_seed"]
+        elif algo == "glm":
+            params = ["prevalence", "var_import", "type", "interaction_level", "test", "family", \
+                      "mustart", "control_epsilon", "control_maxit", "control_trace", "random_seed"]
+        elif algo == "lm":
+            params = ["subset", "weights", "na_action", "method", "model", "x", "y", "qr", \
+                      "singular_ok", "contrasts", "offset", "random_seed"]
+        elif algo == "manova":
+            params = ["projections_returned", "qr", "contrasts", "subset", "weights", "na_action", "random_seed"]
+        elif algo == "mars":
+            params = ["prevalence", "var_import", "degree", "nk", "penalty", "thresh", "prune", "random_seed"]
+        elif algo == "maxent":
+            params = ["prevalence", "var_import", "maximumiterations", "linear", "quadratic", "product", \
+                      "threshold", "hinge", "lq2lqptthreshold", "lq2lqthreshold", "hingethreshold", \
+                      "beta_threshold", "beta_categorical", "beta_lqp", "beta_hinge", "defaultprevalence", \
+                      "random_seed"]
+        elif algo == "rf":
+            params = ["prevalence", "var_import", "do.classif", "ntree", "mtry", "nodesize", "maxnodes", \
+                      "random_seed"]
+        elif algo == "sre":
+            params = ["prevalence", "var_import", "quant", "random_seed"]
+        else:
+            params = ["random_seed"]
+
+        options = []
+        for param in params:
+            if param in job_params:
+                optionstr = "{} = {}".format(
+                    self.__paramName(param), 
+                    str(job_params.get(param)) if job_params.get(param) is not None else ''
+                )
+                options.append(optionstr)
+        return '\n'.join(options)
+
     def __getMetadataText(self, key, md):
         value = md.get(key)
         if not value:
@@ -257,13 +403,6 @@ class ExperimentMetadata(object):
                     attribution = '\n'.join([att.raw for att in attribution])
 
                 layer_titles = [layer_vocab.getTerm(layer).title for layer in layers]
-                # env_list.append(self.__getMetadataText(ds.title, {
-                #         ds.title: { 
-                #             'layers': u', '.join(layer_titles), 
-                #             'description': description, 
-                #             'attribution': attribution[0].raw
-                #         }
-                #     }))
                 env_list.append({ 
                    'Title': ds.title, 
                    'Layers': u'\n'.join(layer_titles), 
@@ -290,7 +429,10 @@ class ExperimentMetadata(object):
 
         key = 'function'
         if key in job_params:
-            self.md['Algorithm settings:'] = {'Algorithm Name': job_params[key]}
+            self.md['Algorithm settings:'] = {
+                'Algorithm Name': job_params[key],
+                'Configuration options': self.__algoConfigOption(job_params[key], job_params)
+            }
 
         # Construct the text
         mdtext = StringIO.StringIO()
