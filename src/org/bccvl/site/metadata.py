@@ -359,6 +359,10 @@ class ExperimentMetadata(object):
             spmd['Attribution'] = attribution
             self.md['Input datasets:'][key] = spmd
 
+        key = 'traits_dataset_params'
+        if key in job_params:
+            self.md['Input datasets:'][key] = job_params.get(key, {})
+
 
         # pseudo-absence metadata.
         key = u"pseudo_absence_dataset"
