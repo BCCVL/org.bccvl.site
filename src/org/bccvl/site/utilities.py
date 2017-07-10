@@ -253,6 +253,7 @@ class SDMJobTracker(MultiJobTracker):
             # link with activity
             activity.add(PROV['used'], dsprov)
 
+
         for uuid, layers in result.job_params['environmental_datasets'].items():
             key = 'environmental_datasets'
             ds = uuidToObject(uuid)
@@ -277,6 +278,7 @@ class SDMJobTracker(MultiJobTracker):
             activity.add(PROV['used'], dsprov)
 
         provdata.data = graph.serialize(format="turtle")
+
 
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,

@@ -411,6 +411,30 @@ class ExperimentMetadata(object):
                 })
             self.md['Input datasets:'][key] = env_list
 
+        key = "datasets"
+        if key in job_params:
+            dataset_list = []
+            for uid in job_params[key]:
+                dsbrain = uuidToCatalogBrain(uid)
+                if dsbrain:
+                    ds = dsbrain.getObject()
+                    # get the source experiment
+                    source_exp = ds.__parent__
+                    while not IExperiment.providedBy(source_exp):
+                        source_exp = source_exp.__parent__
+                    dataset_list.append({
+                        'Source experiment': source_exp.title,
+                        'Title': ds.title,
+                        'Description': ds.description,
+                        'Download URL': '{}/@@download/file/{}'.format(ds.absolute_url(), os.path.basename(ds.absolute_url()))
+    ,
+                        'Algorithm': ds.__parent__.job_params.get('function', ''),
+                        'Species': IBCCVLMetadata(ds).get('species', {}).get('scientificName', ''),
+                        'Resolution': IBCCVLMetadata(ds).get('resolution', '')
+                    })
+            self.md['Input datasets:'][key] = dataset_list
+
+
         key = 'species_distribution_models'
         if key in job_params:
             dsbrain = uuidToCatalogBrain(job_params[key])
