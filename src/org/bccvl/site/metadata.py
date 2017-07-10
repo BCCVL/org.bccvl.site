@@ -8,6 +8,7 @@ from zope.annotation import IAnnotations, IAttributeAnnotatable
 from persistent.dict import PersistentDict
 from Products.CMFCore.interfaces import ISiteRoot
 from org.bccvl.site.behavior.collection import ICollection
+from org.bccvl.site.content.interfaces import IExperiment, IProjectionExperiment
 from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo, IProvenanceData, IExperimentMetadata
 
 # TODO: this will become future work to enhance performance by
@@ -243,47 +244,42 @@ class ExperimentMetadata(object):
     def __algoConfigOption(self, algo, job_params):
         params = []
         if algo == "ann":
-            params = ["prevalence", "var_import", "maxit", "nbcv", "rang", "random_seed"]
+            params = ["prevalence", "maxit", "nbcv", "rang", "random_seed"]
         elif algo == "brt":
             params = ["tree_complexity", "learning_rate", "bag_fraction", "n_folds", "prev_stratify", \
                       "family", "n_trees", "max_trees", "tolerance_method", "tolerance_value", "random_seed"]
         elif algo == "cta":
-            params = ["prevalence", "var_import", "method", "control_xval", "control_minbucket", \
+            params = ["prevalence", "method", "control_xval", "control_minbucket", \
                       "control_minsplit", "control_cp", "control_maxdepth", "random_seed"]
         elif algo == "fda":
             params = ["prevalence", "var_import", "method", "random_seed"]
         elif algo == "gam":
-            params = ["prevalence", "var_import", "interaction_level", "family", "irls_reg", "epsilon", \
+            params = ["prevalence", "interaction_level", "family", "irls_reg", "epsilon", \
                       "maxit", "mgcv_tol", "mgcv_half", "random_seed"]
-        elif algo == "gamlss":
-            params = ["sigma_formula", "nu_formula", "tau_formula", "family", "weights", "contrasts", \
-                      "method", "start_from", "mu_start", "sigma_start", "nu_start", "tau_start", \
-                      "mu_fix", "sigma_fix", "nu_fix", "tau_fix", "control", "i_control", "other_args", \
-                      "random_seed"]
         elif algo == "gbm":
-            params = ["prevalence", "var_import", "distribution", "n_trees", "interaction_depth", \
-                      "n_minobsinnode", "shrinkage", "bag_fraction", "train_fraction", "cv_folds", \
-                      "random_seed"]
+            params = ["prevalence", "distribution", "n_trees", "interaction_depth", "n_minobsinnode", \
+                      "shrinkage", "bag_fraction", "train_fraction", "cv_folds", "random_seed"]
         elif algo == "glm":
-            params = ["prevalence", "var_import", "type", "interaction_level", "test", "family", \
+            params = ["prevalence", "type", "interaction_level", "test", "family", \
                       "mustart", "control_epsilon", "control_maxit", "control_trace", "random_seed"]
-        elif algo == "lm":
-            params = ["subset", "weights", "na_action", "method", "model", "x", "y", "qr", \
-                      "singular_ok", "contrasts", "offset", "random_seed"]
-        elif algo == "manova":
-            params = ["projections_returned", "qr", "contrasts", "subset", "weights", "na_action", "random_seed"]
         elif algo == "mars":
             params = ["prevalence", "var_import", "degree", "nk", "penalty", "thresh", "prune", "random_seed"]
         elif algo == "maxent":
-            params = ["prevalence", "var_import", "maximumiterations", "linear", "quadratic", "product", \
+            params = ["prevalence", "maximumiterations", "linear", "quadratic", "product", \
                       "threshold", "hinge", "lq2lqptthreshold", "lq2lqthreshold", "hingethreshold", \
                       "beta_threshold", "beta_categorical", "beta_lqp", "beta_hinge", "defaultprevalence", \
                       "random_seed"]
         elif algo == "rf":
-            params = ["prevalence", "var_import", "do.classif", "ntree", "mtry", "nodesize", "maxnodes", \
-                      "random_seed"]
+            params = ["prevalence", "ntree", "mtry", "nodesize", "maxnodes", "random_seed"]
         elif algo == "sre":
             params = ["prevalence", "var_import", "quant", "random_seed"]
+        elif algo == "speciestrait_cta":
+            params = ["control_xval", "control_minbucket", "control_minsplit", "control_cp", "control_maxdepth", \
+                      "random_seed"]
+        elif algo == "speciestrait_glmm":
+            params = ["family", "na_action", "random_seed"]
+        elif algo in ["speciestrait_gam", "speciestrait_glm", "traitdiff_glm"]:
+            params = ["family", "na_action", "method", "random_seed"]
         else:
             params = ["random_seed"]
 
@@ -337,7 +333,7 @@ class ExperimentMetadata(object):
 
         # iterate over all input datasets and add them as entities
         self.md['Input datasets:'] = {}
-        for key in ('species_occurrence_dataset', 'species_absence_dataset'):
+        for key in ('species_occurrence_dataset', 'species_absence_dataset', 'traits_dataset'):
             spmd = {}
             if not job_params.has_key(key):
                 continue
@@ -416,23 +412,56 @@ class ExperimentMetadata(object):
             dsbrain = uuidToCatalogBrain(job_params[key])
             if dsbrain:
                 ds = dsbrain.getObject()
+                # get the source experiment
+                source_exp = ds.__parent__
+                while not IExperiment.providedBy(source_exp):
+                    source_exp = source_exp.__parent__
+                
+                # get the threshold
+                threshold = self.context.species_distribution_models.get(source_exp.UID(), {}).get(ds.UID())
                 self.md['Input datasets:'][key] = {
+                    'Source experiment': source_exp.title,
                     'Title': ds.title,
                     'Description': ds.description,
                     'Download URL': '{}/@@download/file/{}'.format(ds.absolute_url(), os.path.basename(ds.absolute_url()))
 ,
                     'Algorithm': ds.__parent__.job_params.get('function', ''),
                     'Species': IBCCVLMetadata(ds).get('species', {}).get('scientificName', ''),
-                    'Threshold': job_params.get('threshold', '')
+                    'Threshold': "{}({})".format(threshold.get('label', ''), str(threshold.get('value', '')))
                 }
 
 
-        key = 'function'
+        key = 'projections'
         if key in job_params:
-            self.md['Algorithm settings:'] = {
-                'Algorithm Name': job_params[key],
-                'Configuration options': self.__algoConfigOption(job_params[key], job_params)
-            }
+            for pds in job_params[key]:
+                threshold = pds.get('threshold', {})
+                dsbrain = uuidToCatalogBrain(pds.get('dataset'))
+                if dsbrain:
+                    ds = dsbrain.getObject()
+                    # get the source experiment
+                    source_exp = ds.__parent__
+                    while not IExperiment.providedBy(source_exp):
+                        source_exp = source_exp.__parent__
+                    self.md['Input datasets:'][key] = {
+                        'Source experiment': source_exp.title,
+                        'Title': ds.title,
+                        'Description': ds.description,
+                        'Download URL': '{}/@@download/file/{}'.format(ds.absolute_url(), os.path.basename(ds.absolute_url()))
+    ,
+                        'Algorithm': ds.__parent__.job_params.get('function', ''),
+                        'Species': IBCCVLMetadata(ds).get('species', {}).get('scientificName', ''),
+                        'Threshold': "{}({})".format(threshold.get('label', ''), str(threshold.get('value', ''))), 
+                        'Biodiverse Cell size (m)': str(job_params.get('cluster_size', ''))
+                    }
+
+        # Projection experiment does not have algorithm as input
+        if not IProjectionExperiment.providedBy(self.context.__parent__):
+            for key in ['function', 'algorithm']:
+                if key in job_params:
+                    self.md['Algorithm settings:'] = {
+                        'Algorithm Name': job_params[key],
+                        'Configuration options': self.__algoConfigOption(job_params[key], job_params)
+                    }
 
         # Construct the text
         mdtext = StringIO.StringIO()
