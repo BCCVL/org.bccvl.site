@@ -7,5 +7,6 @@
     ],
     "external_description": "See <a href=\"http://www.bom.gov.au/water/geofabric/\">http://www.bom.gov.au/water/geofabric/</a> and <a href=\"http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_75066\">http://http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_75066</a>.",
     "categories": ["environmental"],
+    "BCCDataGenre": ["DataGenreE"],
     "_transitions": ["show_internally", "publish_externally"]
 }
