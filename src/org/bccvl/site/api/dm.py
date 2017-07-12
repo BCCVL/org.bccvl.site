@@ -457,6 +457,7 @@ class DMService(BaseService):
                 raise Exception("Invalid UUID (content type)")
             md = IBCCVLMetadata(obj)
             if md.get('genre') not in ('DataGenreSpeciesOccurrence',
+                                       'DataGenreSpeciesCollection',
                                        'DataGenreTraits'):
                 raise Exception("Invalid UUID (data type)")
             # get download url
