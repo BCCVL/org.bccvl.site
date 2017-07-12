@@ -105,31 +105,41 @@ class ExperimentMetadata(object):
         self.context = context
         self.md = {
             'BCCVL model outputs guide': [
+                u"".join([
                     u"The Biodiversity and Climate Change Virtual Laboratory brings together real-world data from trusted providers with peer-reviewed ",
                     u"scientific analysis tools to facilitate the investigation of climate impacts on the world's biodiversity. The lab hosts a wealth ",
                     u"of data for you to use in your models that has been collected, aggregated and shared by others. Please be aware that correct attribution ",
-                    u"is important to ensure that data providers get the credits they deserve and can maintain their work.",
-                    u"",
+                    u"is important to ensure that data providers get the credits they deserve and can maintain their work."
+                ]),
+                u"",
+                u"".join([
                     u"The information below describes some system specifications and information about your model. We aim to provide transparency of processes ",
-                    u"and procedures of the BCCVL that will allow users to further utilise research data and modelling outputs.",
-                    u"",
-                    u"More information about the procedures of the BCCVL can be found here:",
-                    u"https://docs.google.com/document/d/1Wte9hpE41WUueMT6USAEoacFeH6TkYRL5nMPPI1yR4c/edit#",
-                    u"",
-                    u"If you use the BCCVL in a publication or report we ask you to attribute us as follows:",
-            ],
-            'BCCVL application:': [
+                    u"and procedures of the BCCVL that will allow users to further utilise research data and modelling outputs."
+                ]),
+                u"",
+                u"".join([
+                    u"More information about the procedures of the BCCVL can be found here: ",
+                    u"https://support.bccvl.org.au/support/solutions/articles/6000176070-bccvl-procedures"
+                ]),
+                u"",
+                u"If you use the BCCVL in a publication or report we ask you to attribute us as follows:",
+                u"",
+                u"BCCVL application:",
+                u"".join([
                     u'Hallgren W, Beaumont L, Bowness A, Chambers L, Graham E, Holewa H, Laffan S, Mackey B, Nix H, Price J and Vanderwal J. 2016. ',
                     u'The Biodiversity and Climate Change Virtual Laboratory: Where ecology meets big data. Environmental Modelling & Software, 76, pp.182-186.'
-            ],
-            'Online Open Course in SDM:': [
+                ]),
+                u"",
+                u"Online Open Course in SDM:",
+                u"".join([
                     u'Huijbers CM, Richmond SJ, Low-Choy SJ, Laffan SW, Hallgren W, Holewa H (2016) SDM Online Open Course. ',
                     u'Biodiversity and Climate Change Virtual Laboratory, http://www.bccvl.org.au/training/. DDMMYY of access.'
+                ]),
             ],
-            'Model outputs:': [
-                    u'Detailed information on how to interpret the outputs of a Species Distribution Model experiment can be ',
-                    u'found on our support page: https://support.bccvl.org.au/support/solutions/articles/6000127046-interpretation-of-model-outputs'
-            ],
+            'Model outputs:': u''.join([
+                u'Detailed information on how to interpret the outputs of a Species Distribution Model experiment can be ',
+                u'found on our support page: https://support.bccvl.org.au/support/solutions/articles/6000127046-interpretation-of-model-outputs'
+            ]),
             'System specifications': {
                 "Linux OS": u"CentOS release 6.7", 
                 "R version": u"3.2.2",
@@ -495,9 +505,8 @@ class ExperimentMetadata(object):
         mdtext = StringIO.StringIO()
         for heading in [
                         'BCCVL model outputs guide', 
-                        'BCCVL application:', 
-                        'Online Open Course in SDM:', 
                         'System specifications', 
+                        'Model specifications',
                         'Input datasets:',
                         'Algorithm settings:',
                         'Model outputs:']:
