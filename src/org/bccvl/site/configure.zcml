@@ -313,6 +313,11 @@
       />
 
   <utility
+      component=".vocabularies.domain_dataset_source"
+      name="domain_dataset_source"
+      />
+
+  <utility
       component=".vocabularies.monthly_dataset_source"
       name="monthly_dataset_source"
       />

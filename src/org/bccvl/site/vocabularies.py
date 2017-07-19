@@ -486,6 +486,17 @@ def summary_dataset_source(context):
     return summary_dataset_vocabulary
 
 
+domain_dataset_vocabulary = SimpleVocabulary([
+    SimpleTerm("Freshwater datasets", "Freshwaterdatasets", u'Freshwater datasets'),
+    SimpleTerm("Terrestrial datasets", "Terrestrialdatasets", u'Terrestrial datasets'),
+])
+
+
+@provider(IVocabularyFactory)
+def domain_dataset_source(context):
+    return domain_dataset_vocabulary
+
+
 monthly_dataset_vocabulary = SimpleVocabulary([
     SimpleTerm("Monthly datasets", "Monthlydatasets", u'Monthly datasets'),
 ])
