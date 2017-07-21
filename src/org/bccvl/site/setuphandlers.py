@@ -841,5 +841,5 @@ def upgrade_310_320_1(context, logger=None):
                 elif isinstance(obj.subject, tuple):
                     obj.subject = list(obj.subject) + ['Terrestrial datasets']
                 else:
-                    obj.subject = obj.subject.append('Terrestrial datasets')
+                    obj.subject.append('Terrestrial datasets')
                 obj.reindexObject()
