@@ -836,7 +836,6 @@ def upgrade_310_320_1(context, logger=None):
         if 'Freshwater datasets' not in brain.Subject:
             if 'Terrestrial datasets' not in brain.Subject:
                 obj = brain.getObject()
-                print obj.Title(), obj.subject, type(obj.subject)
                 if not obj.subject:
                     obj.subject = ['Terrestrial datasets']
                 elif isinstance(obj.subject, tuple):
