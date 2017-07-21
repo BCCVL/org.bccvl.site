@@ -816,3 +816,31 @@ def upgrade_300_310_1(context, logger=None):
                 if '_unconstraint' in dsbrain.Title and dsbrain.BCCDataGenre != 'DataGenreFP_ENVLOP':
                     obj = dsbrain.getObject()
                     IBCCVLMetadata(obj)['genre'] = 'DataGenreFP_ENVLOP'
+
+
+def upgrade_310_320_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    # Tag untagged climate and environmental datasets as terrestrial
+    for brain in pc.searchResults(portal_type='org.bccvl.content.remotedataset',
+                                  BCCDataGenre=('DataGenreE', 'DataGenreCC', 'DataGenreFC')):
+        if 'Freshwater datasets' not in brain.Subject:
+            if 'Terrestrial datasets' not in brain.Subject:
+                obj = brain.getObject()
+                print obj.Title(), obj.subject, type(obj.subject)
+                if not obj.subject:
+                    obj.subject = ['Terrestrial datasets']
+                elif isinstance(obj.subject, tuple):
+                    obj.subject = list(obj.subject) + ['Terrestrial datasets']
+                else:
+                    obj.subject = obj.subject.append('Terrestrial datasets')
+                obj.reindexObject()
