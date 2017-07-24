@@ -58,6 +58,9 @@ class BCCVLUploadForm(DefaultAddForm):
     datagenre = None
 
     def create(self, data):
+        if self.datagenre in ('DataGenreCC', 'DataGenreFC', 'DataGenreE'):
+            self.domain = data.get('domain', None)
+
         if self.portal_type == 'org.bccvl.content.remotedataset':
             # we are going to create a remote dataset from an upload
             # 1. put upload information aside
@@ -86,6 +89,8 @@ class BCCVLUploadForm(DefaultAddForm):
             IBCCVLMetadata(new_object)['genre'] = self.datagenre
         if self.categories:
             IBCCVLMetadata(new_object)['categories'] = self.categories
+        if self.domain:
+            new_object.subject = [self.domain]
             # rdf commit should happens in transmogrifier step later on
         # if fti.immediate_view:
         #     self.immediate_view = "%s/%s/%s" % (container.absolute_url(), new_object.id, fti.immediate_view,)
@@ -365,7 +370,7 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
         u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
-        'file', 'title', 'description', 'resolution', 'resolutiono',
+        'domain', 'file', 'title', 'description', 'resolution', 'resolutiono',
         'rights')
     datagenre = 'DataGenreCC'
     categories = ['current']
@@ -384,7 +389,7 @@ class EnvironmentalAddForm(BCCVLUploadForm):
         u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
-        'file', 'title', 'description', 'resolution', 'resolutiono',
+        'domain', 'file', 'title', 'description', 'resolution', 'resolutiono',
         'rights')
     datagenre = 'DataGenreE'
     categories = ['environmental']
@@ -405,7 +410,7 @@ class ClimateFutureAddForm(BCCVLUploadForm):
         u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
-        'file', 'title', 'description', 'emsc', 'gcm',
+         'domain', 'file', 'title', 'description', 'emsc', 'gcm',
         'resolution', 'resolutiono', 'rights')
     datagenre = 'DataGenreFC'
     categories = ['future']

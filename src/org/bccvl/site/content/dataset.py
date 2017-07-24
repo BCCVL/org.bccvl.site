@@ -101,6 +101,11 @@ class ILayerDataset(model.Schema):
         vocabulary=u'genre_source'
     )
 
+    domain = schema.Choice(
+        title=u'Dataset Domain',
+        vocabulary=u'domain_dataset_source'
+    )
+
     datatype = schema.Choice(
         required=False,
         title=u'Type of Dataset',
