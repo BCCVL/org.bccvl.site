@@ -113,7 +113,7 @@ class ILayerDataset(model.Schema):
 
     resolution = schema.Choice(
         title=u'Resolution',
-        required=False,
+        required=True,
         vocabulary=u'resolution_source')
 
     resolutiono = schema.TextLine(
