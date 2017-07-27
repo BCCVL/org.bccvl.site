@@ -91,7 +91,7 @@ class ResolutionSourceTest(unittest.TestCase):
         self.assertIn(u'Resolution30s', source)
         term = source.getTerm(u'Resolution30s')
         self.assertEqual(term.value, u'Resolution30s')
-        self.assertEqual(len(source), 11)
+        self.assertEqual(len(source), 12)
 
 
 class CRSSourceTest(unittest.TestCase):

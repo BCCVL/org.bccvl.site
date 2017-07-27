@@ -386,6 +386,7 @@ class TestDatasetUpload(unittest.TestCase):
             'climatecurrent.buttons.save': u'Save',
             'climatecurrent.widgets.description': u'some test.tif file',
             'climatecurrent.widgets.file': fileupload,
+            'climatecurrent.widgets.domain': u'Terrestrialdatasets',
             'climatecurrent.widgets.title': u'test single layer title',
             'climatecurrent.widgets.legalcheckbox': [u'selected'],
             'climatecurrent.widgets.legalcheckbox-empty-marker': u'1',
@@ -451,6 +452,7 @@ class TestDatasetUpload(unittest.TestCase):
         view.request.form.update({
             'climatefuture.buttons.save': u'Save',
             'climatefuture.widgets.description': u'some test.tif file',
+            'climatefuture.widgets.domain': u'Terrestrialdatasets',
             'climatefuture.widgets.file': fileupload,
             'climatefuture.widgets.title': u'test smulti layer title',
             'climatefuture.widgets.legalcheckbox': [u'selected'],
