@@ -13,7 +13,6 @@ from zope.component import getUtility
 from zope.publisher.interfaces import NotFound, BadRequest
 
 from org.bccvl.site import defaults
-from org.bccvl.site.browser.ws import IALAService, IGBIFService
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo)
 from org.bccvl.site.swift.interfaces import ISwiftSettings
@@ -109,100 +108,6 @@ class UrlLibResponseIterator(object):
 
     def __len__(self):
         return self.length
-
-
-class GBIFProxy(BrowserView):
-    # @returnwrapper ... returning file here ... returnwrapper not handling it properly
-
-    def autojson(self, q, callback=None):
-        # TODO: do parameter checking and maybe set defaults so that
-        # js side doesn't have to do it
-        gbif = getUtility(IGBIFService)
-        return self._doResponse(gbif.autojson(q, None, None, callback))
-
-    # @returnwrapper ... returning file here ... returnwrapper not handling it properly
-    def searchjson(self, name, start=0, pageSize=None, callback=None):
-        # TODO: do parameter checking and maybe set defaults so that
-        #       js side doesn't have to do it
-        gbif = getUtility(IGBIFService)
-        return self._doResponse(gbif.searchjson(name, None, start, pageSize, callback))
-
-    def speciesjson(self, genusKey, start=0, pageSize=None, callback=None):
-        gbif = getUtility(IGBIFService)
-        return self._doResponse(gbif.speciesjson(genusKey, None, start, pageSize, callback))
-
-    def _doResponse(self, resp):
-        # TODO: add headers like:
-        #    User-Agent
-        #    orig-request
-        #    etc...
-        # TODO: check response code?
-        for name in ('Date', 'Pragma', 'Expires', 'Content-Type',
-                     'Cache-Control', 'Content-Language', 'Content-Length',
-                     'transfer-encoding'):
-            value = resp.headers.getheader(name)
-            if value:
-                self.request.response.setHeader(name, value)
-        self.request.response.setStatus(resp.code)
-        ret = UrlLibResponseIterator(resp)
-        if len(ret) != 0:
-            # we have a content-length so let the publisher stream it
-            return ret
-        # we don't have content-length and stupid publisher want's one
-        # for stream, so let's stream it ourselves.
-        while True:
-            try:
-                data = ret.next()
-                self.request.response.write(data)
-            except StopIteration:
-                break
-
-
-class ALAProxy(BrowserView):
-
-    # @returnwrapper ... returning file here ... returnwrapper not handling it properly
-    def autojson(self, q, geoOnly=None, idxType=None, limit=None,
-                 callback=None):
-        # TODO: do parameter checking and maybe set defaults so that
-        # js side doesn't have to do it
-        ala = getUtility(IALAService)
-        return self._doResponse(ala.autojson(q, geoOnly, idxType, limit,
-                                             callback))
-
-    # @returnwrapper ... returning file here ... returnwrapper not handling it properly
-    def searchjson(self, q, fq=None, start=None, pageSize=None,
-                   sort=None, dir=None, callback=None):
-        # TODO: do parameter checking and maybe set defaults so that
-        #       js side doesn't have to do it
-        ala = getUtility(IALAService)
-        return self._doResponse(ala.searchjson(q, fq, start, pageSize,
-                                               sort, dir, callback))
-
-    def _doResponse(self, resp):
-        # TODO: add headers like:
-        #    User-Agent
-        #    orig-request
-        #    etc...
-        # TODO: check response code?
-        for name in ('Date', 'Pragma', 'Expires', 'Content-Type',
-                     'Cache-Control', 'Content-Language', 'Content-Length',
-                     'transfer-encoding'):
-            value = resp.headers.getheader(name)
-            if value:
-                self.request.response.setHeader(name, value)
-        self.request.response.setStatus(resp.code)
-        ret = UrlLibResponseIterator(resp)
-        if len(ret) != 0:
-            # we have a content-length so let the publisher stream it
-            return ret
-        # we don't have content-length and stupid publisher want's one
-        # for stream, so let's stream it ourselves.
-        while True:
-            try:
-                data = ret.next()
-                self.request.response.write(data)
-            except StopIteration:
-                break
 
 
 class DataMover(BrowserView):
