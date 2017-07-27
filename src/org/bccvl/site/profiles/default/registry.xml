@@ -1873,7 +1873,7 @@
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
         <element key="type">substrate</element>
-        <element key="tooltip">Areal proportion of all grid cells overlying siliciclastic/undifferentiated sedimentary rocks (examples include sandstones, conglomerate, mudstone, siltstone).</elemnt>
+        <element key="tooltip">Areal proportion of all grid cells overlying siliciclastic/undifferentiated sedimentary rocks (examples include sandstones, conglomerate, mudstone, siltstone).</element>
       </element>
       <element>
         <element key="value">unconsolidatedrock</element>
@@ -1882,7 +1882,7 @@
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
         <element key="type">substrate</element>
-        <element key="tooltip">Areal proportion of all grid cells overlying unconsolidated material (regolith).<element>
+        <element key="tooltip">Areal proportion of all grid cells overlying unconsolidated material (regolith).</element>
       </element>
       <element>
         <element key="value">sathydraulicconductivity</element>
