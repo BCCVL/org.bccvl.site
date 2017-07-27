@@ -371,7 +371,7 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
         u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
-        'domain', 'file', 'title', 'description', 'resolution', 'resolutiono',
+        'domain', 'file', 'title', 'description', 'resolution', # 'resolutiono',
         'rights')
     datagenre = 'DataGenreCC'
     categories = ['current']
@@ -390,7 +390,7 @@ class EnvironmentalAddForm(BCCVLUploadForm):
         u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
-        'domain', 'file', 'title', 'description', 'resolution', 'resolutiono',
+        'domain', 'file', 'title', 'description', 'resolution', # 'resolutiono',
         'rights')
     datagenre = 'DataGenreE'
     categories = ['environmental']
@@ -412,7 +412,8 @@ class ClimateFutureAddForm(BCCVLUploadForm):
 
     fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
          'domain', 'file', 'title', 'description', 'emsc', 'gcm',
-        'resolution', 'resolutiono', 'rights')
+        'resolution', # 'resolutiono',
+        'rights')
     datagenre = 'DataGenreFC'
     categories = ['future']
     # datatype, gcm, emissionscenario

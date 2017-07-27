@@ -198,7 +198,7 @@ class DMService(BaseService):
     def import_trait_data(self):
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
             self.record_error('Request must be POST', 400)
-            raise BadRequest('Request must be POST')        
+            raise BadRequest('Request must be POST')
 
         source = self.request.form.get('source', None)
         species = self.request.form.get('species', None)
