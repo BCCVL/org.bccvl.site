@@ -58,6 +58,7 @@ class BCCVLUploadForm(DefaultAddForm):
     datagenre = None
 
     def create(self, data):
+        self.domain = None
         if self.datagenre in ('DataGenreCC', 'DataGenreFC', 'DataGenreE'):
             self.domain = data.get('domain', None)
 
