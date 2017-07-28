@@ -118,7 +118,7 @@ class RemoteDatasetDownload(BrowserView):
             url = tool.generate_temp_url(url=remoteUrl)
         except:
             url = remoteUrl
-        return self.request.RESPONSE.redirect(url)
+        return self.request.RESPONSE.redirect(url.encode('utf-8'))
 
     def HEAD(self):
         # we wan't to redirect here as well

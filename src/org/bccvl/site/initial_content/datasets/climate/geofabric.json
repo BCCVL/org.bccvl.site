@@ -1,0 +1,12 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "Australian Stream and Catchment Climate Data",
+    "description": "A suite of climate layers calculated based on the Australian Hydrological Geospatial Fabric (‘Geofabric’) network that represents stream segments and their catchments.",
+    "rights": "CC-BY Share Alike Attribution 3.0 and Creative Commons Attribution 4.0 International Licence",
+    "attribution": ["Stein JL, Hutchinson MF, Stein JA (2014) A new stream and nested catchment framework for Australia. Hydrology and Earth System Sciences, 18(5), 1917-1933."
+    ],
+    "external_description": "Current Climate (1976-2005) data with 19 different layers calculated for each stream segment, which refers to all grid cells comprising the stream segment and associated valley bottoms, and for each catchment, which refers to all grid cells upstream of the center of the stream segment pour-point cell.The layers were developed by the Australian National University (ANU) in 2011 and updated in 2012. BCCVL has integrated version 1.1.5 (2012) of the database.<br> Publication: See <a href=\"http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf\" target=\"_blank\">http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf</a><br>Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>",
+    "categories": ["climate"],
+    "BCCDataGenre": ["DataGenreCC"],
+    "_transitions": ["show_internally", "publish_externally"]
+}

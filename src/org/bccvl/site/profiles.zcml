@@ -227,4 +227,17 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="310"
+      destination="320"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 320"
+        description="Tagging existing climate/environmental datasets as Terrestrial"
+        handler=".setuphandlers.upgrade_310_320_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

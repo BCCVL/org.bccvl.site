@@ -101,6 +101,12 @@ class ILayerDataset(model.Schema):
         vocabulary=u'genre_source'
     )
 
+    domain = schema.Choice(
+        title=u'Dataset Domain',
+        vocabulary=u'domain_dataset_source',
+        default=u'Terrestrialdatasets'
+    )
+
     datatype = schema.Choice(
         required=False,
         title=u'Type of Dataset',
@@ -108,7 +114,7 @@ class ILayerDataset(model.Schema):
 
     resolution = schema.Choice(
         title=u'Resolution',
-        required=False,
+        required=True,
         vocabulary=u'resolution_source')
 
     resolutiono = schema.TextLine(

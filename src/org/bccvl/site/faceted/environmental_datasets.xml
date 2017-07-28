@@ -12,9 +12,9 @@
    <property name="onlyallelements">1</property>
    <property name="wildcard">1</property>
   </criterion>
-  <criterion name="c10">
+  <criterion name="c11">
    <property name="widget">checkbox</property>
-   <property name="title">Summary</property>
+   <property name="title">Domain</property>
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">0</property>
@@ -24,10 +24,28 @@
    <property name="index">Subject</property>
    <property name="operator">or</property>
    <property name="operator_visible">0</property>
-   <property name="vocabulary">summary_dataset_source</property>
+   <property name="vocabulary">domain_dataset_source</property>
    <property name="catalog"></property>
    <property name="maxitems"></property>
    <property name="sortreversed">0</property>
+   <property name="default"/>
+  </criterion>
+  <criterion name="c10">
+   <property name="widget">checkbox</property>
+   <property name="title">Summary</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
+   <property name="index">Subject</property>
+   <property name="operator">or</property>
+   <property name="operator_visible"></property>
+   <property name="vocabulary">summary_dataset_source</property>
+   <property name="catalog"></property>
+   <property name="maxitems"></property>
+   <property name="sortreversed"></property>
    <property name="default">Summary datasets</property>
   </criterion>
   <criterion name="c8">
@@ -37,15 +55,15 @@
    <property name="section">default</property>
    <property name="hidden">0</property>
    <property name="count">1</property>
-   <property name="sortcountable">0</property>
+   <property name="sortcountable"></property>
    <property name="hidezerocount">1</property>
    <property name="index">BCCCategory</property>
    <property name="operator">and</property>
-   <property name="operator_visible">0</property>
+   <property name="operator_visible"></property>
    <property name="vocabulary">scientific_category_source</property>
    <property name="maxitems"></property>
-   <property name="sortreversed">0</property>
-   <property name="default"/>
+   <property name="sortreversed"></property>
+   <property name="default"></property>
   </criterion>
   <criterion name="c6">
    <property name="widget">select</property>
@@ -69,12 +87,12 @@
    <property name="section">default</property>
    <property name="hidden">0</property>
    <property name="count">1</property>
-   <property name="sortcountable">0</property>
-   <property name="hidezerocount">0</property>
+   <property name="sortcountable"></property>
+   <property name="hidezerocount"></property>
    <property name="index">path</property>
    <property name="root">/datasets</property>
    <property name="vocabulary">climate_environmental_source</property>
-   <property name="sortreversed">0</property>
+   <property name="sortreversed"></property>
   </criterion>
   <criterion name="c5">
    <property name="widget">userselect</property>
@@ -86,6 +104,24 @@
    <property name="sortcountable"></property>
    <property name="hidezerocount"></property>
    <property name="sortreversed"></property>
+  </criterion>
+  <criterion name="c9">
+   <property name="widget">checkbox</property>
+   <property name="title">Year</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">0</property>
+   <property name="count">1</property>
+   <property name="sortcountable">1</property>
+   <property name="hidezerocount"></property>
+   <property name="index">BCCYear</property>
+   <property name="operator">or</property>
+   <property name="operator_visible"></property>
+   <property name="vocabulary"></property>
+   <property name="catalog">portal_catalog</property>
+   <property name="maxitems"></property>
+   <property name="sortreversed">1</property>
+   <property name="default"></property>
   </criterion>
   <criterion name="c0">
    <property name="widget">resultsperpage</property>
@@ -145,24 +181,6 @@
     <element value="DataGenreCC"/>
     <element value="DataGenreE"/>
    </property>
-  </criterion>
-  <criterion name="c9">
-   <property name="widget">checkbox</property>
-   <property name="title">Year</property>
-   <property name="position">left</property>
-   <property name="section">default</property>
-   <property name="hidden">0</property>
-   <property name="count">1</property>
-   <property name="sortcountable">1</property>
-   <property name="hidezerocount">0</property>
-   <property name="index">BCCYear</property>
-   <property name="operator">or</property>
-   <property name="operator_visible">0</property>
-   <property name="vocabulary"></property>
-   <property name="catalog">portal_catalog</property>
-   <property name="maxitems"></property>
-   <property name="sortreversed">1</property>
-   <property name="default"/>
   </criterion>
  </criteria>
 </object>

@@ -37,3 +37,10 @@ class IProvenanceData(Interface):
     """
 
     data = Text()
+
+class IExperimentMetadata(Interface):
+    """
+    Interface to access experiment metadata
+    """
+
+    data = Text()

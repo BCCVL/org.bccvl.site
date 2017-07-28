@@ -47,7 +47,7 @@ def DatasetDownloadInfo(context):
         contenttype = context.file.contentType
     # generate downloaurl
     downloadview = getMultiAdapter((context, context.REQUEST), name="download")
-    downloadurl = '{}/@@download/file/{}'.format(
+    downloadurl = u'{}/@@download/file/{}'.format(
         context.absolute_url(),
         filename
     )
@@ -66,7 +66,7 @@ def RemoteDatasetDownloadInfo(context):
     url = urlsplit(context.remoteUrl)
     filename = os.path.basename(url.path)
     return {
-        'url': '{}/@@download/{}'.format(
+        'url': u'{}/@@download/{}'.format(
             context.absolute_url(),
             filename),
         'filename': os.path.basename(url.path),
@@ -253,6 +253,7 @@ class SDMJobTracker(MultiJobTracker):
             # link with activity
             activity.add(PROV['used'], dsprov)
 
+
         for uuid, layers in result.job_params['environmental_datasets'].items():
             key = 'environmental_datasets'
             ds = uuidToObject(uuid)
@@ -277,6 +278,7 @@ class SDMJobTracker(MultiJobTracker):
             activity.add(PROV['used'], dsprov)
 
         provdata.data = graph.serialize(format="turtle")
+
 
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,

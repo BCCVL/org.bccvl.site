@@ -145,7 +145,16 @@ class DatasetTools(BrowserView):
             resultobj = self.context
         pc = api.portal.get_tool('portal_catalog')
         for brain in pc.searchResults(path={'query': resultobj.getPath(), 'depth': 1},
-                                      BCCDataGenre=('DataGenreCP', 'DataGenreCP_ENVLOP', 'DataGenceFP', 'DataGenreBiodiverseOutput')):
+                                      BCCDataGenre=('DataGenreCP', 'DataGenreCP_ENVLOP', 'DataGenceFP', 'DataGenreENDW_RICHNESS')):
+            return IContentListingObject(brain)
+        return None
+
+    def get_biodiverse_output(self, resultobj=None):
+        if resultobj is None:
+            resultobj = self.context
+        pc = api.portal.get_tool('portal_catalog')
+        for brain in pc.searchResults(path={'query': resultobj.getPath(), 'depth': 1},
+                                      BCCDataGenre=('DataGenreBiodiverseOutput')):
             return IContentListingObject(brain)
         return None
 

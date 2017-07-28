@@ -77,6 +77,10 @@
       factory=".metadata.ProvenanceData"
       />
 
+  <adapter
+      factory=".metadata.ExperimentMetadata"
+      />
+
   <!-- download info adapters -->
   <adapter
       factory=".utilities.DatasetDownloadInfo"
@@ -306,6 +310,11 @@
   <utility
       component=".vocabularies.summary_dataset_source"
       name="summary_dataset_source"
+      />
+
+  <utility
+      component=".vocabularies.domain_dataset_source"
+      name="domain_dataset_source"
       />
 
   <utility
