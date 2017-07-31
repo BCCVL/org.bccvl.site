@@ -103,7 +103,8 @@ class ILayerDataset(model.Schema):
 
     domain = schema.Choice(
         title=u'Dataset Domain',
-        vocabulary=u'domain_dataset_source'
+        vocabulary=u'domain_dataset_source',
+        default=u'Terrestrialdatasets'
     )
 
     datatype = schema.Choice(
