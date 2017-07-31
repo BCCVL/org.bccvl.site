@@ -1918,7 +1918,7 @@
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
         <element key="type">substrate</element>
-        <element key="tooltip">Average percentage of clay in the B soil horizon, which is commonly referred to as the "subsoil". Plant roots penetrate through this layer, but it has little humus.</element>
+        <element key="tooltip">Average percentage of clay in the B soil horizon, which is commonly referred to as the 'subsoil'. Plant roots penetrate through this layer, but it has little humus.</element>
       </element>
       <element>
         <element key="value">sandAhorizon</element>
@@ -1990,11 +1990,11 @@
         <element key="unitfull">megajoule-millimetre per hectare per hour per year</element>
         <element key="legend">default</element>
         <element key="type">climate</element>
-        <element key="tooltip">Average value of the rainfall erosivity R-factor of all grid cells upstream of the center of the stream segment pour-point cell.</element>
+        <element key="tooltip">Average value of the rainfall erosivity R-factor of all grid cells comprising the stream segment and its sub-catchment.</element>
       </element>
       <element>
         <element key="value">areatotal</element>
-        <element key="title">Catchment Area</element>
+        <element key="title">Catchment area</element>
         <element key="unit">km^2</element>
         <element key="unitfull">square kilometres</element>
         <element key="legend">default</element>
@@ -2377,7 +2377,7 @@
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
         <element key="type">landuse</element>
-        <element key="tooltip">AAreal proportion of grid cells that is used for irrigation supply/drainage.</element>
+        <element key="tooltip">Areal proportion of grid cells that is used for irrigation supply/drainage.</element>
       </element>
       <element>
         <element key="value">artficialimpoundment</element>
@@ -2445,7 +2445,7 @@
       </element>
       <element>
         <element key="value">npp01</element>
-        <element key="title">January mean Net Primary Productivity</element>
+        <element key="title">01 - January mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2455,7 +2455,7 @@
       </element>
       <element>
         <element key="value">npp02</element>
-        <element key="title">February mean Net Primary Productivity</element>
+        <element key="title">02 - February mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2465,7 +2465,7 @@
       </element>
       <element>
         <element key="value">npp03</element>
-        <element key="title">March mean Net Primary Productivity</element>
+        <element key="title">03 - March mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2475,7 +2475,7 @@
       </element>
       <element>
         <element key="value">npp04</element>
-        <element key="title">April mean Net Primary Productivity</element>
+        <element key="title">04 - April mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2485,7 +2485,7 @@
       </element>
       <element>
         <element key="value">npp05</element>
-        <element key="title">May mean Net Primary Productivity</element>
+        <element key="title">05 - May mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2495,7 +2495,7 @@
       </element>
       <element>
         <element key="value">npp06</element>
-        <element key="title">June mean Net Primary Productivity</element>
+        <element key="title">06 - June mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2505,7 +2505,7 @@
       </element>
       <element>
         <element key="value">npp07</element>
-        <element key="title">July mean Net Primary Productivity</element>
+        <element key="title">07 - July mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2515,7 +2515,7 @@
       </element>
       <element>
         <element key="value">npp08</element>
-        <element key="title">August mean Net Primary Productivity</element>
+        <element key="title">08 - August mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2525,7 +2525,7 @@
       </element>
       <element>
         <element key="value">npp09</element>
-        <element key="title">September mean Net Primary Productivity</element>
+        <element key="title">09 - September mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2535,7 +2535,7 @@
       </element>
       <element>
         <element key="value">npp10</element>
-        <element key="title">October mean Net Primary Productivity</element>
+        <element key="title">10 - October mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2545,7 +2545,7 @@
       </element>
       <element>
         <element key="value">npp11</element>
-        <element key="title">November mean Net Primary Productivity</element>
+        <element key="title">11 - November mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
@@ -2555,7 +2555,7 @@
       </element>
       <element>
         <element key="value">npp12</element>
-        <element key="title">December mean Net Primary Productivity</element>
+        <element key="title">12 - December mean Net Primary Productivity</element>
         <element key="unit">tC ha</element>
         <element key="unitfull">tonnes of carbon per hectare</element>
         <element key="legend">default</element>
