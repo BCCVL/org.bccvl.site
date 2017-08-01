@@ -2814,7 +2814,7 @@
         <element key="legend">percentage</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Minimum of barrier free flow path length percentage for reservoirs and damwalls, spillways or large dams</element>
+        <element key="tooltip">Minimum overall barrier free flow path length percentage (damwalls, spillways, large dams and reservoirs combined).</element>
       </element>
       <element>
         <element key="value">barfreelengresv</element>
@@ -2824,7 +2824,7 @@
         <element key="legend">percentage</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">((DUPRESERVR + D2RESERVOR ) / TOTLEN ) * 100</element>
+        <element key="tooltip">Percentage barrier free flow path length for reservoirs, calculated as ((Maximum barrier free flow path length upstream + Unrestricted distance downstream) / Total catchment length) * 100.</element>
       </element>
       <element>
         <element key="value">barfreelengdam</element>
@@ -2834,7 +2834,7 @@
         <element key="legend">percentage</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">((DISTUPDAMW + D2DAMWALL ) / TOTLEN ) * 100</element>
+        <element key="tooltip">Percentage barrier free flow path length for damwalls, spillways or large dams, calculated as ((Maximum barrier free flow path length upstream + Unrestricted distance downstream) / Total catchment length) * 100.</element>
       </element>
       <element>
         <element key="value">totalcatlength</element>
@@ -2844,7 +2844,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Sum of UPSDIST and D2OUTLET (terrain.lut)</element>
+        <element key="tooltip">Sum of 'distance to outlet' and 'distance to source'. Indicates total flow path length across the surface, allowing for the change in elevation, from segment pour-point to stream outlet.</element>
       </element>
       <element>
         <element key="value">maxupstbffplengres</element>
@@ -2854,7 +2854,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Calculated as for UPSDIST with sinks imposed on flow pathways at the outlet of stream segments flowing out of a reservoir (i.e. the RESERVOIRPID of the next stream segment downstream is 0)</element>
+        <element key="tooltip">Maximum flow path length upstream to the segment pour-point with sinks imposed on flow pathways at the outlet of stream segments flowing out of a reservoir.</element>
       </element>
       <element>
         <element key="value">unrestdowndistres</element>
@@ -2874,7 +2874,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Calculated as for UPSDIST with sinks imposed on flow pathways at damwalls or spillways intersecting or within 100m of an AusHydro 1.1.6 WatercourseLine feature.</element>
+        <element key="tooltip">Maximum flow path length upstream to the segment pour-point with sinks imposed on flow pathways at damwalls or spillways intersecting or within 100m of an AusHydro 1.1.6 WatercourseLine feature.</element>
       </element>
       <element>
         <element key="value">unrestdowndistdam</element>
@@ -2894,7 +2894,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">A damwall, spillway or reservoir outlet is present up and/or downstream (1 if present, 0 if absent).</element>
+        <element key="tooltip">Presence (1) or absence (0) of a damwall, spillway or reservoir outlet upstream and/or downstream.</element>
       </element>
       <element>
         <element key="value">barrierdownstr</element>
@@ -2904,7 +2904,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags a damwall, spillway or reservoir outlet in the downstream flow path (1 if present, 0 if absent).</element>
+        <element key="tooltip">Presence (1) or absence (0) of a damwall, spillway or reservoir outlet in the downstream flowpath (including anabranches).</element>
       </element>
       <element>
         <element key="value">barrierupstr</element>
@@ -2914,31 +2914,31 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags a damwall, spillway or reservoir outlet in the upstream flow path (1 if present, 0 if absent).</element>
+        <element key="tooltip">Presence (1) or absence (0) of a damwall, spillway or reservoir outlet upstream.</element>
       </element>
       <element>
         <element key="value">cliffupstr</element>
-        <element key="title">Upstream of a cliff</element>
+        <element key="title">Cliff presence upstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments upstream of a segment flowing over a cliff (1 if present downstream, 0 if absent).</element>
+        <element key="tooltip">Flags stream segments upstream of a segment flowing over a cliff (1 = present downstream, 0 = absent).</element>
       </element>
       <element>
         <element key="value">cliffdownstr</element>
-        <element key="title">Downstream of a cliff</element>
+        <element key="title">Cliff presence downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments downstream of a segment flowing over a cliff (1 if present downstream, 0 if absent).</element>
+        <element key="tooltip">Flags stream segments flowing over a waterfall (1 = present downstream, 0 = absent).</element>
       </element>
       <element>
         <element key="value">waterfallflow</element>
-        <element key="title">Flowing over a waterfall</element>
+        <element key="title">Waterfall presence up or downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
         <element key="legend">default</element>
@@ -2948,23 +2948,23 @@
       </element>
       <element>
         <element key="value">waterfallupstr</element>
-        <element key="title">Upstream of a waterfall</element>
+        <element key="title">Waterfall presence upstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments upstream of a segment flowing over a waterfall (1 if present downstream, 0 if absent).</element>
+        <element key="tooltip">Flags stream segments upstream of a segment flowing over a waterfall (1 = present downstream, 0 = absent).</element>
       </element>
       <element>
         <element key="value">waterfalldownstr</element>
-        <element key="title">Downstream of a waterfall</element>
+        <element key="title">Waterfall presence downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments downstream of a segment flowing over a waterfall (1 if present upstream, 0 if absent).</element>
+        <element key="tooltip">Flags stream segments downstream of a segment flowing over a waterfall (1 = present downstream, 0 = absent).</element>
       </element>
       <element>
         <element key="value">strdensity</element>
