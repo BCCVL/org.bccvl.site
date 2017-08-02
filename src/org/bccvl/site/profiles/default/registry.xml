@@ -2570,7 +2570,7 @@
         <element key="unitfull">disturbance index</element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Catchment Disturbance Index</element>
+        <element key="tooltip">Accumulated values of the Sub-catchment Disturbance Index adjusted by an estimate of the sub-catchments relative contribution to toal run-off.</element>
       </element>
       <element>
         <element key="value">subcatdisturbindex</element>
@@ -2579,7 +2579,7 @@
         <element key="unitfull">disturbance index</element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Sub-catchment Disturbance Index</element>
+        <element key="tooltip">Rating for the indirect impact of human modifications in the sub-catchments.</element>
       </element>
       <element>
         <element key="value">segflowdisturbindex</element>
@@ -2588,7 +2588,7 @@
         <element key="unitfull">disturbance index</element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Segment Flow Regime Disturbance Index</element>
+        <element key="tooltip">Rating for the disturbance of direct alterations to the flow regime such as dams, levee banks or flow diversions. This index is based on the Impoundment factor, Flow Diversions factor and Levee bank factor.</element>
       </element>
       <element>
         <element key="value">flowregimedisturbindex</element>
@@ -2597,7 +2597,7 @@
         <element key="unitfull">disturbance index</element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Flow Regime Disturbance Index</element>
+        <element key="tooltip">Accumulated values of the upstream Segment Flow Regime Disturbance Index adjusted by an estimate of the relative run-off accumulated at the points of disturbance.</element>
       </element>
       <element>
         <element key="value">riverdisturbindex</element>
@@ -2606,202 +2606,202 @@
         <element key="unitfull">disturbance index</element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">River Disturbance Index</element>
+        <element key="tooltip">Overall rating for river disturbance standardized between 0 (undisturbed) and 1 (severe disturbance) based on the combination of the Catchment Disturbance Index and the Flow Regime Disturbance Index.</element>
       </element>
       <element>
         <element key="value">extindsrcptfactor</element>
-        <element key="title">Extractive Industries/ Point source Factor</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">factor</element>
+        <element key="title">Sub-catchments - Point source factor (maximum of all data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Extractive Industries/ Point source Factor</element>
       </element>
       <element>
         <element key="value">landusefactor</element>
-        <element key="title">Landuse Factor</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">landuse factor</element>
+        <element key="title">Sub-catchments - Land use factor</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Landuse Factor</element>
       </element>
       <element>
         <element key="value">leveebankfactor</element>
-        <element key="title">Leveebank Factor</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">leveebank factor</element>
+        <element key="title">Streams - Levee bank factor</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Leveebank Factor</element>
       </element>
       <element>
         <element key="value">nwisettlefactor</element>
-        <element key="title">Settlement factor (NWI data only)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">settlement factor</element>
+        <element key="title">Sub-catchments - Settlement factor (only NWI data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Settlement factor (NWI data only)</element>
+        <element key="tooltip">The settlement score reflects both the density of settlements within a sub-catchment and their proximity to the stream. It is calculated based on weighted categories of settlements and structures according to the assumed level of impact on a stream. NWI = National Wilderness Inventory.</element>
       </element>
       <element>
         <element key="value">geodatasettlefactor</element>
-        <element key="title">Settlement factor (GEODATA data only)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">settlement factor</element>
+        <element key="title">Sub-catchments - Settlement factor (only Geodata)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Settlement factor (GEODATA data only)</element>
+        <element key="tooltip">The settlement score reflects both the density of settlements within a sub-catchment and their proximity to the stream. It is calculated based on weighted categories of settlements and structures according to the assumed level of impact on a stream.</element>
       </element>
       <element>
         <element key="value">otherdatasettlefactor</element>
-        <element key="title">Settlement factor (Other data)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">settlement factor</element>
+        <element key="title">Sub-catchments - Settlement factor (other data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Settlement factor (Other data)</element>
+        <element key="tooltip">The settlement score reflects both the density of settlements within a sub-catchment and their proximity to the stream. It is calculated based on weighted categories of settlements and structures according to the assumed level of impact on a stream.</element>
       </element>
       <element>
         <element key="value">maxsettlefactor</element>
-        <element key="title">Settlement factor (max of SDSF, GDSF and NWISF)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">settlement factor</element>
+        <element key="title">Sub-catchments - Settlement factor (maximum of all data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Settlement factor (max of SDSF, GDSF and NWISF)</element>
+        <element key="tooltip">The settlement score reflects both the density of settlements within a sub-catchment and their proximity to the stream. It is calculated based on weighted categories of settlements and structures according to the assumed level of impact on a stream.</element>
       </element>
       <element>
         <element key="value">nwiinffactor</element>
-        <element key="title">Infrastructure factor (NWI data only)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">infrastructure factor</element>
+        <element key="title">Sub-catchments - Infrastructure factor (only NWI data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Infrastructure factor (NWI data only)</element>
       </element>
       <element>
         <element key="value">geodatainffactor</element>
-        <element key="title">Infrastructure factor (GEODATA data only)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">infrastructure factor</element>
+        <element key="title">Sub-catchments - Infrastructure factor (only Geodata)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Infrastructure factor (GEODATA data only)</element>
       </element>
       <element>
         <element key="value">maxinffactor</element>
-        <element key="title">Infrastructure factor (max of GDIF and NWIIF)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">infrastructure factor</element>
+        <element key="title">Sub-catchments - Infrastructure factor (maximum of all data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Infrastructure factor (max of GDIF and NWIIF)</element>
       </element>
       <element>
         <element key="value">nwiimpfactor</element>
-        <element key="title">Impoundments Factor (NWI data only)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">impoundments factor</element>
+        <element key="title">Streams - Impoundments factor (only NWI data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Impoundments Factor (NWI data only)</element>
       </element>
       <element>
         <element key="value">geodataimpfactor</element>
-        <element key="title">Impoundments factor (GEODATA only)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">impoundments factor</element>
+        <element key="title">Streams - Impoundments factor (only Geodata)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Impoundments factor (GEODATA only)</element>
       </element>
       <element>
         <element key="value">maximpfactor</element>
-        <element key="title">Impoundments factor (max of GDIMF and NWIIMF)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">impoundments factor</element>
+        <element key="title">Streams - Impoundments factor (maximum of all data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Impoundments factor (max of GDIMF and NWIIMF)</element>
       </element>
       <element>
         <element key="value">nwidiverfactor</element>
-        <element key="title">Flow diversions factor (NWI data only)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">flow diversions factor</element>
+        <element key="title">Streams - Flow diversions factor (only NWI data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Flow diversions factor (NWI data only)</element>
       </element>
       <element>
         <element key="value">geodatadiverfactor</element>
-        <element key="title">Flow diversions factor (GEODATA data only)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">flow diversions factor</element>
+        <element key="title">Streams - Flow diversions factor (only Geodata)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Flow diversions factor (GEODATA data only)</element>
       </element>
       <element>
         <element key="value">maxdiverfactor</element>
-        <element key="title">Flow diversions factor (max of GDFDF and NWIFDF)</element>
-        <element key="unit">factor</element>
-        <element key="unitfull">flow diversions factor</element>
+        <element key="title">Streams - Flow diversions factor (maximum of all data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">Flow diversions factor (max of GDFDF and NWIFDF)</element>
       </element>
       <element>
         <element key="value">sdif</element>
-        <element key="title">sdif</element>
-        <element key="unit">TBD</element>
-        <element key="unitfull">To be done</element>
+        <element key="title">Sub-catchments - Infrastructure factor (other data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">To be done</element>
       </element>
       <element>
         <element key="value">nwief</element>
-        <element key="title">nwief</element>
-        <element key="unit">TBD</element>
-        <element key="unitfull">To be done</element>
+        <element key="title">Sub-catchments - Point source factor (only NWI data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">To be done</element>
       </element>
       <element>
         <element key="value">gdef</element>
-        <element key="title">gdef</element>
-        <element key="unit">TBD</element>
-        <element key="unitfull">To be done</element>
+        <element key="title">Sub-catchments - Point source factor (only Geodata)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">To be done</element>
       </element>
       <element>
         <element key="value">sdef</element>
-        <element key="title">sdef</element>
-        <element key="unit">TBD</element>
-        <element key="unitfull">To be done</element>
+        <element key="title">Sub-catchments - Point source factor (other data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">To be done</element>
       </element>
       <element>
         <element key="value">sdimf</element>
-        <element key="title">sdimf</element>
-        <element key="unit">TBD</element>
-        <element key="unitfull">To be done</element>
+        <element key="title">Streams - Impoundments factor (other data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">To be done</element>
       </element>
       <element>
         <element key="value">sdfdf</element>
-        <element key="title">sdfdf</element>
-        <element key="unit">TBD</element>
-        <element key="unitfull">To be done</element>
+        <element key="title">Streams - Flow diversions factor (other data)</element>
+        <element key="unit"> </element>
+        <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
         <element key="tooltip">To be done</element>
@@ -2917,7 +2917,7 @@
         <element key="tooltip">Presence (1) or absence (0) of a damwall, spillway or reservoir outlet upstream.</element>
       </element>
       <element>
-        <element key="value">cliffupstr</element>
+        <element key="value">cliffdownstr</element>
         <element key="title">Cliff presence upstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
@@ -2927,7 +2927,7 @@
         <element key="tooltip">Flags stream segments upstream of a segment flowing over a cliff (1 = present downstream, 0 = absent).</element>
       </element>
       <element>
-        <element key="value">cliffdownstr</element>
+        <element key="value">cliffupstr</element>
         <element key="title">Cliff presence downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
