@@ -1963,7 +1963,7 @@
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
         <element key="type">climate</element>
-        <element key="tooltip">Average growth index seasonality value calculated for C4 megatherm plants.</element>
+        <element key="tooltip">Average growth index seasonality value (coefficient of variation) calculated for C4 megatherm plants.</element>
       </element>
       <element>
         <element key="value">mesoseasongrowindex</element>
@@ -1972,7 +1972,7 @@
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
         <element key="type">climate</element>
-        <element key="tooltip">Average growth index seasonality value calculated for C3 mesotherm plants.</element>
+        <element key="tooltip">Average growth index seasonality value (coefficient of variation) calculated for C3 mesotherm plants.</element>
       </element>
       <element>
         <element key="value">microseasongrowindex</element>
@@ -1981,7 +1981,7 @@
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
         <element key="type">climate</element>
-        <element key="tooltip">Average growth index seasonality value calculated for C3 microtherm plants.</element>
+        <element key="tooltip">Average growth index seasonality value (coefficient of variation) calculated for C3 microtherm plants.</element>
       </element>
       <element>
         <element key="value">rainerosivityfactor</element>
@@ -2615,7 +2615,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Extractive Industries/ Point source Factor</element>
+        <element key="tooltip">The point source factor reflects the impact of a extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">landusefactor</element>
@@ -2624,7 +2624,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Landuse Factor</element>
+        <element key="tooltip">The land use factor is calculated as the proportion of the sub-catchment with land cover alterated post European settlement, weighted according to the relative impact of the land use on the stream, ranging from 1 (heavy impact, e.g. cleared for urban and cropping) to 0 (uncleared land).</element>
       </element>
       <element>
         <element key="value">leveebankfactor</element>
@@ -2678,7 +2678,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Infrastructure factor (NWI data only)</element>
+        <element key="tooltip">The infrastructure factor is calculated based on weighted categories of infrastructure ranging from high impact (main sealed roads) to low impact (walking tracks) and a distance factor to account for proximity to a stream. NWI = National Wilderness Inventory.</element>
       </element>
       <element>
         <element key="value">geodatainffactor</element>
@@ -2687,7 +2687,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Infrastructure factor (GEODATA data only)</element>
+        <element key="tooltip">The infrastructure factor is calculated based on weighted categories of infrastructure ranging from high impact (main sealed roads) to low impact (walking tracks) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">maxinffactor</element>
@@ -2696,7 +2696,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Infrastructure factor (max of GDIF and NWIIF)</element>
+        <element key="tooltip"The infrastructure factor is calculated based on weighted categories of infrastructure ranging from high impact (main sealed roads) to low impact (walking tracks) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">nwiimpfactor</element>
@@ -2705,7 +2705,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Impoundments Factor (NWI data only)</element>
+        <element key="tooltip">The impoundments factor is the maximum value of weighted factors of any impoundment features (major structures, weirs, locks/sluice gates, minor structures) recorded for a stream section. All stream sections with no impoundments of any type were assigned a value of zero. Off-stream impoundments, including farm dams, were generally not considered. NWI = National Wilderness Inventory.</element>
       </element>
       <element>
         <element key="value">geodataimpfactor</element>
@@ -2714,7 +2714,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Impoundments factor (GEODATA only)</element>
+        <element key="tooltip">The impoundments factor is the maximum value of weighted factors of any impoundment features (major structures, weirs, locks/sluice gates, minor structures) recorded for a stream section. All stream sections with no impoundments of any type were assigned a value of zero. Off-stream impoundments, including farm dams, were generally not considered.</element>
       </element>
       <element>
         <element key="value">maximpfactor</element>
@@ -2723,7 +2723,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Impoundments factor (max of GDIMF and NWIIMF)</element>
+        <element key="tooltip">The impoundments factor is the maximum value of weighted factors of any impoundment features (major structures, weirs, locks/sluice gates, minor structures) recorded for a stream section. All stream sections with no impoundments of any type were assigned a value of zero. Off-stream impoundments, including farm dams, were generally not considered.</element>
       </element>
       <element>
         <element key="value">nwidiverfactor</element>
@@ -2732,7 +2732,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Flow diversions factor (NWI data only)</element>
+        <element key="tooltip">The flow diversions factor is the maximum value of weighted factors assigned to the classes of flow diversion (major, other) recorded for a stream section. All stream sections with no flow diversions of any type were assigned a value of zero. NWI = National Wilderness Inventory.</element>
       </element>
       <element>
         <element key="value">geodatadiverfactor</element>
@@ -2741,7 +2741,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Flow diversions factor (GEODATA data only)</element>
+        <element key="tooltip">The flow diversions factor is the maximum value of weighted factors assigned to the classes of flow diversion (major, other) recorded for a stream section. All stream sections with no flow diversions of any type were assigned a value of zero.</element>
       </element>
       <element>
         <element key="value">maxdiverfactor</element>
@@ -2750,7 +2750,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Flow diversions factor (max of GDFDF and NWIFDF)</element>
+        <element key="tooltip">The flow diversions factor is the maximum value of weighted factors assigned to the classes of flow diversion (major, other) recorded for a stream section. All stream sections with no flow diversions of any type were assigned a value of zero.</element>
       </element>
       <element>
         <element key="value">sdif</element>
@@ -2759,7 +2759,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">To be done</element>
+        <element key="tooltip">The infrastructure factor is calculated based on weighted categories of infrastructure ranging from high impact (main sealed roads) to low impact (walking tracks) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">nwief</element>
@@ -2768,7 +2768,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">To be done</element>
+        <element key="tooltip">The point source factor reflects the impact of a extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream. NWI = National Wilderness Inventory.</element>
       </element>
       <element>
         <element key="value">gdef</element>
@@ -2777,7 +2777,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">To be done</element>
+        <element key="tooltip">The point source factor reflects the impact of a extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">sdef</element>
@@ -2786,7 +2786,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">To be done</element>
+        <element key="tooltip">The point source factor reflects the impact of a extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">sdimf</element>
@@ -2795,7 +2795,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">To be done</element>
+        <element key="tooltip">The impoundments factor is the maximum value of weighted factors of any impoundment features (major structures, weirs, locks/sluice gates, minor structures) recorded for a stream section. All stream sections with no impoundments of any type were assigned a value of zero. Off-stream impoundments, including farm dams, were generally not considered.</element>
       </element>
       <element>
         <element key="value">sdfdf</element>
@@ -2804,7 +2804,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">To be done</element>
+        <element key="tooltip">The flow diversions factor is the maximum value of weighted factors assigned to the classes of flow diversion (major, other) recorded for a stream section. All stream sections with no flow diversions of any type were assigned a value of zero.</element>
       </element>
       <element>
         <element key="value">barfreelengmin</element>
