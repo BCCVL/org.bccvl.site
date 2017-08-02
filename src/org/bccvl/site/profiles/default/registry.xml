@@ -2696,7 +2696,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip"The infrastructure factor is calculated based on weighted categories of infrastructure ranging from high impact (main sealed roads) to low impact (walking tracks) and a distance factor to account for proximity to a stream.</element>
+        <element key="tooltip">The infrastructure factor is calculated based on weighted categories of infrastructure ranging from high impact (main sealed roads) to low impact (walking tracks) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">nwiimpfactor</element>
