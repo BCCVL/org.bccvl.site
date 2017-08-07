@@ -2570,7 +2570,7 @@
         <element key="unitfull">disturbance index</element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Accumulated values of the Sub-catchment Disturbance Index adjusted by an estimate of the sub-catchments relative contribution to toal run-off.</element>
+        <element key="tooltip">Accumulated upstream values of the Sub-catchment Disturbance Index adjusted by an estimate of the sub-catchments relative contribution to total run-off.</element>
       </element>
       <element>
         <element key="value">subcatdisturbindex</element>
@@ -2615,7 +2615,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">The point source factor reflects the impact of a extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
+        <element key="tooltip">The point source factor reflects the impact of an extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">landusefactor</element>
@@ -2629,11 +2629,11 @@
       <element>
         <element key="value">leveebankfactor</element>
         <element key="title">Streams - Levee bank factor</element>
-        <element key="unit"> </element>
-        <element key="unitfull"> </element>
+        <element key="unit">bool</element>
+        <element key="unitfull">boolean</element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">Leveebank Factor</element>
+        <element key="tooltip">Indicates whether a levee bank was present within 500 m of the stream segment.</element>
       </element>
       <element>
         <element key="value">nwisettlefactor</element>
@@ -2768,7 +2768,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">The point source factor reflects the impact of a extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream. NWI = National Wilderness Inventory.</element>
+        <element key="tooltip">The point source factor reflects the impact of an extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream. NWI = National Wilderness Inventory.</element>
       </element>
       <element>
         <element key="value">gdef</element>
@@ -2777,7 +2777,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">The point source factor reflects the impact of a extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
+        <element key="tooltip">The point source factor reflects the impact of an extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">sdef</element>
@@ -2786,7 +2786,7 @@
         <element key="unitfull"> </element>
         <element key="legend">default</element>
         <element key="type">landuse</element>
-        <element key="tooltip">The point source factor reflects the impact of a extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
+        <element key="tooltip">The point source factor reflects the impact of an extractive industry point source, calculated based on weighted categories ranging from high impact (operating mines, contaminated sites, chemical and nutrient point pollution) to low impact (abandoned mine/quarry/petroleum well) and a distance factor to account for proximity to a stream.</element>
       </element>
       <element>
         <element key="value">sdimf</element>
@@ -2808,7 +2808,7 @@
       </element>
       <element>
         <element key="value">barfreelengmin</element>
-        <element key="title">Barrier free flow path length percentage</element>
+        <element key="title">Percentage barrier free flow path length</element>
         <element key="unit">%</element>
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
@@ -2818,7 +2818,7 @@
       </element>
       <element>
         <element key="value">barfreelengresv</element>
-        <element key="title">Barrier free flow path length percentage (reservoirs)</element>
+        <element key="title">Percentage barrier free flow path length percentage for reservoirs</element>
         <element key="unit">%</element>
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
@@ -2828,7 +2828,7 @@
       </element>
       <element>
         <element key="value">barfreelengdam</element>
-        <element key="title">Barrier free flow path length percentage (damwalls, spillways or large dams)</element>
+        <element key="title">Percentage barrier free flow path length for damwalls, spillways or large dams</element>
         <element key="unit">%</element>
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
@@ -2924,7 +2924,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments upstream of a segment flowing over a cliff (1 = present downstream, 0 = absent).</element>
+        <element key="tooltip">Flags stream segments upstream of a segment flowing over a cliff (1 = present, 0 = absent).</element>
       </element>
       <element>
         <element key="value">cliffupstr</element>
@@ -2934,7 +2934,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments flowing over a waterfall (1 = present downstream, 0 = absent).</element>
+        <element key="tooltip">Flags stream segments downstream of a segment flowing over a cliff (1 = present, 0 = absent)</element>
       </element>
       <element>
         <element key="value">waterfallflow</element>
@@ -2944,7 +2944,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments flowing over a waterfall (1 if present, 0 if absent).</element>
+        <element key="tooltip">Flags stream segments flowing over a waterfall (1 = present, 0 = absent).</element>
       </element>
       <element>
         <element key="value">waterfallupstr</element>
@@ -2954,7 +2954,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments upstream of a segment flowing over a waterfall (1 = present downstream, 0 = absent).</element>
+        <element key="tooltip">Flags stream segments upstream of a segment flowing over a waterfall (1 = present, 0 = absent).</element>
       </element>
       <element>
         <element key="value">waterfalldownstr</element>
@@ -2964,7 +2964,7 @@
         <element key="legend">default</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
-        <element key="tooltip">Flags stream segments downstream of a segment flowing over a waterfall (1 = present downstream, 0 = absent).</element>
+        <element key="tooltip">Flags stream segments downstream of a segment flowing over a waterfall (1 = present, 0 = absent).</element>
       </element>
       <element>
         <element key="value">strdensity</element>
