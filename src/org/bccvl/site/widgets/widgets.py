@@ -337,14 +337,14 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             # now search all models within and add infos
             pc = getToolByName(self.context, 'portal_catalog')
             # only get result folders that are completed
-            brains = pc.searchResults(path={'query': expbrain.getPath(), 'depth': 1}, 
+            brains = pc.searchResults(path={'query': expbrain.getPath(), 'depth': 1},
                                       portal_type='Folder',
                                       job_state='COMPLETED')
             # TODO: maybe as generator?
             item['subitems'] = []
             for fldbrain in brains:
                 # Get the SDM model from result folder
-                brain = pc.searchResults(path=fldbrain.getPath(), 
+                brain = pc.searchResults(path=fldbrain.getPath(),
                                          BCCDataGenre=self.genre)
                 if not brain:
                     # ignore this folder, as it does not have a result we want
