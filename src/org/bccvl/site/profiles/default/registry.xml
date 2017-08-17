@@ -3147,6 +3147,11 @@
     </field>
     <value>
       <element>
+        <element key="value">Resolution02s</element>
+        <element key="title">0.2" (~5m)</element>
+        <element key="arcsec">0.2</element>
+      </element>
+      <element>
         <element key="value">Resolution1s</element>
         <element key="title">1" (~30m)</element>
         <element key="arcsec">1</element>
