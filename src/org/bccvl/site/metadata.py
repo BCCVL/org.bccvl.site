@@ -390,10 +390,10 @@ class ExperimentMetadata(object):
                 'Pseudo-absence Strategy': job_params.get('pa_strategy', ''),
                 'Pseudo-absence Ratio' : str(job_params.get('pa_ratio', ''))
             }
-            if job_params['pa_strategy'] == 'disc':
+            if job_params.get('pa_strategy', '') == 'disc':
                 pamd['Minimum distance'] = str(job_params.get('pa_disk_min', ''))
                 pamd['Maximum distance'] = str(job_params.get('pa_disk_max', ''))
-            if job_params['pa_strategy'] == 'sre':
+            if job_params.get('pa_strategy', '') == 'sre':
                 pamd['Quantile'] = str(job_params.get('pa_sre_quant', ''))
             self.md['Input datasets:'][key] = pamd
         
