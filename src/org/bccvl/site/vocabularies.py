@@ -74,6 +74,13 @@ class BCCVLSimpleVocabulary(SimpleVocabulary):
         terms = (cls.createTerm(value) for value in values)
         return cls(terms, *interfaces)
 
+    def getLayerTitle(self, layer):
+        """ Return layer title if available, otherwise layer name."""
+        if layer in self.by_value:
+            return self.getTerm(layer).title
+        else:
+            return layer
+
 
 # TODO: optimize catalog vocabulary for lazy sliced access
 class BrainsVocabulary(BCCVLSimpleVocabulary):

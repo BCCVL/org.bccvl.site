@@ -412,7 +412,7 @@ class ExperimentMetadata(object):
                 if isinstance(attribution, list):
                     attribution = '\n'.join([att.raw for att in attribution])
 
-                layer_titles = [layer_vocab.getTerm(layer).title for layer in layers]
+                layer_titles = [layer_vocab.getLayerTitle(layer) for layer in layers]
                 env_list.append({ 
                    'Title': ds.title, 
                    'Layers': u'\n'.join(layer_titles), 
