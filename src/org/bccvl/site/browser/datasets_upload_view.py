@@ -254,7 +254,7 @@ class BCCVLUploadForm(DefaultAddForm):
         self.fields += Fields(
             Bool(
                 __name__='legalcheckbox',
-                title=u'I agree to the <a href="http://www.bccvl.org.au/bccvl/legals/" target="_blank">Terms and Conditions</a>',
+                title=u'I agree to the <a href="http://www.bccvl.org.au/about/legal/terms-of-use/" target="_blank">Terms and Conditions</a>',
                 required=True,
                 default=False
             )
