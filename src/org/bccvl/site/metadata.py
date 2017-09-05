@@ -387,14 +387,14 @@ class ExperimentMetadata(object):
             pamd = {
                 'Title': pa_title, 
                 'Download URL': pa_url,
-                'Pseudo-absence Strategy': job_params['pa_strategy'] or '',
-                'Pseudo-absence Ratio' : str(job_params['pa_ratio']) or ''
+                'Pseudo-absence Strategy': job_params.get('pa_strategy', ''),
+                'Pseudo-absence Ratio' : str(job_params.get('pa_ratio', ''))
             }
-            if job_params['pa_strategy'] == 'disc':
-                pamd['Minimum distance'] = str(job_params['pa_disk_min']) or ''
-                pamd['Maximum distance'] = str(job_params['pa_disk_max']) or ''
-            if job_params['pa_strategy'] == 'sre':
-                pamd['Quantile'] = str(job_params['pa_sre_quant']) or ''
+            if job_params.get('pa_strategy', '') == 'disc':
+                pamd['Minimum distance'] = str(job_params.get('pa_disk_min', ''))
+                pamd['Maximum distance'] = str(job_params.get('pa_disk_max', ''))
+            if job_params.get('pa_strategy', '') == 'sre':
+                pamd['Quantile'] = str(job_params.get('pa_sre_quant', ''))
             self.md['Input datasets:'][key] = pamd
         
         for key in ['environmental_datasets', 'future_climate_datasets']:
@@ -412,7 +412,7 @@ class ExperimentMetadata(object):
                 if isinstance(attribution, list):
                     attribution = '\n'.join([att.raw for att in attribution])
 
-                layer_titles = [layer_vocab.getTerm(layer).title for layer in layers]
+                layer_titles = [layer_vocab.getLayerTitle(layer) for layer in layers]
                 env_list.append({ 
                    'Title': ds.title, 
                    'Layers': u'\n'.join(layer_titles), 

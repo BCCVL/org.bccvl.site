@@ -216,6 +216,12 @@ class DatasetTools(BrowserView):
                 IVocabularyFactory, 'layer_source')(self.context)
         return self._layer_vocab
 
+    def layer_title(self, layer):
+        try:
+            return self.layer_vocab.getTerm(layer).title
+        except:
+            return layer
+
     def layer_list(self):
         selected = self.request.get('datasets.filter.layer', ())
         for genre in self.layer_vocab:

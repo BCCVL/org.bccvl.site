@@ -33,10 +33,7 @@ def getdsmetadata(ds):
     layer_vocab = getUtility(IVocabularyFactory, 'layer_source')(ds)
     for layer in md.get('layers', {}).values():
         if layer.has_key('layer'):
-            if layer['layer'] in layer_vocab:
-                layer['title'] = layer_vocab.getTerm(layer['layer']).title
-            else:
-                layer['title'] = layer['layer']
+            layer['title'] = layer_vocab.getLayerTitle(layer['layer'])
 
     dlinfo = IDownloadInfo(ds)
     md.update({

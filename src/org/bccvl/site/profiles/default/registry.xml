@@ -2631,7 +2631,7 @@
         <element key="title">Streams - Levee bank factor</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">landuse</element>
         <element key="tooltip">Indicates whether a levee bank was present within 500 m of the stream segment.</element>
       </element>
@@ -2818,7 +2818,7 @@
       </element>
       <element>
         <element key="value">barfreelengresv</element>
-        <element key="title">Percentage barrier free flow path length percentage for reservoirs</element>
+        <element key="title">Percentage barrier free flow path length for reservoirs</element>
         <element key="unit">%</element>
         <element key="unitfull">percentage</element>
         <element key="legend">percentage</element>
@@ -2891,7 +2891,7 @@
         <element key="title">Artificial barrier presence up or downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
         <element key="tooltip">Presence (1) or absence (0) of a damwall, spillway or reservoir outlet upstream and/or downstream.</element>
@@ -2901,7 +2901,7 @@
         <element key="title">Artificial barrier presence downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
         <element key="tooltip">Presence (1) or absence (0) of a damwall, spillway or reservoir outlet in the downstream flowpath (including anabranches).</element>
@@ -2911,7 +2911,7 @@
         <element key="title">Artificial barrier presence upstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
         <element key="tooltip">Presence (1) or absence (0) of a damwall, spillway or reservoir outlet upstream.</element>
@@ -2921,7 +2921,7 @@
         <element key="title">Cliff presence upstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
         <element key="tooltip">Flags stream segments upstream of a segment flowing over a cliff (1 = present, 0 = absent).</element>
@@ -2931,7 +2931,7 @@
         <element key="title">Cliff presence downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
         <element key="tooltip">Flags stream segments downstream of a segment flowing over a cliff (1 = present, 0 = absent)</element>
@@ -2941,7 +2941,7 @@
         <element key="title">Waterfall presence up or downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
         <element key="tooltip">Flags stream segments flowing over a waterfall (1 = present, 0 = absent).</element>
@@ -2951,7 +2951,7 @@
         <element key="title">Waterfall presence upstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
         <element key="tooltip">Flags stream segments upstream of a segment flowing over a waterfall (1 = present, 0 = absent).</element>
@@ -2961,7 +2961,7 @@
         <element key="title">Waterfall presence downstream</element>
         <element key="unit">bool</element>
         <element key="unitfull">boolean</element>
-        <element key="legend">default</element>
+        <element key="legend">boolean</element>
         <element key="type">hydrology</element>
         <element key="type">topography</element>
         <element key="tooltip">Flags stream segments downstream of a segment flowing over a waterfall (1 = present, 0 = absent).</element>
@@ -3146,6 +3146,11 @@
       </value_type>
     </field>
     <value>
+      <element>
+        <element key="value">Resolution02s</element>
+        <element key="title">0.2" (~5m)</element>
+        <element key="arcsec">0.2</element>
+      </element>
       <element>
         <element key="value">Resolution1s</element>
         <element key="title">1" (~30m)</element>

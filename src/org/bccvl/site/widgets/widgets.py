@@ -337,14 +337,14 @@ class ExperimentSDMWidget(HTMLInputWidget, Widget):
             # now search all models within and add infos
             pc = getToolByName(self.context, 'portal_catalog')
             # only get result folders that are completed
-            brains = pc.searchResults(path={'query': expbrain.getPath(), 'depth': 1}, 
+            brains = pc.searchResults(path={'query': expbrain.getPath(), 'depth': 1},
                                       portal_type='Folder',
                                       job_state='COMPLETED')
             # TODO: maybe as generator?
             item['subitems'] = []
             for fldbrain in brains:
                 # Get the SDM model from result folder
-                brain = pc.searchResults(path=fldbrain.getPath(), 
+                brain = pc.searchResults(path=fldbrain.getPath(),
                                          BCCDataGenre=self.genre)
                 if not brain:
                     # ignore this folder, as it does not have a result we want
@@ -480,8 +480,8 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
     Gives user the ability to select an experiment and pick a number of sdm models from within.
     """
 
-    genre = ['DataGenreCP', 'DataGenreCP_ENVLOP',
-             'DataGenreFP', 'DataGenreFP_ENVLOP',
+    genre = ['DataGenreCP_ENVLOP', # 'DataGenreCP',
+             'DataGenreFP_ENVLOP', #'DataGenreFP',
              'DataGenreENDW_CWE', 'DataGenreENDW_WE',
              'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
              'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
