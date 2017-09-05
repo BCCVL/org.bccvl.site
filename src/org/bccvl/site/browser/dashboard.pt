@@ -18,7 +18,7 @@
         <div class="row">
           <div class="cell position-0">
             <h1>Welcome <strong tal:content="userinfo/name_or_id">Username</strong></h1>
-            <p>Need help? <a href="knowledgebase" tal:attributes="href string:${root_url}/knowledgebase">Visit our knowledge base</a> or <a href="contact-info" tal:attributes="href string:${root_url}/contact-info">contact our support team</a></p>
+            <p>Need help? <a href="knowledgebase" tal:attributes="href string:${root_url}/knowledgebase">Visit our knowledge base</a> or <a href="http://www.bccvl.org.au/contact/" target="_blank">contact our support team</a></p>
           </div>
         </div>
         <div class="row">
