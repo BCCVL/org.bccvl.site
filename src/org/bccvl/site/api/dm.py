@@ -373,7 +373,7 @@ class DMService(BaseService):
             res = requests.get(biocache_url, params=query)
             res = res.json()
             # FIXME: do we need to treat sandbox downloads differently?
-            if res['facetResults']:  # do we have some results at all?
+            if res.get('facetResults'):  # do we have some results at all?
                 for guid in res['facetResults'][0]['fieldResult']:
                     species.add(guid['label'])
         if len(species) > 1:
