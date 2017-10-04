@@ -129,8 +129,8 @@ class ISDMExperiment(IExperiment):
 
     directives.widget('scale_down',
                       BoolRadioFieldWidget,
-                      true_label=u"Scale to highest resolution",
-                      false_label=u"Scale to lowest resolution")
+                      true_label=u"Scale to finest resolution",
+                      false_label=u"Scale to coarsest resolution")
     scale_down = Bool(
         title=u'Select common resolution',
         description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
@@ -187,8 +187,8 @@ class IMSDMExperiment(IExperiment):
 
     directives.widget('scale_down',
                       BoolRadioFieldWidget,
-                      true_label=u"Scale to highest resolution",
-                      false_label=u"Scale to lowest resolution")
+                      true_label=u"Scale to finest resolution",
+                      false_label=u"Scale to coarsest resolution")
     scale_down = Bool(
         title=u'Select common resolution',
         description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
@@ -240,8 +240,8 @@ class IMMExperiment(IExperiment):
 
     directives.widget('scale_down',
                       BoolRadioFieldWidget,
-                      true_label=u"Scale to highest resolution",
-                      false_label=u"Scale to lowest resolution")
+                      true_label=u"Scale to finest resolution",
+                      false_label=u"Scale to coarsest resolution")
     scale_down = Bool(
         title=u'Select common resolution',
         description=u'Environmental datasets will be scaled to the same resolution. This option allows to select to scale to highest or lowest resolution.',
