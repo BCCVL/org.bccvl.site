@@ -736,6 +736,7 @@ class ProjectionJobTracker(MultiJobTracker):
         sdmuuid, threshold = sdmthreshold
         sdmdsObj = uuidToCatalogBrain(sdmuuid).getObject()
         algorithm = sdmdsObj.__parent__.job_params['function']
+        subset = sdmdsObj.__parent__.job_params.get('subset')
 
         # get more metadata about dataset
         dsmd = IBCCVLMetadata(dsbrain.getObject())
@@ -760,6 +761,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'resolution': dsmd['resolution'],
             'future_climate_datasets': projlayers,
             'function': algorithm,
+            'subset': subset,
             'projection_region': self.context.projection_region,
             # TO DO: This shall be input from user??
             'generate_convexhull': False,
