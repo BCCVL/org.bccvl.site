@@ -67,6 +67,18 @@
         permission="zope2.View"/>
 
     <browser:page
+        name="view"
+        for="..content.interfaces.IMSDMExperiment"
+        class=".experiment.MSDMView"
+        permission="zope2.View"/>    
+
+    <browser:page
+        name="view"
+        for="..content.interfaces.IMMExperiment"
+        class=".experiment.MMEView"
+        permission="zope2.View"/>    
+
+    <browser:page
         name="edit"
         for="org.bccvl.site.content.interfaces.IExperiment"
         class=".experiment.Edit"

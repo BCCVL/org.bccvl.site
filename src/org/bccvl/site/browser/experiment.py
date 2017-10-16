@@ -87,6 +87,7 @@ class ParamGroupMixin(object):
         func_vocab = getUtility(IVocabularyFactory, name=self.func_vocab_name)
         functions = getattr(self.context, self.func_select_field, None) or ()
 
+
         # TODO: could also use uuidToObject(term.value) instead of relying on
         # BrainsVocabluary terms
         for toolkit in (term.brain.getObject() for term in func_vocab(self.context)):
@@ -530,7 +531,7 @@ class MSDMAdd(ParamGroupMixin, Add):
 
     # Parameters for ParamGroupMixin
     func_vocab_name = 'sdm_functions_source'
-    func_select_field = 'functions'
+    func_select_field = 'function'
 
     def is_toolkit_selected(self, tid, data):
         return tid in data
@@ -587,6 +588,16 @@ class MSDMAdd(ParamGroupMixin, Add):
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
 
+class MSDMView(ParamGroupMixin, View):
+    """
+    View MSDM Experiment
+    """
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'sdm_functions_source'
+    func_select_field = 'function'
+
+    def is_toolkit_selected(self, tid, data):
+        return tid in data
 
 class MMEAdd(ParamGroupMixin, Add):
     """
@@ -597,7 +608,7 @@ class MMEAdd(ParamGroupMixin, Add):
 
     # Parameters for ParamGroupMixin
     func_vocab_name = 'sdm_functions_source'
-    func_select_field = 'functions'
+    func_select_field = 'function'
 
     def is_toolkit_selected(self, tid, data):
         return tid in data
@@ -653,6 +664,18 @@ class MMEAdd(ParamGroupMixin, Add):
         #         if idx > resolution_idx:
         #             resolution_idx = idx
         #     data['resolution'] = res_vocab._terms[resolution_idx].value
+
+
+class MMEView(ParamGroupMixin, View):
+    """
+    View MME Experiment
+    """
+    # Parameters for ParamGroupMixin
+    func_vocab_name = 'sdm_functions_source'
+    func_select_field = 'function'
+
+    def is_toolkit_selected(self, tid, data):
+        return tid in data
 
 
 class ProjectionAdd(Add):
