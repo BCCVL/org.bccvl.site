@@ -480,8 +480,8 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
     Gives user the ability to select an experiment and pick a number of sdm models from within.
     """
 
-    genre = ['DataGenreCP_ENVLOP', # 'DataGenreCP',
-             'DataGenreFP_ENVLOP', #'DataGenreFP',
+    genre = ['DataGenreCP', #'DataGenreCP_ENVLOP', 
+             'DataGenreFP', #'DataGenreFP_ENVLOP', 
              'DataGenreENDW_CWE', 'DataGenreENDW_WE',
              'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
              'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
@@ -511,6 +511,7 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                 brains = pc.searchResults(path=expbrain.getPath(),
                                           BCCDataGenre=self.genre)
                 # TODO: maybe as generator?
+                import ipdb; ipdb.set_trace()
                 item['subitems'] = [{'uuid': brain.UID,
                                      'title': brain.Title,
                                      'obj': brain.getObject(),
@@ -531,6 +532,7 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
         if count <= 0:
             return NO_VALUE
         # try to find count experiments
+
         for idx in range(0, count):
             uuid = self.request.get('{}.item.{}'.format(self.name, idx))
             models = self.request.get(
@@ -556,7 +558,7 @@ class ExperimentResultProjectionWidget(HTMLInputWidget, Widget):
     """
 
     experiment_type = None
-    genre = ['DataGenreCP', 'DataGenreFP', 'DataGenreFP_ENVLOP']
+    genre = ['DataGenreCP', 'DataGenreFP']  # BCCVL-97: limit to constrained models
     multiple = 'multiple'
 
     def items(self):
