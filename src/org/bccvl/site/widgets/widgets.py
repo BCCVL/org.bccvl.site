@@ -511,7 +511,6 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                 brains = pc.searchResults(path=expbrain.getPath(),
                                           BCCDataGenre=self.genre)
                 # TODO: maybe as generator?
-                import ipdb; ipdb.set_trace()
                 item['subitems'] = [{'uuid': brain.UID,
                                      'title': brain.Title,
                                      'obj': brain.getObject(),
