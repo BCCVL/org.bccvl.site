@@ -89,13 +89,13 @@ def get_username():
     return pwd.getpwuid(os.getuid()).pw_name
 
 
-def get_results_dir(result, request):
+def get_results_dir(result, request, childSpecies=False):
     swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
 
     # swift only if it is remote dataset. For blob and multi-species dataset, store locally.
-    # For other dataset type, store at swift if possible.
+    # For other dataset type (including the child species of multispecies), store at swift if possible.
     do_swift = IRemoteDataset.providedBy(result) or \
-               (not IMultiSpeciesDataset.providedBy(result) and \
+               ((childSpecies or (not IMultiSpeciesDataset.providedBy(result))) and \
                 not IBlobDataset.providedBy(result) and \
                 swiftsettings.storage_url)
 
@@ -223,7 +223,7 @@ def build_ala_import_qid_task(params, dataset, request):
     if IMultiSpeciesDataset.providedBy(dataset):
         container = aq_parent(aq_inner(dataset))
         import_multispecies_params = {
-            'results_dir': get_results_dir(container, request),
+            'results_dir': get_results_dir(dataset, request, childSpecies=True),
             'import_context': {
                 'context': '/'.join(container.getPhysicalPath()),
                 'user': {

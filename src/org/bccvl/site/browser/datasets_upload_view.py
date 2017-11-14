@@ -109,7 +109,7 @@ class BCCVLUploadForm(DefaultAddForm):
                 "org.bccvl.tasks.datamover.tasks.import_multi_species_csv",
                 kwargs={
                     'url': '{}/@@download/file/{}'.format(new_object.absolute_url(), new_object.file.filename),
-                    'results_dir': get_results_dir(container, self.request),
+                    'results_dir': get_results_dir(new_object, self.request, childSpecies=True),
                     'import_context': {
                         'context': '/'.join(container.getPhysicalPath()),
                         'user': {
