@@ -822,7 +822,7 @@ class SpeciesTraitsView(MultiParamGroupMixin, View):
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
-        return tid == data
+        return tid in data
 
 
 class SpeciesTraitsEdit(MultiParamGroupMixin, Edit):
@@ -836,11 +836,10 @@ class SpeciesTraitsEdit(MultiParamGroupMixin, Edit):
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
-        return tid == data
+        return tid in data
 
 
 class SpeciesTraitsAdd(MultiParamGroupMixin, Add):
-
     portal_type = "org.bccvl.content.speciestraitsexperiment"
 
     # Parameters for ParamGroupMixin
@@ -850,7 +849,7 @@ class SpeciesTraitsAdd(MultiParamGroupMixin, Add):
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
-        return tid == data
+        return tid in data
 
     def create(self, data):
         # Dexterity base AddForm bypasses self.applyData and uses form.applyData directly,
