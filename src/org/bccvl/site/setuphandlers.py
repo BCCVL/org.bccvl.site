@@ -843,3 +843,22 @@ def upgrade_310_320_1(context, logger=None):
                 else:
                     obj.subject.append('Terrestrial datasets')
                 obj.reindexObject()
+
+def upgrade_320_330_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    # Add BCCDomian index tp catalog
+    for brain in pc.searchResults(portal_type='org.bccvl.content.remotedataset',
+                                  BCCDataGenre=('DataGenreE', 'DataGenreCC', 'DataGenreFC')):
+        obj = brain.getObject()
+        obj.reindexObject()

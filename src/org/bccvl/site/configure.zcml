@@ -176,6 +176,11 @@
       name="BCCMonth"
       />
 
+  <adapter
+      factory=".indexers.domain_type"
+      name="BCCDomain"
+      />
+
   <adapter factory=".utilities.SDMJobTracker"/>
 
   <adapter factory=".utilities.MSDMJobTracker"/>

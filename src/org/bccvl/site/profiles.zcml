@@ -240,4 +240,17 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="320"
+      destination="330"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 330"
+        description="Various bug fixes"
+        handler=".setuphandlers.upgrade_320_330_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

@@ -33,6 +33,9 @@
     <index name="part_of" meta_type="FieldIndex">
       <indexed_attr value="part_of"/>
     </index>
+    <index name="BCCDomain" meta_type="KeywordIndex">
+      <indexed_attr value="BCCDomain"/>
+    </index>
 
     <index name="BCCSpeciesLayer" meta_type="KeywordIndex" remove="True"/>
     <index name="DCTemporal" meta_type="DateRangeIndex" remove="True"/>

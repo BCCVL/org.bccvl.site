@@ -184,3 +184,7 @@ def month(obj, **kw):
     # FIXME: see year indexer above
     md = IBCCVLMetadata(obj)
     return md.get('month', None)
+
+@indexer(IDataset)
+def domain_type(obj, **kw):
+    return obj.subject
