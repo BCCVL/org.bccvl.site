@@ -717,14 +717,10 @@ class MMJobTracker(MultiJobTracker):
 class ProjectionJobTracker(MultiJobTracker):
 
     def _get_sdm_projection_result(self, sdmdsObj):
-        # return the unconstraint projection geotif results of SDM
+        # BCCVL-101: get only the constraint projection geotif results of SDM
         pc = getToolByName(self.context, 'portal_catalog')
         projbrains = pc.searchResults(path='/'.join(sdmdsObj.__parent__.getPhysicalPath()),
-                                      BCCDataGenre=['DataGenreCP_ENVLOP'])
-        # if there is no DataGenrceRP_ENVLOP there should be at least a single DataGenreCP (in case no constraints were specified)
-        if not projbrains:
-            projbrains = pc.searchResults(path='/'.join(sdmdsObj.__parent__.getPhysicalPath()),
-                                          BCCDataGenre=['DataGenreCP'])
+                                      BCCDataGenre=['DataGenreCP'])
         # FIXME what to do if there is still no projbrains?
         #       we probably can't run a CC experiment without it.
         #       we certainly shouldn't fail with indexerror 0 (empty search result)
