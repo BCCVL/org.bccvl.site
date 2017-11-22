@@ -14,7 +14,7 @@ if (env.BRANCH_NAME == 'master') {
                 if (publishPackage(currentBuild.result, env.BRANCH_NAME)) {
                     withVirtualenv() {
                         sh 'rm -fr build dist'
-                        sh 'python setup.py register -r devpi sdist bdist_wheel upload -r devpi'
+                        sh '${VIRTUALENV}/bin/python setup.py register -r devpi sdist bdist_wheel upload -r devpi'
                     }
                 }
             }
