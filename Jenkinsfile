@@ -12,7 +12,7 @@ if (env.BRANCH_NAME == 'master') {
         img.inside() {
             stage('Package') {
                 if (publishPackage(currentBuild.result, env.BRANCH_NAME)) {
-                    withPyPi() {
+                    withVirtualenv() {
                         sh 'rm -fr build dist'
                         sh 'python setup.py register -r devpi sdist bdist_wheel upload -r devpi'
                     }
