@@ -2,6 +2,7 @@ from datetime import datetime
 from itertools import chain
 import logging
 import os.path
+import json
 from urlparse import urlsplit
 
 from Products.ZCatalog.interfaces import ICatalogBrain
@@ -466,6 +467,11 @@ class MSDMJobTracker(MultiJobTracker):
         # and multiple species input datasets
         # TODO: rethink and maybe split jobs based on enviro input datasets?
         if not self.is_active():
+            # Only generate convex-hull if specified.
+            generate_convexhull = False
+            if self.context.modelling_region:
+                constraint_region = json.loads(self.context.modelling_region)
+                generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
             func = uuidToObject(self.context.function)
             for occur_coll in self.context.species_occurrence_collections:
                 for occur_ds in self.context.species_occurrence_collections[occur_coll]:
@@ -489,7 +495,7 @@ class MSDMJobTracker(MultiJobTracker):
                         'scale_down': self.context.scale_down,
                         'modelling_region': self.context.modelling_region,
                         # TO DO: This shall be input from user??
-                        'generate_convexhull': True,
+                        'generate_convexhull': generate_convexhull,
                     }
 
                     # add toolkit params:
@@ -660,6 +666,12 @@ class MMJobTracker(MultiJobTracker):
         # split sdm jobs across multiple algorithms,
         # and across multiple subset of species according to months
         if not self.is_active():
+            # Only generate convex-hull if specified.
+            generate_convexhull = False
+            if self.context.modelling_region:
+                constraint_region = json.loads(self.context.modelling_region)
+                generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
+            
             func = uuidToObject(self.context.function)
             for datasubset in self.context.datasubsets:
                 subset = datasubset['subset']
@@ -688,7 +700,7 @@ class MMJobTracker(MultiJobTracker):
                     'scale_down': self.context.scale_down,
                     'modelling_region': self.context.modelling_region,
                     # TO DO: This shall be input from user??
-                    'generate_convexhull': True,
+                    'generate_convexhull': generate_convexhull,
                 }
 
                 # add toolkit params:
