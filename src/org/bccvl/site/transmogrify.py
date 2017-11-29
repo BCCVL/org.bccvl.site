@@ -20,6 +20,7 @@ from rdflib.namespace import RDF, DCTERMS, XSD
 from rdflib.resource import Resource
 from zope.interface import implementer, provider
 
+from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
 
@@ -682,6 +683,13 @@ class Constructor(object):
             if obj.getId() != id:
                 item[pathkey] = posixpath.join(container, obj.getId())
 
+            # Attach a job tracker only for species dataset from multispecies
+            if item.get('_partof', {}):
+                jt = IJobTracker(obj)
+                job = jt.new_job('TODO: generate id',
+                                 'generate taskname: ala_import')
+                job.type = obj.portal_type
+                jt.state = 'COMPLETED'
             yield item
 
 
