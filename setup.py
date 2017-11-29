@@ -1,10 +1,9 @@
 from setuptools import setup, find_packages
-import os
 
 setup(
     name='org.bccvl.site',
-    setup_requires=['guscmversion'],
-    guscmversion=True,
+    setup_requires=['setuptools_scm'],
+    use_scm_version=True,
     description="BCCVL Policy Product",
     # long_description=open("README.txt").read() + "\n" +
     #                  open(os.path.join("docs", "HISTORY.txt")).read(),
