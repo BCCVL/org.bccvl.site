@@ -28,6 +28,7 @@ setup(
         'Plone',
         'five.pt',
         'org.bccvl.theme',
+        'org.bccvl.movelib[swift]',
         'Products.AutoUserMakerPASPlugin',
         'Products.ShibbolethPermissions',
         'Products.CMFPlacefulWorkflow',
