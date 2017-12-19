@@ -481,14 +481,16 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
     """
 
     genre = ['DataGenreCP', #'DataGenreCP_ENVLOP', 
-             'DataGenreFP', #'DataGenreFP_ENVLOP', 
-             'DataGenreENDW_CWE', 'DataGenreENDW_WE',
-             'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
-             'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
-             'DataGenreREDUNDANCY_ALL',
-             'DataGenreRAREW_CWE', 'DataGenreRAREW_RICHNESS',
-             'DataGenreRAREW_WE']
+             'DataGenreFP', #'DataGenreFP_ENVLOP'
+            ] 
+             #'DataGenreENDW_CWE', 'DataGenreENDW_WE',
+             #'DataGenreENDW_RICHNESS', 'DataGenreENDW_SINGLE',
+             #'DataGenreREDUNDANCY_SET1', 'DataGenreREDUNDANCY_SET2',
+             #'DataGenreREDUNDANCY_ALL',
+             #'DataGenreRAREW_CWE', 'DataGenreRAREW_RICHNESS',
+             #'DataGenreRAREW_WE']
     multiple = 'multiple'
+
 
     def items(self):
         # return dict with keys for experiment
@@ -510,6 +512,17 @@ class ExperimentResultWidget(HTMLInputWidget, Widget):
                 pc = getToolByName(self.context, 'portal_catalog')
                 brains = pc.searchResults(path=expbrain.getPath(),
                                           BCCDataGenre=self.genre)
+
+                filtered_brains = []
+                for brain in brains:
+                    # get algorithm term
+                    algoid = getattr(brain.getObject(), 'job_params',
+                                     {}).get('function')
+                    # Filter out geographic models
+                    if algoid not in ['circles', 'convhull', 'geoDist', 'geoIDW', 'voronoiHull']:
+                        filtered_brains.append(brain)
+                brains = filtered_brains
+
                 # TODO: maybe as generator?
                 item['subitems'] = [{'uuid': brain.UID,
                                      'title': brain.Title,

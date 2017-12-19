@@ -411,8 +411,7 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 EXPERIMENT_TYPE_VOCAB = SimpleVocabulary(
     (SimpleTerm(ISDMExperiment.__identifier__, ISDMExperiment.__identifier__, u'SDM Experiment'),
      SimpleTerm(IProjectionExperiment.__identifier__,
-                IProjectionExperiment.__identifier__, u'Climate Change Experiment'),
-     SimpleTerm(IBiodiverseExperiment.__identifier__, IBiodiverseExperiment.__identifier__,  u'Biodiverse Experiment'))
+                IProjectionExperiment.__identifier__, u'Climate Change Experiment'))
 )
 
 
