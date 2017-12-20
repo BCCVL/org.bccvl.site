@@ -844,6 +844,7 @@ def upgrade_310_320_1(context, logger=None):
                     obj.subject.append('Terrestrial datasets')
                 obj.reindexObject()
 
+
 def upgrade_320_330_1(context, logger=None):
     if logger is None:
         logger = LOG
@@ -862,3 +863,12 @@ def upgrade_320_330_1(context, logger=None):
                                   BCCDataGenre=('DataGenreE', 'DataGenreCC', 'DataGenreFC')):
         obj = brain.getObject()
         obj.reindexObject()
+
+
+def upgrade_330_340_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
