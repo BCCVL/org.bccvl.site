@@ -10,6 +10,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.namedfile.browser import Download
 from plone.session.tktauth import splitTicket
+from plone.app.uuid.utils import uuidToObject
 from z3c.form import field, button, form
 from z3c.form.widget import AfterWidgetUpdateEvent
 from z3c.form.interfaces import DISPLAY_MODE
@@ -39,13 +40,21 @@ class DatasetRemoveView(form.Form):
     def handle_delete(self, action):
         title = self.context.Title()
         parent = aq_parent(aq_inner(self.context))
-        # removed file working on frontend Javascript
-        if hasattr(self.context, "file"):
-            self.context.file = None
-        # FIXME: we should probably delete it instead of marking it as REMOVED
-        jt = IJobTracker(self.context)
-        jt.state = 'REMOVED'
-        self.context.reindexObject()
+
+        # Objects to be deleted
+        dsobjs = [self.context]
+        if hasattr(self.context, "parts"):
+            dsobjs += [uuidToObject(ds) for ds in self.context.parts]
+
+        for context in dsobjs:
+            # removed file working on frontend Javascript
+            if hasattr(context, "file"):
+                context.file = None
+            # FIXME: we should probably delete it instead of marking it as REMOVED
+            jt = IJobTracker(context)
+            if (jt.state != 'REMOVED'):
+                jt.state = 'REMOVED'
+                context.reindexObject()
         #####
         IStatusMessage(self.request).add(
             u'{0[title]} has been removed.'.format({u'title': title}))
