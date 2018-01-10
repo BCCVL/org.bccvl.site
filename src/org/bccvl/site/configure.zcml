@@ -81,6 +81,10 @@
       factory=".metadata.ExperimentMetadata"
       />
 
+  <adapter
+      factory=".metadata.ExperimentParameter"
+      />
+
   <!-- download info adapters -->
   <adapter
       factory=".utilities.DatasetDownloadInfo"

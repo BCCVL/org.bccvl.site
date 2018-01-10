@@ -44,3 +44,10 @@ class IExperimentMetadata(Interface):
     """
 
     data = Text()
+
+class IExperimentParameter(Interface):
+    """
+    Interface to access experiment parameters
+    """
+
+    data = Text()

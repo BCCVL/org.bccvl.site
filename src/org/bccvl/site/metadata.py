@@ -1,5 +1,9 @@
 import StringIO
 import os, os.path
+import json
+import re
+from copy import deepcopy
+from decimal import Decimal
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from zope.interface import implementer
 from zope.component import adapter, getUtility
@@ -9,7 +13,8 @@ from persistent.dict import PersistentDict
 from Products.CMFCore.interfaces import ISiteRoot
 from org.bccvl.site.behavior.collection import ICollection
 from org.bccvl.site.content.interfaces import IExperiment, IProjectionExperiment
-from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo, IProvenanceData, IExperimentMetadata
+from org.bccvl.site.interfaces import IBCCVLMetadata, IDownloadInfo, IProvenanceData, IExperimentMetadata, IExperimentParameter
+from org.bccvl.compute.utils import getdatasetparams
 
 # TODO: this will become future work to enhance performance by
 # reducing the amonut of queries we have to do against the triple
@@ -90,6 +95,130 @@ class ProvenanceData(object):
         # serialise or store as is
         self.annots[PROV_KEY] = value
     
+
+@implementer(IExperimentParameter)
+@adapter(IAttributeAnnotatable)
+class ExperimentParameter(object):
+    '''
+    Adapter to manage parameters data on result containers
+    '''
+
+    __marker = object()
+
+    def __init__(self, context):
+        self.context = context
+
+    def __generateParameters(self, params, portal_type):
+        # This code formats the input parameters to experiments, and is a mirror "copy" of get_sdm_params, 
+        # get_project_params, get_biodiverse_params, get_traits_params, get_ensemble_params in org.bccvl.compute.
+        inp = deepcopy(params)
+        for key, val in inp.items():
+            if key in ('species_occurrence_dataset', 'species_absence_dataset'):
+                if val:
+                    val = getdatasetparams(val)
+                    val['species'] = re.sub(u"[ _,\-'\"/\(\)\{\}\[\]]", u".", val.get('species', u'Unknown'))
+
+            if key in ('environmental_datasets', 'future_climate_datasets'):
+                envlist = []
+                for uuid, layers in val.items():
+                    dsinfo = getdatasetparams(uuid)
+                    for layer in layers:
+                        dsdata = {
+                            'uuid': dsinfo['uuid'],
+                            'filename': dsinfo['filename'],
+                            'downloadurl': dsinfo['downloadurl'],
+                            # TODO: should we use layer title or URI?
+                            'layer': layer,
+                            'type': dsinfo['layers'][layer]['datatype']
+                        }
+                        # if this is a zip file we'll have to set zippath as well
+                        # FIXME: poor check whether this is a zip file
+                        if dsinfo['filename'].endswith('.zip'):
+                            dsdata['zippath'] = dsinfo['layers'][layer]['filename']
+                        envlist.append(dsdata)
+                val = envlist
+
+            # for SDM model as input to Climate Change experiement
+            if key == 'species_distribution_models':
+                if val:
+                    uuid = val
+                    val = getdatasetparams(uuid)
+                    val['species'] = re.sub(u"[ _\-'\"/\(\)\{\}\[\]]", u".", val.get('species', u"Unknown"))
+                    sdmobj = uuidToObject(uuid)
+                    sdmmd = IBCCVLMetadata(sdmobj)
+                    val['layers'] = sdmmd.get('layers_used', None)
+
+                    # do SDM projection results
+                    sdm_projections = []
+                    for resuuid in inp['sdm_projections']:
+                         sdm_projections.append(getdatasetparams(resuuid))
+                    inp['sdm_projections'] = sdm_projections
+
+            # for projection as input to Biodiverse experiment
+            if key == 'projections':
+                dslist = []
+                for dsparam in val:
+                    dsinfo = getdatasetparams(dsparam['dataset'])
+                    dsinfo['threshold'] = dsparam['threshold']
+                    # Convert threshold value from Decimal to float
+                    for thkey, thvalue in dsinfo['threshold'].items():
+                        if isinstance(thvalue, Decimal):
+                            dsinfo['threshold'][thkey] = float(thvalue)
+                    dslist.append(dsinfo)
+                # replace projections param
+                val = dslist
+
+            # projection models as input to Ensemble experiment
+            if key == 'datasets':
+                dslist = []
+                for uuid in val:
+                    dslist.append(getdatasetparams(uuid))
+                # replace datasets param
+                val = dslist
+
+            # for trait dataset as input to Species Trait Modelling experiment
+            if key == 'traits_dataset':
+                dsinfo = getdatasetparams(val)
+                if dsinfo['filename'].endswith('.zip'):
+                    dsinfo['zippath'] = dsinfo['layers'].values()[0]['filename']
+                val = dsinfo
+
+            if isinstance(val, Decimal):
+                val = float(val)
+            inp[key] = val
+
+        if portal_type == ('org.bccvl.content.sdmexperiment',
+                           'org.bccvl.content.msdmexperiment',
+                           'org.bccvl.content.mmexperiment'):
+            inp.update({
+                'rescale_all_models': False,
+                'selected_models': 'all',
+                'modeling_id': 'bccvl',
+                # generic dismo params
+                'tails': 'both',
+                })
+        elif portal_type == 'org.bccvl.content.projectionexperiment':
+            inp.update({
+                'selected_models': 'all',
+                'projection_name': os.path.splitext(dsinfo['filename'])[0]
+                })
+
+        inputParams = {
+            # example of input/ouput directories
+            'env': {
+                'inputdir': './input',
+                'outputdir': './output',
+                'scriptdir': './script',
+                'workdir': './workdir'
+            },
+            'params': inp
+        }
+        return json.dumps(inputParams, default=str, indent=4)
+    @property
+    def data(self):
+        exp_type = self.context.__parent__.portal_type if self.context.__parent__ else ''
+        return self.__generateParameters(self.context.job_params, exp_type)
+
 
 EXPMD_KEY = 'org.bccvl.site.content.expmetadata'
     
