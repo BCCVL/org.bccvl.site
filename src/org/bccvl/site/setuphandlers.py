@@ -871,4 +871,17 @@ def upgrade_330_340_1(context, logger=None):
     # Run GS steps
     portal = api.portal.get()
     setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    # Update Description for species absence output file
+    for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset'),
+                                  BCCDataGenre=('DataGenreSpeciesAbsence')):
+
+        obj = brain.getObject()
+        if obj.description != u'Absence records (map)':
+            import ipdb; ipdb.set_trace()
+            obj.description = u'Absence records (map)'
+            obj.reindexObject()
