@@ -53,7 +53,7 @@ setup(
         'transmogrify.dexterity',
         'org.bccvl.compute',
         'org.bccvl.tasks',
-        'org.bccvl.movelib[http,swift]'
+        'org.bccvl.movelib[http,swift]',
         'requests-oauthlib',
         'rdflib',
         'eea.facetednavigation',
