@@ -462,6 +462,22 @@ class MSDMJobTracker(MultiJobTracker):
 
         provdata.data = graph.serialize(format="turtle")
 
+    def __getSpeciesName(self, uuid):
+        dsobj = uuidToObject(uuid)
+        if dsobj:
+            return IBCCVLMetadata(dsobj).get('species', {}).get('scientificName', '')
+        return ''
+
+    def __getUUIDBySpecies(self, uuid, species):
+        if uuid is None or not species:
+            return None
+        collobj = uuidToObject(uuid)
+        if collobj and collobj.parts:
+            for dsuuid in collobj.parts:
+                if self.__getSpeciesName(dsuuid) == species:
+                    return dsuuid
+        return None
+
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and multiple species input datasets
@@ -486,11 +502,15 @@ class MSDMJobTracker(MultiJobTracker):
                     title = u'{} - {} {}'.format(self.context.title, func.getId(),
                                                  datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                     result = self._create_result_container(title)
+
                     # Build job_params store them on result and submit job
+                    speciesName = self.__getSpeciesName(occur_ds)
+                    absence_ds = self.__getUUIDBySpecies(self.context.species_absence_collection, speciesName)
                     result.job_params = {
                         'resolution': IBCCVLMetadata(self.context)['resolution'],
                         'function': func.getId(),
                         'species_occurrence_dataset': occur_ds,
+                        'species_absence_dataset': absence_ds,
                         'environmental_datasets': self.context.environmental_datasets,
                         'scale_down': self.context.scale_down,
                         'modelling_region': self.context.modelling_region,

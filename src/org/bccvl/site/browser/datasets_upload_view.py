@@ -120,6 +120,7 @@ class BCCVLUploadForm(DefaultAddForm):
                     },
                     'context': {
                         'context': context_path,
+                        'genre': self.datagenre,
                         'user': {
                             'id': member.getUserName(),
                             'email': member.getProperty('email'),
@@ -357,6 +358,21 @@ class MultiSpeciesOccurrenceAddForm(BCCVLUploadForm):
     categories = ['multispecies']
     subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
 
+class MultiSpeciesAbsenceAddForm(BCCVLUploadForm):
+
+    title = u"Upload Multiple Species Absence Data"
+    description = (
+        u"<p>Upload absence data for multiple species</p>"
+        u"<h4>Instructions:</h4>"
+        u"<ul><li>Format needs to be .csv</li>"
+        u"<li>Three columns with exact labels 'species', ‘lat’ and ‘lon’</li>"
+        u"<li>Coordinates in decimal degrees</li></p>"
+    )
+    fields = Fields(IMultiSpeciesDataset, IDublinCore, ISpeciesCollection).select(
+        'file', 'title', 'description', 'rights')
+    datagenre = 'DataGenreSpeciesAbsenceCollection'
+    categories = ['absence']
+    subpath = [defaults.DATASETS_SPECIES_FOLDER_ID, 'user']
 
 class ClimateCurrentAddForm(BCCVLUploadForm):
 
@@ -474,6 +490,8 @@ class DatasetsUploadView(BrowserView):
                 ('speciesabundance', SpeciesAbundanceAddForm, ds_portal_type),
                 ('speciesoccurrence', SpeciesOccurrenceAddForm, ds_portal_type),
                 ('multispeciesoccurrence', MultiSpeciesOccurrenceAddForm,
+                 'org.bccvl.content.multispeciesdataset'),
+                ('multispeciesabsence', MultiSpeciesAbsenceAddForm,
                  'org.bccvl.content.multispeciesdataset'),
                 ('climatecurrent', ClimateCurrentAddForm, ds_portal_type),
                 ('environmental', EnvironmentalAddForm, ds_portal_type),

@@ -94,5 +94,10 @@
                 name="species_occurrence_collections.xml"
                 template="species_occurrence_collections.xml"
                 permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="species_absence_collection.xml"
+                template="species_absence_collection.xml"
+                permission="cmf.ModifyPortalContent" />
   
 </configure>
