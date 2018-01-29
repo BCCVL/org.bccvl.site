@@ -522,18 +522,29 @@ class MSDMJobTracker(MultiJobTracker):
                     result.job_params.update(
                         self.context.parameters[IUUID(func)])
                     self._createProvenance(result)
-                    # submit job
-                    LOG.info("Submit JOB %s to queue", func.getId())
-                    method(result, func)
+
+                    # Create job tracker
                     resultjt = IJobTracker(result)
                     job = resultjt.new_job('TODO: generate id',
                                            'generate taskname: sdm_experiment')
                     job.type = self.context.portal_type
                     job.function = func.getId()
                     job.toolkit = IUUID(func)
-                    # reindex job object here ... next call should do that
-                    resultjt.set_progress('PENDING',
-                                          u'{} pending'.format(func.getId()))
+ 
+                    # submit job 
+                    LOG.info("Submit JOB %s to queue", func.getId())
+                    if self.context.species_absence_collection is not None and absence_ds is None:
+                        # Fail the SDM experiment as no absence dataset is found for the species
+                        resultjt.state = 'FAILED'
+                        resultjt.set_progress('FAILED', 
+                                              u"Can't find absence dataset for species '{0}'".format(speciesName))
+                        resultjt.context.reindexObject()
+                        self.context.reindexObject()
+                    else:
+                        method(result, func)
+                        # reindex job object here ... next call should do that
+                        resultjt.set_progress('PENDING',
+                                              u'{} pending'.format(func.getId()))
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
