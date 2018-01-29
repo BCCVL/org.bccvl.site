@@ -174,7 +174,8 @@ def msdm_listing_details(expbrain):
             'type': 'MSDM',
             'functions': get_title_from_uuid(exp.function, u'(Unavailable)') if exp.function else '',
             'species_occurrence': species_titles,
-            'species_absence': '',
+            'species_absence': get_title_from_uuid(
+                exp.species_absence_collection, u'(Unavailable)') if exp.species_absence_collection else '',
             'environmental_layers': ({
                 'title': get_title_from_uuid(dataset, u'(Unavailable)'),
                 'layers': sorted(layers)
