@@ -273,7 +273,7 @@ class ExperimentMetadata(object):
                 "Linux OS": u"CentOS release 6.7", 
                 "R version": u"3.2.2",
                 "R packages":  u" ".join([
-                    "abind 1.4-3, biomod2 3.1-64, car 2.1-0, caret 6.0-76, class 7.3-14, colorspace 1.2-6, deldir 0.1-9, dichromat 2.0-0,",
+                    "abind 1.4-3, biomod2 3.3-7, car 2.1-0, caret 6.0-76, class 7.3-14, colorspace 1.2-6, deldir 0.1-9, dichromat 2.0-0,",
                     "digest 0.6.9, dismo 1.1-1, doParallel 1.0.10, evaluate 0.8, FNN 1.1, foreach 1.4.3, foreign 0.8-66, gam 1.12, gamlss 4.3-8,",
                     "gamlss.data 4.3-2, gamlss.dist 4.3-5, gbm 2.1.1, gdalUtils 2.0.1.7, ggdendro 0.1-20, ggplot2 2.2.1, gridExtra 2.2.0, gstat 1.1-2,",
                     "gtable 0.2.0, hexbin 1.27.1, intervals 0.15.1, iterators 1.0.8, labeling 0.3, lattice 0.20-33, latticeExtra 0.6-28, lazyeval 0.2.0,",
