@@ -326,6 +326,8 @@ class SDMJobTracker(MultiJobTracker):
                 # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
+                # reindex context to update the status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
@@ -538,13 +540,13 @@ class MSDMJobTracker(MultiJobTracker):
                         resultjt.state = 'FAILED'
                         resultjt.set_progress('FAILED', 
                                               u"Can't find absence dataset for species '{0}'".format(speciesName))
-                        resultjt.context.reindexObject()
-                        self.context.reindexObject()
                     else:
                         method(result, func)
                         # reindex job object here ... next call should do that
                         resultjt.set_progress('PENDING',
                                               u'{} pending'.format(func.getId()))
+            # reindex to update experiment status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
@@ -750,6 +752,8 @@ class MMJobTracker(MultiJobTracker):
                 # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
+            # reindex to update experiment status
+            self.context.reindexObject()                
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
@@ -978,6 +982,8 @@ class ProjectionJobTracker(MultiJobTracker):
                     # reindex job object here ... next call should do that
                     resultjt.set_progress('PENDING',
                                           u'projection pending')
+            # reindex to update experiment status
+            self.context.reindexObject()                    
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             # TODO: in case there is an error should we abort the transaction
@@ -1295,6 +1301,8 @@ class EnsembleJobTracker(MultiJobTracker):
 
             resultjt.set_progress('PENDING',
                                   'ensemble pending')
+            # reindex to update experiment status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
@@ -1468,6 +1476,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(algorithm.id))
+            # reindex to update experiment status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
