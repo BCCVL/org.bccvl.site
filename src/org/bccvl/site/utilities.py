@@ -326,6 +326,8 @@ class SDMJobTracker(MultiJobTracker):
                 # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
+                # reindex context to update the status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
@@ -462,6 +464,22 @@ class MSDMJobTracker(MultiJobTracker):
 
         provdata.data = graph.serialize(format="turtle")
 
+    def __getSpeciesName(self, uuid):
+        dsobj = uuidToObject(uuid)
+        if dsobj:
+            return IBCCVLMetadata(dsobj).get('species', {}).get('scientificName', '')
+        return ''
+
+    def __getUUIDBySpecies(self, uuid, species):
+        if uuid is None or not species:
+            return None
+        collobj = uuidToObject(uuid)
+        if collobj and collobj.parts:
+            for dsuuid in collobj.parts:
+                if self.__getSpeciesName(dsuuid) == species:
+                    return dsuuid
+        return None
+
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and multiple species input datasets
@@ -486,11 +504,15 @@ class MSDMJobTracker(MultiJobTracker):
                     title = u'{} - {} {}'.format(self.context.title, func.getId(),
                                                  datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                     result = self._create_result_container(title)
+
                     # Build job_params store them on result and submit job
+                    speciesName = self.__getSpeciesName(occur_ds)
+                    absence_ds = self.__getUUIDBySpecies(self.context.species_absence_collection, speciesName)
                     result.job_params = {
                         'resolution': IBCCVLMetadata(self.context)['resolution'],
                         'function': func.getId(),
                         'species_occurrence_dataset': occur_ds,
+                        'species_absence_dataset': absence_ds,
                         'environmental_datasets': self.context.environmental_datasets,
                         'scale_down': self.context.scale_down,
                         'modelling_region': self.context.modelling_region,
@@ -502,18 +524,29 @@ class MSDMJobTracker(MultiJobTracker):
                     result.job_params.update(
                         self.context.parameters[IUUID(func)])
                     self._createProvenance(result)
-                    # submit job
-                    LOG.info("Submit JOB %s to queue", func.getId())
-                    method(result, func)
+
+                    # Create job tracker
                     resultjt = IJobTracker(result)
                     job = resultjt.new_job('TODO: generate id',
                                            'generate taskname: sdm_experiment')
                     job.type = self.context.portal_type
                     job.function = func.getId()
                     job.toolkit = IUUID(func)
-                    # reindex job object here ... next call should do that
-                    resultjt.set_progress('PENDING',
-                                          u'{} pending'.format(func.getId()))
+ 
+                    # submit job 
+                    LOG.info("Submit JOB %s to queue", func.getId())
+                    if self.context.species_absence_collection is not None and absence_ds is None:
+                        # Fail the SDM experiment as no absence dataset is found for the species
+                        resultjt.state = 'FAILED'
+                        resultjt.set_progress('FAILED', 
+                                              u"Can't find absence dataset for species '{0}'".format(speciesName))
+                    else:
+                        method(result, func)
+                        # reindex job object here ... next call should do that
+                        resultjt.set_progress('PENDING',
+                                              u'{} pending'.format(func.getId()))
+            # reindex to update experiment status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
@@ -719,6 +752,8 @@ class MMJobTracker(MultiJobTracker):
                 # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
+            # reindex to update experiment status
+            self.context.reindexObject()                
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
@@ -947,6 +982,8 @@ class ProjectionJobTracker(MultiJobTracker):
                     # reindex job object here ... next call should do that
                     resultjt.set_progress('PENDING',
                                           u'projection pending')
+            # reindex to update experiment status
+            self.context.reindexObject()                    
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             # TODO: in case there is an error should we abort the transaction
@@ -1264,6 +1301,8 @@ class EnsembleJobTracker(MultiJobTracker):
 
             resultjt.set_progress('PENDING',
                                   'ensemble pending')
+            # reindex to update experiment status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
@@ -1437,6 +1476,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(algorithm.id))
+            # reindex to update experiment status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'

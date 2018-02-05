@@ -1,0 +1,5 @@
+{
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Species Absence Collection",
+    "_transitions": ["show_internally"]
+}

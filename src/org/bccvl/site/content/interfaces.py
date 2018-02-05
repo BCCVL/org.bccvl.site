@@ -88,7 +88,6 @@ class IMultiSpeciesDataset(IDatasetCollection):
         required=True
     )
 
-
 class IExperiment(Interface):
     """Base Experiment Class"""
 
@@ -119,7 +118,7 @@ class ISDMExperiment(IExperiment):
     directives.widget('species_absence_dataset',
                       DatasetFieldWidget,
                       genre=['DataGenreSpeciesAbsence'],
-                      errmsg=u"Please select at least 1 emmission scenario.",
+                      errmsg=u"Please select at least 1 absence dataset.",
                       vizclass=u'bccvl-absence-viz')
     species_absence_dataset = TextLine(
         title=u'Species Absence Datasets',
@@ -183,6 +182,17 @@ class IMSDMExperiment(IExperiment):
         required=True,
         min_length=1,
         max_length=5,
+    )
+
+    directives.widget('species_absence_collection',
+                      DatasetFieldWidget,
+                      genre=['DataGenreSpeciesAbsenceCollection'],
+                      errmsg=u"Please select at least 1 species absence dataset.",
+                      vizclass=u'bccvl-absence-viz')
+    species_absence_collection = TextLine(
+        title=u'Species Absence Collection',
+        default=None,
+        required=False,
     )
 
     directives.widget('scale_down',

@@ -379,6 +379,8 @@ genre_vocabulary = SimpleVocabulary([
                "DataGenreSpeciesAbsenceEnv", "Species Absence with Environmental"),    
     SimpleTerm("DataGenreSpeciesCollection",
                "DataGenreSpeciesCollection", "Species Occurrence Collection"),
+    SimpleTerm("DataGenreSpeciesAbsenceCollection",
+               "DataGenreSpeciesAbsenceCollection", "Species Absence Collection"),
     SimpleTerm("DataGenreTraits", "DataGenreTraits", "Species Traits"),
     SimpleTerm("DataGenreCC", "DataGenreCC", "Current Climate"),
     SimpleTerm("DataGenreFC", "DataGenreFC", "Future Climate"),

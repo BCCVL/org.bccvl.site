@@ -418,6 +418,7 @@ jQuery(document).ready( function() {
     new bccvl.SelectDict("species_distribution_models");
     new bccvl.SelectList("future_climate_datasets");
     new bccvl.SelectDict("species_occurrence_collections");
+    new bccvl.SelectList("species_absence_collection");
     var projection = new bccvl.SelectDict("projection");
     var datasets = new bccvl.SelectDict("datasets");
     new bccvl.SelectList("data_table");
