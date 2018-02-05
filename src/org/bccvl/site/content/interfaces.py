@@ -248,6 +248,17 @@ class IMMExperiment(IExperiment):
         required=True,
     )
 
+    directives.widget('species_absence_dataset',
+                      DatasetFieldWidget,
+                      genre=['DataGenreSpeciesAbsence'],
+                      errmsg=u"Please select at least 1 absence dataset.",
+                      vizclass=u'bccvl-absence-viz')
+    species_absence_dataset = TextLine(
+        title=u'Species Absence Datasets',
+        default=None,
+        required=False,
+    )
+
     directives.widget('scale_down',
                       BoolRadioFieldWidget,
                       true_label=u"Scale to finest resolution",

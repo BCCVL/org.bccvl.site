@@ -879,9 +879,17 @@ def upgrade_330_340_1(context, logger=None):
     # Update Description for species absence output file
     for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset'),
                                   BCCDataGenre=('DataGenreSpeciesAbsence')):
-
         obj = brain.getObject()
         if obj.description != u'Absence records (map)':
-            import ipdb; ipdb.set_trace()
             obj.description = u'Absence records (map)'
             obj.reindexObject()
+
+
+    # Update the headers indexer for occurrence and absence datasets
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.multispeciesdataset'),
+                                  BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection', 
+                                                'DataGenreSpeciesAbsence', 'DataGenreSpeciesAbsenceCollection')):
+        obj = brain.getObject()
+        obj.headers = IBCCVLMetadata(obj).get('headers', None)
+        obj.reindexObject()
