@@ -7,7 +7,8 @@ from org.bccvl.site.browser.interfaces import IRavenConfig
 
 
 TEMPLATE = u"""
-        define(['raven'], function(Raven) {{
+        function() {{
+        //define(['raven'], function(Raven) {{
             Raven.config('{public_dsn}', {{
                 whitelistUrls: [ /.*\.bccvl\.org\.au/ ]
             }}).install()
@@ -32,7 +33,7 @@ TEMPLATE = u"""
                     }}
                 }});
             }});
-        }});
+        }}();
 """
 
 
