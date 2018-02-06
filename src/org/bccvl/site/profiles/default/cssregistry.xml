@@ -7,4 +7,29 @@
         id="login.css"
         />
 
+    <!-- Faceted View -->
+    <stylesheet id="++resource++org.bccvl.site.faceted.checkboxtree.view.css"
+                insert-after="++resource++eea.faceted-navigation.css"
+                bundle="faceted-view" />
+                
+    <stylesheet id="++resource++org.bccvl.site.faceted.pathselect.view.css"
+                insert-after="++resource++eea.faceted-navigation.css"
+                bundle="faceted-view" />
+
+    <stylesheet id="++resource++org.bccvl.site.faceted.userselect.view.css"
+                insert-after="++resource++eea.faceted-navigation.css"
+                bundle="faceted-view" />
+                
+                
+    <!-- Faceted Edit -->
+    <stylesheet id="++resource++org.bccvl.site.faceted.checkboxtree.edit.css"
+                insert-after="++resource++eea.faceted-navigation-edit.css"
+                expression="python:'configure_faceted.html' in request.URL0"
+                bundle="faceted-edit" />                
+
+    <stylesheet id="++resource++org.bccvl.site.faceted.pathselect.edit.css"
+                insert-after="++resource++eea.faceted-navigation-edit.css"
+                expression="python:'configure_faceted.html' in request.URL0"
+                bundle="faceted-edit" />                
+
 </object>

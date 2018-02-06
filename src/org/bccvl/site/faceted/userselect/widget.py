@@ -2,33 +2,19 @@
 """
 from BTrees.IIBTree import weightedIntersection, IISet
 
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import BooleanField
-from Products.Archetypes.public import StringField
-from Products.Archetypes.public import StringWidget
-from Products.Archetypes.public import SelectionWidget
-from Products.Archetypes.public import BooleanWidget
 from Products.CMFCore.utils import getToolByName
 
 from eea.facetednavigation.dexterity_support import normalize as atdx_normalize
 from eea.facetednavigation.interfaces import IFacetedCatalog
 from eea.facetednavigation.widgets import ViewPageTemplateFile
+from eea.facetednavigation.widgets.interfaces import LayoutSchemata
+from eea.facetednavigation.widgets.interfaces import CountableSchemata
 from eea.facetednavigation.widgets.widget import CountableWidget
 from eea.facetednavigation import EEAMessageFactory as _
 
 from zope.component import getMultiAdapter, queryUtility
-
-
-EditSchema = Schema((
-    BooleanField('sortreversed',
-        schemata="display",
-        widget=BooleanWidget(
-            label=_(u"Reverse options"),
-            description=_(u"Sort options reversed"),
-        )
-    ),
-))
-
+from org.bccvl.site.faceted.userselect.interfaces import DefaultSchemata
+from org.bccvl.site.faceted.userselect.interfaces import DisplaySchemata
 
 class Widget(CountableWidget):
     """ Widget
@@ -36,12 +22,15 @@ class Widget(CountableWidget):
     # Widget properties
     widget_type = 'userselect'
     widget_label = _('User Select')
-    view_js = '++resource++org.bccvl.site.faceted.userselect.view.js'
-    edit_js = '++resource++org.bccvl.site.faceted.userselect.edit.js'
-    view_css = '++resource++org.bccvl.site.faceted.userselect.view.css'
+    
+    groups = (
+        DefaultSchemata,
+        LayoutSchemata,
+        CountableSchemata,
+        DisplaySchemata
+    )
 
     index = ViewPageTemplateFile('widget.pt')
-    edit_schema = CountableWidget.edit_schema.copy() + EditSchema
 
     def __init__(self, context, request, data=None):
         super(Widget, self).__init__(context, request, data)

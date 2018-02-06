@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<object name="portal_javascripts" meta_type="JavaScripts Registry">
+    
+    <!-- Faceted View -->
+    <javascript id="++resource++org.bccvl.site.faceted.checkboxtree.view.js"
+                insert-after="++resource++eea.faceted-navigation.js"
+                bundle="faceted-view" />
+                
+    <javascript id="++resource++org.bccvl.site.faceted.pathselect.view.js"
+                insert-after="++resource++eea.faceted-navigation.js"
+                bundle="faceted-view" />
+
+    <javascript id="++resource++org.bccvl.site.faceted.userselect.view.js"
+                insert-after="++resource++eea.faceted-navigation.js"
+                bundle="faceted-view" />
+
+    <!-- Faceted Edit -->
+    <javascript id="++resource++org.bccvl.site.faceted.checkboxtree.edit.js"
+                expression="python:'configure_faceted.html' in request.URL0"
+                insert-after="++resource++eea.facetednavigation.widgets.alphabets.edit.js"
+                bundle="faceted-edit" />
+
+    <javascript id="++resource++org.bccvl.site.faceted.pathselect.edit.js"
+                expression="python:'configure_faceted.html' in request.URL0"
+                insert-after="++resource++eea.facetednavigation.widgets.alphabets.edit.js"
+                bundle="faceted-edit" />
+                
+    <javascript id="++resource++org.bccvl.site.faceted.userselect.edit.js"
+                expression="python:'configure_faceted.html' in request.URL0"
+                insert-after="++resource++eea.facetednavigation.widgets.alphabets.edit.js"
+                bundle="faceted-edit" />
+                
+    <javascript id="++resource++bccvl-widgets.js"
+                />
+
+</object>

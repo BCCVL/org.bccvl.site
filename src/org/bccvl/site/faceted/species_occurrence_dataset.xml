@@ -1,88 +1,81 @@
 <?xml version="1.0"?>
 <object name="species_occurrence_dataset" meta_type="Dexterity Container">
  <criteria>
-  <criterion name="c0">
-   <property name="widget">resultsperpage</property>
-   <property name="title">Results per page</property>
-   <property name="position">right</property>
-   <property name="section">default</property>
-   <property name="hidden">1</property>
-   <property name="start">5</property>
-   <property name="end">200</property>
-   <property name="step">5</property>
-   <property name="default">200</property>
-  </criterion>
-  <criterion name="c2">
-   <property name="widget">sorting</property>
-   <property name="title">Sort on</property>
-   <property name="position">right</property>
-   <property name="section">default</property>
-   <property name="hidden">1</property>
-   <property name="vocabulary"></property>
-   <property name="default">effective(reverse)</property>
-  </criterion>
   <criterion name="c3">
    <property name="widget">text</property>
    <property name="title">Search</property>
+   <property name="index">SearchableText</property>
+   <property name="onlyallelements">True</property>
+   <property name="wildcard">False</property>
    <property name="position">left</property>
    <property name="section">default</property>
-   <property name="hidden">0</property>
-   <property name="index">SearchableText</property>
-   <property name="default"></property>
-   <property name="onlyallelements">1</property>
-   <property name="wildcard">1</property>
-  </criterion>
-  <criterion name="c4">
-   <property name="widget">select</property>
-   <property name="title">Genre</property>
-   <property name="position">right</property>
-   <property name="section">default</property>
-   <property name="hidden">1</property>
-   <property name="count"></property>
-   <property name="sortcountable"></property>
-   <property name="hidezerocount"></property>
-   <property name="index">BCCDataGenre</property>
-   <property name="vocabulary"></property>
-   <property name="catalog">portal_catalog</property>
-   <property name="sortreversed"></property>
-   <property name="default">DataGenreSpeciesOccurrence</property>
-  </criterion>
-  <criterion name="c1">
-   <property name="widget">checkbox</property>
-   <property name="title">state</property>
-   <property name="position">right</property>
-   <property name="section">default</property>
-   <property name="hidden">1</property>
-   <property name="count"></property>
-   <property name="sortcountable"></property>
-   <property name="hidezerocount"></property>
-   <property name="index">job_state</property>
-   <property name="operator">or</property>
-   <property name="operator_visible"></property>
-   <property name="vocabulary"></property>
-   <property name="catalog">portal_catalog</property>
-   <property name="maxitems"></property>
-   <property name="sortreversed"></property>
-   <property name="default">COMPLETED</property>
+   <property name="hidden">False</property>
   </criterion>
   <criterion name="c5">
    <property name="widget">userselect</property>
    <property name="title">Source</property>
+   <property name="index">Creator</property>
+   <property name="default">all</property>
    <property name="position">left</property>
    <property name="section">default</property>
-   <property name="hidden">0</property>
-   <property name="count">1</property>
-   <property name="sortcountable">1</property>
-   <property name="hidezerocount">0</property>
-   <property name="sortreversed">0</property>
+   <property name="hidden">False</property>
+   <property name="count">False</property>
+   <property name="sortcountable">False</property>
+   <property name="hidezerocount">False</property>
+   <property name="sortreversed">False</property>
   </criterion>
   <criterion name="c7">
    <property name="widget">portlet</property>
    <property name="title">Help Text</property>
+   <property name="macro">occurrences_modal_text/macros/portlet</property>
    <property name="position">left</property>
    <property name="section">default</property>
-   <property name="hidden">0</property>
-   <property name="macro">occurrences_modal_text/macros/portlet</property>
+   <property name="hidden">False</property>
+  </criterion>
+  <criterion name="c0">
+   <property name="widget">resultsperpage</property>
+   <property name="title">Results per page</property>
+   <property name="default">200</property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">True</property>
+   <property name="start">5</property>
+   <property name="end">200</property>
+   <property name="step">5</property>
+  </criterion>
+  <criterion name="c2">
+   <property name="widget">sorting</property>
+   <property name="title">Sort on</property>
+   <property name="vocabulary"></property>
+   <property name="default">effective(reverse)</property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">True</property>
+  </criterion>
+  <criterion name="c4">
+   <property name="widget">select</property>
+   <property name="title">Genre</property>
+   <property name="index">BCCDataGenre</property>
+   <property name="vocabulary"></property>
+   <property name="catalog">portal_catalog</property>
+   <property name="default">DataGenreSpeciesOccurrence</property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">True</property>
+  </criterion>
+  <criterion name="c1">
+   <property name="widget">checkbox</property>
+   <property name="title">state</property>
+   <property name="index">job_state</property>
+   <property name="operator">or</property>
+   <property name="vocabulary"></property>
+   <property name="catalog">portal_catalog</property>
+   <property name="default">
+    <element value="COMPLETED"/>
+   </property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">True</property>
   </criterion>
  </criteria>
 </object>
