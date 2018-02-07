@@ -266,4 +266,17 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="340"
+      destination="350"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 350"
+        description="Move js and css to resource registries"
+        handler=".setuphandlers.upgrade_340_350_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

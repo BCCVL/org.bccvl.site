@@ -885,3 +885,30 @@ def upgrade_330_340_1(context, logger=None):
             import ipdb; ipdb.set_trace()
             obj.description = u'Absence records (map)'
             obj.reindexObject()
+
+
+def upgrade_340_350_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+
+    # remove data_table once and for all
+    from org.bccvl.site.faceted.interfaces import IFacetConfigUtility
+    facet_tool = getUtility(IFacetConfigUtility)
+    if 'data_table' in facet_tool.context:
+        # data_table is still there....
+        facet_tool.context.manage_delObjects('data_table')
+
+    setup.runImportStepFromProfile(PROFILE_ID, 'jsregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'cssregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
+    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'skins')
+    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'jsregistry')
+    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'cssregistry')
+    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'plone.app.registry')
+    # update theme (reimport it?)
+    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'plone.app.theming')
