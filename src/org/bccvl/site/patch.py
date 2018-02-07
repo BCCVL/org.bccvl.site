@@ -146,3 +146,43 @@ def apply_patched_const(scope, original, replacement):
     """
     setattr(scope, original, replacement())
     return
+
+
+from Products.CMFPlone.utils import safeToInt
+from zope.component import queryUtility
+from eea.facetednavigation.plonex import ISolrSearch
+import operator
+from eea.facetednavigation.widgets.widget import compare
+
+def faceted_widget_vocabulary(self, **kwargs):
+        """ Return data vocabulary
+        """
+        reverse = safeToInt(self.data.get('sortreversed', 0))
+        mapping = self.portal_vocabulary()
+        catalog = self.data.get('catalog', None)
+
+        if catalog:
+            mapping = dict(mapping)
+            values = []
+
+            # get values from SOLR if collective.solr is present
+            searchutility = queryUtility(ISolrSearch)
+            if searchutility is not None and searchutility.getConfig() and searchutility.getConfig().active:
+                index = self.data.get('index', None)
+                kw = {'facet': 'on',
+                  'facet.field': index,    # facet on index
+                  'facet.limit': -1,       # show unlimited results
+                  'rows':0}                # no results needed
+                result = searchutility.search('*:*', **kw)
+                try:
+                    values = result.facet_counts['facet_fields'][index].keys()
+                except (AttributeError, KeyError):
+                    pass
+
+            if not values:
+                values = self.catalog_vocabulary()
+
+            res = [(val, mapping.get(val, val)) for val in values]
+            res.sort(key=operator.itemgetter(1), cmp=compare)
+        else:
+            res = mapping

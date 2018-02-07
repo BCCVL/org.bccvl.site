@@ -49,6 +49,13 @@
       replacement=".patch.createTicket"
       />
 
+  <monkey:patch
+      description="Patch eea faceted navigation with inactive collective.solr installed."
+      class="eea.facetednavigation.widgets.widget.Widget"
+      original="vocabulary"
+      replacement=".patch.faceted_widget_vocabulary"
+    />
+
   <i18n:registerTranslations directory="locales" />
 
   <includeDependencies package="."/>
