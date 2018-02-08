@@ -882,6 +882,5 @@ def upgrade_330_340_1(context, logger=None):
 
         obj = brain.getObject()
         if obj.description != u'Absence records (map)':
-            import ipdb; ipdb.set_trace()
             obj.description = u'Absence records (map)'
             obj.reindexObject()
