@@ -186,3 +186,4 @@ def faceted_widget_vocabulary(self, **kwargs):
             res.sort(key=operator.itemgetter(1), cmp=compare)
         else:
             res = mapping
+        return res
