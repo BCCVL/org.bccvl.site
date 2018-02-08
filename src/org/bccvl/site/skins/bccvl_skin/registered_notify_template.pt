@@ -49,7 +49,7 @@ Precedence: bulk
 <p i18n:domain="passwordresettool"
    i18n:translate="mailtemplate_registered_user_body"
    tal:omit-tag="">
-  Remember, if you have any issues at all, or require a bit of help please contact us here (http://www.bccvl.org.au/contact-us).
+  Remember, if you have any issues at all, or require a bit of help please contact us here (http://www.bccvl.org.au/contact/).
 </p>
 
 <p i18n:domain="passwordresettool"
