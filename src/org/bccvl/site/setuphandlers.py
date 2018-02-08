@@ -892,6 +892,7 @@ def upgrade_340_350_1(context, logger=None):
     # Run GS steps
     portal = api.portal.get()
     setup = getToolByName(context, 'portal_setup')
+    pq = getToolByName(context, 'portal_quickinstaller')
 
     # remove data_table once and for all
     from org.bccvl.site.faceted.interfaces import IFacetConfigUtility
@@ -900,14 +901,32 @@ def upgrade_340_350_1(context, logger=None):
         # data_table is still there....
         facet_tool.context.manage_delObjects('data_table')
 
+    # reinstall facetednavigation
+    pq.uninstallProducts(['eea.jquery', 'eea.facetednavigation'])
+    # make sure some of the eea jquery plugins are installed
+    # for some reason reinstalling eea.facetednavigation does not always re-apply profile dependencies
+    # manually apply dependencies for eea.facetednavigation 10.8
+    setup.runAllImportStepsFromProfile('profile-eea.jquery:01-jquery')
+    setup.runAllImportStepsFromProfile('profile-eea.jquery:03-ajaxfileupload')
+    setup.runAllImportStepsFromProfile('profile-eea.jquery:04-bbq')
+    setup.runAllImportStepsFromProfile('profile-eea.jquery:05-cookie')
+    setup.runAllImportStepsFromProfile('profile-eea.jquery:10-jstree')
+    setup.runAllImportStepsFromProfile('profile-eea.jquery:12-select2uislider')
+    setup.runAllImportStepsFromProfile('profile-eea.jquery:14-tagcloud')
+    setup.runAllImportStepsFromProfile('profile-eea.jquery:23-select2')
+    pq.installProducts(['eea.facetednavigation'])
+    # make sure actions and rolemap is setup
+    setup.runImportStepFromProfile('profile-eea.facetednavigation:universal', 'actions')
+    setup.runImportStepFromProfile('profile-eea.facetednavigation:universal', 'rolemap')
+    # make sure diavo is disabled on ajax requests
+    from eea.facetednavigation.interfaces import IEEASettings
+    registry = getUtility(IRegistry)
+    facetsettings = registry.forInterface(IEEASettings)
+    facetsettings.disable_diazo_rules_ajax = True
+
     setup.runImportStepFromProfile(PROFILE_ID, 'jsregistry')
     setup.runImportStepFromProfile(PROFILE_ID, 'cssregistry')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
 
-    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'skins')
-    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'jsregistry')
-    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'cssregistry')
-    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'plone.app.registry')
-    # update theme (reimport it?)
-    setup.runImportStepFromProfile(THEME_PROFILE_ID, 'plone.app.theming')
+    setup.upgradeProfile(THEME_PROFILE_ID)
