@@ -1,75 +1,61 @@
 <?xml version="1.0"?>
 <object name="projection" meta_type="Dexterity Container">
  <criteria>
+  <criterion name="c3">
+   <property name="widget">text</property>
+   <property name="title">Search</property>
+   <property name="index">SearchableText</property>
+   <property name="onlyallelements">True</property>
+   <property name="wildcard">False</property>
+   <property name="position">left</property>
+   <property name="section">default</property>
+   <property name="hidden">False</property>
+  </criterion>
   <criterion name="c0">
    <property name="widget">resultsperpage</property>
    <property name="title">Results per page</property>
+   <property name="default">200</property>
    <property name="position">right</property>
    <property name="section">default</property>
-   <property name="hidden">1</property>
+   <property name="hidden">True</property>
    <property name="start">5</property>
    <property name="end">200</property>
    <property name="step">5</property>
-   <property name="default">200</property>
   </criterion>
   <criterion name="c2">
    <property name="widget">sorting</property>
    <property name="title">Sort on</property>
-   <property name="position">right</property>
-   <property name="section">default</property>
-   <property name="hidden">1</property>
    <property name="vocabulary"></property>
    <property name="default">effective(reverse)</property>
-  </criterion>
-  <criterion name="c3">
-   <property name="widget">text</property>
-   <property name="title">Search</property>
-   <property name="position">left</property>
+   <property name="position">right</property>
    <property name="section">default</property>
-   <property name="hidden">0</property>
-   <property name="index">SearchableText</property>
-   <property name="default"></property>
-   <property name="onlyallelements">1</property>
-   <property name="wildcard">1</property>
+   <property name="hidden">True</property>
   </criterion>
   <criterion name="c1">
    <property name="widget">select</property>
    <property name="title">Type</property>
-   <property name="position">right</property>
-   <property name="section">default</property>
-   <property name="hidden">0</property>
-   <property name="count"></property>
-   <property name="sortcountable"></property>
-   <property name="hidezerocount"></property>
    <property name="index">portal_type</property>
    <property
       name="vocabulary">eea.faceted.vocabularies.FacetedOnlyPortalTypes</property>
-   <property name="catalog"></property>
-   <property name="sortreversed"></property>
-   <property name="default"></property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">False</property>
   </criterion>
   <criterion name="c4">
    <property name="widget">checkbox</property>
    <property name="title">Type</property>
-   <property name="position">right</property>
-   <property name="section">default</property>
-   <property name="hidden">1</property>
-   <property name="count"></property>
-   <property name="sortcountable"></property>
-   <property name="hidezerocount"></property>
    <property name="index">portal_type</property>
    <property name="operator">or</property>
-   <property name="operator_visible"></property>
    <property
       name="vocabulary">eea.faceted.vocabularies.FacetedPortalTypes</property>
-   <property name="catalog"></property>
-   <property name="maxitems"></property>
-   <property name="sortreversed"></property>
    <property name="default">
     <element value="org.bccvl.content.projectionexperiment"/>
     <element value="org.bccvl.content.sdmexperiment"/>
-    <element value="org.bccvl.content.msdmexperiment"/>    
+    <element value="org.bccvl.content.msdmexperiment"/>
    </property>
+   <property name="position">right</property>
+   <property name="section">default</property>
+   <property name="hidden">True</property>
   </criterion>
  </criteria>
 </object>

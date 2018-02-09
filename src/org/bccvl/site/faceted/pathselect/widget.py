@@ -2,63 +2,21 @@
 """
 from BTrees.IIBTree import weightedIntersection, IISet
 
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import BooleanField
-from Products.Archetypes.public import StringField
-from Products.Archetypes.public import StringWidget
-from Products.Archetypes.public import SelectionWidget
-from Products.Archetypes.public import BooleanWidget
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safeToInt
 
 from eea.facetednavigation.interfaces import IFacetedCatalog
 from eea.facetednavigation.widgets import ViewPageTemplateFile
+from eea.facetednavigation.widgets.interfaces import LayoutSchemata
+from eea.facetednavigation.widgets.interfaces import CountableSchemata
 from eea.facetednavigation.widgets.widget import CountableWidget
 from eea.facetednavigation import EEAMessageFactory as _
 
 from plone.app.uuid.utils import uuidToCatalogBrain
 from zope.component import queryUtility
 
-
-
-EditSchema = Schema((
-    StringField('index',
-        schemata="default",
-        required=True,
-        vocabulary_factory='eea.faceted.vocabularies.PathCatalogIndexes',
-        widget=SelectionWidget(
-            format='select',
-            label=_(u'Catalog index'),
-            description=_(u'Catalog index to use for search'),
-            i18n_domain="eea"
-        )
-    ),
-    StringField('root',
-        schemata="default",
-        widget=StringWidget(
-            size=25,
-            label=_(u'Root folder'),
-            description=_(u'Full path to default container relative site root'
-                          u'Will be used if All is selected.'),
-            i18n_domain="eea"
-        )
-    ),
-    StringField('vocabulary',
-        schemata="default",
-        vocabulary_factory='eea.faceted.vocabularies.PortalVocabularies',
-        widget=SelectionWidget(
-            label=_(u"Vocabulary"),
-            description=_(u'Vocabulary to use to render widget items.'),
-        )
-    ),
-    BooleanField('sortreversed',
-        schemata="display",
-        widget=BooleanWidget(
-            label=_(u"Reverse options"),
-            description=_(u"Sort options reversed"),
-        )
-    ),
-))
+from org.bccvl.site.faceted.pathselect.interfaces import DefaultSchemata
+from org.bccvl.site.faceted.pathselect.interfaces import DisplaySchemata
 
 
 class Widget(CountableWidget):
@@ -67,14 +25,15 @@ class Widget(CountableWidget):
     # Widget properties
     widget_type = 'pathselect'
     widget_label = _('Path Select')
-    view_js = '++resource++org.bccvl.site.faceted.pathselect.view.js'
-    edit_js = '++resource++org.bccvl.site.faceted.pathselect.edit.js'
-    view_css = '++resource++org.bccvl.site.faceted.pathselect.view.css'
-    edit_css = '++resource++org.bccvl.site.faceted.pathselect.edit.css'
 
+    groups = (
+        DefaultSchemata,
+        LayoutSchemata,
+        CountableSchemata,
+        DisplaySchemata
+    )
+    
     index = ViewPageTemplateFile('widget.pt')
-    edit_schema = CountableWidget.edit_schema.copy() + EditSchema
-
     # TODO: we could add index and field 'part_of' to associate datasets with collections (similar to related_items? maybe eea.relations would be an option?)
 
     def query(self, form):
