@@ -882,7 +882,7 @@ def upgrade_330_340_1(context, logger=None):
     experiments = portal[defaults.EXPERIMENTS_FOLDER_ID]
     for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset'),
                                   BCCDataGenre='DataGenreSpeciesAbsence',
-                                  path='/'.join(experiments.getPhysicalPath()):
+                                  path='/'.join(experiments.getPhysicalPath())):
 
         obj = brain.getObject()
         if obj.description != u'Absence records (map)':
