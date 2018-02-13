@@ -873,6 +873,8 @@ def upgrade_330_340_1(context, logger=None):
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
 
     pc = getToolByName(context, 'portal_catalog')
 
