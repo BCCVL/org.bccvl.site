@@ -1,0 +1,5 @@
+{
+    "_type": "org.bccvl.tool.facetconfig",
+    "title": "Species Absence Dataset with Month column",
+    "_transitions": ["show_internally"]
+}
