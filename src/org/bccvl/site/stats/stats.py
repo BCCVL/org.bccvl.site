@@ -206,7 +206,7 @@ class StatisticsView(BrowserView):
 
         jobstats = self.stats['jobs']
         stats = {}
-        count = 0
+        count_all = 0
 
         for function, jstats in jobstats.items():
             algouuid = self.func_by_id.get(function, None)
@@ -233,10 +233,10 @@ class StatisticsView(BrowserView):
                 # 'nodata_success': 0,
                 # 'nodata_failed': 0
             }
-            count += dict_get(jstats, ['CREATED', 'count'], 0)
+            count_all += dict_get(jstats, ['CREATED', 'count'], 0)
 
         self._job_stats = {
-            'count': count,
+            'count': count_all,
             'average_runtimes': stats
         }
         return self._job_stats
