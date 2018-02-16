@@ -1163,6 +1163,8 @@ class BiodiverseJobTracker(MultiJobTracker):
 
                 resultjt.set_progress('PENDING',
                                       'biodiverse pending')
+            # reindex to update experiment status
+            self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(
                 self.context.title, self.state)
         else:
