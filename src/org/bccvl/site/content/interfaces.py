@@ -42,6 +42,14 @@ class IDataset(model.Schema):
         default=None
     )
 
+    directives.mode(dataSource=HIDDEN_MODE)
+    dataSource = TextLine(
+        title=_(u'Data Source'),
+        description=u'e.g. ala, gbif, aekos, upload, experiment, ...',
+        required=False,
+        default=None
+    )
+
 
 class IBlobDataset(IDataset):
 
