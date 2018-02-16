@@ -273,20 +273,19 @@ class ExperimentMetadata(object):
                 "Linux OS": u"CentOS release 6.7", 
                 "R version": u"3.2.2",
                 "R packages":  u" ".join([
-                    "abind 1.4-3, biomod2 3.3-7, car 2.1-0, caret 6.0-76, class 7.3-14, colorspace 1.2-6, deldir 0.1-9, dichromat 2.0-0,",
-                    "digest 0.6.9, dismo 1.1-1, doParallel 1.0.10, evaluate 0.8, FNN 1.1, foreach 1.4.3, foreign 0.8-66, gam 1.12, gamlss 4.3-8,",
-                    "gamlss.data 4.3-2, gamlss.dist 4.3-5, gbm 2.1.1, gdalUtils 2.0.1.7, ggdendro 0.1-20, ggplot2 2.2.1, gridExtra 2.2.0, gstat 1.1-2,",
-                    "gtable 0.2.0, hexbin 1.27.1, intervals 0.15.1, iterators 1.0.8, labeling 0.3, lattice 0.20-33, latticeExtra 0.6-28, lazyeval 0.2.0,",
-                    "lme4 1.1-11, magrittr 1.5, MASS 7.3-45, Matrix 1.2-3, MatrixModels 0.4-1, mda 0.4-8, mgcv 1.8-9, minqa 1.2.4, mmap 0.6-12,",
-                    "ModelMetrics 1.1.0, munsell 0.4.3, nlme 3.1-123, nloptr 1.0.4, nnet 7.3-11, ordinal 2015.1-21, pbkrtest 0.4-2, plyr 1.8.3,",
-                    "png 0.1-7, pROC 1.8, proto 0.3-10, quantreg 5.33, R.methodsS3 1.7.1, R.oo 1.20.0, R.utils 2.2.0, R2HTML 2.3.1, randomForest 4.6-12,",
-                    "raster 2.5-8, rasterVis 0.37, RColorBrewer 1.1-2, Rcpp 0.12.3, RcppEigen 0.3.3.3.0, reshape 0.8.5, reshape2 1.4.1, rgdal 1.1-3,",
-                    "rgeos 0.3-23, rjson 0.2.15, scales 0.4.1, SDMTools 1.1-221, sp 1.2-4, spacetime 1.1-5, SparseM 1.77, spatial 7.3-11,",
-                    "spatial.tools 1.4.8, stringi 1.0-1, stringr 1.0.0, survival 2.38-3, tibble 1.3.0, ucminf 1.1-4, xts 0.9-7, zoo 1.7-12,",
-                    "base 3.2.2, boot 1.3-17, class 7.3-13, cluster 2.0.3, codetools 0.2-14, compiler 3.2.2, datasets 3.2.2, foreign 0.8-65,",
-                    "graphics 3.2.2, grDevices 3.2.2, grid 3.2.2, KernSmooth 2.23-15, lattice 0.20-33, MASS 7.3-43, Matrix 1.2-2, methods 3.2.2,",
-                    "mgcv 1.8-7, nlme 3.1-121, nnet 7.3-10, parallel 3.2.2, rpart 4.1-10, spatial 7.3-10, splines 3.2.2, stats 3.2.2, stats4 3.2.2,",
-                    "survival 2.38-3, tcltk 3.2.2, tools 3.2.2, utils 3.2.2"
+                    "abind 1.4-5, biomod2 3.3-7, car 2.1-0, caret 6.0-78, class 7.3-14, colorspace 1.3-2, deldir 0.1-15, dichromat 2.0-0,",
+                    "digest 0.6.13, dismo 1.1-4, doParallel 1.0.11, evaluate 0.10.1, FNN 1.1, foreach 1.4.4, foreign 0.8-69, gam 1.14-4, gamlss 4.3-8,",
+                    "gamlss.data 4.3-2, gamlss.dist 4.3-5, gbm 2.1.3, gdalUtils 2.0.1.7, ggdendro 0.1-20, ggplot2 2.2.1, gridExtra 2.3, gstat 1.1-5,",
+                    "gtable 0.2.0, hexbin 1.27.1, intervals 0.15.1, iterators 1.0.9, labeling 0.3, lattice 0.20-35, latticeExtra 0.6-28, lazyeval 0.2.1,",
+                    "lme4 1.1-14, magrittr 1.5, MASS 7.3-47, Matrix 1.2-3, MatrixModels 0.4-1, mda 0.4-10, mgcv 1.8-22, minqa 1.2.4, mmap 0.6-15,",
+                    "ModelMetrics 1.1.0, munsell 0.4.3, nlme 3.1-131, nloptr 1.0.4, nnet 7.3-12, ordinal 2015.6-28, pbkrtest 0.4-2, plyr 1.8.3,",
+                    "png 0.1-7, pROC 1.8, proto 1.0.0, quantreg 5.34, R.methodsS3 1.7.1, R.oo 1.20.0, R.utils 2.2.0, R2HTML 2.3.1, randomForest 4.6-12,",
+                    "raster 2.6-7, rasterVis 0.41, RColorBrewer 1.1-2, Rcpp 0.12.4, RcppEigen 0.3.3.3.0, reshape 0.8.7, reshape2 1.4.3, rgdal 1.1-3,",
+                    "rgeos 0.3-23, rjson 0.2.15, scales 0.5.0, SDMTools 1.1-221, sp 1.2-5, spacetime 1.2-1, SparseM 1.77, spatial 7.3-11,",
+                    "spatial.tools 1.4.8, stringi 1.1.6, stringr 1.2.0, survival 2.41-3, tibble 1.3.4, ucminf 1.1-4, xts 0.10-0, zoo 1.8-0,",
+                    "base 3.2.2, boot 1.3-17, class 7.3-14, cluster 2.0.3, codetools 0.2-14, compiler 3.2.2, datasets 3.2.2, foreign 0.8-65,",
+                    "graphics 3.2.2, grDevices 3.2.2, grid 3.2.2, KernSmooth 2.23-15, MASS 7.3-47, methods 3.2.2, parallel 3.2.2,",
+                    "rpart 4.1-10, splines 3.2.2, stats 3.2.2, stats4 3.2.2, tcltk 3.2.2, tools 3.2.2, utils 3.2.2"
                 ])
             }
         }    
