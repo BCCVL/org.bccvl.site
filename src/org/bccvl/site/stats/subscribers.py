@@ -15,10 +15,12 @@ def count_dataset_created(obj, event):
     if IAnnotations(obj.REQUEST).get('org.bccvl.site.stats.delay'):
         # skip this event, we have been called from transmogrify chain, where
         # we collect stats later
+        # tell stats collector that we really created a new object
+        IAnnotations(obj.REQUEST)['org.bccvl.site.stats.created'] = True
         return
     dataSrc = obj.dataSource
     if not dataSrc:
-        if obj.partof:
+        if obj.part_of:
             # part of multispecies file ... get dataSource from master file
             master = uuidToObject(obj.part_of)
             dataSrc = master.dataSource

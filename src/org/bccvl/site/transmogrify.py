@@ -721,10 +721,16 @@ class CollectStats(object):
 
             # The contructor generated an empty object (which triggered our
             # stats event handler.) Let's update the stats here manually.
-            getUtility(IStatsUtility).count_dataset(
-                source=obj.dataSource,
-                portal_type=obj.portal_type
-            )
+            created = IAnnotations(obj.REQUEST).get('org.bccvl.site.stats.created', False)
+            if created:
+                # our created subscriber has been invoked
+                getUtility(IStatsUtility).count_dataset(
+                    source=obj.dataSource,
+                    portal_type=obj.portal_type
+                )
+                # reset the flag ... we can do that, because the pipeline runs
+                # sequentially
+                IAnnotations(obj.REQUEST)['org.bccvl.site.stats.created'] = False
 
             # Attach a job tracker only for species dataset from multispecies
             if item.get('_partof', {}):
