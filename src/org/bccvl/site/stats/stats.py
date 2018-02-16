@@ -183,7 +183,7 @@ class StatisticsView(BrowserView):
             if count == 0:
                 runtime = u'n/a'
             else:
-                runtime = runtime / count
+                runtime = u'{:.1f}'.format(runtime / count)
             runtimes[portal_type] = {
                 'runtime': runtime,
                 'failed': failed,
@@ -220,7 +220,7 @@ class StatisticsView(BrowserView):
             if count == 0:
                 mean_runtime = 'n/a'
             else:
-                mean_runtime = runtime / count
+                mean_runtime = '{:.1f}'.format(runtime / count)
             stats[algouuid] = {
                 'runtime': (dict_get(jstats, ['COMPLETED', 'runtime'], 0) +
                             dict_get(jstats, ['FINISHED', 'runtime'], 0)),
