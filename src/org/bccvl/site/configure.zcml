@@ -70,6 +70,7 @@
   <include package=".behavior"/>
   <include package=".job"/>
   <include package=".api"/>
+  <include package=".stats" />
   <include package=".swift"/>
   <include package=".userannotation"/>
 
