@@ -26,6 +26,7 @@ from org.bccvl.site.api.interfaces import IExperimentService
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IDownloadInfo, IExperimentJobTracker)
 from org.bccvl.site.job.interfaces import IJobUtility, IJobTracker
+from org.bccvl.site.stats.interfaces import IStatsUtility
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 
 
@@ -552,12 +553,12 @@ class ExperimentService(BaseService):
 
         # create job
         jobtool = getUtility(IJobUtility)
-        job = jobtool.new_job()
-        job.lsid = lsid
-        job.toolkit = IUUID(func)
-        job.function = func.getId()
-        job.type = 'org.bccvl.content.sdmexperiment'
-        jobtool.reindex_job(job)
+        job = jobtool.new_job(
+            lsid=lsid,
+            toolkit=IUUID(func),
+            function=func.getId(),
+            type='demosdm'
+        )
         # create job context object
         member = ploneapi.user.get_current()
         context = {
@@ -576,6 +577,13 @@ class ExperimentService(BaseService):
         from org.bccvl.tasks.plone import after_commit_task
         after_commit_task(demo_task, jobdesc, context)
         # let's hope everything works, return result
+
+        # We don't create an experiment object, so we don't count stats here
+        # let's do it manually
+        getUtility(IStatsUtility).count_experiment(
+            user=member.getId(),
+            portal_type='demosdm',
+        )
 
         return {
             'state': os.path.join(result['results_dir'], 'state.json'),

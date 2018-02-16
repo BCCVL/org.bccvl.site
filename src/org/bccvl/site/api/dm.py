@@ -13,7 +13,7 @@ from Products.CMFCore.utils import getToolByName
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.batching import Batch
-from plone.dexterity.utils import createContentInContainer
+from plone.dexterity.utils import createContent, addContentToContainer
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 from zope.interface import implementer
@@ -187,8 +187,9 @@ class DMService(BaseService):
             # track background job state
             jt = IJobTracker(obj)
             job = jt.new_job('TODO: generate id',
-                             'generate taskname: update_metadata')
-            job.type = obj.portal_type
+                             'generate taskname: update_metadata',
+                             function=obj.dataSource,
+                             type=obj.portal_type)
             jt.set_progress('PENDING', 'Metadata update pending')
             return job.id
         except Exception as e:
@@ -266,11 +267,12 @@ class DMService(BaseService):
         if swiftsettings.storage_url:
             portal_type = 'org.bccvl.content.remotedataset'
         # create content
-        ds = createContentInContainer(context, portal_type, title=title)
+        ds = createContent(portal_type, title=title)
         ds.dataSource = source
         ds.description = u' '.join([
             title, ','.join(traits), ','.join(environ),
             u' imported from {}'.format(source.upper())])
+        ds = addContentToContainer(context, ds)
         md = IBCCVLMetadata(ds)
         md['genre'] = 'DataGenreTraits'
         md['categories'] = ['traits']
@@ -385,10 +387,11 @@ class DMService(BaseService):
             if swiftsettings.storage_url:
                 portal_type = 'org.bccvl.content.remotedataset'
         # create content
-        ds = createContentInContainer(context, portal_type, title=title)
+        ds = createContent(portal_type, title=title)
         ds.dataSource = 'ala'
         ds.description = u' '.join([title, u' imported from ALA'])
         ds.import_params = params
+        ds = addContentToContainer(context, ds)
         md = IBCCVLMetadata(ds)
         if IMultiSpeciesDataset.providedBy(ds):
             md['genre'] = 'DataGenreSpeciesCollection'

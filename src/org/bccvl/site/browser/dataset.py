@@ -23,6 +23,7 @@ from zope.security import checkPermission
 from org.bccvl.site.interfaces import IBCCVLMetadata
 # from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.site.stats.interfaces import IStatsUtility
 from org.bccvl.site.swift.interfaces import ISwiftUtility
 
 
@@ -46,6 +47,8 @@ class DatasetRemoveView(form.Form):
         if hasattr(self.context, "parts"):
             dsobjs += [uuidToObject(ds) for ds in self.context.parts]
 
+        stats = getUtility(IStatsUtility)
+
         for context in dsobjs:
             # removed file working on frontend Javascript
             if hasattr(context, "file"):
@@ -55,6 +58,11 @@ class DatasetRemoveView(form.Form):
             if (jt.state != 'REMOVED'):
                 jt.state = 'REMOVED'
                 context.reindexObject()
+            # collect stats
+            stats.count_dataset(source=dsobj.source,
+                                portal_type=context.portal_type,
+                                state='REMOVED')
+
         #####
         IStatusMessage(self.request).add(
             u'{0[title]} has been removed.'.format({u'title': title}))

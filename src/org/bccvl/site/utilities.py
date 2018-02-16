@@ -23,6 +23,7 @@ from org.bccvl.site.content.interfaces import (
 from org.bccvl.site.interfaces import (
     IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker)
 from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.site.stats.interfaces import IStatsUtility
 from org.bccvl.site.utils import (
     build_ala_import_task, build_traits_import_task, build_ala_import_qid_task)
 from org.bccvl.tasks.plone import after_commit_task
@@ -318,11 +319,11 @@ class SDMJobTracker(MultiJobTracker):
                 LOG.info("Submit JOB %s to queue", func.getId())
                 method(result, func)
                 resultjt = IJobTracker(result)
-                job = resultjt.new_job('TODO: generate id',
-                                       'generate taskname: sdm_experiment')
-                job.type = self.context.portal_type
-                job.function = func.getId()
-                job.toolkit = IUUID(func)
+                resultjt.new_job('TODO: generate id',
+                                 'generate taskname: sdm_experiment',
+                                 type=self.context.portal_type,
+                                 function=func.getId(),
+                                 toolkit=IUUID(func))
                 # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
@@ -528,18 +529,24 @@ class MSDMJobTracker(MultiJobTracker):
                     # Create job tracker
                     resultjt = IJobTracker(result)
                     job = resultjt.new_job('TODO: generate id',
-                                           'generate taskname: sdm_experiment')
-                    job.type = self.context.portal_type
-                    job.function = func.getId()
-                    job.toolkit = IUUID(func)
- 
-                    # submit job 
+                                           'generate taskname: sdm_experiment',
+                                           type=self.context.portal_type,
+                                           function=func.getId(),
+                                           toolkit=IUUID(func))
+
+                    # submit job
                     LOG.info("Submit JOB %s to queue", func.getId())
                     if self.context.species_absence_collection is not None and absence_ds is None:
                         # Fail the SDM experiment as no absence dataset is found for the species
                         resultjt.state = 'FAILED'
                         resultjt.set_progress('FAILED', 
                                               u"Can't find absence dataset for species '{0}'".format(speciesName))
+                        # FIXME: Ideally we want to collect the stats somewhere else
+                        getUtility(IStatsUtility).count_job(
+                            function=job.function,
+                            portal_type=self.context.portal_type,
+                            state='FAILED'
+                        )
                     else:
                         method(result, func)
                         # reindex job object here ... next call should do that
@@ -744,11 +751,11 @@ class MMJobTracker(MultiJobTracker):
                 LOG.info("Submit JOB %s to queue", func.getId())
                 method(result, func)
                 resultjt = IJobTracker(result)
-                job = resultjt.new_job('TODO: generate id',
-                                       'generate taskname: sdm_experiment')
-                job.type = self.context.portal_type
-                job.function = func.getId()
-                job.toolkit = IUUID(func)
+                resultjt.new_job('TODO: generate id',
+                                 'generate taskname: sdm_experiment',
+                                 type=self.context.portal_type,
+                                 function=func.getId(),
+                                 toolkit=IUUID(func))
                 # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
@@ -973,13 +980,13 @@ class ProjectionJobTracker(MultiJobTracker):
                     LOG.info("Submit JOB project to queue")
                     method(result, "project")  # TODO: wrong interface
                     resultjt = IJobTracker(result)
-                    job = resultjt.new_job('TODO: generate id',
-                                           'generate taskname: projection experiment')
-                    job.type = self.context.portal_type
-                    job.function = result.job_params['function']
-                    job.toolkit = IUUID(
-                        api.portal.get()[defaults.TOOLKITS_FOLDER_ID][job.function])
-                    # reindex job object here ... next call should do that
+                    resultjt.new_job(
+                        'TODO: generate id',
+                        'generate taskname: projection experiment',
+                        type=self.context.portal_type,
+                        function=result.job_params['function'],
+                        toolkit=IUUID(api.portal.get()[defaults.TOOLKITS_FOLDER_ID][result.job_params['function']])
+                    )
                     resultjt.set_progress('PENDING',
                                           u'projection pending')
             # reindex to update experiment status
@@ -1153,11 +1160,9 @@ class BiodiverseJobTracker(MultiJobTracker):
                 LOG.info("Submit JOB Biodiverse to queue")
                 method(result, "biodiverse")  # TODO: wrong interface
                 resultjt = IJobTracker(result)
-                job = resultjt.new_job('TODO: generate id',
-                                       'generate taskname: biodiverse')
-
-                job.type = self.context.portal_type
-                # reindex job object here ... next call should do that
+                resultjt.new_job('TODO: generate id',
+                                 'generate taskname: biodiverse',
+                                 type=self.context.portal_type)
 
                 resultjt.set_progress('PENDING',
                                       'biodiverse pending')
@@ -1293,11 +1298,9 @@ class EnsembleJobTracker(MultiJobTracker):
             LOG.info("Submit JOB Ensemble to queue")
             method(result, "ensemble")  # TODO: wrong interface
             resultjt = IJobTracker(result)
-            job = resultjt.new_job('TODO: generate id',
-                                   'generate taskname: ensemble')
-
-            job.type = self.context.portal_type
-            # job reindex happens in next call
+            resultjt.new_job('TODO: generate id',
+                             'generate taskname: ensemble',
+                             type=self.context.portal_type)
 
             resultjt.set_progress('PENDING',
                                   'ensemble pending')
@@ -1466,13 +1469,11 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                 LOG.info("Submit JOB %s to queue", algorithm.id)
                 method(result, algorithm.getObject())
                 resultjt = IJobTracker(result)
-                job = resultjt.new_job('TODO: generate id',
-                                       'generate taskname: sdm_experiment')
-
-                job.type = self.context.portal_type
-                job.function = algorithm.id
-                job.toolkit = algorithm.UID
-                # job reindex happens in next call
+                resultjt.new_job('TODO: generate id',
+                                 'generate taskname: sdm_experiment',
+                                 type=self.context.portal_type,
+                                 function=algorithm.id,
+                                 toolkit=algorithm.UID)
 
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(algorithm.id))
@@ -1546,10 +1547,10 @@ class ALAJobTracker(MultiJobTracker):
             #        after commit, when we shouldn't write anything to the db
             #        maybe add another callback to set task_id?
             jt = IJobTracker(self.context)
-            job = jt.new_job('TODO: generate id',
-                             'generate taskname: traits_import')
-            job.type = self.context.portal_type
-            # job reindex happens in next call
+            jt.new_job('TODO: generate id',
+                       'generate taskname: traits_import',
+                       function=self.context.dataSource,
+                       type=self.context.portal_type)
             jt.set_progress('PENDING', u'Data import pending')
         else:
             if hasattr(self.context, 'import_params'):
@@ -1566,10 +1567,10 @@ class ALAJobTracker(MultiJobTracker):
                 #        after commit, when we shouldn't write anything to the db
                 #        maybe add another callback to set task_id?
                 jt = IJobTracker(self.context)
-                job = jt.new_job('TODO: generate id',
-                                 'generate taskname: ala_import')
-                job.type = self.context.portal_type
-                # job reindex happens in next call
+                jt.new_job('TODO: generate id',
+                           'generate taskname: ala_import',
+                           function=self.context.dataSource,
+                           type=self.context.portal_type)
                 jt.set_progress('PENDING', u'Data import pending')
 
             else:
@@ -1590,11 +1591,11 @@ class ALAJobTracker(MultiJobTracker):
                 #        after commit, when we shouldn't write anything to the db
                 #        maybe add another callback to set task_id?
                 jt = IJobTracker(self.context)
-                job = jt.new_job('TODO: generate id',
-                                 'generate taskname: ala_import')
-                job.type = self.context.portal_type
-                job.lsid = lsid
-                # job reindex happens in next call
+                jt.new_job('TODO: generate id',
+                           'generate taskname: ala_import',
+                           function=self.context.dataSource,
+                           type=self.context.portal_type,
+                           lsid=lsid)
                 jt.set_progress('PENDING', u'Data import pending')
 
         return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)

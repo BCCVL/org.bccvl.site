@@ -6,11 +6,13 @@ from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError
 from zope.schema.interfaces import RequiredMissing
 from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.interfaces import IExperimentJobTracker
+#from org.bccvl.site.stats.interfaces import IStatsUtility
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit, view
 from org.bccvl.site import MessageFactory as _
 from zope.interface import Invalid
+from plone import api
 from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
 from plone.autoform.utils import processFields

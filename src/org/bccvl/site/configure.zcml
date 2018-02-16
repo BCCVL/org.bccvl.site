@@ -240,6 +240,11 @@
       />
 
   <utility
+      component=".transmogrify.CollectStats"
+      name="org.bccvl.site.transmogrify.collectstats"
+      />
+
+  <utility
       component=".vocabularies.sdm_functions_source"
       name="sdm_functions_source"
       />

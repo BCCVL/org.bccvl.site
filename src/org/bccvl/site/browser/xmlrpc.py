@@ -6,7 +6,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 from plone import api
-from plone.dexterity.utils import createContentInContainer
+from plone.dexterity.utils import createContent, addContentToContainer
 from plone.registry.interfaces import IRegistry
 from zope import contenttype
 from zope.component import getUtility
@@ -15,6 +15,7 @@ from zope.publisher.interfaces import NotFound, BadRequest
 from org.bccvl.site import defaults
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo)
+#from org.bccvl.site.stats.interfaces import IStatsUtility
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.site.utils import decimal_encoder
 
@@ -91,7 +92,7 @@ class UrlLibResponseIterator(object):
         self.resp = resp
         try:
             self.length = int(resp.headers.getheader('Content-Length'))
-        except:
+        except Exception:
             self.length = 0
 
     def __iter__(self):
@@ -142,13 +143,14 @@ class DataMover(BrowserView):
             portal_type = 'org.bccvl.content.dataset'
 
         # TODO: make sure we get a better content id that dataset-x
-        ds = createContentInContainer(dscontainer,
-                                      portal_type,
-                                      title=u' '.join(title))
-        ds.dataSource = dataSrc    # Either ALA or GBIF as source
+        title = u' '.join(title)
+        ds = createContent(portal_type, title=title)
+        ds.dataSource = dataSrc  # Either ALA or GBIF as source
         # TODO: add number of occurences to description
         ds.description = u' '.join(
-            title) + u' imported from ' + unicode(dataSrc.upper())
+            (title, u'imported from', unicode(dataSrc.upper()))
+        )
+        ds = addContentToContainer(dscontainer, ds)
         md = IBCCVLMetadata(ds)
         # TODO: provenance ... import url?
         # FIXME: verify input parameters before adding to graph
