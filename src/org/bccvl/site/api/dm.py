@@ -1,8 +1,6 @@
-import copy
 import json
 import logging
 import os
-from urlparse import parse_qs
 
 import requests
 
@@ -26,7 +24,8 @@ from org.bccvl.site.api.base import BaseService
 from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import IDMService
 from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
+from org.bccvl.site.interfaces import (IBCCVLMetadata, IExperimentJobTracker,
+                                       IDownloadInfo)
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 
@@ -58,7 +57,7 @@ class DMService(BaseService):
         pc = getToolByName(self.context, 'portal_catalog')
         kw.update({
             'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
-            #'object_provides': IDataset.__identifier__,
+            # 'object_provides': IDataset.__identifier__,
             'path': '/'.join(self.context.getPhysicalPath()),
         })
         batch = Batch(pc.searchResults(**kw), b_size, b_start)
@@ -76,11 +75,11 @@ class DMService(BaseService):
                 'url': brain.getURL(),
                 'uuid': brain.UID,
                 'id': brain.getId,
-                #'BCCCategory': brain.BCCCategory,
+                # 'BCCCategory': brain.BCCCategory,
                 'BCCDataGenre': brain.BCCDataGenre,
-                #'BCCEnviroLayer': brain.BCCEnviroLayer,
-                #'BCCEmissionScenairo': brain.BCCEmissionScenairo,
-                #'BCCGlobalClimateModel': brain.BCCGlobalClimateModel,
+                # 'BCCEnviroLayer': brain.BCCEnviroLayer,
+                # 'BCCEmissionScenairo': brain.BCCEmissionScenairo,
+                # 'BCCGlobalClimateModel': brain.BCCGlobalClimateModel,
                 'BCCResolution': brain.BCCResolution,
                 'Description': brain.Description,
                 'Title': brain.Title,
@@ -126,7 +125,8 @@ class DMService(BaseService):
             return rat
         except Exception as e:
             LOG.warning(
-                "Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
+                "Couldn't decode Raster Attribute Table from metadata. %s: %s",
+                self.context, repr(e))
         raise NotFound(self, 'rat', self.request)
 
     def update_metadata(self):

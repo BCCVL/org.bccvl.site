@@ -5,7 +5,6 @@ import urllib
 from pkg_resources import resource_string
 
 from Products.CMFCore.interfaces import ISiteRoot
-from Products.CMFCore.utils import getToolByName
 
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
@@ -69,7 +68,8 @@ class ExperimentService(BaseService):
             props['title'] = params['title']
         props['description'] = params.get('description', '')
         if not params.get('occurrence_data', None):
-            self.record_error('Bad Request', 400, 'Missing parameter occurrence_data',
+            self.record_error('Bad Request', 400,
+                              'Missing parameter occurrence_data',
                               {'parameter': 'occurrence_data'})
         else:
             # FIXME:  should properly support source / id
@@ -127,6 +127,7 @@ class ExperimentService(BaseService):
         from plone.dexterity.utils import createContent, addContentToContainer
         experiment = createContent("org.bccvl.content.sdmexperiment", **props)
         experiment = addContentToContainer(context, experiment)
+
         # TODO: check if props and algo params have been applied properly
         experiment.parameters = dict(props['functions'])
         # FIXME: need to get resolution from somewhere
@@ -271,7 +272,8 @@ class ExperimentService(BaseService):
             props['title'] = params['title']
         props['description'] = params.get('description', '')
         if not params.get('traits_data', None):
-            self.record_error('Bad Request', 400, 'Missing parameter traits_data',
+            self.record_error('Bad Request', 400,
+                              'Missing parameter traits_data',
                               {'parameter': 'traits_data'})
         else:
             # FIXME:  should properly support source / id
@@ -281,7 +283,9 @@ class ExperimentService(BaseService):
 
         props['species_traits_dataset_params'] = {}
         for col_name, col_val in params.get("columns", {}).items():
-            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'trait_ord', 'trait_nom', 'env_var_con', 'env_var_cat', 'random_con', 'random_cat'):
+            if col_val not in ('lat', 'lon', 'species', 'trait_con',
+                               'trait_ord', 'trait_nom', 'env_var_con',
+                               'env_var_cat', 'random_con', 'random_cat'):
                 continue
             props['species_traits_dataset_params'][col_name] = col_val
         if not props['species_traits_dataset_params']:
@@ -310,7 +314,6 @@ class ExperimentService(BaseService):
                               'Missing parameter algorithms',
                               {'parameter': 'algorithms'})
         else:
-            portal = ploneapi.portal.get()
             props['algorithms_species'] = {}
             props['algorithms_diff'] = {}
             funcs_env = getUtility(
@@ -356,7 +359,6 @@ class ExperimentService(BaseService):
         experiment = createContent(
             "org.bccvl.content.speciestraitsexperiment", **props)
         experiment = addContentToContainer(context, experiment)
-        # TODO: check if props and algo params have been applied properly
         experiment.parameters = dict(props['algorithms_species'])
         experiment.parameters.update(dict(props['algorithms_diff']))
         # FIXME: need to get resolution from somewhere
@@ -446,7 +448,8 @@ class ExperimentService(BaseService):
         # get parameters
         if not lsid:
             raise BadRequest('Required parameter lsid missing')
-        # we have an lsid,.... we can't really verify but at least some data is here
+        # we have an lsid,.... we can't really verify but at least some
+        #                      data is here
         # find rest of parameters
         # FIXME: hardcoded path to environmental datasets
 

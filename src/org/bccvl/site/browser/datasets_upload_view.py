@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import pwd
 import shutil
 import tempfile
 
@@ -33,7 +32,7 @@ from org.bccvl.site.content.dataset import (
     ILayerDataset,
     ITraitsDataset)
 from org.bccvl.site.swift.interfaces import ISwiftSettings
-from org.bccvl.site.utils import get_results_dir, get_hostname
+from org.bccvl.site.utils import get_results_dir
 from org.bccvl.tasks.celery import app
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.tasks.plone import after_commit_task
@@ -64,7 +63,7 @@ class BCCVLUploadForm(DefaultAddForm):
 
         if self.portal_type == 'org.bccvl.content.remotedataset':
             # we are going to create a remote dataset from an upload
-            # 1. put upload information aside
+            # 1. put upload information aside; will be processed in add
             self._upload = {'file': data['file']}
             del data['file']
 

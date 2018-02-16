@@ -19,9 +19,11 @@ from org.bccvl.site.content.interfaces import IDataset
 from org.bccvl.site.content.remotedataset import IRemoteDataset
 from org.bccvl.site.content.interfaces import (
     ISDMExperiment, IProjectionExperiment, IBiodiverseExperiment,
-    IEnsembleExperiment, ISpeciesTraitsExperiment, IMSDMExperiment, IMMExperiment)
+    IEnsembleExperiment, ISpeciesTraitsExperiment, IMSDMExperiment,
+    IMMExperiment)
 from org.bccvl.site.interfaces import (
-    IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData, IExperimentJobTracker)
+    IComputeMethod, IDownloadInfo, IBCCVLMetadata, IProvenanceData,
+    IExperimentJobTracker)
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.stats.interfaces import IStatsUtility
 from org.bccvl.site.utils import (
@@ -183,11 +185,13 @@ class SDMJobTracker(MultiJobTracker):
         software.add(RDF['type'], PROV['Agent'])
         software.add(RDF['type'], PROV['SoftwareAgent'])
         software.add(FOAF['name'], Literal('BCCVL Job Script'))
-        # script content is stored somewhere on result and will be exported with zip?
+        # script content is stored somewhere on result and will be exported
+        # with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
-        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        # -> source code ... maybe some link expression? stored on result ?
+        #                    separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ...
@@ -203,13 +207,15 @@ class SDMJobTracker(MultiJobTracker):
             param = Resource(graph, LOCAL[u'param_{}'.format(idx)])
             activity.add(BCCVL['algoparam'], param)
             param.add(BCCVL['name'], Literal(key))
-            if key in ('species_occurrence_dataset', 'species_absence_dataset'):
+            if key in ('species_occurrence_dataset',
+                       'species_absence_dataset'):
                 if not result.job_params[key]:
                     # skip empty values
                     continue
                 param.add(BCCVL['value'], LOCAL[value])
             elif key in ('environmental_datasets',):
-                # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
+                # FIXME: got two env datasets with overlapping layer set
+                #        (e.g. B08 selected in both)
                 # FIXME: look for dict params in other experiment types as well
                 # value is a dictionary, where keys are dataset uuids and
                 # values are a set of selected layers
@@ -229,7 +235,7 @@ class SDMJobTracker(MultiJobTracker):
             ds = dsbrain.getObject()
             dsprov = Resource(graph, LOCAL[dsbrain.UID])
             dsprov.add(RDF['type'], PROV['Entity'])
-            #dsprov.add(PROV['..'], Literal(''))
+            # dsprov.add(PROV['..'], Literal(''))
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
@@ -281,7 +287,6 @@ class SDMJobTracker(MultiJobTracker):
 
         provdata.data = graph.serialize(format="turtle")
 
-
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and multiple species input datasets
@@ -329,7 +334,8 @@ class SDMJobTracker(MultiJobTracker):
                                       u'{} pending'.format(func.getId()))
                 # reindex context to update the status
             self.context.reindexObject()
-            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+            return 'info', u'Job submitted {0} - {1}'.format(
+                self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
 
@@ -368,11 +374,13 @@ class MSDMJobTracker(MultiJobTracker):
         software.add(RDF['type'], PROV['Agent'])
         software.add(RDF['type'], PROV['SoftwareAgent'])
         software.add(FOAF['name'], Literal('BCCVL Job Script'))
-        # script content is stored somewhere on result and will be exported with zip?
+        # script content is stored somewhere on result and will be exported
+        # with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
-        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        # -> source code ... maybe some link expression? stored on result ?
+        #                    separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ...
@@ -394,7 +402,8 @@ class MSDMJobTracker(MultiJobTracker):
                     continue
                 param.add(BCCVL['value'], LOCAL[value])
             elif key in ('environmental_datasets',):
-                # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
+                # FIXME: got two env datasets with overlapping layer set
+                #        (e.g. B08 selected in both)
                 # FIXME: look for dict params in other experiment types as well
                 # value is a dictionary, where keys are dataset uuids and
                 # values are a set of selected layers
@@ -414,7 +423,7 @@ class MSDMJobTracker(MultiJobTracker):
             ds = dsbrain.getObject()
             dsprov = Resource(graph, LOCAL[dsbrain.UID])
             dsprov.add(RDF['type'], PROV['Entity'])
-            #dsprov.add(PROV['..'], Literal(''))
+            # dsprov.add(PROV['..'], Literal(''))
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
@@ -502,8 +511,9 @@ class MSDMJobTracker(MultiJobTracker):
                                 u"Can't find method to run SDM Experiment")
                     # create result object:
                     # TODO: refactor this out into helper method
-                    title = u'{} - {} {}'.format(self.context.title, func.getId(),
-                                                 datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                    title = u'{} - {} {}'.format(
+                        self.context.title, func.getId(),
+                        datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                     result = self._create_result_container(title)
 
                     # Build job_params store them on result and submit job
@@ -539,7 +549,7 @@ class MSDMJobTracker(MultiJobTracker):
                     if self.context.species_absence_collection is not None and absence_ds is None:
                         # Fail the SDM experiment as no absence dataset is found for the species
                         resultjt.state = 'FAILED'
-                        resultjt.set_progress('FAILED', 
+                        resultjt.set_progress('FAILED',
                                               u"Can't find absence dataset for species '{0}'".format(speciesName))
                         # FIXME: Ideally we want to collect the stats somewhere else
                         getUtility(IStatsUtility).count_job(
@@ -554,7 +564,8 @@ class MSDMJobTracker(MultiJobTracker):
                                               u'{} pending'.format(func.getId()))
             # reindex to update experiment status
             self.context.reindexObject()
-            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+            return 'info', u'Job submitted {0} - {1}'.format(
+                self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
 
@@ -593,11 +604,13 @@ class MMJobTracker(MultiJobTracker):
         software.add(RDF['type'], PROV['Agent'])
         software.add(RDF['type'], PROV['SoftwareAgent'])
         software.add(FOAF['name'], Literal('BCCVL Job Script'))
-        # script content is stored somewhere on result and will be exported with zip?
+        # script content is stored somewhere on result and will be exported
+        #  with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
-        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        # -> source code ... maybe some link expression? stored on result ?
+        #                    separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ...
@@ -619,7 +632,8 @@ class MMJobTracker(MultiJobTracker):
                     continue
                 param.add(BCCVL['value'], LOCAL[value])
             elif key in ('environmental_datasets',):
-                # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
+                # FIXME: got two env datasets with overlapping layer set
+                #        (e.g. B08 selected in both)
                 # FIXME: look for dict params in other experiment types as well
                 # value is a dictionary, where keys are dataset uuids and
                 # values are a set of selected layers
@@ -639,7 +653,7 @@ class MMJobTracker(MultiJobTracker):
             ds = dsbrain.getObject()
             dsprov = Resource(graph, LOCAL[dsbrain.UID])
             dsprov.add(RDF['type'], PROV['Entity'])
-            #dsprov.add(PROV['..'], Literal(''))
+            # dsprov.add(PROV['..'], Literal(''))
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
@@ -701,7 +715,6 @@ class MMJobTracker(MultiJobTracker):
                 resolution_idx = idx
         return res_vocab._terms[resolution_idx].value
 
-
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and across multiple subset of species according to months
@@ -711,7 +724,7 @@ class MMJobTracker(MultiJobTracker):
             if self.context.modelling_region:
                 constraint_region = json.loads(self.context.modelling_region)
                 generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
-            
+
             func = uuidToObject(self.context.function)
             for datasubset in self.context.datasubsets:
                 subset = datasubset['subset']
@@ -724,8 +737,9 @@ class MMJobTracker(MultiJobTracker):
                             u"Can't find method to run SDM Experiment")
                 # create result object:
                 # TODO: refactor this out into helper method
-                title = u'{} - {} {} {}'.format(self.context.title, func.getId(), subset['title'],
-                                             datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                title = u'{} - {} {} {}'.format(
+                    self.context.title, func.getId(), subset['title'],
+                    datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                 result = self._create_result_container(title)
                 # Build job_params store them on result and submit job
                 result.job_params = {
@@ -760,8 +774,9 @@ class MMJobTracker(MultiJobTracker):
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
             # reindex to update experiment status
-            self.context.reindexObject()                
-            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+            self.context.reindexObject()
+            return 'info', u'Job submitted {0} - {1}'.format(
+                self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
 
@@ -773,11 +788,14 @@ class ProjectionJobTracker(MultiJobTracker):
     def _get_sdm_projection_result(self, sdmdsObj):
         # BCCVL-101: get only the constraint projection geotif results of SDM
         pc = getToolByName(self.context, 'portal_catalog')
-        projbrains = pc.searchResults(path='/'.join(sdmdsObj.__parent__.getPhysicalPath()),
-                                      BCCDataGenre=['DataGenreCP'])
+        projbrains = pc.searchResults(
+            path='/'.join(sdmdsObj.__parent__.getPhysicalPath()),
+            BCCDataGenre=['DataGenreCP']
+        )
         # FIXME what to do if there is still no projbrains?
         #       we probably can't run a CC experiment without it.
-        #       we certainly shouldn't fail with indexerror 0 (empty search result)
+        #       we certainly shouldn't fail with indexerror 0
+        #       (empty search result)
         return [projbrains[0].UID]
 
     def _create_result_container(self, sdmthreshold, dsbrain, projlayers):
@@ -848,11 +866,13 @@ class ProjectionJobTracker(MultiJobTracker):
         software.add(RDF['type'], PROV['Agent'])
         software.add(RDF['type'], PROV['SoftwareAgent'])
         software.add(FOAF['name'], Literal('BCCVL Job Script'))
-        # script content is stored somewhere on result and will be exported with zip?
+        # script content is stored somewhere on result and will be exported
+        # with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
-        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        # -> source code ... maybe some link expression? stored on result ?
+        #                    separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ...
@@ -884,7 +904,7 @@ class ProjectionJobTracker(MultiJobTracker):
             ds = dsbrain.getObject()
             dsprov = Resource(graph, LOCAL[result.job_params[key]])
             dsprov.add(RDF['type'], PROV['Entity'])
-            #dsprov.add(PROV['..'], Literal(''))
+            # dsprov.add(PROV['..'], Literal(''))
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
@@ -990,8 +1010,9 @@ class ProjectionJobTracker(MultiJobTracker):
                     resultjt.set_progress('PENDING',
                                           u'projection pending')
             # reindex to update experiment status
-            self.context.reindexObject()                    
-            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+            self.context.reindexObject()
+            return 'info', u'Job submitted {0} - {1}'.format(
+                self.context.title, self.state)
         else:
             # TODO: in case there is an error should we abort the transaction
             #       to cancel previously submitted jobs?
@@ -1026,11 +1047,13 @@ class BiodiverseJobTracker(MultiJobTracker):
         software.add(RDF['type'], PROV['Agent'])
         software.add(RDF['type'], PROV['SoftwareAgent'])
         software.add(FOAF['name'], Literal('BCCVL Job Script'))
-        # script content is stored somewhere on result and will be exported with zip?
+        # script content is stored somewhere on result and will be exported
+        # with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
-        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        # -> source code ... maybe some link expression? stored on result ?
+        #                    separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ...
@@ -1060,7 +1083,7 @@ class BiodiverseJobTracker(MultiJobTracker):
             ds = dsbrain.getObject()
             dsprov = Resource(graph, LOCAL[value['dataset']])
             dsprov.add(RDF['type'], PROV['Entity'])
-            #dsprov.add(PROV['..'], Literal(''))
+            # dsprov.add(PROV['..'], Literal(''))
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
@@ -1199,11 +1222,13 @@ class EnsembleJobTracker(MultiJobTracker):
         software.add(RDF['type'], PROV['Agent'])
         software.add(RDF['type'], PROV['SoftwareAgent'])
         software.add(FOAF['name'], Literal('BCCVL Job Script'))
-        # script content is stored somewhere on result and will be exported with zip?
+        # script content is stored somewhere on result and will be exported
+        # with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
-        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        # -> source code ... maybe some link expression? stored on result ?
+        #                    separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ...
@@ -1233,7 +1258,7 @@ class EnsembleJobTracker(MultiJobTracker):
             ds = dsbrain.getObject()
             dsprov = Resource(graph, LOCAL[result.job_params[key]])
             dsprov.add(RDF['type'], PROV['Entity'])
-            #dsprov.add(PROV['..'], Literal(''))
+            # dsprov.add(PROV['..'], Literal(''))
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
@@ -1274,7 +1299,8 @@ class EnsembleJobTracker(MultiJobTracker):
 
             # create result container
             title = u'{} - ensemble {}'.format(
-                self.context.title, datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                self.context.title,
+                datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
             result = createContentInContainer(
                 self.context,
                 'Folder',
@@ -1338,11 +1364,13 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
         software.add(RDF['type'], PROV['Agent'])
         software.add(RDF['type'], PROV['SoftwareAgent'])
         software.add(FOAF['name'], Literal('BCCVL Job Script'))
-        # script content is stored somewhere on result and will be exported with zip?
+        # script content is stored somewhere on result and will be exported
+        # with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
-        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        # -> source code ... maybe some link expression? stored on result ?
+        #                    separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ...
@@ -1362,7 +1390,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             if key in ('traits_dataset',):
                 param.add(BCCVL['value'], LOCAL[value])
             elif key in ('environmental_datasets', ):
-                # FIXME: got two env datasets with overlapping layer set (e.g. B08 selected in both)
+                # FIXME: got two env datasets with overlapping layer set
+                #        (e.g. B08 selected in both)
                 # FIXME: look for dict params in other experiment types as well
                 # value is a dictionary, where keys are dataset uuids and
                 # values are a set of selected layers
@@ -1383,7 +1412,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             ds = dsbrain.getObject()
             dsprov = Resource(graph, LOCAL[result.job_params[key]])
             dsprov.add(RDF['type'], PROV['Entity'])
-            #dsprov.add(PROV['..'], Literal(''))
+            # dsprov.add(PROV['..'], Literal(''))
             dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
             dsprov.add(DCTERMS['title'], Literal(ds.title))
             dsprov.add(DCTERMS['description'], Literal(ds.description))
@@ -1439,15 +1468,19 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             for algorithm in (uuidToCatalogBrain(f) for f in chain(self.context.algorithms_species,
                                                                    self.context.algorithms_diff)):
                 # get utility to execute this experiment
-                method = queryUtility(IComputeMethod,
-                                      name=ISpeciesTraitsExperiment.__identifier__)
+                method = queryUtility(
+                    IComputeMethod,
+                    name=ISpeciesTraitsExperiment.__identifier__
+                )
                 if method is None:
-                    return ('error',
-                            u"Can't find method to run Species Traits Experiment")
+                    return (
+                        'error',
+                        u"Can't find method to run Species Traits Experiment")
                 # create result object:
                 # TODO: refactor this out into helper method
-                title = u'{} - {} {}'.format(self.context.title, algorithm.id,
-                                             datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+                title = u'{} - {} {}'.format(
+                    self.context.title, algorithm.id,
+                    datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                 result = createContentInContainer(self.context,
                                                   'Folder',
                                                   title=title)
@@ -1479,7 +1512,8 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                                       u'{} pending'.format(algorithm.id))
             # reindex to update experiment status
             self.context.reindexObject()
-            return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+            return 'info', u'Job submitted {0} - {1}'.format(
+                self.context.title, self.state)
         else:
             return 'error', u'Current Job is still running'
 
@@ -1512,11 +1546,13 @@ class ALAJobTracker(MultiJobTracker):
         software.add(RDF['type'], PROV['Agent'])
         software.add(RDF['type'], PROV['SoftwareAgent'])
         software.add(FOAF['name'], Literal('BCCVL ALA Importer'))
-        # script content is stored somewhere on result and will be exported with zip?
+        # script content is stored somewhere on result and will be exported
+        # with zip?
         #   ... or store along with pstats.json ? hidden from user
 
         # -> execenvironment after import -> log output?
-        # -> source code ... maybe some link expression? stored on result ? separate entity?
+        # -> source code ... maybe some link expression? stored on result ?
+        #                    separate entity?
         activity = Resource(graph, LOCAL['activity'])
         activity.add(RDF['type'], PROV['Activity'])
         # TODO: this is rather queued or created time for this activity ...
@@ -1558,14 +1594,16 @@ class ALAJobTracker(MultiJobTracker):
                     self.context.import_params, self.context,
                     self.context.REQUEST)
 
-                # TODO: add title, and url for dataset? (like with experiments?)
+                # TODO: add title, and url for dataset?
+                #       (like with experiments?)
                 # update provenance
                 self._createProvenance(self.context)
                 after_commit_task(ala_import_task)
 
-                # FIXME: we don't have a backend task id here as it will be started
-                #        after commit, when we shouldn't write anything to the db
-                #        maybe add another callback to set task_id?
+                # FIXME: we don't have a backend task id here as it will be
+                #        started after commit, when we shouldn't write
+                #        anything to the db maybe add another callback to set
+                #        task_id?
                 jt = IJobTracker(self.context)
                 jt.new_job('TODO: generate id',
                            'generate taskname: ala_import',
@@ -1582,14 +1620,16 @@ class ALAJobTracker(MultiJobTracker):
                 ala_import_task = build_ala_import_task(
                     lsid, self.context, self.context.REQUEST)
 
-                # TODO: add title, and url for dataset? (like with experiments?)
+                # TODO: add title, and url for dataset?
+                #       (like with experiments?)
                 # update provenance
                 self._createProvenance(self.context)
                 after_commit_task(ala_import_task)
 
-                # FIXME: we don't have a backend task id here as it will be started
-                #        after commit, when we shouldn't write anything to the db
-                #        maybe add another callback to set task_id?
+                # FIXME: we don't have a backend task id here as it will be
+                #        started after commit, when we shouldn't write
+                #        anything to the db maybe add another callback to set
+                #        task_id?
                 jt = IJobTracker(self.context)
                 jt.new_job('TODO: generate id',
                            'generate taskname: ala_import',
@@ -1598,7 +1638,8 @@ class ALAJobTracker(MultiJobTracker):
                            lsid=lsid)
                 jt.set_progress('PENDING', u'Data import pending')
 
-        return 'info', u'Job submitted {0} - {1}'.format(self.context.title, self.state)
+        return 'info', u'Job submitted {0} - {1}'.format(
+            self.context.title, self.state)
 
     @property
     def state(self):

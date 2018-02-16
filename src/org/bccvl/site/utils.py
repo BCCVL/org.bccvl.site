@@ -234,11 +234,11 @@ def build_ala_import_qid_task(params, dataset, request):
                     'email': member.getProperty('email'),
                     'fullname': member.getProperty('fullname')
                 }
-            }    
+            }
         }
 
     results_dir = get_results_dir(dataset, request)
     task = datamover.pull_occurrences_from_ala.si(params,
-                                                      results_dir, context,
-                                                      import_multispecies_params)
+                                                  results_dir, context,
+                                                  import_multispecies_params)
     return task

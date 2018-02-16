@@ -44,6 +44,7 @@ class DatasetRemoveView(form.Form):
 
         # Objects to be deleted
         dsobjs = [self.context]
+        # FIXME: would be faster to deal with brains here instead of objects
         if hasattr(self.context, "parts"):
             dsobjs += [uuidToObject(ds) for ds in self.context.parts]
 
@@ -363,19 +364,16 @@ class CrudFileMetadataForm(crud.CrudForm):
                       key=lambda x: x[0])
 
     def add(self, data):
-        # import ipdb; ipdb.set_trace()
         # super(CrudFileMetadataForm, self).add(data)
         # TODO: implement this someday
         pass
 
     def remove(self, (id, item)):
-        # import ipdb; ipdb.set_trace()
         # super(CrudFileMetadataForm, self).remove((id, item))
         # TODO: implement this someday
         pass
 
     # def before_update(self, item, data):
-    #     import ipdb; ipdb.set_trace()
     #     super(CrudFileMetadataForm, self).before_update(item, data)
 
 
