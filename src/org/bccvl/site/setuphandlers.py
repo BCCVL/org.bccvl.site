@@ -35,6 +35,10 @@ def setupTools(context, logger=None):
     from org.bccvl.site.userannotation.utility import init_user_annotation
     init_user_annotation()
 
+    # setup stats tool
+    from org.bccvl.site.stats.utility import init_stats
+    init_stats()
+
 
 def setupVarious(context, logger=None):
     if logger is None:
@@ -383,18 +387,18 @@ def upgrade_200_210_1(context, logger=None):
         if not old_job:
             # no job state here ... skip it
             continue
-        job = jobtool.new_job()
-        job.created = ds.created()
-        job.message = old_job['progress']['message']
-        job.progress = old_job['progress']['state']
-        job.state = old_job['state']
-        job.title = old_job['name']
-        job.taskid = old_job['taskid']
-        job.userid = ds.getOwner().getId()
-        job.content = IUUID(ds)
-        job.type = brain.portal_type
+        jobtool.new_job(
+            created=ds.created(),
+            message=old_job['progress']['message'],
+            progress=old_job['progress']['state'],
+            state=old_job['state'],
+            title=old_job['name'],
+            taskid=old_job['taskid'],
+            userid=ds.getOwner().getId(),
+            content=IUUID(ds),
+            type=brain.portal_type
+        )
 
-        jobtool.reindex_job(job)
         del annots['org.bccvl.state']
 
     # search all experiments and create job object with infos from experiment
@@ -423,22 +427,23 @@ def upgrade_200_210_1(context, logger=None):
             if not old_job:
                 # no job state here ... skip it
                 continue
-            job = jobtool.new_job()
-            job.created = result.created()
-            job.message = old_job['progress']['message']
-            job.progress = old_job['progress']['state']
-            job.state = old_job['state']
-            job.title = old_job['name']
-            job.taskid = old_job['taskid']
-            job.userid = result.getOwner().getId()
-            job.content = IUUID(result)
-            job.type = brain.portal_type
-            job.function = result.job_paramsi.get('function')
-            if job.function:
-                job.toolkit = IUUID(
-                    portal[defaults.TOOLKITS_FOLDER_ID][job.function])
-
-            jobtool.reindex_job(job)
+            if result.job_params.get('function'):
+                toolkit = IUUID(portal[defaults.TOOLKITS_FOLDER_ID][job.function])
+            else:
+                toolkit = None
+            jobtool.new_job(
+                created=result.created(),
+                message=old_job['progress']['message'],
+                progress=old_job['progress']['state'],
+                state=old_job['state'],
+                title=old_job['name'],
+                taskid=old_job['taskid'],
+                userid=result.getOwner().getId(),
+                content=IUUID(result),
+                type=brain.portal_type,
+                function=result.job_params.get('function'),
+                toolkit=toolkit
+            )
             del annots['org.bccvl.state']
 
     LOG.info('Updating layer metadata for projection outputs')
@@ -930,3 +935,14 @@ def upgrade_340_350_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
 
     setup.upgradeProfile(THEME_PROFILE_ID)
+
+
+def upgrade_340_350_2(context, logger=None):
+    if logger is None:
+        logger = LOG
+
+    # setup stats tool
+    from org.bccvl.site.stats.utility import init_stats
+    init_stats()
+
+    # TODO: initialise stats with existing content
