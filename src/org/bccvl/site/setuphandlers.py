@@ -883,7 +883,6 @@ def upgrade_330_340_1(context, logger=None):
     for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset'),
                                   BCCDataGenre='DataGenreSpeciesAbsence',
                                   path='/'.join(experiments.getPhysicalPath())):
-
         obj = brain.getObject()
         if obj.description != u'Absence records (map)':
             obj.description = u'Absence records (map)'
@@ -934,3 +933,14 @@ def upgrade_340_350_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
 
     setup.upgradeProfile(THEME_PROFILE_ID)
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    # Update the headers indexer for occurrence and absence datasets
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.multispeciesdataset'),
+                                  BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection', 
+                                                'DataGenreSpeciesAbsence', 'DataGenreSpeciesAbsenceCollection')):
+        obj = brain.getObject()
+        obj.headers = IBCCVLMetadata(obj).get('headers', None)
+        obj.reindexObject()

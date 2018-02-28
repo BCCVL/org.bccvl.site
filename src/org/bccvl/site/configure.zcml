@@ -192,6 +192,11 @@
       name="BCCDomain"
       />
 
+  <adapter
+      factory=".indexers.headers"
+      name="headers"
+      />
+
   <adapter factory=".utilities.SDMJobTracker"/>
 
   <adapter factory=".utilities.MSDMJobTracker"/>
