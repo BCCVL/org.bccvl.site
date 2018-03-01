@@ -873,6 +873,7 @@ def upgrade_330_340_1(context, logger=None):
     setup = getToolByName(context, 'portal_setup')
     setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
 
 
@@ -887,6 +888,14 @@ def upgrade_330_340_1(context, logger=None):
         obj = brain.getObject()
         if obj.description != u'Absence records (map)':
             obj.description = u'Absence records (map)'
+            obj.reindexObject()
+
+    # Update description for Australia Dynamic Land Cover dataset
+    for brain in pc.searchResults(portal_type='org.bccvl.content.remotedataset',
+                                  BCCDataGenre='DataGenreE'):
+        if brain.Title == "Australia, Dynamic Land Cover (2000-2008), 9 arcsec (~250 m)":
+            obj = brain.getObject()
+            obj.description = u"Observed biophysical cover on the Earth's surface."
             obj.reindexObject()
 
 
