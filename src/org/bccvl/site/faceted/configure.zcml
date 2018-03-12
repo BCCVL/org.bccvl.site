@@ -86,8 +86,18 @@
                 permission="cmf.ModifyPortalContent" />
 
   <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="species_absence_month_dataset.xml"
+                template="species_absence_month_dataset.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
                 name="species_occurrence_dataset.xml"
                 template="species_occurrence_dataset.xml"
+                permission="cmf.ModifyPortalContent" />
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+                name="species_occurrence_month_dataset.xml"
+                template="species_occurrence_month_dataset.xml"
                 permission="cmf.ModifyPortalContent" />
 
   <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"

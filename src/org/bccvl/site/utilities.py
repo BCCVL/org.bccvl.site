@@ -305,6 +305,7 @@ class SDMJobTracker(MultiJobTracker):
                                              datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
                 result = self._create_result_container(title)
 
+
                 # Build job_params store them on result and submit job
                 result.job_params = {
                     'resolution': IBCCVLMetadata(self.context)['resolution'],
@@ -746,6 +747,7 @@ class MMJobTracker(MultiJobTracker):
                     'resolution': self._get_resolution(environmental_datasets),
                     'function': func.getId(),
                     'species_occurrence_dataset': self.context.species_occurrence_dataset,
+                    'species_absence_dataset': self.context.species_absence_dataset,
                     'environmental_datasets': environmental_datasets,
                     # TODO: this sholud rather be a filter expression?
                     #       -> <csv column> in <subset values>

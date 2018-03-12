@@ -301,7 +301,8 @@ class SpeciesAbsenceAddForm(BCCVLUploadForm):
         u"<p>Upload absence data for single species</p>"
         u"<h4>Instructions:</h4>"
         u"<ul><li>Format needs to be .csv</li>"
-        u"<li>Two columns with exact labels ‘lat’ and ‘lon’</li>"
+        u"<li>REQUIRED: Two columns with exact labels ‘lat’ and ‘lon’</li>"
+        u"<li>OPTIONAL: third column with exact label 'month' (used in Migratory Modelling Experiment)</li>"
         u"<li>Coordinates in decimal degrees</li></p>"
     )
     fields = Fields(IBlobDataset, IDublinCore, ISpeciesDataset).select(

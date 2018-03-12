@@ -188,3 +188,48 @@ def faceted_widget_vocabulary(self, **kwargs):
         else:
             res = mapping
         return res
+
+
+# We have a problem here with our job state indexer.
+#   when the indexing queue get's processed at the end of a transaction
+#   e.g. when deleteing an experiment the last element in the queue
+#        triggers (e.g. /experiments folder) will be reindexed, which triggers
+#        our job state indexer which then triggers another indexing queue process.
+#        At this stage, the indexing queue has not been emptied and all unindex
+#        operations will be re-run again, but will log an error because these
+#        objects have been unindexed in the first run already
+#  workaround: pop each processed item from the queue, so that they can't be re-run
+#        this may cause a bit of a performance hit, as the queue can't optimize
+#        already processed elements anymore (but as they have been run already,
+#        it's probably not necessary to optimse them anymore)
+from zope.component import getSiteManager
+from collective.indexing.interfaces import IIndexQueueProcessor
+from collective.indexing.config import INDEX, REINDEX, UNINDEX
+# TODO: logger (debug) should not be instantiated at module load time
+from collective.indexing.queue import InvalidQueueOperation, debug
+
+
+def indexing_queue_process(self):
+    self.optimize()
+    if not self.queue:
+        return 0
+    sm = getSiteManager()
+    utilities = list(sm.getUtilitiesFor(IIndexQueueProcessor))
+    processed = 0
+    for name, util in utilities:
+        util.begin()
+    # TODO: must the queue be handled independently for each processor?
+    while self.queue:
+        op, obj, attributes = self.queue.pop()
+        for name, util in utilities:
+            if op == INDEX:
+                util.index(obj, attributes)
+            elif op == REINDEX:
+                util.reindex(obj, attributes)
+            elif op == UNINDEX:
+                util.unindex(obj)
+            else:
+                raise InvalidQueueOperation(op)
+        processed += 1
+    self.clear()
+    return processed

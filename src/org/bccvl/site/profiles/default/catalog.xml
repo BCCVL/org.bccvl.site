@@ -36,6 +36,10 @@
     <index name="BCCDomain" meta_type="KeywordIndex">
       <indexed_attr value="BCCDomain"/>
     </index>
+    <index name="headers" meta_type="KeywordIndex">
+      <indexed_attr value="headers"/>
+    </index>
+
 
     <index name="BCCSpeciesLayer" meta_type="KeywordIndex" remove="True"/>
     <index name="DCTemporal" meta_type="DateRangeIndex" remove="True"/>
