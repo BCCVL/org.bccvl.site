@@ -54,7 +54,14 @@
       class="eea.facetednavigation.widgets.widget.Widget"
       original="vocabulary"
       replacement=".patch.faceted_widget_vocabulary"
-    />
+      />
+
+  <monkey:patch
+      description="Patch collective indexing queue process to avoid re-processing a queue in case an indexer calles searchResults which triggers another processing of the indexing queue"
+      class="collective.indexing.queue.IndexQueue"
+      original="process"
+      replacement=".patch.indexing_queue_process"
+      />
 
   <i18n:registerTranslations directory="locales" />
 
