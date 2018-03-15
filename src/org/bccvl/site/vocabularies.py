@@ -476,6 +476,9 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
         (SimpleTerm('landcover', 'landcover', u'Land Cover'), {}),
         (SimpleTerm('landuse', 'landuse', u'Land Use'), {}),
         (SimpleTerm('productivity', 'productivity', u'Net Primary Productivity'), {}),
+        (SimpleTerm('physical', 'physical', u'Physical'), {}),
+        (SimpleTerm('nutrients', 'nutrients', u'Nutrients'), {}),
+        (SimpleTerm('biochemical', 'biochemical', u'Biochemical'), {}),
     ]))
 ]))
 
@@ -498,6 +501,7 @@ def summary_dataset_source(context):
 domain_dataset_vocabulary = SimpleVocabulary([
     SimpleTerm("Freshwater datasets", "Freshwaterdatasets", u'Freshwater datasets'),
     SimpleTerm("Terrestrial datasets", "Terrestrialdatasets", u'Terrestrial datasets'),
+    SimpleTerm("Marine datasets", "Marinedatasets", u'Marine datasets'),
 ])
 
 
