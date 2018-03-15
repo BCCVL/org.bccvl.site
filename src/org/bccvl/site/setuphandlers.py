@@ -972,7 +972,6 @@ def upgrade_340_350_1(context, logger=None):
                                   BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection',
                                                 'DataGenreSpeciesAbsence', 'DataGenreSpeciesAbsenceCollection')):
         obj = brain.getObject()
-        obj.headers = IBCCVLMetadata(obj).get('headers', None)
         obj.reindexObject()
         spcounter += 1
         if spcounter % 500 == 0:
