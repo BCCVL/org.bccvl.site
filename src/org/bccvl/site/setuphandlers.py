@@ -876,8 +876,15 @@ def upgrade_330_340_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
 
-
     pc = getToolByName(context, 'portal_catalog')
+
+    # transactions can get very big here, this upgrade step is idempotent,
+    # so we just commit everything inbetween
+    # commiting the full transaction makes it slow, but if we still run
+    # out of memory we don't have to repeat the full index walk
+    import transaction
+    transaction.commit()
+    spcounter = 0
 
     # Update Description for species absence output file
     experiments = portal[defaults.EXPERIMENTS_FOLDER_ID]
@@ -888,6 +895,13 @@ def upgrade_330_340_1(context, logger=None):
         if obj.description != u'Absence records (map)':
             obj.description = u'Absence records (map)'
             obj.reindexObject()
+            spcounter += 1
+            if spcounter % 500 == 0:
+                logger.info("Absence rename %d", spcounter)
+                transaction.commit()
+
+    transaction.commit()
+    spcounter = 0
 
     # Update description for Australia Dynamic Land Cover dataset
     for brain in pc.searchResults(portal_type='org.bccvl.content.remotedataset',
@@ -896,6 +910,10 @@ def upgrade_330_340_1(context, logger=None):
             obj = brain.getObject()
             obj.description = u"Observed biophysical cover on the Earth's surface."
             obj.reindexObject()
+            spcounter += 1
+            if spcounter % 500 == 0:
+                logger.info("Absence rename %d", spcounter)
+                transaction.commit()
 
 
 def upgrade_340_350_1(context, logger=None):
@@ -941,15 +959,26 @@ def upgrade_340_350_1(context, logger=None):
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
     setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
 
-    setup.upgradeProfile(THEME_PROFILE_ID)
-
     pc = getToolByName(context, 'portal_catalog')
 
     # Update the headers indexer for occurrence and absence datasets
+    # make sure large transactions don't run out of memory
+    import transaction
+    transaction.commit()
+    spcounter = 0
+
     from org.bccvl.site.interfaces import IBCCVLMetadata
     for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.multispeciesdataset'),
-                                  BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection', 
+                                  BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection',
                                                 'DataGenreSpeciesAbsence', 'DataGenreSpeciesAbsenceCollection')):
         obj = brain.getObject()
         obj.headers = IBCCVLMetadata(obj).get('headers', None)
         obj.reindexObject()
+        spcounter += 1
+        if spcounter % 500 == 0:
+            logger.info("Reindex Species data %d", spcounter)
+            transaction.commit()
+
+    # Do this as very last step in case something goes wrong above and we need
+    # to re-run a partially commited upgrade.
+    setup.upgradeProfile(THEME_PROFILE_ID)
