@@ -1,0 +1,14 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "Global Marine Environmental Data",
+    "description": "Bio-ORACLE, v2: a suite of geophysical, biotic and environmental data layers for surface and benthic marine realms.",
+    "attribution": [
+        "Tyberghein L., Verbruggen H., Pauly K., Troupin C., Mineur F., De Clerck O. (2012) Bio-ORACLE: A global environmental dataset for marine species distribution modelling. Global Ecology and Biogeography, 21, 272–281.",
+        "Assis J., Tyberghein L., Bosh S., Verbruggen H., Serrão E. A., De Clerck O. (2017) Bio-ORACLE v2.0: Extending marine data layers for bioclimatic modelling. Global Ecology and Biogeography. <a href=\"https://doi.org/10.1111/geb.12693\" target=\"_blank\">https://doi.org/10.1111/geb.12693</a>"
+    ],
+    "rights": "CC-BY Attribution 4.0",
+    "external_description": "Bio-ORACLE is a set of GIS rasters providing geophysical, biotic and environmental data for surface and benthic marine realms. The data are available for global-scale applications at a spatial resolution of 5 arcmin (approximately 9.2 km at the equator). Bio-ORACLE data layers are created from monthly pre-processed satellite and in situ observations. Bio-ORACLE is developed by a team of marine researchers from the Flanders Marine Institute (VLIZ), the University of Algarve, the University of Melbourne and Ghent University. Website: <a href=\"http://www.bio-oracle.org/\" target=\"_blank\">http://www.bio-oracle.org/</a>",
+    "categories": ["environmental"],
+    "BCCDataGenre": ["DataGenreE"],
+    "_transitions": ["show_internally", "publish_externally"]
+}

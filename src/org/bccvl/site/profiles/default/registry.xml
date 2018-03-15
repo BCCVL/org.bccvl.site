@@ -3143,6 +3143,798 @@
         <element key="type">range-change</element>
         <element key="tooltip">This value indicates whether the range of a species is expanded, contracted or not changed for any given location between current and future projections.</element>
       </element>
+      <element>
+        <element key="value">Present.Surface.Temperature.Min</element>
+        <element key="title">Minimum Water Temperature</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees Celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute minimum water temperature of the topmost meter of the ocean water column for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Temperature.Max</element>
+        <element key="title">Maximum Water Temperature</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees Celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute maximum water temperature of the topmost meter of the ocean water column for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Temperature.Mean</element>
+        <element key="title">Mean Water Temperature</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees Celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Average water temperature of the topmost meter of the ocean water column over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Temperature.Range</element>
+        <element key="title">Range of Water Temperature</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees Celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Range of water temperatures of the topmost meter of the ocean water column calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Temperature.Lt.max</element>
+        <element key="title">Maximum Water Temperature of Warmest Month</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees Celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of maximum water temperature of the topmost meter of the ocean water column of the warmest month.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Temperature.Lt.min</element>
+        <element key="title">Minimum Water Temperature of Coldest Month</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees Celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of minimum water temperature of the topmost meter of the ocean water column of the coldest month.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Salinity.Min</element>
+        <element key="title">Minimum Water Salinity</element>
+        <element key="unit">PSS</element>
+        <element key="unitfull">Practical Salinity Scale</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute minimum water salinity of the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Salinity.Max</element>
+        <element key="title">Maximum Water Salinity</element>
+        <element key="unit">PSS</element>
+        <element key="unitfull">Practical Salinity Scale</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute maximum water salinity of the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Salinity.Mean</element>
+        <element key="title">Mean Water Salinity</element>
+        <element key="unit">PSS</element>
+        <element key="unitfull">Practical Salinity Scale</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Average water salinity of the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Salinity.Range</element>
+        <element key="title">Range of Water Salinity</element>
+        <element key="unit">PSS</element>
+        <element key="unitfull">Practical Salinity Scale</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Range of water salinity of the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Salinity.Lt.max</element>
+        <element key="title">Maximum Water Salinity of Saltiest Month</element>
+        <element key="unit">PSS</element>
+        <element key="unitfull">Practical Salinity Scale</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of maximum water salinity of the ocean surface of the saltiest month.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Salinity.Lt.min</element>
+        <element key="title">Minimum Water Salinity of Freshest Month</element>
+        <element key="unit">PSS</element>
+        <element key="unitfull">Practical Salinity Scale</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of minimum water salinity of the ocean surface of the freshest month.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Current.Velocity.Min</element>
+        <element key="title">Minimum Currents Velocity</element>
+        <element key="unit">m/s</element>
+        <element key="unitfull">metre per second</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute minimum currents velocity at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Current.Velocity.Max</element>
+        <element key="title">Maximum Currents Velocity</element>
+        <element key="unit">m/s</element>
+        <element key="unitfull">metre per second</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute maximum currents velocity at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Current.Velocity.Mean</element>
+        <element key="title">Mean Currents Velocity</element>
+        <element key="unit">m/s</element>
+        <element key="unitfull">metre per second</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Average currents velocity at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Current.Velocity.Range</element>
+        <element key="title">Range of Currents Velocity</element>
+        <element key="unit">m/s</element>
+        <element key="unitfull">metre per second</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Range of currents velocity at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Current.Velocity.Lt.max</element>
+        <element key="title">Long term average of maximum currents velocity</element>
+        <element key="unit">m/s</element>
+        <element key="unitfull">metre per second</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of maximum currents velocity at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Current.Velocity.Lt.min</element>
+        <element key="title">Long term average of minimum currents velocity</element>
+        <element key="unit">m/s</element>
+        <element key="unitfull">metre per second</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of minimum currents velocity at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.thickness.Min</element>
+        <element key="title">Minimum Ice Thickness</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute minimum ice thickness at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.thickness.Max</element>
+        <element key="title">Maximum Ice Thickness</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute maximum ice thickness at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.thickness.Mean</element>
+        <element key="title">Mean Ice Thickness</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Average ice thickness at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.thickness.Range</element>
+        <element key="title">Range of Ice Thickness</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Range of ice thickness at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.thickness.Lt.max</element>
+        <element key="title">Long term average of maximum ice thickness</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of maximum ice thickness at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.thickness.Lt.min</element>
+        <element key="title">Long term average of minimum ice thickness</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of minimum ice thickness at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.cover.Min</element>
+        <element key="title">Minimum Sea Ice Concentration</element>
+        <element key="unit">fraction</element>
+        <element key="unitfull">fraction</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute minimum area of the ocean covered with sea ice relative to total ocean area for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.cover.Max</element>
+        <element key="title">Maximum Sea Ice Concentration</element>
+        <element key="unit">fraction</element>
+        <element key="unitfull">fraction</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Absolute maximum area of the ocean covered with sea ice relative to total ocean area for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.cover.Mean</element>
+        <element key="title">Mean Sea Ice Concentration</element>
+        <element key="unit">fraction</element>
+        <element key="unitfull">fraction</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Average area of the ocean covered with sea ice relative to total ocean area for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.cover.Range</element>
+        <element key="title">Range of Sea Ice Concentration</element>
+        <element key="unit">fraction</element>
+        <element key="unitfull">fraction</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Range of area of the ocean covered with sea ice calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.cover.Lt.max</element>
+        <element key="title">Long term average of maximum sea ice concentration</element>
+        <element key="unit">fraction</element>
+        <element key="unitfull">fraction</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of maximum area of the ocean covered with sea ice relative to total ocean area.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Ice.cover.Lt.min</element>
+        <element key="title">Long term average of minimum sea ice concentration</element>
+        <element key="unit">fraction</element>
+        <element key="unitfull">fraction</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Long term average of minimum area of the ocean covered with sea ice relative to total ocean area.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Diffuse.attenuation.Min</element>
+        <element key="title">Minimum Diffuse Attenuation</element>
+        <element key="unit">m-1</element>
+        <element key="unitfull">inverse metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Minimum diffuse attenuation at the ocean surface for the time period. This is an indicator of water clarity, expressing how deeply visible light in the blue to the green region of the spectrum penetrates into the water column.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Diffuse.attenuation.Max</element>
+        <element key="title">Maximum Diffuse Attenuation</element>
+        <element key="unit">m-1</element>
+        <element key="unitfull">inverse metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Maximum diffuse attenuation at the ocean surface for the time period. This is an indicator of water clarity, expressing how deeply visible light in the blue to the green region of the spectrum penetrates into the water column.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Diffuse.attenuation.Mean</element>
+        <element key="title">Mean Diffuse Attenuation</element>
+        <element key="unit">m-1</element>
+        <element key="unitfull">inverse metre</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Average diffuse attenuation at the ocean surface for the time period. This is an indicator of water clarity, expressing how deeply visible light in the blue to the green region of the spectrum penetrates into the water column.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Cloud.cover.Min</element>
+        <element key="title">Minimum Cloud Cover</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Minimum percentage of the earth covered by clouds over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Cloud.cover.Max</element>
+        <element key="title">Maximum Cloud Cover</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Maximum percentage of the earth covered by clouds over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Cloud.cover.Mean</element>
+        <element key="title">Mean Cloud Cover</element>
+        <element key="unit">%</element>
+        <element key="unitfull">percentage</element>
+        <element key="legend">percentage</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Average percentage of the earth covered by clouds over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Nitrate.Min</element>
+        <element key="title">Minimum Nitrate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute minimum nitrate concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Nitrate.Max</element>
+        <element key="title">Maximum Nitrate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute maximum nitrate concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Nitrate.Mean</element>
+        <element key="title">Mean Nitrate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Average nitrate concentration at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Nitrate.Range</element>
+        <element key="title">Range of Nitrate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Range of nitrate concentration at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Nitrate.Lt.max</element>
+        <element key="title">Long term average of maximum nitrate concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of maximum nitrate concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Nitrate.Lt.min</element>
+        <element key="title">Long term average of minimum nitrate concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of minimum nitrate concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phosphate.Min</element>
+        <element key="title">Minimum Phosphate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute minimum phosphate concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phosphate.Max</element>
+        <element key="title">Maximum Phosphate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute maximum phosphate concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phosphate.Mean</element>
+        <element key="title">Mean Phosphate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Average phosphate concentration at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phosphate.Range</element>
+        <element key="title">Range of Phosphate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Range of phosphate concentration at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phosphate.Lt.max</element>
+        <element key="title">Long term average of maximum phosphate concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of maximum phosphate concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phosphate.Lt.min</element>
+        <element key="title">Long term average of minimum phosphate concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of minimum phosphate concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Silicate.Min</element>
+        <element key="title">Minimum Silicate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute minimum silicate concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Silicate.Max</element>
+        <element key="title">Maximum Silicate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute maximum silicate concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Silicate.Mean</element>
+        <element key="title">Mean Silicate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Average silicate concentration at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Silicate.Range</element>
+        <element key="title">Range of Silicate Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Range of silicate concentration at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Silicate.Lt.max</element>
+        <element key="title">Long term average of maximum silicate concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of maximum silicate concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Silicate.Lt.min</element>
+        <element key="title">Long term average of minimum silicate concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of minimum silicate concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Dissolved.oxygen.Min</element>
+        <element key="title">Minimum Oxygen Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute minimum dissolved oxygen concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Dissolved.oxygen.Max</element>
+        <element key="title">Maximum Oxygen Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute maximum dissolved oxygen concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Dissolved.oxygen.Mean</element>
+        <element key="title">Mean Oxygen Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Average oxygen dissolved concentration at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Dissolved.oxygen.Range</element>
+        <element key="title">Range of Oxygen Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Range of dissolved oxygen concentration at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Dissolved.oxygen.Lt.max</element>
+        <element key="title">Long term average of maximum oxygen concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of maximum dissolved oxygen concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Dissolved.oxygen.Lt.min</element>
+        <element key="title">Long term average of minimum oxygen concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of minimum dissolved oxygen concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Iron.Min</element>
+        <element key="title">Minimum Iron Concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute minimum dissolved iron concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Iron.Max</element>
+        <element key="title">Maximum Iron Concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Absolute maximum dissolved iron concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Iron.Mean</element>
+        <element key="title">Mean Iron Concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Average dissolved iron concentration at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Iron.Range</element>
+        <element key="title">Range of Iron Concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Range of dissolved iron concentration at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Iron.Lt.max</element>
+        <element key="title">Long term average of maximum iron concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of maximum dissolved iron concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Iron.Lt.min</element>
+        <element key="title">Long term average of minimum iron concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Long term average of minimum dissolved iron concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Calcite.Mean</element>
+        <element key="title">Mean Calcite Concentration</element>
+        <element key="unit">mol/m3</element>
+        <element key="unitfull">mole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Nutrients</element>
+        <element key="tooltip">Average calcite (CaCO3) concentration at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Chlorophyll.Min</element>
+        <element key="title">Minimum Chlorophyll A Concentration</element>
+        <element key="unit">mg/m3</element>
+        <element key="unitfull">milligram per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Absolute minimum chlorophyll A concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Chlorophyll.Max</element>
+        <element key="title">Maximum Chlorophyll A Concentration</element>
+        <element key="unit">mg/m3</element>
+        <element key="unitfull">milligram per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Absolute maximum chlorophyll A concentration at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Chlorophyll.Mean</element>
+        <element key="title">Mean Chlorophyll A Concentration</element>
+        <element key="unit">mg/m3</element>
+        <element key="unitfull">milligram per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Average chlorophyll A concentration at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Chlorophyll.Range</element>
+        <element key="title">Range of Chlorophyll A Concentration</element>
+        <element key="unit">mg/m3</element>
+        <element key="unitfull">milligram per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Range of chlorophyll A concentration at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Chlorophyll.Lt.max</element>
+        <element key="title">Long term average of maximum chlorophyll A concentration</element>
+        <element key="unit">mg/m3</element>
+        <element key="unitfull">milligram per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Long term average of maximum chlorophyll A concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Chlorophyll.Lt.min</element>
+        <element key="title">Long term average of minimum chlorophyll A concentration</element>
+        <element key="unit">mg/m3</element>
+        <element key="unitfull">milligram per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Long term average of minimum chlorophyll A concentration at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phytoplankton.Min</element>
+        <element key="title">Minimum Phytoplankton Concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Absolute minimum phytoplankton concentration expressed as carbon at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phytoplankton.Max</element>
+        <element key="title">Maximum Phytoplankton Concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Absolute maximum phytoplankton concentration expressed as carbon at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phytoplankton.Mean</element>
+        <element key="title">Mean Phytoplankton Concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Average phytoplankton concentration expressed as carbon at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phytoplankton.Range</element>
+        <element key="title">Range of Phytoplankton Concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Range of phytoplankton concentration expressed as carbon at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phytoplankton.Lt.max</element>
+        <element key="title">Long term average of maximum phytoplankton concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Long term average of maximum phytoplankton concentration expressed as carbon at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Phytoplankton.Lt.min</element>
+        <element key="title">Long term average of minimum phytoplankton concentration</element>
+        <element key="unit">umol/m3</element>
+        <element key="unitfull">micromole per cubic metre</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Long term average of minimum phytoplankton concentration expressed as carbon at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Primary.productivity.Min</element>
+        <element key="title">Minimum Primary Productivity</element>
+        <element key="unit">g/m3/day</element>
+        <element key="unitfull">gram per cubic metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Absolute minimum net primary productivity of carbon at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Primary.productivity.Max</element>
+        <element key="title">Maximum Primary Productivity</element>
+        <element key="unit">g/m3/day</element>
+        <element key="unitfull">gram per cubic metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Absolute maximum net primary productivity of carbon at the ocean surface for the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Primary.productivity.Mean</element>
+        <element key="title">Mean Primary Productivity</element>
+        <element key="unit">g/m3/day</element>
+        <element key="unitfull">gram per cubic metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Average net primary productivity of carbon at the ocean surface over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Primary.productivity.Range</element>
+        <element key="title">Range of Primary Productivity</element>
+        <element key="unit">g/m3/day</element>
+        <element key="unitfull">gram per cubic metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Range of net primary productivity of carbon at the ocean surface calculated as absolute maximum - absolute minimum over the time period.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Primary.productivity.Lt.max</element>
+        <element key="title">Long term average of maximum primary productivity</element>
+        <element key="unit">g/m3/day</element>
+        <element key="unitfull">gram per cubic metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Long term average of maximum net primary productivity of carbon at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Primary.productivity.Lt.min</element>
+        <element key="title">Long term average of minimum primary productivity</element>
+        <element key="unit">g/m3/day</element>
+        <element key="unitfull">gram per cubic metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Long term average of minimum net primary productivity of carbon at the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.pH</element>
+        <element key="title">Mean pH</element>
+        <element key="unit">g/m3/day</element>
+        <element key="unitfull">gram per cubic metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Average pH of the ocean surface for the time period. pH is an indicator of the acidity in the ocean, with lower values indicating more acid conditions and higher values more alkaline conditions.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Par.Max</element>
+        <element key="title">Maximum Photosynthetically Available Radiation</element>
+        <element key="unit">E/m2/day</element>
+        <element key="unitfull">einsteins per square meter per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Maximum Photosynthetically Available Radiation (PAR) at the ocean surface for the time period. PAR indicates the quantum energy flux from the sun in the spectral range 400-700 nm reaching the ocean surface.</element>
+      </element>
+      <element>
+        <element key="value">Present.Surface.Par.Mean</element>
+        <element key="title">Mean Photosynthetically Available Radiation</element>
+        <element key="unit">E/m2/day</element>
+        <element key="unitfull">einsteins per square meter per day</element>
+        <element key="legend">default</element>
+        <element key="type">Biochemical</element>
+        <element key="tooltip">Mean Photosynthetically Available Radiation  at the ocean surface for the time period. PAR indicates the quantum energy flux from the sun in the spectral range 400-700 nm reaching the ocean surface.</element>
+      </element>
     </value>
   </record>
 
