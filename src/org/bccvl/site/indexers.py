@@ -185,9 +185,11 @@ def month(obj, **kw):
     md = IBCCVLMetadata(obj)
     return md.get('month', None)
 
+
 @indexer(IDataset)
 def domain_type(obj, **kw):
     return obj.subject
+
 
 @indexer(IDataset)
 def headers(obj, **kw):
