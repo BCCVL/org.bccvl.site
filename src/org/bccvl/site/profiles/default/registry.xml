@@ -2080,7 +2080,7 @@
         <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
-        <element key="tooltip">Average value of BIOCLIM parameter 'Wettest quarter mean temperature" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+        <element key="tooltip">Average value of BIOCLIM parameter 'Wettest quarter mean temperature' of all grid cells upstream of the center of the stream segment pour-point cell</element>
       </element>
       <element>
         <element key="value">catdriestqtemp</element>
@@ -2098,7 +2098,7 @@
         <element key="unitfull">degrees celsius</element>
         <element key="legend">temperature</element>
         <element key="type">climate</element>
-        <element key="tooltip">Average value of BIOCLIM parameter "Coldest quarter mean temperature' of all grid cells upstream of the center of the stream segment pour-point cell</element>
+        <element key="tooltip">Average value of BIOCLIM parameter 'Coldest quarter mean temperature' of all grid cells upstream of the center of the stream segment pour-point cell</element>
       </element>
       <element>
         <element key="value">catmeanrain</element>
