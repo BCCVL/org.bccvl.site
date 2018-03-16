@@ -1939,6 +1939,222 @@
         <element key="tooltip">Average percentage of sand in the A soil horizon, which refers to the topmost mineral horizon, also known as 'topsoil'. This layer is known as the zone in which the most biological activity occurs.</element>
       </element>
       <element>
+        <element key="value">strmeantemp</element>
+        <element key="title">Annual mean temperature</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Annual mean Temperature" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strhotmonthmax</element>
+        <element key="title">Maximum temperature of warmest month</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Hottest month maximum temperature" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strcoldmonthmin</element>
+        <element key="title">Minimum temperature of coldest month</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Coldest month minimum temperature" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strwetestqtemp</element>
+        <element key="title">Mean temperature of wettest quarter</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Wettest quarter mean temperature" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strdriestqtemp</element>
+        <element key="title">Mean temperature of driest quarter</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Driest quarter mean temperature" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strcoldestqtemp</element>
+        <element key="title">Mean temperature of coldest quarter</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Coldest quarter mean temperature" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strmeanrain</element>
+        <element key="title">Annual precipitation</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Annual mean rainfall" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strwestestqrain</element>
+        <element key="title">Mean rainfall of wettest quarter</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Wettest quarter mean rainfall" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strdriestqrain</element>
+        <element key="title">Mean rainfall of driest quarter</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Driest quarter mean rainfall" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strwarmestqrain</element>
+        <element key="title">Mean rainfall of warmest quarter</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Warmest quarter mean rainfall" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strcoldestqrain</element>
+        <element key="title">Mean rainfall of coldest quarter</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Coldest quarter mean rainfall" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">strmeanradiation</element>
+        <element key="title">Annual mean radiation</element>
+        <element key="unit">MJ/m2/day</element>
+        <element key="unitfull">megajoule per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Annual mean solar radiation" of all grid cells comprising the stream segment and associated valley bottoms</element>
+      </element>
+      <element>
+        <element key="value">catmeantemp</element>
+        <element key="title">Annual mean temperature</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Annual mean Temperature" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">cathotmonthmax</element>
+        <element key="title">Maximum temperature of warmest month</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Hottest month maximum temperature" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catcoldmonthmin</element>
+        <element key="title">Minimum temperature of coldest month</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Coldest month minimum temperature" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catwestestqtemp</element>
+        <element key="title">Mean temperature of wettest quarter</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Wettest quarter mean temperature" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catdriestqtemp</element>
+        <element key="title">Mean temperature of driest quarter</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Driest quarter mean temperature" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catcoldestqtemp</element>
+        <element key="title">Mean temperature of coldest quarter</element>
+        <element key="unit">degrees C</element>
+        <element key="unitfull">degrees celsius</element>
+        <element key="legend">temperature</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Coldest quarter mean temperature" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catmeanrain</element>
+        <element key="title">Annual precipitation</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Annual mean rainfall" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catwetestqrain</element>
+        <element key="title">Mean rainfall of wettest quarter</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Wettest quarter mean rainfall" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catdriestqrain</element>
+        <element key="title">Mean rainfall of driest quarter</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Driest quarter mean temperature" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catwarmestqrain</element>
+        <element key="title">Mean rainfall of warmest quarter</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Warmest quarter mean rainfall" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catcoldestqrain</element>
+        <element key="title">Mean rainfall of coldest quarter</element>
+        <element key="unit">mm</element>
+        <element key="unitfull">millimetres</element>
+        <element key="legend">rainfall</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Coldest quarter rainfall" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
+        <element key="value">catmeanradiation</element>
+        <element key="title">Annual mean radiation</element>
+        <element key="unit">MJ/m2/day</element>
+        <element key="unitfull">megajoule per square metre per day</element>
+        <element key="legend">default</element>
+        <element key="type">climate</element>
+        <element key="tooltip">Average value of BIOCLIM parameter "Annual mean solar radiation" of all grid cells upstream of the center of the stream segment pour-point cell</element>
+      </element>
+      <element>
         <element key="value">megathermgrowindex</element>
         <element key="title">Average annual growth index (megatherm plants)</element>
         <element key="unit">Growth Index</element>
