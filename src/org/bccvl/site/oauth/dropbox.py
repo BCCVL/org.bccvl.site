@@ -7,21 +7,21 @@ class IDropbox(IOAuth2Settings):
     authorization_url = URI(
         title=u"Authorization url",
         description=u"Url to start user authorization",
-        default="https://www.dropbox.com/1/oauth2/authorize",
+        default="https://www.dropbox.com/oauth2/authorize",
         required=False,
     )
 
     token_url = URI(
         title=u"Token url",
         description=u"Url to token service",
-        default="https://api.dropbox.com/1/oauth2/token",
+        default="https://api.dropboxapi.com/oauth2/token",
         required=False,
     )
 
     refresh_url = URI(
         title=u"Refresh url",
         description=u"Url to token refresh service",
-        default="https://api.dropbox.com/1/oauth2/token",
+        default="https://api.dropboxapi.com/oauth2/token",
         required=False,
     )
 
@@ -35,7 +35,7 @@ class IDropbox(IOAuth2Settings):
         title=u"Revoke url",
         description=u"Url to revoke authorization",
         # Google OAuth2 would also have programmatic web endpoint to revoke access
-        default="https://api.dropboxapi.com/1/disable_access_token",
+        default="https://api.dropboxapi.com/2/auth/token/revoke",
         required=False,
     )
 
