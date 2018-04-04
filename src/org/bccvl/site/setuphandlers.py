@@ -981,7 +981,7 @@ def upgrade_340_350_1(context, logger=None):
         spcounter += 1
         if spcounter % 500 == 0:
             logger.info("Reindex Species data %d", spcounter)
-                transaction.commit()
+            transaction.commit()
 
     # Do this as very last step in case something goes wrong above and we need
     # to re-run a partially commited upgrade.
