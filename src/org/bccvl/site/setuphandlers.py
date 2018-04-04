@@ -1064,12 +1064,42 @@ def upgrade_340_350_2(context, logger=None):
     for jobid in jobcatalog.jobs:
         job = jobtool.get_job_by_id(jobid)
         # again count each job twice (with and without state)
-        function = job.function
+
+        portal_type = getattr(job, 'type', None)
+        if not portal_type:
+            # check title if it is a dataset:
+            if ('ala_import' in job.title or
+                'traits_import' in job.title or
+                'metadata_update' in job.title or
+                'import_multi_species_csv' in job.title):
+                portal_type = 'org.bccvl.content.remotedataset'
+            else:
+                # likely an experiment, but which one?
+                if 'sdm_experiment' in job.title:
+                    # might be a sdm, sdm, mm or traits
+                    obj = uuidToObject(job.content)
+                    if obj:
+                        portal_type = obj.portal_type
+                    else:
+                        # No idea ... just guess
+                        portal_type = 'org.bccvl.content.sdmexperiment'
+                elif 'projection experiment' in job.title:
+                    portal_type = 'org.bccvl.content.projectionexperiment'
+                elif 'ensemble' in job.title:
+                    portal_type = 'org.bccvl.content.ensemble'
+                elif 'biodiverse' in job.title:
+                    portal_type = 'org.bccvl.content.biodiverseexperiment'
+                else:
+                    logger.warn('Could not determine portal_type for job %s', job.id)
+            # update job object as well
+            job.type = portal_type
+
+        function = getattr(job, 'function', None)
         if not function:
             # this is either an experiment without function or a dateset
-            if job.type in ('org.bccvl.content.dataset',
-                            'org.bccvl.content.remotedataset',
-                            'org.bccvl.content.multispeciesdataset'):
+            if portal_type in ('org.bccvl.content.dataset',
+                               'org.bccvl.content.remotedataset',
+                               'org.bccvl.content.multispeciesdataset'):
                 # it is a dateset job... get the dataset and check source
                 ds = uuidToObject(job.content)
                 if ds:
@@ -1094,21 +1124,24 @@ def upgrade_340_350_2(context, logger=None):
                         function = 'upload'
             else:
                 # it's an experiment without function ... all good
-                function = job.function
-
+                function = getattr(job, 'function', None)
+            # update job object as well
+            job.function = function
+        # count create
         stats.count_job(
             function=function,
-            portal_type=job.type,
+            portal_type=portal_type,
             date=job.created.asdatetime().date()
         )
-        if job.rusage:
+        if getattr(job, 'rusage', None):
             rusage = job.rusage.get('rusage', {})
             rusage = (rusage.get('ru_utime', 0) + rusage.get('ru_stime', 0))
         else:
             rusage = 0
+        # count finished
         stats.count_job(
-            function=job.function,
-            portal_type=job.type,
+            function=function,
+            portal_type=portal_type,
             runtime=rusage,
             state=job.state,
             # not quite exact, as it is the creation date and not last modified state
