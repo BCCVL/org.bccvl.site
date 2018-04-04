@@ -18,11 +18,14 @@ from plone.uuid.interfaces import IUUID
 from rdflib import Graph, Namespace, Literal
 from rdflib.namespace import RDF, DCTERMS, XSD
 from rdflib.resource import Resource
+from zope.annotation import IAnnotations
+from zope.component import getUtility
 from zope.interface import implementer, provider
 
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.content.interfaces import IExperiment
 from org.bccvl.site.interfaces import IBCCVLMetadata, IProvenanceData
+from org.bccvl.site.stats.interfaces import IStatsUtility
 
 
 LOG = logging.getLogger(__name__)
@@ -676,6 +679,8 @@ class Constructor(object):
                 yield item
                 continue
 
+            # tell our event stats event handler that we collect stats later
+            IAnnotations(context.REQUEST)['org.bccvl.site.stats.delay'] = True
             # item does not exist or update flag is false, so we create a new
             # object in any case
             obj = createContentInContainer(context, type_, id=id)
@@ -683,13 +688,59 @@ class Constructor(object):
             if obj.getId() != id:
                 item[pathkey] = posixpath.join(container, obj.getId())
 
+            yield item
+
+
+@provider(ISectionBlueprint)
+@implementer(ISection)
+class CollectStats(object):
+    """Collect dataset and job stats for newly created datasets.
+    We have to do this in a seperate step, because wo don't have
+    a fully populated object available in e.g. the constructor. (not all data
+    has been applied at that point.)
+    """
+
+    def __init__(self, transmogrifier, name, options, previous):
+        self.previous = previous
+        self.context = transmogrifier.context
+
+        self.typekey = defaultMatcher(options, 'type-key', name, 'type',
+                                      ('portal_type', 'Type'))
+        self.pathkey = defaultMatcher(options, 'path-key', name, 'path')
+        self.update = options.get('update', 'true').lower() in (
+            "yes", "true", "t", "1")
+        self.required = bool(options.get('required'))
+
+    def __iter__(self):
+        for item in self.previous:
+            keys = item.keys()
+            pathkey = self.pathkey(*keys)[0]
+
+            objpath = item[pathkey]
+            obj = self.context.unrestrictedTraverse(objpath)
+
+            # The contructor generated an empty object (which triggered our
+            # stats event handler.) Let's update the stats here manually.
+            created = IAnnotations(obj.REQUEST).get('org.bccvl.site.stats.created', False)
+            if created:
+                # our created subscriber has been invoked
+                getUtility(IStatsUtility).count_dataset(
+                    source=obj.dataSource,
+                    portal_type=obj.portal_type
+                )
+                # reset the flag ... we can do that, because the pipeline runs
+                # sequentially
+                IAnnotations(obj.REQUEST)['org.bccvl.site.stats.created'] = False
+
             # Attach a job tracker only for species dataset from multispecies
             if item.get('_partof', {}):
                 jt = IJobTracker(obj)
-                job = jt.new_job('TODO: generate id',
-                                 'generate taskname: ala_import')
-                job.type = obj.portal_type
-                jt.state = 'COMPLETED'
+                jt.new_job('TODO: generate id',
+                           'generate taskname: ala_import',
+                           function=obj.dataSource,
+                           type=obj.portal_type,
+                           state='COMPLETED')
+
             yield item
 
 

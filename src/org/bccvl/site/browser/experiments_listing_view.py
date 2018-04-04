@@ -49,8 +49,7 @@ class ExperimentTools(BrowserView):
             itemob = itemob or self.context
             return checkPermission('cmf.ModifyPortalContent', itemob)
         except Exception as e:
-            import pdb
-            pdb.set_trace()
+            return False
 
     def get_state_css(self, itemob=None):
         itemob = itemob or self.context

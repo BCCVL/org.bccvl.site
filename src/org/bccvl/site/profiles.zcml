@@ -277,6 +277,12 @@
         handler=".setuphandlers.upgrade_340_350_1"
         />
 
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 350"
+        description="New Stats collection tool"
+        handler=".setuphandlers.upgrade_340_350_2"
+        />
+
   </genericsetup:upgradeSteps>
 
 </configure>

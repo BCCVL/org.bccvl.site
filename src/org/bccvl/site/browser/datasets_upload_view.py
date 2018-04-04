@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import pwd
 import shutil
 import tempfile
 
@@ -33,7 +32,7 @@ from org.bccvl.site.content.dataset import (
     ILayerDataset,
     ITraitsDataset)
 from org.bccvl.site.swift.interfaces import ISwiftSettings
-from org.bccvl.site.utils import get_results_dir, get_hostname
+from org.bccvl.site.utils import get_results_dir
 from org.bccvl.tasks.celery import app
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.tasks.plone import after_commit_task
@@ -64,11 +63,15 @@ class BCCVLUploadForm(DefaultAddForm):
 
         if self.portal_type == 'org.bccvl.content.remotedataset':
             # we are going to create a remote dataset from an upload
-            # 1. put upload information aside
+            # 1. put upload information aside; will be processed in add
             self._upload = {'file': data['file']}
             del data['file']
-            data['remoteUrl'] = None
-        return super(BCCVLUploadForm, self).create(data)
+
+        # this method only applies fields from the form ,....
+        #     we have to apply other attributes manually
+        obj = super(BCCVLUploadForm, self).create(data)
+        obj.dataSource ='upload'
+        return obj
 
     def add(self, object):
         # FIXME: this is a workaround, which is fine for small uploaded files.
@@ -121,6 +124,7 @@ class BCCVLUploadForm(DefaultAddForm):
                     'context': {
                         'context': context_path,
                         'genre': self.datagenre,
+                        'dataSource': new_object.dataSource,
                         'user': {
                             'id': member.getUserName(),
                             'email': member.getProperty('email'),
@@ -132,9 +136,10 @@ class BCCVLUploadForm(DefaultAddForm):
             after_commit_task(import_task)
             # create job tracking object
             jt = IJobTracker(new_object)
-            job = jt.new_job('TODO: generate id',
-                             'generate taskname: import_multi_species_csv')
-            job.type = new_object.portal_type
+            jt.new_job('TODO: generate id',
+                       'generate taskname: import_multi_species_csv',
+                       function=new_object.dataSource,
+                       type=new_object.portal_type)
             jt.set_progress('PENDING', u'Multi species import pending')
         else:
             if hasattr(self, '_upload'):
@@ -228,9 +233,10 @@ class BCCVLUploadForm(DefaultAddForm):
             after_commit_task(update_task)
             # create job tracking object
             jt = IJobTracker(new_object)
-            job = jt.new_job('TODO: generate id',
-                             'generate taskname: update_metadata')
-            job.type = new_object.portal_type
+            jt.new_job('TODO: generate id',
+                       'generate taskname: update_metadata',
+                       function=new_object.dataSource,
+                       type=new_object.portal_type)
             jt.set_progress('PENDING', u'Metadata update pending')
 
         # We have to reindex after updating the object

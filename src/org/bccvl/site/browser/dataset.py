@@ -23,6 +23,7 @@ from zope.security import checkPermission
 from org.bccvl.site.interfaces import IBCCVLMetadata
 # from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from org.bccvl.site.job.interfaces import IJobTracker
+from org.bccvl.site.stats.interfaces import IStatsUtility
 from org.bccvl.site.swift.interfaces import ISwiftUtility
 
 
@@ -43,8 +44,11 @@ class DatasetRemoveView(form.Form):
 
         # Objects to be deleted
         dsobjs = [self.context]
+        # FIXME: would be faster to deal with brains here instead of objects
         if hasattr(self.context, "parts"):
             dsobjs += [uuidToObject(ds) for ds in self.context.parts]
+
+        stats = getUtility(IStatsUtility)
 
         for context in dsobjs:
             # removed file working on frontend Javascript
@@ -55,6 +59,11 @@ class DatasetRemoveView(form.Form):
             if (jt.state != 'REMOVED'):
                 jt.state = 'REMOVED'
                 context.reindexObject()
+            # collect stats
+            stats.count_dataset(source=dsobj.source,
+                                portal_type=context.portal_type,
+                                state='REMOVED')
+
         #####
         IStatusMessage(self.request).add(
             u'{0[title]} has been removed.'.format({u'title': title}))
@@ -355,19 +364,16 @@ class CrudFileMetadataForm(crud.CrudForm):
                       key=lambda x: x[0])
 
     def add(self, data):
-        # import ipdb; ipdb.set_trace()
         # super(CrudFileMetadataForm, self).add(data)
         # TODO: implement this someday
         pass
 
     def remove(self, (id, item)):
-        # import ipdb; ipdb.set_trace()
         # super(CrudFileMetadataForm, self).remove((id, item))
         # TODO: implement this someday
         pass
 
     # def before_update(self, item, data):
-    #     import ipdb; ipdb.set_trace()
     #     super(CrudFileMetadataForm, self).before_update(item, data)
 
 

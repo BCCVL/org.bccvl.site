@@ -139,6 +139,7 @@ def build_ala_import_task(lsid, dataset, request):
     member = api.user.get_current()
     context = {
         'context': dataset_path,
+        'dataSource': dataset.dataSource,
         'user': {
             'id': member.getUserName(),
             'email': member.getProperty('email'),
@@ -174,6 +175,7 @@ def build_traits_import_task(dataset, request):
     member = api.user.get_current()
     context = {
         'context': dataset_path,
+        'dataSource': dataset.dataSource,
         'user': {
             'id': member.getUserName(),
             'email': member.getProperty('email'),
@@ -212,6 +214,7 @@ def build_ala_import_qid_task(params, dataset, request):
     member = api.user.get_current()
     context = {
         'context': dataset_path,
+        'dataSource': dataset.dataSource,
         'user': {
             'id': member.getUserName(),
             'email': member.getProperty('email'),
@@ -231,11 +234,11 @@ def build_ala_import_qid_task(params, dataset, request):
                     'email': member.getProperty('email'),
                     'fullname': member.getProperty('fullname')
                 }
-            }    
+            }
         }
 
     results_dir = get_results_dir(dataset, request)
     task = datamover.pull_occurrences_from_ala.si(params,
-                                                      results_dir, context,
-                                                      import_multispecies_params)
+                                                  results_dir, context,
+                                                  import_multispecies_params)
     return task

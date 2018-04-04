@@ -1,6 +1,9 @@
 from persistent import Persistent
+from zope.interface import implementer
+from .interfaces import IJob
 
 
+@implementer(IJob)
 class Job(Persistent):
 
     def __init__(self):

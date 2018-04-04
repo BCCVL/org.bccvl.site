@@ -1,16 +1,18 @@
 from collections import OrderedDict
 from itertools import chain
 from z3c.form import button
-from z3c.form.form import extends, applyChanges
+from z3c.form.form import extends
 from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
 from zope.schema.interfaces import RequiredMissing
 from org.bccvl.site.interfaces import IBCCVLMetadata
 from org.bccvl.site.interfaces import IExperimentJobTracker
+#from org.bccvl.site.stats.interfaces import IStatsUtility
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.dexterity.browser import add, edit, view
 from org.bccvl.site import MessageFactory as _
 from zope.interface import Invalid
+from plone import api
 from plone.z3cform.fieldsets.group import Group
 from plone.autoform.base import AutoFields
 from plone.autoform.utils import processFields
@@ -45,7 +47,7 @@ class ExperimentParamGroup(AutoFields, Group):
             # TODO: check assumption here
             # assume that we have an add form and need a fresh dict?
             self.parameters = {}
-        if not self.toolkit in self.parameters:
+        if self.toolkit not in self.parameters:
             self.parameters[self.toolkit] = {}
         return self.parameters[self.toolkit]
 
@@ -78,7 +80,8 @@ class ParamGroupMixin(object):
         # FIXME: This relies on the order the vocabularies are returned, which
         # shall be fixed.
         vocab = getUtility(
-            IVocabularyFactory, "org.bccvl.site.algorithm_category_vocab")(self.context)
+            IVocabularyFactory,
+            "org.bccvl.site.algorithm_category_vocab")(self.context)
         groups = OrderedDict((cat.value, [])
                              for cat in chain((SimpleTerm(None),), vocab))
 
@@ -152,7 +155,7 @@ class ParamGroupMixin(object):
                 exp_params = expobj.parameters.get(group.toolkit, {})
                 for param_group in group.groups:
                     for name in tuple(param_group.widgets):
-                        pname = name.split(group.toolkit+'.')[1]
+                        pname = name.split(group.toolkit + '.')[1]
                         if pname in exp_params:
                             conv = getMultiAdapter((param_group.fields[name].field, param_group.widgets[name]), IDataConverter)
                             param_group.widgets[name].value = conv.toWidgetValue(exp_params.get(pname))
@@ -245,11 +248,11 @@ class MultiParamGroupMixin(object):
             groups[toolkit.algorithm_category].append(param_group)
 
         # join the lists in that order
-        return (tuple(groups[None])
-                + tuple(groups['profile'])
-                + tuple(groups['machineLearning'])
-                + tuple(groups['statistical'])
-                + tuple(groups['geographic']))
+        return (tuple(groups[None]) +
+                tuple(groups['profile']) +
+                tuple(groups['machineLearning']) +
+                tuple(groups['statistical']) +
+                tuple(groups['geographic']))
 
     def updateFields(self):
         super(MultiParamGroupMixin, self).updateFields()
@@ -278,11 +281,10 @@ class MultiParamGroupMixin(object):
                 exp_params = expobj.parameters.get(group.toolkit, {})
                 for param_group in group.groups:
                     for name in tuple(param_group.widgets):
-                        pname = name.split(group.toolkit+'.')[1]
+                        pname = name.split(group.toolkit + '.')[1]
                         if pname in exp_params:
                             conv = getMultiAdapter((param_group.fields[name].field, param_group.widgets[name]), IDataConverter)
                             param_group.widgets[name].value = conv.toWidgetValue(exp_params.get(pname))
-
 
             except Exception as e:
                 LOG.info("Group %s failed: %s", group.__name__, e)
@@ -522,6 +524,7 @@ class SDMAdd(ParamGroupMixin, Add):
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
 
+
 class MSDMAdd(ParamGroupMixin, Add):
     """
     Add MSDM Experiment
@@ -588,6 +591,7 @@ class MSDMAdd(ParamGroupMixin, Add):
                     resolution_idx = idx
             data['resolution'] = res_vocab._terms[resolution_idx].value
 
+
 class MSDMView(ParamGroupMixin, View):
     """
     View MSDM Experiment
@@ -598,6 +602,7 @@ class MSDMView(ParamGroupMixin, View):
 
     def is_toolkit_selected(self, tid, data):
         return tid in data
+
 
 class MMEAdd(ParamGroupMixin, Add):
     """

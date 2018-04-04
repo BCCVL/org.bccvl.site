@@ -3,8 +3,10 @@ from DateTime import DateTime
 from plone import api
 from plone.uuid.interfaces import IUUID
 from zope.component import getUtility
+from zope.event import notify
 from zope.interface import implementer
-from org.bccvl.site.job.interfaces import IJobUtility, IJobTracker
+from zope.lifecycleevent import ObjectCreatedEvent, ObjectAddedEvent
+from org.bccvl.site.job.interfaces import IJob, IJobUtility, IJobTracker
 from org.bccvl.site.job.job import Job
 
 
@@ -34,15 +36,22 @@ class JobUtility(object):
         idx2 = self._states.index(state2)
         return cmp(idx1, idx2)
 
-    def new_job(self):
+    def new_job(self, **kw):
         # FIXME: do we really need to locate it?
         job = Job()
         job.id = str(uuid.uuid1())
         job.state = 'PENDING'
         job.created = DateTime()
         job.userid = api.user.get_current().getId()
+
+        for name in IJob.names():
+            if name in kw:
+                setattr(job, name, kw[name])
+
+        notify(ObjectCreatedEvent(job))
         cat = self._catalog()
         cat.jobs[job.id] = job
+        notify(ObjectAddedEvent(job, cat.jobs, job.id))
         return job
 
     def reindex_job(self, job):
@@ -151,12 +160,12 @@ class JobTracker(object):
             self.job_tool.set_progress(job, progress, message, rusage)
             self.context.reindexObject()
 
-    def new_job(self, taskid, title):
+    def new_job(self, taskid, title, **kw):
         # FIXME: this is duplicate API ... should probably go away
-        job = self.job_tool.new_job()
-        job.content = IUUID(self.context)
-        job.taskid = taskid
-        job.title = title
+        kw['taskid'] = taskid
+        kw['title'] = title
+        kw['content'] = IUUID(self.context)
+        job = self.job_tool.new_job(**kw)
         self.job_tool.reindex_job(job)
         self.context.reindexObject()
         return job
