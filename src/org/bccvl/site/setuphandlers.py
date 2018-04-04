@@ -973,9 +973,9 @@ def upgrade_340_350_1(context, logger=None):
     spcounter = 0
 
     from org.bccvl.site.interfaces import IBCCVLMetadata
-    for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.multispeciesdataset'),
-                                  BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection',
-                                                'DataGenreSpeciesAbsence', 'DataGenreSpeciesAbsenceCollection')):
+    for brain in pc.unrestriedSearchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.multispeciesdataset'),
+                                            BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection',
+                                                          'DataGenreSpeciesAbsence', 'DataGenreSpeciesAbsenceCollection')):
         obj = brain.getObject()
         obj.reindexObject()
         spcounter += 1
@@ -1005,8 +1005,8 @@ def upgrade_340_350_2(context, logger=None):
     # 1. add all existing datasets
     pc = getToolByName(context, 'portal_catalog')
     datasets = portal[defaults.DATASETS_FOLDER_ID]
-    for brain in pc.searchResults(object_provides=IDataset.__identifier__,
-                                  path='/'.join(datasets.getPhysicalPath())):
+    for brain in pc.unrestriedSearchResults(object_provides=IDataset.__identifier__,
+                                            path='/'.join(datasets.getPhysicalPath())):
         ds = brain.getObject()
         if not ds.dataSource:
             if brain.Creator in ('BCCVL', 'admin'):
@@ -1028,8 +1028,8 @@ def upgrade_340_350_2(context, logger=None):
 
     # 2. add all experiments
     experiments = portal[defaults.EXPERIMENTS_FOLDER_ID]
-    for brain in pc.searchResults(object_provides=IExperiment.__identifier__,
-                                  path='/'.join(experiments.getPhysicalPath())):
+    for brain in pc.unrestriedSearchResults(object_provides=IExperiment.__identifier__,
+                                            path='/'.join(experiments.getPhysicalPath())):
         # we have to count each experiment twice; created, finished
         stats.count_experiment(
             user=brain.Creator,
@@ -1046,8 +1046,8 @@ def upgrade_340_350_2(context, logger=None):
         )
 
     # 3. add all experiment datasets
-    for brain in pc.searchResults(object_provides=IDataset.__identifier__,
-                                  path='/'.join(experiments.getPhysicalPath())):
+    for brain in pc.unrestriedSearchResults(object_provides=IDataset.__identifier__,
+                                            path='/'.join(experiments.getPhysicalPath())):
         ds = brain.getObject()
         if not ds.dataSource:
             ds.dataSource = 'experiment'
