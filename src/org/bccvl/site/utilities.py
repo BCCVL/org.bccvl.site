@@ -540,7 +540,7 @@ class MSDMJobTracker(MultiJobTracker):
                     # Create job tracker
                     resultjt = IJobTracker(result)
                     job = resultjt.new_job('TODO: generate id',
-                                           'generate taskname: sdm_experiment',
+                                           'generate taskname: msdm_experiment',
                                            type=self.context.portal_type,
                                            function=func.getId(),
                                            toolkit=IUUID(func))
@@ -768,7 +768,7 @@ class MMJobTracker(MultiJobTracker):
                 method(result, func)
                 resultjt = IJobTracker(result)
                 resultjt.new_job('TODO: generate id',
-                                 'generate taskname: sdm_experiment',
+                                 'generate taskname: mm_experiment',
                                  type=self.context.portal_type,
                                  function=func.getId(),
                                  toolkit=IUUID(func))
@@ -1507,7 +1507,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                 method(result, algorithm.getObject())
                 resultjt = IJobTracker(result)
                 resultjt.new_job('TODO: generate id',
-                                 'generate taskname: sdm_experiment',
+                                 'generate taskname: traits experiment',
                                  type=self.context.portal_type,
                                  function=algorithm.id,
                                  toolkit=algorithm.UID)
