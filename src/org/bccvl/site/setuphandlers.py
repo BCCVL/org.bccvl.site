@@ -18,6 +18,13 @@ PROFILE = 'org.bccvl.site'
 THEME_PROFILE_ID = 'profile-org.bccvl.theme:default'
 
 
+def get_object_by_uuid(pc, uuid):
+    brain = pc.unrestrictedSearchResults(UID=uuid)
+    if len(brain) != 1:
+        return None
+    return brain[0].getObject()
+
+
 def setupTools(context, logger=None):
     if logger is None:
         logger = LOG
@@ -1014,7 +1021,7 @@ def upgrade_340_350_2(context, logger=None):
             else:
                 # does it have part_of?
                 if ds.part_of:
-                    master = uuidToObject(ds.part_of)
+                    master = get_object_by_uuid(pc, ds.part_of)
                     if not master.dataSource:
                         master.dataSource = 'upload'
                     ds.dataSource = master.dataSource
@@ -1077,7 +1084,7 @@ def upgrade_340_350_2(context, logger=None):
                 # likely an experiment, but which one?
                 if 'sdm_experiment' in job.title:
                     # might be a sdm, sdm, mm or traits
-                    obj = uuidToObject(job.content)
+                    obj = get_object_by_uuid(pc, job.content)
                     if obj:
                         portal_type = obj.portal_type
                     else:
@@ -1101,7 +1108,7 @@ def upgrade_340_350_2(context, logger=None):
                                'org.bccvl.content.remotedataset',
                                'org.bccvl.content.multispeciesdataset'):
                 # it is a dateset job... get the dataset and check source
-                ds = uuidToObject(job.content)
+                ds = get_object_by_uuid(pc, job.content)
                 if ds:
                     # ds still exists
                     function = ds.dataSource
