@@ -1072,9 +1072,10 @@ def upgrade_340_350_2(context, logger=None):
             date=brain.modified.asdatetime().date()
         )
         trcounter += 1
-        if trcounter % 500 == 0:
+        if trcounter % 10 == 0:
             logger.info("Collect stats for experiments %d", trcounter)
             transaction.commit()
+
 
     transaction.commit()
     trcounter = 0
