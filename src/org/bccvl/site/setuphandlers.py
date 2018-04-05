@@ -1005,11 +1005,15 @@ def upgrade_340_350_2(context, logger=None):
     from org.bccvl.site.stats.interfaces import IStatsUtility
     from org.bccvl.site.content.interfaces import IDataset, IExperiment
     init_stats()
+    import transaction
 
     stats = getUtility(IStatsUtility)
     # initialise stats with existing content
     # TODO: do this only if we re-created the stats tool
     # 1. add all existing datasets
+    transaction.commit()
+    trcounter = 0
+
     pc = getToolByName(context, 'portal_catalog')
     datasets = portal[defaults.DATASETS_FOLDER_ID]
     for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
@@ -1032,8 +1036,15 @@ def upgrade_340_350_2(context, logger=None):
             portal_type=brain.portal_type,
             date=brain.created.asdatetime().date()
         )
+        trcounter += 1
+        if trcounter % 500 == 0:
+            logger.info("Collect stats for datasets %d", trcounter)
+            transaction.commit()
 
+    transaction.commit()
+    trcounter = 0
     # 2. add all experiments
+    from org.bccvl.site.job.interfaces import IJobTracker
     experiments = portal[defaults.EXPERIMENTS_FOLDER_ID]
     for brain in pc.unrestrictedSearchResults(object_provides=IExperiment.__identifier__,
                                               path='/'.join(experiments.getPhysicalPath())):
@@ -1044,14 +1055,29 @@ def upgrade_340_350_2(context, logger=None):
             date=brain.created.asdatetime().date(),
         )
         exp = brain.getObject()
+        exp_runtime = getattr(exp, 'runtime', None)
+        if exp_runtime is None:
+            # no runtime set on experiment ... calc it from results
+            exp_runtime = 0
+            for result in exp.values():
+                jt = IJobTracker(result)
+                rusage = getattr(jt, 'rusage', None)
+                if rusage:
+                    exp_runtime += rusage.get('ru_utime', 0) + rusage.get('ru_stime', 0)
         stats.count_experiment(
             user=brain.Creator,
             portal_type=brain.portal_type,
-            runtime=exp.runtime,
+            runtime=exp_runtime,
             state=brain.job_state,
             date=brain.modified.asdatetime().date()
         )
+        trcounter += 1
+        if trcounter % 500 == 0:
+            logger.info("Collect stats for experiments %d", trcounter)
+            transaction.commit()
 
+    transaction.commit()
+    trcounter = 0
     # 3. add all experiment datasets
     for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
                                               path='/'.join(experiments.getPhysicalPath())):
@@ -1063,7 +1089,13 @@ def upgrade_340_350_2(context, logger=None):
             portal_type=brain.portal_type,
             date=brain.created.asdatetime().date()
         )
+        trcounter += 1
+        if trcounter % 500 == 0:
+            logger.info("Collect stats for experiment results %d", trcounter)
+            transaction.commit()
 
+    transaction.commit()
+    trcounter = 0
     # 4. count all jobs
     from org.bccvl.site.job.interfaces import IJobUtility
     jobtool = getUtility(IJobUtility)
@@ -1154,3 +1186,9 @@ def upgrade_340_350_2(context, logger=None):
             # not quite exact, as it is the creation date and not last modified state
             date=job.created.asdatetime().date()
         )
+        trcounter += 1
+        if trcounter % 500 == 0:
+            logger.info("Collect stats for jobs %d", trcounter)
+            transaction.commit()
+
+    transaction.commit()
