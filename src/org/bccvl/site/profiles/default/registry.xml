@@ -3913,7 +3913,7 @@
         <element key="title">Mean pH</element>
         <element key="unit">g/m3/day</element>
         <element key="unitfull">gram per cubic metre per day</element>
-        <element key="legend">default</element>
+        <element key="legend">pH</element>
         <element key="type">Biochemical</element>
         <element key="tooltip">Average pH of the ocean surface for the time period. pH is an indicator of the acidity in the ocean, with lower values indicating more acid conditions and higher values more alkaline conditions.</element>
       </element>
