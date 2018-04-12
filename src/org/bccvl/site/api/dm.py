@@ -1,8 +1,6 @@
-import copy
 import json
 import logging
 import os
-from urlparse import parse_qs
 
 import requests
 
@@ -13,7 +11,7 @@ from Products.CMFCore.utils import getToolByName
 from plone import api as ploneapi
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.batching import Batch
-from plone.dexterity.utils import createContentInContainer
+from plone.dexterity.utils import createContent, addContentToContainer
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 from zope.interface import implementer
@@ -26,7 +24,8 @@ from org.bccvl.site.api.base import BaseService
 from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import IDMService
 from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
-from org.bccvl.site.interfaces import IBCCVLMetadata, IExperimentJobTracker, IDownloadInfo
+from org.bccvl.site.interfaces import (IBCCVLMetadata, IExperimentJobTracker,
+                                       IDownloadInfo)
 from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 
@@ -58,7 +57,7 @@ class DMService(BaseService):
         pc = getToolByName(self.context, 'portal_catalog')
         kw.update({
             'object_provides': 'org.bccvl.site.content.interfaces.IDataset',
-            #'object_provides': IDataset.__identifier__,
+            # 'object_provides': IDataset.__identifier__,
             'path': '/'.join(self.context.getPhysicalPath()),
         })
         batch = Batch(pc.searchResults(**kw), b_size, b_start)
@@ -76,11 +75,11 @@ class DMService(BaseService):
                 'url': brain.getURL(),
                 'uuid': brain.UID,
                 'id': brain.getId,
-                #'BCCCategory': brain.BCCCategory,
+                # 'BCCCategory': brain.BCCCategory,
                 'BCCDataGenre': brain.BCCDataGenre,
-                #'BCCEnviroLayer': brain.BCCEnviroLayer,
-                #'BCCEmissionScenairo': brain.BCCEmissionScenairo,
-                #'BCCGlobalClimateModel': brain.BCCGlobalClimateModel,
+                # 'BCCEnviroLayer': brain.BCCEnviroLayer,
+                # 'BCCEmissionScenairo': brain.BCCEmissionScenairo,
+                # 'BCCGlobalClimateModel': brain.BCCGlobalClimateModel,
                 'BCCResolution': brain.BCCResolution,
                 'Description': brain.Description,
                 'Title': brain.Title,
@@ -126,7 +125,8 @@ class DMService(BaseService):
             return rat
         except Exception as e:
             LOG.warning(
-                "Couldn't decode Raster Attribute Table from metadata. %s: %s", self.context, repr(e))
+                "Couldn't decode Raster Attribute Table from metadata. %s: %s",
+                self.context, repr(e))
         raise NotFound(self, 'rat', self.request)
 
     def update_metadata(self):
@@ -187,8 +187,9 @@ class DMService(BaseService):
             # track background job state
             jt = IJobTracker(obj)
             job = jt.new_job('TODO: generate id',
-                             'generate taskname: update_metadata')
-            job.type = obj.portal_type
+                             'generate taskname: update_metadata',
+                             function=obj.dataSource,
+                             type=obj.portal_type)
             jt.set_progress('PENDING', 'Metadata update pending')
             return job.id
         except Exception as e:
@@ -266,11 +267,12 @@ class DMService(BaseService):
         if swiftsettings.storage_url:
             portal_type = 'org.bccvl.content.remotedataset'
         # create content
-        ds = createContentInContainer(context, portal_type, title=title)
+        ds = createContent(portal_type, title=title)
         ds.dataSource = source
         ds.description = u' '.join([
             title, ','.join(traits), ','.join(environ),
             u' imported from {}'.format(source.upper())])
+        ds = addContentToContainer(context, ds)
         md = IBCCVLMetadata(ds)
         md['genre'] = 'DataGenreTraits'
         md['categories'] = ['traits']
@@ -385,10 +387,11 @@ class DMService(BaseService):
             if swiftsettings.storage_url:
                 portal_type = 'org.bccvl.content.remotedataset'
         # create content
-        ds = createContentInContainer(context, portal_type, title=title)
+        ds = createContent(portal_type, title=title)
         ds.dataSource = 'ala'
         ds.description = u' '.join([title, u' imported from ALA'])
         ds.import_params = params
+        ds = addContentToContainer(context, ds)
         md = IBCCVLMetadata(ds)
         if IMultiSpeciesDataset.providedBy(ds):
             md['genre'] = 'DataGenreSpeciesCollection'

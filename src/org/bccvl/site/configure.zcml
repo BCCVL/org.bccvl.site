@@ -77,6 +77,7 @@
   <include package=".behavior"/>
   <include package=".job"/>
   <include package=".api"/>
+  <include package=".stats" />
   <include package=".swift"/>
   <include package=".userannotation"/>
 
@@ -248,6 +249,11 @@
   <utility
       component=".transmogrify.Constructor"
       name="org.bccvl.site.transmogrify.constructor"
+      />
+
+  <utility
+      component=".transmogrify.CollectStats"
+      name="org.bccvl.site.transmogrify.collectstats"
       />
 
   <utility

@@ -36,6 +36,7 @@ class IALAService(Interface):
         ALA's search service
         """
 
+
 class IGBIFService(Interface):
     """
     A component to talk to GBIF's web services
@@ -48,14 +49,16 @@ class IGBIFService(Interface):
         GBIFs autocomplete service
         """
 
-    def searchjson(name, datasetKey=None, start=None, pageSize=None, callback=None):
+    def searchjson(name, datasetKey=None, start=None, pageSize=None,
+                   callback=None):
         """
         GBIFs's search service
         """
 
-    def speciesjson(genusKey, datasetKey=None, start=None, pageSize=None, callback=None):
+    def speciesjson(genusKey, datasetKey=None, start=None, pageSize=None,
+                    callback=None):
         """
-        GBIFs's species search service for a specified genus 
+        GBIFs's species search service for a specified genus
         """
 
 
@@ -91,6 +94,7 @@ class ALAService(object):
         # TODO: maybe do some error catching here?
         return urlopen(self.baseurl + 'search.json?' + urlencode(qs, True))
 
+
 @implementer(IGBIFService)
 class GBIFService(object):
 
@@ -106,10 +110,10 @@ class GBIFService(object):
                ('rank', rank),
                ('callback', callback)) if p[1]]
         # TODO: maybe do some error catching here?
-        url = self.baseurl + 'species/suggest?' + urlencode(qs)
         return urlopen(self.baseurl + 'species/suggest?' + urlencode(qs))
 
-    def searchjson(self, name, datasetKey=None, start=None, pageSize=None, callback=None):
+    def searchjson(self, name, datasetKey=None, start=None, pageSize=None,
+                   callback=None):
         qs = [p for p in
               (('name', name),
                ('datasetKey', datasetKey),
@@ -119,11 +123,13 @@ class GBIFService(object):
         # TODO: maybe do some error catching here?
         return urlopen(self.baseurl + 'species?' + urlencode(qs, True))
 
-    def speciesjson(self, genusKey, datasetKey=None, start=None, pageSize=None, callback=None):
+    def speciesjson(self, genusKey, datasetKey=None, start=None, pageSize=None,
+                    callback=None):
         qs = [p for p in
               (('datasetKey', datasetKey),
                ('offset', start),
                ('limit', pageSize),
                ('callback', callback)) if p[1]]
         # TODO: maybe do some error catching here?
-        return urlopen(self.baseurl + 'species/' + genusKey + '/children?' + urlencode(qs, True))
+        return urlopen(self.baseurl + 'species/' + genusKey + '/children?' +
+                       urlencode(qs, True))

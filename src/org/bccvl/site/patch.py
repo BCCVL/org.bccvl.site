@@ -17,14 +17,14 @@ IExcludeFromNavigation['exclude_from_nav'].required = False
 # file instead of copying it. This may have unwanted side effects,
 # like on a transaction abort it won't restore the original file. (bad
 # for conflicterror retries)
-from zope.interface import implements
+from zope.interface import implementer
 from plone.namedfile.interfaces import IStorage
 from plone.namedfile.interfaces import NotStorable
 import shutil
 
 
+@implementer(IStorage)
 class FileDescriptorStorable(object):
-    implements(IStorage)
 
     def store(self, data, blob):
         if not isinstance(data, file):
@@ -153,6 +153,7 @@ from zope.component import queryUtility
 from eea.facetednavigation.plonex import ISolrSearch
 import operator
 from eea.facetednavigation.widgets.widget import compare
+
 
 def faceted_widget_vocabulary(self, **kwargs):
         """ Return data vocabulary

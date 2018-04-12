@@ -18,6 +18,13 @@ PROFILE = 'org.bccvl.site'
 THEME_PROFILE_ID = 'profile-org.bccvl.theme:default'
 
 
+def get_object_by_uuid(pc, uuid):
+    brain = pc.unrestrictedSearchResults(UID=uuid)
+    if len(brain) != 1:
+        return None
+    return brain[0].getObject()
+
+
 def setupTools(context, logger=None):
     if logger is None:
         logger = LOG
@@ -34,6 +41,10 @@ def setupTools(context, logger=None):
     # setup userannotation storage
     from org.bccvl.site.userannotation.utility import init_user_annotation
     init_user_annotation()
+
+    # setup stats tool
+    from org.bccvl.site.stats.utility import init_stats
+    init_stats()
 
 
 def setupVarious(context, logger=None):
@@ -383,18 +394,18 @@ def upgrade_200_210_1(context, logger=None):
         if not old_job:
             # no job state here ... skip it
             continue
-        job = jobtool.new_job()
-        job.created = ds.created()
-        job.message = old_job['progress']['message']
-        job.progress = old_job['progress']['state']
-        job.state = old_job['state']
-        job.title = old_job['name']
-        job.taskid = old_job['taskid']
-        job.userid = ds.getOwner().getId()
-        job.content = IUUID(ds)
-        job.type = brain.portal_type
+        jobtool.new_job(
+            created=ds.created(),
+            message=old_job['progress']['message'],
+            progress=old_job['progress']['state'],
+            state=old_job['state'],
+            title=old_job['name'],
+            taskid=old_job['taskid'],
+            userid=ds.getOwner().getId(),
+            content=IUUID(ds),
+            type=brain.portal_type
+        )
 
-        jobtool.reindex_job(job)
         del annots['org.bccvl.state']
 
     # search all experiments and create job object with infos from experiment
@@ -423,22 +434,23 @@ def upgrade_200_210_1(context, logger=None):
             if not old_job:
                 # no job state here ... skip it
                 continue
-            job = jobtool.new_job()
-            job.created = result.created()
-            job.message = old_job['progress']['message']
-            job.progress = old_job['progress']['state']
-            job.state = old_job['state']
-            job.title = old_job['name']
-            job.taskid = old_job['taskid']
-            job.userid = result.getOwner().getId()
-            job.content = IUUID(result)
-            job.type = brain.portal_type
-            job.function = result.job_paramsi.get('function')
-            if job.function:
-                job.toolkit = IUUID(
-                    portal[defaults.TOOLKITS_FOLDER_ID][job.function])
-
-            jobtool.reindex_job(job)
+            if result.job_params.get('function'):
+                toolkit = IUUID(portal[defaults.TOOLKITS_FOLDER_ID][job.function])
+            else:
+                toolkit = None
+            jobtool.new_job(
+                created=result.created(),
+                message=old_job['progress']['message'],
+                progress=old_job['progress']['state'],
+                state=old_job['state'],
+                title=old_job['name'],
+                taskid=old_job['taskid'],
+                userid=result.getOwner().getId(),
+                content=IUUID(result),
+                type=brain.portal_type,
+                function=result.job_params.get('function'),
+                toolkit=toolkit
+            )
             del annots['org.bccvl.state']
 
     LOG.info('Updating layer metadata for projection outputs')
@@ -968,9 +980,9 @@ def upgrade_340_350_1(context, logger=None):
     spcounter = 0
 
     from org.bccvl.site.interfaces import IBCCVLMetadata
-    for brain in pc.searchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.multispeciesdataset'),
-                                  BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection',
-                                                'DataGenreSpeciesAbsence', 'DataGenreSpeciesAbsenceCollection')):
+    for brain in pc.unrestrictedSearchResults(portal_type=('org.bccvl.content.dataset', 'org.bccvl.content.remotedataset', 'org.bccvl.content.multispeciesdataset'),
+                                              BCCDataGenre=('DataGenreSpeciesOccurrence', 'DataGenreSpeciesCollection',
+                                                            'DataGenreSpeciesAbsence', 'DataGenreSpeciesAbsenceCollection')):
         obj = brain.getObject()
         obj.reindexObject()
         spcounter += 1
@@ -981,3 +993,203 @@ def upgrade_340_350_1(context, logger=None):
     # Do this as very last step in case something goes wrong above and we need
     # to re-run a partially commited upgrade.
     setup.upgradeProfile(THEME_PROFILE_ID)
+
+
+def upgrade_340_350_2(context, logger=None):
+    if logger is None:
+        logger = LOG
+
+    portal = api.portal.get()
+    # setup stats tool
+    from org.bccvl.site.stats.utility import init_stats
+    from org.bccvl.site.stats.interfaces import IStatsUtility
+    from org.bccvl.site.content.interfaces import IDataset, IExperiment
+    init_stats()
+    import transaction
+
+    stats = getUtility(IStatsUtility)
+    # initialise stats with existing content
+    # TODO: do this only if we re-created the stats tool
+    # 1. add all existing datasets
+    transaction.commit()
+    trcounter = 0
+
+    pc = getToolByName(context, 'portal_catalog')
+    datasets = portal[defaults.DATASETS_FOLDER_ID]
+    for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
+                                              path='/'.join(datasets.getPhysicalPath())):
+        ds = brain.getObject()
+        if not ds.dataSource:
+            if brain.Creator in ('BCCVL', 'admin'):
+                ds.dataSource = 'ingest'
+            else:
+                # does it have part_of?
+                if ds.part_of:
+                    master = get_object_by_uuid(pc, ds.part_of)
+                    if not master.dataSource:
+                        master.dataSource = 'upload'
+                    ds.dataSource = master.dataSource
+                else:
+                    ds.dataSource = 'upload'
+        stats.count_dataset(
+            source=ds.dataSource,
+            portal_type=brain.portal_type,
+            date=brain.created.asdatetime().date()
+        )
+        trcounter += 1
+        if trcounter % 500 == 0:
+            logger.info("Collect stats for datasets %d", trcounter)
+            transaction.commit()
+
+    transaction.commit()
+    trcounter = 0
+    # 2. add all experiments
+    from org.bccvl.site.job.interfaces import IJobTracker
+    experiments = portal[defaults.EXPERIMENTS_FOLDER_ID]
+    for brain in pc.unrestrictedSearchResults(object_provides=IExperiment.__identifier__,
+                                              path='/'.join(experiments.getPhysicalPath())):
+        # we have to count each experiment twice; created, finished
+        stats.count_experiment(
+            user=brain.Creator,
+            portal_type=brain.portal_type,
+            date=brain.created.asdatetime().date(),
+        )
+        exp = brain.getObject()
+        exp_runtime = getattr(exp, 'runtime', None)
+        if exp_runtime is None:
+            # no runtime set on experiment ... calc it from results
+            exp_runtime = 0
+            for result in exp.values():
+                jt = IJobTracker(result)
+                rusage = getattr(jt, 'rusage', None)
+                if rusage:
+                    exp_runtime += rusage.get('ru_utime', 0) + rusage.get('ru_stime', 0)
+        stats.count_experiment(
+            user=brain.Creator,
+            portal_type=brain.portal_type,
+            runtime=exp_runtime,
+            state=brain.job_state,
+            date=brain.modified.asdatetime().date()
+        )
+        trcounter += 1
+        if trcounter % 10 == 0:
+            logger.info("Collect stats for experiments %d", trcounter)
+            transaction.commit()
+
+
+    transaction.commit()
+    trcounter = 0
+    # 3. add all experiment datasets
+    for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
+                                              path='/'.join(experiments.getPhysicalPath())):
+        ds = brain.getObject()
+        if not ds.dataSource:
+            ds.dataSource = 'experiment'
+        stats.count_dataset(
+            source=ds.dataSource,
+            portal_type=brain.portal_type,
+            date=brain.created.asdatetime().date()
+        )
+        trcounter += 1
+        if trcounter % 500 == 0:
+            logger.info("Collect stats for experiment results %d", trcounter)
+            transaction.commit()
+
+    transaction.commit()
+    trcounter = 0
+    # 4. count all jobs
+    from org.bccvl.site.job.interfaces import IJobUtility
+    jobtool = getUtility(IJobUtility)
+    jobcatalog = jobtool._catalog()
+    for jobid in jobcatalog.jobs:
+        job = jobtool.get_job_by_id(jobid)
+        # again count each job twice (with and without state)
+
+        portal_type = getattr(job, 'type', None)
+        if not portal_type:
+            # check title if it is a dataset:
+            if ('ala_import' in job.title or
+                'traits_import' in job.title or
+                'metadata_update' in job.title or
+                'import_multi_species_csv' in job.title):
+                portal_type = 'org.bccvl.content.remotedataset'
+            else:
+                # likely an experiment, but which one?
+                if 'sdm_experiment' in job.title:
+                    # might be a sdm, sdm, mm or traits
+                    obj = get_object_by_uuid(pc, job.content)
+                    if obj:
+                        portal_type = obj.portal_type
+                    else:
+                        # No idea ... just guess
+                        portal_type = 'org.bccvl.content.sdmexperiment'
+                elif 'projection experiment' in job.title:
+                    portal_type = 'org.bccvl.content.projectionexperiment'
+                elif 'ensemble' in job.title:
+                    portal_type = 'org.bccvl.content.ensemble'
+                elif 'biodiverse' in job.title:
+                    portal_type = 'org.bccvl.content.biodiverseexperiment'
+                else:
+                    logger.warn('Could not determine portal_type for job %s', job.id)
+            # update job object as well
+            job.type = portal_type
+
+        function = getattr(job, 'function', None)
+        if not function:
+            # this is either an experiment without function or a dateset
+            if portal_type in ('org.bccvl.content.dataset',
+                               'org.bccvl.content.remotedataset',
+                               'org.bccvl.content.multispeciesdataset'):
+                # it is a dateset job... get the dataset and check source
+                ds = get_object_by_uuid(pc, job.content)
+                if ds:
+                    # ds still exists
+                    function = ds.dataSource
+                else:
+                    # ds no longer available ... what now?
+                    # this may count things in the wrong category, but we are not too fuzzed about it.
+                    if 'ala_import' in job.title:
+                        function = 'ala'
+                    elif 'traits_import' in job.title:
+                        function = 'aekos'
+                    elif 'metadata_update' in job.title:
+                        function = 'upload'
+                    elif 'update_metadata' in job.title:
+                        function = 'upload'
+                    elif 'import_multi_species_csv' in job.title:
+                        # no idea where that came from
+                        function = 'upload'
+                    # the fallback
+                    else:
+                        function = 'upload'
+            else:
+                # it's an experiment without function ... all good
+                function = getattr(job, 'function', None)
+            # update job object as well
+            job.function = function
+        # count create
+        stats.count_job(
+            function=function,
+            portal_type=portal_type,
+            date=job.created.asdatetime().date()
+        )
+        if getattr(job, 'rusage', None):
+            rusage = job.rusage.get('rusage', {})
+            rusage = (rusage.get('ru_utime', 0) + rusage.get('ru_stime', 0))
+        else:
+            rusage = 0
+        # count finished
+        stats.count_job(
+            function=function,
+            portal_type=portal_type,
+            runtime=rusage,
+            state=job.state,
+            # not quite exact, as it is the creation date and not last modified state
+            date=job.created.asdatetime().date()
+        )
+        trcounter += 1
+        if trcounter % 500 == 0:
+            logger.info("Collect stats for jobs %d", trcounter)
+            transaction.commit()
+
+    transaction.commit()
