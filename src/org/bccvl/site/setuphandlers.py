@@ -990,28 +990,6 @@ def upgrade_340_350_1(context, logger=None):
             logger.info("Reindex Species data %d", spcounter)
             transaction.commit()
 
-
-    # Update description for Freshwater Climate dataset
-    climate_external_description = [
-            u'The layers in this dataset were developed by the Australian National University (ANU) in 2011 and updated in 2012. BCCVL has integrated version 1.1.5 (2012) of the database. The bioclim layers are the average values of the corresponding bioclim parameters calculated for all grid cells comprising the stream segment and associated valley bottoms.', 
-            u'Publication: <a href=\"http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf\" target=\"_blank\">http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf</a>',
-            u'Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>'
-    ]
-    for brain in pc.searchResults(portal_type='org.bccvl.content.remotedataset',
-                                  BCCDataGenre='DataGenreCC'):
-        if 'Freshwater datasets' in brain.Subject:
-            obj = brain.getObject()
-            if brain.Title == 'Freshwater Catchment Data (Australia), Current Climate (1921-1995), 9 arcsec (~250m)':
-                obj.description = u"Aggregated climate data for the Australian continent between 1921-1995, generated using ANUCLIM version 6.1, for catchments derived from the national 9 arcsec DEM and flow direction grid version 3. Catchments consist of all grid cells upstream of the center of the stream segment pour-point cell."
-            else:
-                obj.description = u"Aggregated climate data for the Australian continent between 1921-1995, generated using ANUCLIM version 6.1, for stream segments derived from the national 9 arcsec DEM and flow direction grid version 3. Stream segments refer to all grid cells comprising the stream segment and associated valley bottom."
-            obj.external_description = u"<br>".join(climate_external_description)
-            obj.reindexObject()
-            spcounter += 1
-            if spcounter % 500 == 0:
-                logger.info("Reindex Freshwater climate datasets %d", spcounter)
-                transaction.commit()
-
     # Do this as very last step in case something goes wrong above and we need
     # to re-run a partially commited upgrade.
     setup.upgradeProfile(THEME_PROFILE_ID)
