@@ -60,7 +60,7 @@ class DatasetRemoveView(form.Form):
                 jt.state = 'REMOVED'
                 context.reindexObject()
             # collect stats
-            stats.count_dataset(source=dsobj.source,
+            stats.count_dataset(source=context.dataSource,
                                 portal_type=context.portal_type,
                                 state='REMOVED')
 
