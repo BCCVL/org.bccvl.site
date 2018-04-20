@@ -21,7 +21,6 @@ class LayerSourceTest(unittest.TestCase):
         self.assertTrue(IVocabulary.providedBy(self._make_one()))
 
     def test_elements(self):
-        import ipdb; ipdb.set_trace()
         source = self._make_one()
         self.assertIn(u'B01', source)
         term = source.getTerm(u'B01')
