@@ -149,13 +149,13 @@ Vocabulary endpoint:
       u'unit': u'degrees C',
       u'unitfull': u'degrees celsius'},
       ...
-     {u'legend': u'range-change',
-      u'title': u'Change in Range',
-      u'token': u'range_change',
-      u'tooltip': u'This value indicates whether the range of a species is expanded, contracted or not changed for any given location between current and future projections.',
-      u'type': u'range-change',
-      u'unit': u' ',
-      u'unitfull': u' '}]
+     {u'legend': u'default',
+      u'title': u'Mean Photosynthetically Available Radiation',
+      u'token': u'Present.Surface.Par.Mean',
+      u'tooltip': u'Mean Photosynthetically Available Radiation  at the ocean surface for the time period. PAR indicates the quantum energy flux from the sun in the spectral range 400-700 nm reaching the ocean surface.',
+      u'type': u'Biochemical',
+      u'unit': u'E/m2/day',
+      u'unitfull': u'einsteins per square meter per day'}]
 
 
 TODO: add test cases that fail because of restricted access
