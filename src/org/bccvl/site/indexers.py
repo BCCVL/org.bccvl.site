@@ -192,6 +192,11 @@ def domain_type(obj, **kw):
 
 
 @indexer(IDataset)
+def time_period(obj, **kw):
+    return obj.subject
+
+
+@indexer(IDataset)
 def headers(obj, **kw):
     md = IBCCVLMetadata(obj)
     return md.get('headers', None)

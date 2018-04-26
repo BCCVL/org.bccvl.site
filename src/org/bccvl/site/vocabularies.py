@@ -464,11 +464,8 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
         (SimpleTerm('absence', 'absence', u'Absence'), {}),
         (SimpleTerm('traits', 'traits', u'Traits'), {}),
     ])),
-    (SimpleTerm('climate', 'climate', u'Climate'), OrderedDict([
-        (SimpleTerm('current', 'current', u'Current'), {}),
-        (SimpleTerm('future', 'future', u'Future'), {}),
-    ])),
     (SimpleTerm('environmental', 'environmental', u'Environmental'), OrderedDict([
+        (SimpleTerm('climate', 'climate', u'Climate'), {}),
         (SimpleTerm('topography', 'topography', u'Topography'), {}),
         (SimpleTerm('hydrology', 'hydrology', u'Hydrology'), {}),
         (SimpleTerm('substrate', 'substrate', u'Substrate'), {}),
@@ -497,6 +494,14 @@ summary_dataset_vocabulary = SimpleVocabulary([
 def summary_dataset_source(context):
     return summary_dataset_vocabulary
 
+time_period_vocabularly = SimpleVocabulary([
+    SimpleTerm("Current datasets", "Currentdatasets", u"Current"),
+    SimpleTerm("Future datasets", "Futuredatasets", u"Future"),
+])
+
+@provider(IVocabularyFactory)
+def time_period_dataset_source(context):
+    return time_period_vocabularly
 
 domain_dataset_vocabulary = SimpleVocabulary([
     SimpleTerm("Freshwater datasets", "Freshwaterdatasets", u'Freshwater datasets'),
