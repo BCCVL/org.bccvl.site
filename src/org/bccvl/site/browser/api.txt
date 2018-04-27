@@ -151,7 +151,7 @@ Vocabulary endpoint:
       ...
      {u'legend': u'default',
       u'title': u'Mean Photosynthetically Available Radiation',
-      u'token': u'Present.Surface.Par.Mean',
+      u'token': u'Surface.Par.Mean',
       u'tooltip': u'Mean Photosynthetically Available Radiation  at the ocean surface for the time period. PAR indicates the quantum energy flux from the sun in the spectral range 400-700 nm reaching the ocean surface.',
       u'type': u'Biochemical',
       u'unit': u'E/m2/day',
