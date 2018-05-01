@@ -334,7 +334,7 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
 
     title = u"Upload Species Occurrence Data"
     description = (
-        u"<p>Upload absence data for single species</p>"
+        u"<p>Upload occurrence data for single species</p>"
         u"<h4>Instructions:</h4>"
         u"<ul><li>Format needs to be .csv</li>"
         u"<li>REQUIRED: Two columns with exact labels ‘lat’ and ‘lon’</li>"
