@@ -457,6 +457,18 @@ def job_state_source(context):
     return job_state_vocabulary
 
 
+collection_category_vocabulary = TreeVocabulary(OrderedDict([
+    (SimpleTerm('biological', 'biological', u'Biological'), OrderedDict([])),
+    (SimpleTerm('climate', 'climate', u'Climate'), OrderedDict([])),
+    (SimpleTerm('environmental', 'environmental', u'Environmental'), OrderedDict([]))
+]))
+
+
+@provider(IVocabularyFactory)
+def collection_category_source(context):
+    return collection_category_vocabulary
+
+
 scientific_category_vocabulary = TreeVocabulary(OrderedDict([
     (SimpleTerm('biological', 'biological', u'Biological'), OrderedDict([
         (SimpleTerm('occurrence', 'occurrence', u'Occurrence'), {}),
@@ -530,7 +542,7 @@ def data_collections_source(context):
     portal_url = getToolByName(context, 'portal_url')
     catalog = getToolByName(context, 'portal_catalog')
     vocab = getUtility(IVocabularyFactory,
-                       'scientific_category_source')(context)
+                       'collection_category_source')(context)
     coll_query = {
         'portal_type': 'org.bccvl.content.collection',
         'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),

@@ -337,6 +337,11 @@
       />
 
   <utility
+      component=".vocabularies.collection_category_source"
+      name="collection_category_source"
+      />
+
+  <utility
       component=".vocabularies.future_climate_source"
       name="future_climate_source"
       />
