@@ -566,7 +566,7 @@ def future_climate_source(context):
     }
 
     def generate_collections():
-        coll_query['BCCDataGenre'] = 'DataGenreFC'
+        coll_query['Subject'] = ['Future datasets']
         for brain in catalog.searchResults(sort_on='sortable_title', sort_order='ascending', **coll_query):
             yield brain
     return BrainsVocabulary.fromBrains(generate_collections(), context)
@@ -582,8 +582,7 @@ def climate_environmental_source(context):
     }
 
     def generate_collections():
-        coll_query['BCCDataGenre'] = [
-            'DataGenreFC', 'DataGenreCC', 'DataGenreE']
+        coll_query['Subject'] = ['Current datasets', 'Future datasets']
         for brain in catalog.searchResults(sort_on='sortable_title', sort_order='ascending', **coll_query):
             yield brain
     return BrainsVocabulary.fromBrains(generate_collections(), context)

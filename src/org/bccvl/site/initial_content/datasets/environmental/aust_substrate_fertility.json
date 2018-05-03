@@ -7,5 +7,6 @@
     "attribution": ["These data build upon an original set of National environmental variables and metadata compiled by Dr Janet Stein of the ANU Fenner School (Stein 2008)"],
     "categories": ["environmental"],
     "BCCDataGenre": ["DataGenreE"],
+    "subjects": ["Current datasets"],
     "_transitions": ["show_internally", "publish_externally"]
 }

@@ -60,7 +60,7 @@ def DatasetSearchableText(obj, **kw):
             safe_unicode(md.get('species', {}).get('scientificName')) or u"",
             safe_unicode(md.get('species', {}).get('vernacularName')) or u"",
         ))
-    if md.get('genre') == "DataGenreFC":
+    if "Future datasets" in obj.subject:
         # year, gcm, emsc
         emsc_vocab = getUtility(IVocabularyFactory, 'emsc_source')(obj)
         gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(obj)
@@ -70,7 +70,7 @@ def DatasetSearchableText(obj, **kw):
             entries.append(
                 safe_unicode(emsc_vocab.getTerm(md['emsc']).title) or u""
             )
-        if md['gcm'] in gcm_vocab:
+        if md.get('gcm') in gcm_vocab:
             entries.append(
                 safe_unicode(gcm_vocab.getTerm(md['gcm']).title) or u""
             )

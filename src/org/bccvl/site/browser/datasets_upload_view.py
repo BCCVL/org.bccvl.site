@@ -56,6 +56,8 @@ class BCCVLUploadForm(DefaultAddForm):
 
     datagenre = None
 
+    timeperiod = None
+
     def create(self, data):
         self.domain = None
         if self.datagenre in ('DataGenreCC', 'DataGenreFC', 'DataGenreE'):
@@ -93,8 +95,13 @@ class BCCVLUploadForm(DefaultAddForm):
             IBCCVLMetadata(new_object)['genre'] = self.datagenre
         if self.categories:
             IBCCVLMetadata(new_object)['categories'] = self.categories
+        
+        new_object.subject = []
         if self.domain:
             new_object.subject = [self.domain]
+        if self.timeperiod:
+            new_object.subject += self.timeperiod
+
             # rdf commit should happens in transmogrifier step later on
         # if fti.immediate_view:
         #     self.immediate_view = "%s/%s/%s" % (container.absolute_url(), new_object.id, fti.immediate_view,)
@@ -397,7 +404,9 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
         'domain', 'file', 'title', 'description', 'resolution', # 'resolutiono',
         'rights')
     datagenre = 'DataGenreCC'
-    categories = ['current']
+    categories = ['climate']
+    timeperiod = ['Current datasets']
+
     # datatype, gcm, emissionscenario
     subpath = [defaults.DATASETS_CLIMATE_FOLDER_ID, 'user']
 
@@ -417,6 +426,8 @@ class EnvironmentalAddForm(BCCVLUploadForm):
         'rights')
     datagenre = 'DataGenreE'
     categories = ['environmental']
+    timeperiod = ['Current datasets']
+
     # datatype, gcm, emissionscenario
     subpath = [defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, 'user']
 
@@ -438,7 +449,9 @@ class ClimateFutureAddForm(BCCVLUploadForm):
         'resolution', # 'resolutiono',
         'rights')
     datagenre = 'DataGenreFC'
-    categories = ['future']
+    categories = ['climate']
+    timeperiod = ['Future datasets']
+
     # datatype, gcm, emissionscenario
     subpath = [defaults.DATASETS_CLIMATE_FOLDER_ID, 'user']
 

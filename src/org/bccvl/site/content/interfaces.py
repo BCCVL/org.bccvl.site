@@ -314,7 +314,6 @@ class IProjectionExperiment(IExperiment):
 
     directives.widget('future_climate_datasets',
                       FutureDatasetsFieldWidget,
-                      genre=['DataGenreFC'],
                       errmsg=u"Please select at least 1 future climate dataset.",
                       vizclass=u'bccvl-absence-viz')
     future_climate_datasets = List(
