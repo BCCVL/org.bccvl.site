@@ -1221,10 +1221,14 @@ def upgrade_340_350_3(context, logger=None):
                     obj.subject = []
                 elif isinstance(obj.subject, tuple):
                     obj.subject = list(obj.subject)
-                if IBCCVLMetadata(obj)['genre'] == 'DataGenreFC':
+
+                genre = IBCCVLMetadata(obj)['genre']
+                if genre == 'DataGenreFC':
                     obj.subject += ["Future datasets"]
                 else:
                     obj.subject += ["Current datasets"]
+                if genre in ['DataGenreCC', 'DataGenreFC']:
+                    IBCCVLMetadata(obj)['categories'] = 'climate'
                 obj.reindexObject()
                 trcounter += 1
                 if trcounter % 500 == 0:
@@ -1233,3 +1237,18 @@ def upgrade_340_350_3(context, logger=None):
 
     transaction.commit()
     trcounter = 0
+
+    for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
+                                              path='/'.join(datasets.getPhysicalPath() + (defaults.DATASETS_CLIMATE_FOLDER_ID, 'user'))):
+        obj = brain.getObject()
+        if IBCCVLMetadata(obj)['categories'] != 'climate':
+            IBCCVLMetadata(obj)['categories'] = 'climate'
+            obj.reindexObject()
+            trcounter += 1
+            if trcounter % 500 == 0:
+                logger.info("Update category for user-uploaded datasets %d", trcounter)
+                transaction.commit()
+
+    transaction.commit()
+    trcounter = 0
+    
