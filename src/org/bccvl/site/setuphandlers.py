@@ -1215,8 +1215,6 @@ def upgrade_340_350_3(context, logger=None):
     for folder in (defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, defaults.DATASETS_CLIMATE_FOLDER_ID):
         for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
                                                   path='/'.join(datasets.getPhysicalPath() + (folder, 'user'))):
-            import pdb; pdb.set_trace()
-
             if 'Current datasets' not in brain.Subject and 'Future datasets' not in brain.Subject:
                 obj = brain.getObject()
                 if not obj.subject:
