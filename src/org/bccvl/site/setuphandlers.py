@@ -1015,6 +1015,7 @@ def upgrade_340_350_2(context, logger=None):
     trcounter = 0
 
     pc = getToolByName(context, 'portal_catalog')
+
     datasets = portal[defaults.DATASETS_FOLDER_ID]
     for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
                                               path='/'.join(datasets.getPhysicalPath())):
@@ -1193,3 +1194,44 @@ def upgrade_340_350_2(context, logger=None):
             transaction.commit()
 
     transaction.commit()
+
+def upgrade_340_350_3(context, logger=None):
+    if logger is None:
+        logger = LOG
+
+    portal = api.portal.get()
+    # setup stats tool
+    from org.bccvl.site.content.interfaces import IDataset
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    import transaction
+
+    # Add new time-period tag for existing user upload datasets
+    transaction.commit()
+    trcounter = 0
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    datasets = portal[defaults.DATASETS_FOLDER_ID]
+    for folder in (defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, defaults.DATASETS_CLIMATE_FOLDER_ID):
+        for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
+                                                  path='/'.join(datasets.getPhysicalPath() + (folder, 'user'))):
+            import pdb; pdb.set_trace()
+
+            if 'Current datasets' not in brain.Subject and 'Future datasets' not in brain.Subject:
+                obj = brain.getObject()
+                if not obj.subject:
+                    obj.subject = []
+                elif isinstance(obj.subject, tuple):
+                    obj.subject = list(obj.subject)
+                if IBCCVLMetadata(obj)['genre'] == 'DataGenreFC':
+                    obj.subject += ["Future datasets"]
+                else:
+                    obj.subject += ["Current datasets"]
+                obj.reindexObject()
+                trcounter += 1
+                if trcounter % 500 == 0:
+                    logger.info("Add time-period tag for user-uploaded datasets %d", trcounter)
+                    transaction.commit()
+
+    transaction.commit()
+    trcounter = 0

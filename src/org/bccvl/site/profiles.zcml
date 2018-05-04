@@ -283,6 +283,12 @@
         handler=".setuphandlers.upgrade_340_350_2"
         />
 
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 350"
+        description="Add time-period tag to user-uploaded datasets"
+        handler=".setuphandlers.upgrade_340_350_3"
+        />
+
   </genericsetup:upgradeSteps>
 
 </configure>
