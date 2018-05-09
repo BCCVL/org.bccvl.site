@@ -123,21 +123,21 @@ class ResultDownloadView(BrowserView):
         provdata = IProvenanceData(context)
         if not provdata.data is None:
             zfile.writestr('/'.join((zfilename, 'prov.ttl')),
-                           provdata.data)
+                           provdata.data.encode('utf-8'))
 
         # add experiment metadata
         expmetadata = IExperimentMetadata(context)
         if not expmetadata.data is None:
             zfile.writestr('/'.join((zfilename, 'expmetadata.txt')),
-                           expmetadata.data)
+                           expmetadata.data.encode('utf-8'))
 
         # add mets.xml
         metsview = getMultiAdapter((context, self.request), name="mets.xml")
         zfile.writestr('/'.join((zfilename, 'mets.xml')),
-                       metsview.render())
+                       metsview.render().encode('utf-8'))
 
         # add experiment parameters
         params = IExperimentParameter(context)
         if not params.data is None:
             zfile.writestr('/'.join((zfilename, 'params.json')),
-                           params.data)
+                           params.data.encode('utf-8'))
