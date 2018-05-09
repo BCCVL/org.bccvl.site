@@ -26,10 +26,10 @@
    <property name="widget">sorting</property>
    <property name="title">Sort on</property>
    <property name="vocabulary"></property>
-   <property name="default">effective(reverse)</property>
+   <property name="default">modified(reverse)</property>
    <property name="position">right</property>
    <property name="section">default</property>
-   <property name="hidden">True</property>
+   <property name="hidden">False</property>
   </criterion>
   <criterion name="c1">
    <property name="widget">select</property>
