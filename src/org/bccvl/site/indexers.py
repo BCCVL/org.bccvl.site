@@ -66,7 +66,7 @@ def DatasetSearchableText(obj, **kw):
         gcm_vocab = getUtility(IVocabularyFactory, 'gcm_source')(obj)
         year = unicode(md.get('year', u''))
         month = unicode(md.get('month', u''))
-        if md['emsc'] in emsc_vocab:
+        if md.get('emsc') in emsc_vocab:
             entries.append(
                 safe_unicode(emsc_vocab.getTerm(md['emsc']).title) or u""
             )
@@ -76,7 +76,7 @@ def DatasetSearchableText(obj, **kw):
             )
         entries.append(year)
         entries.append(month)
-    elif md.get('genre') == "DataGenreCC":
+    elif "Current datasets" in obj.subject:
         entries.append(u"current")
     return u" ".join(entries)
 
