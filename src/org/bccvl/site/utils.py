@@ -154,6 +154,9 @@ def build_ala_import_task(lsid, dataset, request):
     elif dataset.dataSource == 'aekos':
         return datamover.pull_occurrences_from_aekos.si(lsid,
                                                         results_dir, context)
+    elif dataset.dataSource == 'obis':
+        return datamover.pull_occurrences_from_obis.si(lsid,
+                                                        results_dir, context)
     else:
         params = [{
             'query': 'lsid:{}'.format(lsid),
