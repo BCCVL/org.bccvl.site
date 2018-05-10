@@ -827,7 +827,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'year': year,
             'month': month,
             'emsc': dsmd['emsc'],
-            'gcm': dsmd['gcm'],
+            'gcm': dsmd.get('gcm'),
             'resolution': dsmd['resolution'],
             'future_climate_datasets': projlayers,
             'function': algorithm,
