@@ -369,17 +369,16 @@ class DatasetTools(BrowserView):
                 sdm = uuidToObject(sdmuuid)
                 if not sdm:
                     continue
-                # yield occurrence / absence points
-                for x in self.experiment_inputs(sdm):
-                    yield x
                 for model in models:
                     # yield current projections for each model
                     model_brain = uuidToCatalogBrain(model)
                     if not model_brain:
                         continue
+
+                    # Return only constraint SDM projection
                     res_path = model_brain.getPath().rsplit('/', 1)
                     for projection in pc.searchResults(path=res_path,
-                                                       BCCDataGenre=('DataGenreCP', 'DataGenreCP_ENVLOP')):
+                                                       BCCDataGenre='DataGenreCP'):
                         yield projection
 
     def experiment_results(self, context=None):
