@@ -431,6 +431,28 @@ class EnvironmentalAddForm(BCCVLUploadForm):
     # datatype, gcm, emissionscenario
     subpath = [defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, 'user']
 
+class EnvironmentalFutureAddForm(BCCVLUploadForm):
+
+    title = u"Upload Future Environmental Data"
+    description = (
+        u"<p>Upload future environmental data</p>"
+        u"<p>BCCVL can only deal with raster data in GeoTIFF format."
+        u" Valid files are either single GeoTiff files or a number of"
+        u" GeoTiff packaged within a zip file.</p>"
+        u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
+
+    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
+        'domain', 'file', 'title', 'description', 'emsc', 'gcm',
+        'resolution', # 'resolutiono',
+        'rights')
+    datagenre = 'DataGenreE'
+    categories = ['environmental']
+    timeperiod = ['Future datasets']
+
+    # datatype, gcm, emissionscenario
+    subpath = [defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, 'user']
+
+
 
 class ClimateFutureAddForm(BCCVLUploadForm):
 
@@ -516,6 +538,7 @@ class DatasetsUploadView(BrowserView):
                 ('climatecurrent', ClimateCurrentAddForm, ds_portal_type),
                 ('environmental', EnvironmentalAddForm, ds_portal_type),
                 ('climatefuture', ClimateFutureAddForm, ds_portal_type),
+                ('environmentalfuture', EnvironmentalFutureAddForm, ds_portal_type),
                 ('speciestrait', SpeciesTraitAddForm, ds_portal_type)):
             fti = ttool.getTypeInfo(portal_type)
             form = form_class(aq_inner(self.context),
