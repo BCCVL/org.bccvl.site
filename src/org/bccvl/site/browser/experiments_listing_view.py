@@ -61,6 +61,7 @@ class ExperimentTools(BrowserView):
             None: 'success',
             'QUEUED': 'warning',
             'RUNNING': 'warning',
+            'PARTIAL': 'warning',
             'COMPLETED': 'success',
             'FAILED': 'error',
             'REMOVED': 'removed',

@@ -446,6 +446,8 @@ job_state_vocabulary = SimpleVocabulary([
     SimpleTerm('PENDING', 'PENDING', u'Pending'),
     SimpleTerm('QUEUED', 'QUEUED', u'Queued'),
     SimpleTerm('RUNNING', 'RUNNING', u'Running'),
+    SimpleTerm('PARTIAL', 'PARTIAL', u'Partial Finished'),
+    SimpleTerm('FINISHED', 'FINISHED', u'Finished'),
     SimpleTerm('COMPLETED', 'COMPLETED', u'Completed'),
     SimpleTerm('FAILED', 'FAILED', u'Failed'),
     SimpleTerm('REMOVED', 'REMOVED', u'Removed')
