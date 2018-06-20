@@ -138,7 +138,6 @@ class JobTracker(object):
             return
         # TODO: do message update as well, may need to change comparison to <= 0 so that even if state does not change we can update the message
         self.job_tool.set_state(job, state)
-        self.context.reindexObject()
 
     # FIXME: message vs. state vs. dict?
     def progress(self):
@@ -158,7 +157,6 @@ class JobTracker(object):
         job = self.get_job()
         if job:
             self.job_tool.set_progress(job, progress, message, rusage)
-            self.context.reindexObject()
 
     def new_job(self, taskid, title, **kw):
         # FIXME: this is duplicate API ... should probably go away
@@ -167,7 +165,6 @@ class JobTracker(object):
         kw['content'] = IUUID(self.context)
         job = self.job_tool.new_job(**kw)
         self.job_tool.reindex_job(job)
-        self.context.reindexObject()
         return job
 
     def start_job(self, request=None):
