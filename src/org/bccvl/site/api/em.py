@@ -11,6 +11,7 @@ from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.registry.interfaces import IRegistry
 from plone.supermodel import loadString
 from plone.uuid.interfaces import IUUID
+from plone.namedfile.file import NamedBlobFile
 
 from zope.component import getUtility
 from zope.interface import implementer
@@ -88,8 +89,8 @@ class ExperimentService(BaseService):
         else:
             props['environmental_datasets'] = params['environmental_data']
         if params.get('modelling_region', ''):
-            props['modelling_region'] = json.dumps(
-                params['modelling_region'])
+            props['modelling_region'] = NamedBlobFile(
+                data=params['modelling_region'])
         else:
             props['modelling_region'] = None
         if not params.get('algorithms', None):
@@ -304,8 +305,8 @@ class ExperimentService(BaseService):
                               {'parameter': 'environmental_datasets'})
 
         if params.get('modelling_region', ''):
-            props['modelling_region'] = json.dumps(
-                params['modelling_region'])
+            props['modelling_region'] = NamedBlobFile(
+                data=params['modelling_region'])
         else:
             props['modelling_region'] = None
 

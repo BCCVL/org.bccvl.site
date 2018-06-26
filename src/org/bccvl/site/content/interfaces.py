@@ -159,7 +159,7 @@ class ISDMExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
-    modelling_region = Text(
+    modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
@@ -228,7 +228,7 @@ class IMSDMExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
-    modelling_region = Text(
+    modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
@@ -287,7 +287,7 @@ class IMMExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
-    modelling_region = Text(
+    modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
@@ -407,7 +407,7 @@ class ISpeciesTraitsExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
-    modelling_region = Text(
+    modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,

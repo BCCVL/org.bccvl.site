@@ -339,7 +339,7 @@ class SDMJobTracker(MultiJobTracker):
                 # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
-                # reindex context to update the status
+            # reindex context to update the status
             self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(
                 self.context.title, self.state)
@@ -504,8 +504,8 @@ class MSDMJobTracker(MultiJobTracker):
         if not self.is_active():
             # Only generate convex-hull if specified.
             generate_convexhull = False
-            if self.context.modelling_region:
-                constraint_region = json.loads(self.context.modelling_region)
+            if self.context.modelling_region and self.context.modelling_region.data:
+                constraint_region = json.loads(self.context.modelling_region.data)
                 generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
             func = uuidToObject(self.context.function)
             for occur_coll in self.context.species_occurrence_collections:
@@ -728,8 +728,8 @@ class MMJobTracker(MultiJobTracker):
         if not self.is_active():
             # Only generate convex-hull if specified.
             generate_convexhull = False
-            if self.context.modelling_region:
-                constraint_region = json.loads(self.context.modelling_region)
+            if self.context.modelling_region and self.context.modelling_region.data:
+                constraint_region = json.loads(self.context.modelling_region.data)
                 generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
 
             func = uuidToObject(self.context.function)
