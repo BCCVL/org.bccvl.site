@@ -113,6 +113,10 @@ class ExperimentParameter(object):
         # get_project_params, get_biodiverse_params, get_traits_params, get_ensemble_params in org.bccvl.compute.
         inp = deepcopy(params)
         for key, val in inp.items():
+            if key == 'modelling_region':
+                if val:
+                    val = params[key].data
+
             if key in ('species_occurrence_dataset', 'species_absence_dataset'):
                 if val:
                     val = getdatasetparams(val)
