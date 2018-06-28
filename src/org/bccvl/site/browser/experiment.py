@@ -456,12 +456,7 @@ class Add(add.DefaultAddForm):
             for name in self.widgets.keys():
                 if name not in ["IDublinCore.title", "IDublinCore.description"]:
                     conv = getMultiAdapter((self.fields[name].field, self.widgets[name]), IDataConverter)
-                    if name == 'modelling_region':
-                        # convert blobFile to textarea
-                        self.widgets._data['modelling_region'] = TextAreaWidget(self.request)
-                        self.widgets[name].value = expobj.modelling_region.data
-                    else:
-                        self.widgets[name].value = conv.toWidgetValue(getattr(expobj, name))
+                    self.widgets[name].value = conv.toWidgetValue(getattr(expobj, name))
 
 
 class SDMAdd(ParamGroupMixin, Add):

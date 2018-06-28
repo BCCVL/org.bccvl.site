@@ -4,6 +4,7 @@ from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from zope.schema import Choice, List, Dict, Bool, TextLine, Text, Set
 from z3c.form.browser.radio import RadioFieldWidget
+from z3c.form.browser.textarea import TextAreaFieldWidget
 from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
@@ -159,6 +160,8 @@ class ISDMExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
+    directives.widget('modelling_region',
+                      TextAreaFieldWidget)
     modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
