@@ -331,7 +331,9 @@ class IProjectionExperiment(IExperiment):
     )
 
     directives.mode(projection_region=HIDDEN_MODE)
-    projection_region = Text(
+    directives.widget('projection_region',
+                       TextAreaFieldWidget) 
+    projection_region = NamedBlobFile(
         title=u"Projection Region",
         description=u"GEOJson describing the geographic region the onto which the selected model is projected,",
         required=False,

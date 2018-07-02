@@ -291,4 +291,17 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="350"
+      destination="360"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 360"
+        description="Various bug fixes"
+        handler=".setuphandlers.upgrade_350_360_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

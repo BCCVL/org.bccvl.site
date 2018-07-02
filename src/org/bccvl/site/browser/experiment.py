@@ -2,7 +2,6 @@ from collections import OrderedDict
 from itertools import chain
 from z3c.form import button
 from z3c.form.form import extends
-from z3c.form.browser.textarea import TextAreaWidget
 from z3c.form.interfaces import WidgetActionExecutionError, ActionExecutionError, IErrorViewSnippet, NO_VALUE
 from zope.schema.interfaces import RequiredMissing
 from org.bccvl.site.interfaces import IBCCVLMetadata
