@@ -1237,4 +1237,60 @@ def upgrade_340_350_3(context, logger=None):
 
     transaction.commit()
     trcounter = 0
-    
+
+def upgrade_350_360_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    pq = getToolByName(context, 'portal_quickinstaller')
+
+    setup.upgradeProfile(THEME_PROFILE_ID)
+
+    setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
+    setup.runImportStepFromProfile(PROFILE_ID, 'jsregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'cssregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    # Update the modelling_region/projection_region for experiments
+    # make sure large transactions don't run out of memory
+    import transaction
+    transaction.commit()
+    spcounter = 0
+
+    # Update modelling_region to NamedBlobFile
+    from plone.namedfile.file import NamedBlobFile
+    EXP_TYPES = ['org.bccvl.content.sdmexperiment',
+             'org.bccvl.content.mmexperiment',
+             'org.bccvl.content.msdmexperiment',
+             'org.bccvl.content.speciestraitsexperiment'
+             ]
+    for brain in pc.searchResults(portal_type=EXP_TYPES):
+        # go through all experiments and convert modelling_region to NamedBlobFile
+        exp = brain.getObject()
+        if hasattr(exp, 'modelling_region') and exp.modelling_region is not None and type(exp.modelling_region) is not NamedBlobFile:
+            exp.modelling_region = NamedBlobFile(exp.modelling_region)
+            exp.reindexObject()
+            spcounter += 1
+            if spcounter % 500 == 0:
+                logger.info("Convert modelling_region to NamedBlobFile %d", spcounter)
+                transaction.commit()
+
+    # # Update projection_region to NamedBlobFile for CC experiment
+    for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
+        exp = brain.getObject()
+        if hasattr(exp, 'projection_region') and exp.projection_region is not None and type(exp.projection_region) is not NamedBlobFile:
+            exp.projection_region = NamedBlobFile(exp.projection_region)
+            exp.reindexObject()
+            spcounter += 1
+            if spcounter % 500 == 0:
+                logger.info("Convert projection_region to NamedBlobFile %d", spcounter)
+                transaction.commit()
+
+    transaction.commit()
+    spcounter = 0
