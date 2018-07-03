@@ -1282,7 +1282,7 @@ def upgrade_350_360_1(context, logger=None):
                 transaction.commit()
 
         for job in exp.values():
-            if 'modelling_region' in job.job_params and type(job.job_params['modelling_region']) is not NamedBlobFile:
+            if 'modelling_region' in job.job_params and exp.modelling_region is not None and type(job.job_params['modelling_region']) is not NamedBlobFile:
                 job.job_params['modelling_region'] = exp.modelling_region
                 job.reindexObject()
                 spcounter += 1
@@ -1301,7 +1301,7 @@ def upgrade_350_360_1(context, logger=None):
                 logger.info("Convert projection_region to NamedBlobFile %d", spcounter)
                 transaction.commit()
         for job in exp.values():
-            if 'projection_region' in job.job_params and type(job.job_params['projection_region']) is not NamedBlobFile:
+            if 'projection_region' in job.job_params and exp.projection_region is not None and type(job.job_params['projection_region']) is not NamedBlobFile:
                 job.job_params['projection_region'] = exp.projection_region
                 job.reindexObject()
                 spcounter += 1
