@@ -298,7 +298,7 @@
 
     <genericsetup:upgradeStep
         title="Upgrade profile to version 360"
-        description="Various bug fixes"
+        description="Store constraint as NamedBlobFile and various bug fixes"
         handler=".setuphandlers.upgrade_350_360_1"
         />
 
