@@ -1277,9 +1277,18 @@ def upgrade_350_360_1(context, logger=None):
             exp.modelling_region = NamedBlobFile(exp.modelling_region)
             exp.reindexObject()
             spcounter += 1
-            if spcounter % 500 == 0:
+            if spcounter % 100 == 0:
                 logger.info("Convert modelling_region to NamedBlobFile %d", spcounter)
                 transaction.commit()
+
+        for job in exp.values():
+            if 'modelling_region' in job.job_params and type(job.job_params['modelling_region']) is not NamedBlobFile:
+                job.job_params['modelling_region'] = exp.modelling_region
+                job.reindexObject()
+                spcounter += 1
+                if spcounter % 100 == 0:
+                    logger.info("Convert job's modelling_region to NamedBlobFile %d", spcounter)
+                    transaction.commit()
 
     # # Update projection_region to NamedBlobFile for CC experiment
     for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
@@ -1288,9 +1297,17 @@ def upgrade_350_360_1(context, logger=None):
             exp.projection_region = NamedBlobFile(exp.projection_region)
             exp.reindexObject()
             spcounter += 1
-            if spcounter % 500 == 0:
+            if spcounter % 100 == 0:
                 logger.info("Convert projection_region to NamedBlobFile %d", spcounter)
                 transaction.commit()
+        for job in exp.values():
+            if 'projection_region' in job.job_params and type(job.job_params['projection_region']) is not NamedBlobFile:
+                job.job_params['projection_region'] = exp.projection_region
+                job.reindexObject()
+                spcounter += 1
+                if spcounter % 100 == 0:
+                    logger.info("Convert job's projection_region to NamedBlobFile %d", spcounter)
+                    transaction.commit()
 
     transaction.commit()
     spcounter = 0
