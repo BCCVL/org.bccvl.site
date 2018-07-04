@@ -90,7 +90,7 @@ class ExperimentService(BaseService):
             props['environmental_datasets'] = params['environmental_data']
         if params.get('modelling_region', ''):
             props['modelling_region'] = NamedBlobFile(
-                data=params['modelling_region'])
+                data=json.dumps(params['modelling_region']))
         else:
             props['modelling_region'] = None
         if not params.get('algorithms', None):
@@ -204,7 +204,7 @@ class ExperimentService(BaseService):
                 'future_climate_datasets']
         if params.get('projection_region', ''):
             props['projection_region'] = NamedBlobFile(
-                data=params['projection_region'])
+                data=json.dumps(params['projection_region']))
         else:
             props['projection_region'] = None
 
@@ -306,7 +306,7 @@ class ExperimentService(BaseService):
 
         if params.get('modelling_region', ''):
             props['modelling_region'] = NamedBlobFile(
-                data=params['modelling_region'])
+                data=json.dumps(params['modelling_region']))
         else:
             props['modelling_region'] = None
 
