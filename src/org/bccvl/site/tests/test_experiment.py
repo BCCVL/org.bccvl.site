@@ -114,7 +114,7 @@ class ExperimentSDMAddTest(unittest.TestCase):
         # following code will fail, bceause without site we can't find
         # a catalog without whchi we can't finde the toolkit by uuid
         jt.start_job(form.request)
-        self.assertEqual(jt.state, u'RUNNING')
+        self.assertEqual(jt.state, u'PARTIAL')
         transaction.commit()
         self.assertEqual(jt.state, u'COMPLETED')
 
