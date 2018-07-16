@@ -283,6 +283,25 @@
         handler=".setuphandlers.upgrade_340_350_2"
         />
 
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 350"
+        description="Add time-period tag to user-uploaded datasets"
+        handler=".setuphandlers.upgrade_340_350_3"
+        />
+
+  </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="350"
+      destination="360"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 360"
+        description="Store constraint as NamedBlobFile and various bug fixes"
+        handler=".setuphandlers.upgrade_350_360_1"
+        />
+
   </genericsetup:upgradeSteps>
 
 </configure>

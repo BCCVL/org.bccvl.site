@@ -10,5 +10,6 @@
     "external_description": "Bio-ORACLE is a set of GIS rasters providing geophysical, biotic and environmental data for surface and benthic marine realms. The data are available for global-scale applications at a spatial resolution of 5 arcmin (approximately 9.2 km at the equator). Bio-ORACLE data layers are created from monthly pre-processed satellite and in situ observations. Bio-ORACLE is developed by a team of marine researchers from the Flanders Marine Institute (VLIZ), the University of Algarve, the University of Melbourne and Ghent University. Website: <a href=\"http://www.bio-oracle.org/\" target=\"_blank\">http://www.bio-oracle.org/</a>",
     "categories": ["environmental"],
     "BCCDataGenre": ["DataGenreE"],
+    "subjects": ["Current datasets", "Future datasets"],
     "_transitions": ["show_internally", "publish_externally"]
 }

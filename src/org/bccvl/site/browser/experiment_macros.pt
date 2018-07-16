@@ -67,7 +67,7 @@
           <tal:black tal:condition="python: state in ('QUEUED',)">
             <p>This experiment is <strong>queued</strong>.</p>
           </tal:black>
-          <tal:black tal:condition="python: state in ('RUNNING',)">
+          <tal:black tal:condition="python: state in ('RUNNING', 'PARTIAL')">
             <p>This experiment is <strong class="">running</strong>.</p>
           </tal:black>
           <tal:black tal:condition="python: state in ('COMPLETED',)">

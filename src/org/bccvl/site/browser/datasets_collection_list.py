@@ -32,7 +32,7 @@ class DatasetsCollectionListView(BrowserView):
                 self.defaults[criterion.getId()] = default
 
     def categories(self):
-        for term in getUtility(IVocabularyFactory, 'scientific_category_source')(self.context):
+        for term in getUtility(IVocabularyFactory, 'collection_category_source')(self.context):
             yield term
 
     def get_browse_link(self, uuid):

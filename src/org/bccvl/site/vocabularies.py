@@ -446,6 +446,8 @@ job_state_vocabulary = SimpleVocabulary([
     SimpleTerm('PENDING', 'PENDING', u'Pending'),
     SimpleTerm('QUEUED', 'QUEUED', u'Queued'),
     SimpleTerm('RUNNING', 'RUNNING', u'Running'),
+    SimpleTerm('PARTIAL', 'PARTIAL', u'Partial Finished'),
+    SimpleTerm('FINISHED', 'FINISHED', u'Finished'),
     SimpleTerm('COMPLETED', 'COMPLETED', u'Completed'),
     SimpleTerm('FAILED', 'FAILED', u'Failed'),
     SimpleTerm('REMOVED', 'REMOVED', u'Removed')
@@ -457,6 +459,18 @@ def job_state_source(context):
     return job_state_vocabulary
 
 
+collection_category_vocabulary = TreeVocabulary(OrderedDict([
+    (SimpleTerm('biological', 'biological', u'Biological'), OrderedDict([])),
+    (SimpleTerm('climate', 'climate', u'Climate'), OrderedDict([])),
+    (SimpleTerm('environmental', 'environmental', u'Environmental'), OrderedDict([]))
+]))
+
+
+@provider(IVocabularyFactory)
+def collection_category_source(context):
+    return collection_category_vocabulary
+
+
 scientific_category_vocabulary = TreeVocabulary(OrderedDict([
     (SimpleTerm('biological', 'biological', u'Biological'), OrderedDict([
         (SimpleTerm('occurrence', 'occurrence', u'Occurrence'), {}),
@@ -464,11 +478,8 @@ scientific_category_vocabulary = TreeVocabulary(OrderedDict([
         (SimpleTerm('absence', 'absence', u'Absence'), {}),
         (SimpleTerm('traits', 'traits', u'Traits'), {}),
     ])),
-    (SimpleTerm('climate', 'climate', u'Climate'), OrderedDict([
-        (SimpleTerm('current', 'current', u'Current'), {}),
-        (SimpleTerm('future', 'future', u'Future'), {}),
-    ])),
     (SimpleTerm('environmental', 'environmental', u'Environmental'), OrderedDict([
+        (SimpleTerm('climate', 'climate', u'Climate'), {}),
         (SimpleTerm('topography', 'topography', u'Topography'), {}),
         (SimpleTerm('hydrology', 'hydrology', u'Hydrology'), {}),
         (SimpleTerm('substrate', 'substrate', u'Substrate'), {}),
@@ -497,6 +508,14 @@ summary_dataset_vocabulary = SimpleVocabulary([
 def summary_dataset_source(context):
     return summary_dataset_vocabulary
 
+time_period_vocabularly = SimpleVocabulary([
+    SimpleTerm("Current datasets", "Currentdatasets", u"Current"),
+    SimpleTerm("Future datasets", "Futuredatasets", u"Future"),
+])
+
+@provider(IVocabularyFactory)
+def time_period_dataset_source(context):
+    return time_period_vocabularly
 
 domain_dataset_vocabulary = SimpleVocabulary([
     SimpleTerm("Freshwater datasets", "Freshwaterdatasets", u'Freshwater datasets'),
@@ -525,7 +544,7 @@ def data_collections_source(context):
     portal_url = getToolByName(context, 'portal_url')
     catalog = getToolByName(context, 'portal_catalog')
     vocab = getUtility(IVocabularyFactory,
-                       'scientific_category_source')(context)
+                       'collection_category_source')(context)
     coll_query = {
         'portal_type': 'org.bccvl.content.collection',
         'path': '/'.join([portal_url.getPortalPath(), defaults.DATASETS_FOLDER_ID]),
@@ -549,7 +568,7 @@ def future_climate_source(context):
     }
 
     def generate_collections():
-        coll_query['BCCDataGenre'] = 'DataGenreFC'
+        coll_query['Subject'] = ['Future datasets']
         for brain in catalog.searchResults(sort_on='sortable_title', sort_order='ascending', **coll_query):
             yield brain
     return BrainsVocabulary.fromBrains(generate_collections(), context)
@@ -565,8 +584,7 @@ def climate_environmental_source(context):
     }
 
     def generate_collections():
-        coll_query['BCCDataGenre'] = [
-            'DataGenreFC', 'DataGenreCC', 'DataGenreE']
+        coll_query['Subject'] = ['Current datasets', 'Future datasets']
         for brain in catalog.searchResults(sort_on='sortable_title', sort_order='ascending', **coll_query):
             yield brain
     return BrainsVocabulary.fromBrains(generate_collections(), context)

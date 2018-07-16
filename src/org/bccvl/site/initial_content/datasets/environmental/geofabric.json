@@ -8,5 +8,6 @@
     "external_description": "Includes the following datasets that are calculated for each stream segment, which refers to all grid cells comprising the stream segment and associated valley bottoms: Substrate, Vegetation, Land Use, Population, Terrain, Network, Connectivity. And the following datasets that are calculated for each catchment, which refers to all grid cells upstream of the center of the stream segment pour-point cell: Substrate, Vegetation, Land Use, Population, Terrain, Net Primary Productivity and River Disturbance.<br> Publication: See <a href=\"http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf\" target=\"_blank\">http://www.hydrol-earth-syst-sci.net/18/1917/2014/hess-18-1917-2014.pdf</a><br>Data source: <a href=\"https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5\" target=\"_blank\">https://data.gov.au/dataset/national-environmental-stream-attributes-v1-1-5</a>",
     "categories": ["environmental"],
     "BCCDataGenre": ["DataGenreE"],
+    "subjects": ["Current datasets"],    
     "_transitions": ["show_internally", "publish_externally"]
 }

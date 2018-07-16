@@ -100,12 +100,15 @@ class MultiJobTracker(object):
         """
         Return single status across all jobs for this experiment.
 
-        Failed -> in case one snigle job failed
+        Failed -> in case all jobs failed
           bccvl-status-error, alert-error
         New -> in case there is a job in state New
           bccvl-status-running (maps onto queued)
         Queued -> in case there is a job queued
           bccvl-status-running
+        PARTIAL -> in case there is at least a job completed successfully
+          bccvl-status-running
+        FINISHED -> iin case one single job failed
         Completed -> in case all jobs completed successfully
           bccvl-status-complete, alert-success
         All other states -> running
@@ -128,6 +131,9 @@ class MultiJobTracker(object):
                 # all failed
                 return 'FAILED'
             return 'FINISHED'
+        # check if any has completed
+        if any((state in ('COMPLETED',) for state in states)):
+            return 'PARTIAL'
         # is everything still in Nem or Queued?
         queued = all((state in ('PENDING', 'QUEUED') for state in states))
         if queued:
@@ -148,7 +154,7 @@ class MultiJobTracker(object):
 
     def is_active(self):
         return (self.state not in
-                (None, 'COMPLETED', 'FAILED', 'REMOVED'))
+                (None, 'COMPLETED', 'FAILED', 'REMOVED', 'FINISHED'))
 
 
 # TODO: should this be named adapter as well in case there are multiple
@@ -333,7 +339,7 @@ class SDMJobTracker(MultiJobTracker):
                 # reindex job object here ... next call should do that
                 resultjt.set_progress('PENDING',
                                       u'{} pending'.format(func.getId()))
-                # reindex context to update the status
+            # reindex context to update the status
             self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(
                 self.context.title, self.state)
@@ -498,8 +504,8 @@ class MSDMJobTracker(MultiJobTracker):
         if not self.is_active():
             # Only generate convex-hull if specified.
             generate_convexhull = False
-            if self.context.modelling_region:
-                constraint_region = json.loads(self.context.modelling_region)
+            if self.context.modelling_region and self.context.modelling_region.data:
+                constraint_region = json.loads(self.context.modelling_region.data)
                 generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
             func = uuidToObject(self.context.function)
             for occur_coll in self.context.species_occurrence_collections:
@@ -722,8 +728,8 @@ class MMJobTracker(MultiJobTracker):
         if not self.is_active():
             # Only generate convex-hull if specified.
             generate_convexhull = False
-            if self.context.modelling_region:
-                constraint_region = json.loads(self.context.modelling_region)
+            if self.context.modelling_region and self.context.modelling_region.data:
+                constraint_region = json.loads(self.context.modelling_region.data)
                 generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
 
             func = uuidToObject(self.context.function)
@@ -827,7 +833,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'year': year,
             'month': month,
             'emsc': dsmd['emsc'],
-            'gcm': dsmd['gcm'],
+            'gcm': dsmd.get('gcm'),
             'resolution': dsmd['resolution'],
             'future_climate_datasets': projlayers,
             'function': algorithm,

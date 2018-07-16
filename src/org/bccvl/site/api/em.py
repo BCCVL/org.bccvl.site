@@ -11,6 +11,7 @@ from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
 from plone.registry.interfaces import IRegistry
 from plone.supermodel import loadString
 from plone.uuid.interfaces import IUUID
+from plone.namedfile.file import NamedBlobFile
 
 from zope.component import getUtility
 from zope.interface import implementer
@@ -88,8 +89,8 @@ class ExperimentService(BaseService):
         else:
             props['environmental_datasets'] = params['environmental_data']
         if params.get('modelling_region', ''):
-            props['modelling_region'] = json.dumps(
-                params['modelling_region'])
+            props['modelling_region'] = NamedBlobFile(
+                data=json.dumps(params['modelling_region']))
         else:
             props['modelling_region'] = None
         if not params.get('algorithms', None):
@@ -202,8 +203,8 @@ class ExperimentService(BaseService):
             props['future_climate_datasets'] = params[
                 'future_climate_datasets']
         if params.get('projection_region', ''):
-            props['projection_region'] = json.dumps(
-                params['projection_region'])
+            props['projection_region'] = NamedBlobFile(
+                data=json.dumps(params['projection_region']))
         else:
             props['projection_region'] = None
 
@@ -304,8 +305,8 @@ class ExperimentService(BaseService):
                               {'parameter': 'environmental_datasets'})
 
         if params.get('modelling_region', ''):
-            props['modelling_region'] = json.dumps(
-                params['modelling_region'])
+            props['modelling_region'] = NamedBlobFile(
+                data=json.dumps(params['modelling_region']))
         else:
             props['modelling_region'] = None
 
@@ -409,13 +410,20 @@ class ExperimentService(BaseService):
         # add info about parameters?
         # add info about results
         for result in exp.values():
+            # Get the content of blob file for modelling_region/projection_region
+            job_params = dict(**result.job_params)
+            if 'modelling_region' in result.job_params:
+                job_params['modelling_region'] = result.job_params['modelling_region'].data
+            if 'projection_region' in result.job_params:
+                job_params['projection_region'] = result.job_params['projection_region'].data
+
             retval['results'].append({
                 'id': result.id,
                 'uuid': IUUID(result),
                 'title': result.title,
                 'description': result.description,
                 'job_state': IJobTracker(result).state,
-                'params': result.job_params,
+                'params': job_params,
                 'url': result.absolute_url()
             })
         return retval

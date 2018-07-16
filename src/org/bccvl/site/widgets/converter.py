@@ -5,6 +5,8 @@ from zope.component import adapter
 from zope.schema.interfaces import IDict, IList, ITextLine
 from .interfaces import IExperimentSDMWidget, IFutureDatasetsWidget, IExperimentResultWidget, IExperimentResultProjectionWidget, IDatasetWidget, IDatasetDictWidget, IDataSubsetsWidget
 from z3c.form.converter import BaseDataConverter
+from z3c.form.interfaces import ITextAreaWidget
+from plone.namedfile.interfaces import INamedBlobFileField
 from org.bccvl.site.api import dataset
 
 
@@ -68,6 +70,26 @@ class DatasetDictConverter(BaseDataConverter):
             return self.field.missing_value
 
         return value
+
+@adapter(INamedBlobFileField, ITextAreaWidget)
+class NamedBlobFileTextConverter(BaseDataConverter):
+    """
+    Data converter used to convert between a TextAreaWidget and NamedBlobFile.
+    """
+
+    def toWidgetValue(self, value):
+        if value is self.field.missing_value:
+            return None
+
+        # return the content of the blob.
+        return value.data
+
+    def toFieldValue(self, value):
+        if value is None or value == '':
+            return self.field.missing_value
+
+        return self.field._type(data=str(value.encode('utf-8')))
+
 
 @adapter(IDict, IExperimentSDMWidget)
 class ExperimentsSDMConverter(BaseDataConverter):

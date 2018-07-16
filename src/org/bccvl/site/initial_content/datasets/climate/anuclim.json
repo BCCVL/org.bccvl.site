@@ -8,5 +8,6 @@
 ],
     "categories": ["climate"],
     "BCCDataGenre": ["DataGenreCC"],
+    "subjects": ["Current datasets"],
     "_transitions": ["show_internally", "publish_externally"]
 }

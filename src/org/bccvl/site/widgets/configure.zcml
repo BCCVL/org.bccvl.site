@@ -10,6 +10,8 @@
 
   <adapter factory=".converter.DatasetDictConverter"/>
 
+  <adapter factory=".converter.NamedBlobFileTextConverter"/>
+  
   <adapter factory=".converter.ExperimentsSDMConverter"/>
 
   <adapter factory=".converter.ExperimentsResultConverter"/>

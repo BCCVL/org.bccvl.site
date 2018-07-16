@@ -4,5 +4,6 @@
     "description": "Climate data uploaded and shared by users",
     "categories": ["climate"],
     "BCCDataGenre": ["DataGenreCC", "DataGenreFC"],    
+    "subjects": ["Current datasets", "Future datasets"],
     "_transitions": ["show_internally", "publish_internally"]
 }

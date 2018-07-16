@@ -1015,6 +1015,7 @@ def upgrade_340_350_2(context, logger=None):
     trcounter = 0
 
     pc = getToolByName(context, 'portal_catalog')
+
     datasets = portal[defaults.DATASETS_FOLDER_ID]
     for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
                                               path='/'.join(datasets.getPhysicalPath())):
@@ -1193,3 +1194,120 @@ def upgrade_340_350_2(context, logger=None):
             transaction.commit()
 
     transaction.commit()
+
+def upgrade_340_350_3(context, logger=None):
+    if logger is None:
+        logger = LOG
+
+    portal = api.portal.get()
+    # setup stats tool
+    from org.bccvl.site.content.interfaces import IDataset
+    from org.bccvl.site.interfaces import IBCCVLMetadata
+    import transaction
+
+    # Add new time-period tag for existing user upload datasets
+    transaction.commit()
+    trcounter = 0
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    datasets = portal[defaults.DATASETS_FOLDER_ID]
+    for folder in (defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, defaults.DATASETS_CLIMATE_FOLDER_ID):
+        for brain in pc.unrestrictedSearchResults(object_provides=IDataset.__identifier__,
+                                                  path='/'.join(datasets.getPhysicalPath() + (folder, 'user'))):
+            if 'Current datasets' not in brain.Subject and 'Future datasets' not in brain.Subject:
+                obj = brain.getObject()
+                if not obj.subject:
+                    obj.subject = []
+                elif isinstance(obj.subject, tuple):
+                    obj.subject = list(obj.subject)
+
+                genre = IBCCVLMetadata(obj)['genre']
+                if genre == 'DataGenreFC':
+                    obj.subject += ["Future datasets"]
+                else:
+                    obj.subject += ["Current datasets"]
+                if genre in ['DataGenreCC', 'DataGenreFC']:
+                    IBCCVLMetadata(obj)['categories'] = ['climate']
+                obj.reindexObject()
+                trcounter += 1
+                if trcounter % 500 == 0:
+                    logger.info("Add time-period tag for user-uploaded datasets %d", trcounter)
+                    transaction.commit()
+
+    transaction.commit()
+    trcounter = 0
+
+def upgrade_350_360_1(context, logger=None):
+    if logger is None:
+        logger = LOG
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    pq = getToolByName(context, 'portal_quickinstaller')
+
+    setup.upgradeProfile(THEME_PROFILE_ID)
+
+    setup.runImportStepFromProfile(PROFILE_ID, 'catalog')
+    setup.runImportStepFromProfile(PROFILE_ID, 'jsregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'cssregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    # Update the modelling_region/projection_region for experiments
+    # make sure large transactions don't run out of memory
+    import transaction
+    transaction.commit()
+    spcounter = 0
+
+    # Update modelling_region to NamedBlobFile
+    from plone.namedfile.file import NamedBlobFile
+    EXP_TYPES = ['org.bccvl.content.sdmexperiment',
+             'org.bccvl.content.mmexperiment',
+             'org.bccvl.content.msdmexperiment',
+             'org.bccvl.content.speciestraitsexperiment'
+             ]
+    for brain in pc.searchResults(portal_type=EXP_TYPES):
+        # go through all experiments and convert modelling_region to NamedBlobFile
+        exp = brain.getObject()
+        if hasattr(exp, 'modelling_region') and exp.modelling_region is not None and type(exp.modelling_region) is not NamedBlobFile:
+            exp.modelling_region = NamedBlobFile(exp.modelling_region)
+            exp.reindexObject()
+            spcounter += 1
+            if spcounter % 100 == 0:
+                logger.info("Convert modelling_region to NamedBlobFile %d", spcounter)
+                transaction.commit()
+
+        for job in exp.values():
+            if 'modelling_region' in job.job_params and exp.modelling_region is not None and type(job.job_params['modelling_region']) is not NamedBlobFile:
+                job.job_params['modelling_region'] = exp.modelling_region
+                job.reindexObject()
+                spcounter += 1
+                if spcounter % 100 == 0:
+                    logger.info("Convert job's modelling_region to NamedBlobFile %d", spcounter)
+                    transaction.commit()
+
+    # # Update projection_region to NamedBlobFile for CC experiment
+    for brain in pc.searchResults(portal_type='org.bccvl.content.projectionexperiment'):
+        exp = brain.getObject()
+        if hasattr(exp, 'projection_region') and exp.projection_region is not None and type(exp.projection_region) is not NamedBlobFile:
+            exp.projection_region = NamedBlobFile(exp.projection_region)
+            exp.reindexObject()
+            spcounter += 1
+            if spcounter % 100 == 0:
+                logger.info("Convert projection_region to NamedBlobFile %d", spcounter)
+                transaction.commit()
+        for job in exp.values():
+            if 'projection_region' in job.job_params and exp.projection_region is not None and type(job.job_params['projection_region']) is not NamedBlobFile:
+                job.job_params['projection_region'] = exp.projection_region
+                job.reindexObject()
+                spcounter += 1
+                if spcounter % 100 == 0:
+                    logger.info("Convert job's projection_region to NamedBlobFile %d", spcounter)
+                    transaction.commit()
+
+    transaction.commit()
+    spcounter = 0

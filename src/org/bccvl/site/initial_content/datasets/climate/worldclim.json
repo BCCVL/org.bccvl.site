@@ -7,5 +7,6 @@
     "external_description": "See <a href=\"http://www.worldclim.org/methods\">http://www.worldclim.org/methods</a>",
     "categories": ["climate"],
     "BCCDataGenre": ["DataGenreCC", "DataGenreFC"],
+    "subjects": ["Current datasets", "Future datasets"],
     "_transitions": ["show_internally", "publish_externally"]
 }

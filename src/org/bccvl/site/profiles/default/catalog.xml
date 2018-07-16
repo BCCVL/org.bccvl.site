@@ -36,6 +36,9 @@
     <index name="BCCDomain" meta_type="KeywordIndex">
       <indexed_attr value="BCCDomain"/>
     </index>
+    <index name="TimePeriod" meta_type="KeywordIndex">
+      <indexed_attr value="TimePeriod"/>
+    </index>
     <index name="headers" meta_type="KeywordIndex">
       <indexed_attr value="headers"/>
     </index>

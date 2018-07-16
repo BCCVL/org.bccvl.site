@@ -201,6 +201,11 @@
       />
 
   <adapter
+      factory=".indexers.time_period"
+      name="TimePeriod"
+      />
+
+  <adapter
       factory=".indexers.headers"
       name="headers"
       />
@@ -332,6 +337,11 @@
       />
 
   <utility
+      component=".vocabularies.collection_category_source"
+      name="collection_category_source"
+      />
+
+  <utility
       component=".vocabularies.future_climate_source"
       name="future_climate_source"
       />
@@ -344,6 +354,11 @@
   <utility
       component=".vocabularies.summary_dataset_source"
       name="summary_dataset_source"
+      />
+
+  <utility
+      component=".vocabularies.time_period_dataset_source"
+      name="time_period_dataset_source"
       />
 
   <utility

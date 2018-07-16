@@ -4,6 +4,7 @@ from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from zope.schema import Choice, List, Dict, Bool, TextLine, Text, Set
 from z3c.form.browser.radio import RadioFieldWidget
+from z3c.form.browser.textarea import TextAreaFieldWidget
 from z3c.form.interfaces import HIDDEN_MODE
 from org.bccvl.site import MessageFactory as _
 # next import may cause circular import problems
@@ -159,7 +160,9 @@ class ISDMExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
-    modelling_region = Text(
+    directives.widget('modelling_region',
+                      TextAreaFieldWidget)
+    modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
@@ -228,7 +231,9 @@ class IMSDMExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
-    modelling_region = Text(
+    directives.widget('modelling_region',
+                      TextAreaFieldWidget)    
+    modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
@@ -287,7 +292,9 @@ class IMMExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
-    modelling_region = Text(
+    directives.widget('modelling_region',
+                      TextAreaFieldWidget)    
+    modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,
@@ -314,7 +321,6 @@ class IProjectionExperiment(IExperiment):
 
     directives.widget('future_climate_datasets',
                       FutureDatasetsFieldWidget,
-                      genre=['DataGenreFC'],
                       errmsg=u"Please select at least 1 future climate dataset.",
                       vizclass=u'bccvl-absence-viz')
     future_climate_datasets = List(
@@ -325,7 +331,9 @@ class IProjectionExperiment(IExperiment):
     )
 
     directives.mode(projection_region=HIDDEN_MODE)
-    projection_region = Text(
+    directives.widget('projection_region',
+                       TextAreaFieldWidget) 
+    projection_region = NamedBlobFile(
         title=u"Projection Region",
         description=u"GEOJson describing the geographic region the onto which the selected model is projected,",
         required=False,
@@ -408,7 +416,9 @@ class ISpeciesTraitsExperiment(IExperiment):
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)
-    modelling_region = Text(
+    directives.widget('modelling_region',
+                      TextAreaFieldWidget)
+    modelling_region = NamedBlobFile(
         title=u"Modelling Region",
         description=u"GEOJson describing the geographic region which is used to generate the model.",
         required=False,

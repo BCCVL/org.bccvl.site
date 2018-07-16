@@ -56,6 +56,8 @@ class BCCVLUploadForm(DefaultAddForm):
 
     datagenre = None
 
+    timeperiod = None
+
     def create(self, data):
         self.domain = None
         if self.datagenre in ('DataGenreCC', 'DataGenreFC', 'DataGenreE'):
@@ -93,8 +95,13 @@ class BCCVLUploadForm(DefaultAddForm):
             IBCCVLMetadata(new_object)['genre'] = self.datagenre
         if self.categories:
             IBCCVLMetadata(new_object)['categories'] = self.categories
+        
+        new_object.subject = []
         if self.domain:
             new_object.subject = [self.domain]
+        if self.timeperiod:
+            new_object.subject += self.timeperiod
+
             # rdf commit should happens in transmogrifier step later on
         # if fti.immediate_view:
         #     self.immediate_view = "%s/%s/%s" % (container.absolute_url(), new_object.id, fti.immediate_view,)
@@ -334,7 +341,7 @@ class SpeciesOccurrenceAddForm(BCCVLUploadForm):
 
     title = u"Upload Species Occurrence Data"
     description = (
-        u"<p>Upload absence data for single species</p>"
+        u"<p>Upload occurrence data for single species</p>"
         u"<h4>Instructions:</h4>"
         u"<ul><li>Format needs to be .csv</li>"
         u"<li>REQUIRED: Two columns with exact labels ‘lat’ and ‘lon’</li>"
@@ -397,7 +404,9 @@ class ClimateCurrentAddForm(BCCVLUploadForm):
         'domain', 'file', 'title', 'description', 'resolution', # 'resolutiono',
         'rights')
     datagenre = 'DataGenreCC'
-    categories = ['current']
+    categories = ['climate']
+    timeperiod = ['Current datasets']
+
     # datatype, gcm, emissionscenario
     subpath = [defaults.DATASETS_CLIMATE_FOLDER_ID, 'user']
 
@@ -417,8 +426,32 @@ class EnvironmentalAddForm(BCCVLUploadForm):
         'rights')
     datagenre = 'DataGenreE'
     categories = ['environmental']
+    timeperiod = ['Current datasets']
+
     # datatype, gcm, emissionscenario
     subpath = [defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, 'user']
+
+class EnvironmentalFutureAddForm(BCCVLUploadForm):
+
+    title = u"Upload Future Environmental Data"
+    description = (
+        u"<p>Upload future environmental data</p>"
+        u"<p>BCCVL can only deal with raster data in GeoTIFF format."
+        u" Valid files are either single GeoTiff files or a number of"
+        u" GeoTiff packaged within a zip file.</p>"
+        u"Ideally the map projection information is embedded as metadata within the GeoTiff itself. In case of missing map projection BCCVL assumes WGS-84 (EPSG:4326).,</p>")
+
+    fields = Fields(IBlobDataset, IDublinCore, ILayerDataset).select(
+        'domain', 'file', 'title', 'description', 'emsc', 'gcm',
+        'resolution', # 'resolutiono',
+        'rights')
+    datagenre = 'DataGenreE'
+    categories = ['environmental']
+    timeperiod = ['Future datasets']
+
+    # datatype, gcm, emissionscenario
+    subpath = [defaults.DATASETS_ENVIRONMENTAL_FOLDER_ID, 'user']
+
 
 
 class ClimateFutureAddForm(BCCVLUploadForm):
@@ -438,7 +471,9 @@ class ClimateFutureAddForm(BCCVLUploadForm):
         'resolution', # 'resolutiono',
         'rights')
     datagenre = 'DataGenreFC'
-    categories = ['future']
+    categories = ['climate']
+    timeperiod = ['Future datasets']
+
     # datatype, gcm, emissionscenario
     subpath = [defaults.DATASETS_CLIMATE_FOLDER_ID, 'user']
 
@@ -503,6 +538,7 @@ class DatasetsUploadView(BrowserView):
                 ('climatecurrent', ClimateCurrentAddForm, ds_portal_type),
                 ('environmental', EnvironmentalAddForm, ds_portal_type),
                 ('climatefuture', ClimateFutureAddForm, ds_portal_type),
+                ('environmentalfuture', EnvironmentalFutureAddForm, ds_portal_type),
                 ('speciestrait', SpeciesTraitAddForm, ds_portal_type)):
             fti = ttool.getTypeInfo(portal_type)
             form = form_class(aq_inner(self.context),
