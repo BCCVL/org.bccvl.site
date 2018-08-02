@@ -214,13 +214,14 @@ class DatasetDictWidget(HTMLFormElement, Widget):
         md = IBCCVLMetadata(dsbrain.getObject())
         layer_vocab = self.dstools.layer_vocab
         selectedsubitems = self.value.get(dsbrain.UID) or ()
-        for layer in sorted(md.get('layers', ())):
-            subitem = {
-                'id': layer,
-                'title': layer_vocab.getTerm(layer).title if layer in layer_vocab else layer,
-                'selected': layer in selectedsubitems,
-            }
-            yield subitem
+        if md.get('genre') != 'DataGenreSpeciesCollection':
+            for layer in sorted(md.get('layers', ())):
+                subitem = {
+                    'id': layer,
+                    'title': layer_vocab.getTerm(layer).title if layer in layer_vocab else layer,
+                    'selected': layer in selectedsubitems,
+                }
+                yield subitem
         for subdsid in sorted(getattr(dsbrain.getObject(), 'parts', ())):
             part = uuidToCatalogBrain(subdsid)
             # TODO: should we just ignore it?
