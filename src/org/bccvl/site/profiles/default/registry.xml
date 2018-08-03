@@ -3935,6 +3935,15 @@
         <element key="type">Biochemical</element>
         <element key="tooltip">Mean Photosynthetically Available Radiation  at the ocean surface for the time period. PAR indicates the quantum energy flux from the sun in the spectral range 400-700 nm reaching the ocean surface.</element>
       </element>
+      <element>
+        <element key="value">Bathymetry</element>
+        <element key="title">Depth</element>
+        <element key="unit">m</element>
+        <element key="unitfull">metres</element>
+        <element key="legend">default</element>
+        <element key="type">Physical</element>
+        <element key="tooltip">Measurement of water depth in the ocean.</element>
+      </element>
     </value>
   </record>
 

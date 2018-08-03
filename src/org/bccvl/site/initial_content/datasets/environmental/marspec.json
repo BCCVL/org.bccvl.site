@@ -1,0 +1,14 @@
+{
+    "_type": "org.bccvl.content.collection",
+    "title": "Global Marine Environmental Data - MARSPEC",
+    "description": "Global ocean bathymetry data from the MARSPEC data collection.",
+    "attribution": [
+        "Sbrocco, E. J. and Barber, P. H. (2013) MARSPEC: Ocean climate layers for marine spatial ecology. Ecology 94:979. <a href=\"http://dx.doi.org/10.1890/12-1358.1\" target=\"_blank\">http://dx.doi.org/10.1890/12-1358.1</a>"
+    ],
+    "rights": "CC-BY Attribution 4.0",
+    "external_description": "MARSPEC provides a range of geophysical raster grids for the world ocean. Currently, BCCVL only provides the bathymetry layer of this dataset collection. Other marine environmental layers can be found in the Bio-Oracle dataset collection.Website: <a href=\"http://marspec.weebly.com/\" target=\"_blank\">http://marspec.weebly.com/</a>",
+    "categories": ["environmental"],
+    "BCCDataGenre": ["DataGenreE"],
+    "subjects": ["Current datasets"],
+    "_transitions": ["show_internally", "publish_externally"]
+}
