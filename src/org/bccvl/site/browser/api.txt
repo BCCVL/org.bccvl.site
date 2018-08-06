@@ -150,12 +150,12 @@ Vocabulary endpoint:
       u'unitfull': u'degrees celsius'},
       ...
      {u'legend': u'default',
-      u'title': u'Mean Photosynthetically Available Radiation',
-      u'token': u'Surface.Par.Mean',
-      u'tooltip': u'Mean Photosynthetically Available Radiation  at the ocean surface for the time period. PAR indicates the quantum energy flux from the sun in the spectral range 400-700 nm reaching the ocean surface.',
-      u'type': u'Biochemical',
-      u'unit': u'E/m2/day',
-      u'unitfull': u'einsteins per square meter per day'}]
+      u'title': u'Depth',
+      u'token': u'Bathymetry',
+      u'tooltip': u'Measurement of water depth in the ocean.',
+      u'type': u'Physical',
+      u'unit': u'm',
+      u'unitfull': u'metres'}]
 
 
 TODO: add test cases that fail because of restricted access
