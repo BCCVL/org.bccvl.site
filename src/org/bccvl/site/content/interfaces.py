@@ -444,6 +444,15 @@ class ISpeciesTraitsExperiment(IExperiment):
         default=None,
     )
 
+    directives.mode(species_list=HIDDEN_MODE)
+    species_list = List(
+      title=u'Species',
+      description=u'List of species',
+      value_type=TextLine(),
+      required=False,
+      default=[]
+    )
+    
 
 # TODO: use interfaces or portal_type?
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
