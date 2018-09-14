@@ -836,6 +836,7 @@ class ProjectionJobTracker(MultiJobTracker):
             'gcm': dsmd.get('gcm'),
             'resolution': dsmd['resolution'],
             'future_climate_datasets': projlayers,
+            'selected_future_layers': list(projlayers.get(dsbrain.UID)),
             'function': algorithm,
             'subset': subset,
             'projection_region': self.context.projection_region,
