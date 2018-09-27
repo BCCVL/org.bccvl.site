@@ -1311,3 +1311,24 @@ def upgrade_350_360_1(context, logger=None):
 
     transaction.commit()
     spcounter = 0
+
+def upgrade_350_360_2(context, logger=None):
+    if logger is None:
+        logger = LOG
+
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'jsregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'cssregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    # setup stats tool
+    import transaction
+
+    # Add new time-period tag for existing user upload datasets
+    transaction.commit()
+    trcounter = 0

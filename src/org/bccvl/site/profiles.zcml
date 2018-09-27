@@ -302,6 +302,12 @@
         handler=".setuphandlers.upgrade_350_360_1"
         />
 
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 360"
+        description="Bug fixes"
+        handler=".setuphandlers.upgrade_350_360_2"
+        />
+
   </genericsetup:upgradeSteps>
 
 </configure>
