@@ -1475,7 +1475,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
         provdata.data = graph.serialize(format="turtle")
 
-    def start_trait_exp(self, algorithm, species):
+    def start_trait_exp(self, algorithm, species, generate_convexhull):
         # get utility to execute this experiment
         method = queryUtility(
             IComputeMethod,
@@ -1502,6 +1502,7 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
             'traits_dataset_params': self.context.species_traits_dataset_params,
             'environmental_datasets': self.context.environmental_datasets,
             'modelling_region': self.context.modelling_region,
+            'generate_convexhull': generate_convexhull
         }
 
         # Exploration plot does not have algorithm parameter.
@@ -1528,6 +1529,12 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
     def start_job(self, request):
         if not self.is_active():
+            # Only generate convex-hull if specified.
+            generate_convexhull = False
+            if self.context.modelling_region and self.context.modelling_region.data:
+                constraint_region = json.loads(self.context.modelling_region.data)
+                generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
+
             # Start a job to do exploration plot for each species
             expplot_id = 'exploration_plot'
             catalog = getToolByName(getSite(), 'portal_catalog')
@@ -1538,13 +1545,13 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                 })[0]
 
             for species in self.context.species_list:
-                self.start_trait_exp(algorithm, species)
+                self.start_trait_exp(algorithm, species, generate_convexhull)
 
             # start species trait experiment for each algorithm per species
             for algorithm in (uuidToCatalogBrain(f) for f in chain(self.context.algorithms_species,
                                                                    self.context.algorithms_diff)):
                 for species in self.context.species_list:
-                    self.start_trait_exp(algorithm, species)
+                    self.start_trait_exp(algorithm, species, generate_convexhull)
 
             # reindex to update experiment status
             self.context.reindexObject()
