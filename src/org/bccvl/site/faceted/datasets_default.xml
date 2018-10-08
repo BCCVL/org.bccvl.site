@@ -19,7 +19,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="sortreversed">False</property>
@@ -34,7 +34,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="maxitems">0</property>
@@ -50,7 +50,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="maxitems">0</property>
@@ -66,7 +66,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="maxitems">0</property>
@@ -82,7 +82,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="maxitems">0</property>
@@ -99,7 +99,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="maxitems">0</property>
@@ -115,7 +115,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="maxitems">0</property>
@@ -129,7 +129,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="sortreversed">False</property>
@@ -143,7 +143,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="sortreversed">False</property>
@@ -159,7 +159,7 @@
    <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="maxitems">0</property>
@@ -174,7 +174,7 @@
    <property name="position">center</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
-   <property name="count">True</property>
+   <property name="count">False</property>
    <property name="sortcountable">False</property>
    <property name="hidezerocount">False</property>
    <property name="sortreversed">False</property>
