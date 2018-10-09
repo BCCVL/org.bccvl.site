@@ -28,7 +28,7 @@ from org.bccvl.site.job.interfaces import IJobTracker
 from org.bccvl.site.stats.interfaces import IStatsUtility
 from org.bccvl.site.utils import (
     build_ala_import_task, build_traits_import_task, build_ala_import_qid_task)
-from org.bccvl.tasks.plone import after_commit_task
+from org.bccvl.tasks.plone import after_commit_task, LOW_PRIORITY
 from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
 
@@ -565,7 +565,7 @@ class MSDMJobTracker(MultiJobTracker):
                             state='FAILED'
                         )
                     else:
-                        method(result, func)
+                        method(result, func, priority=LOW_PRIORITY)
                         # reindex job object here ... next call should do that
                         resultjt.set_progress('PENDING',
                                               u'{} pending'.format(func.getId()))

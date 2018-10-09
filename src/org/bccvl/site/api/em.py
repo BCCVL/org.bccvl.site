@@ -585,8 +585,8 @@ class ExperimentService(BaseService):
 
         # all set to go build task chain now
         from org.bccvl.tasks.compute import demo_task
-        from org.bccvl.tasks.plone import after_commit_task
-        after_commit_task(demo_task, jobdesc, context)
+        from org.bccvl.tasks.plone import after_commit_task, HIGH_PRIORITY
+        after_commit_task(demo_task, HIGH_PRIORITY, jobdesc, context)
         # let's hope everything works, return result
 
         # We don't create an experiment object, so we don't count stats here

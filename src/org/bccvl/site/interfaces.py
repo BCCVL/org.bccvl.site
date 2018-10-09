@@ -18,7 +18,7 @@ class IExperimentJobTracker(Interface):
 
 class IComputeMethod(Interface):
 
-    def __call__(result, toolkit):
+    def __call__(result, toolkit, priority):
         """
         execute a compute method
         """
