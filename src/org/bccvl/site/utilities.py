@@ -31,6 +31,7 @@ from org.bccvl.site.utils import (
 from org.bccvl.tasks.plone import after_commit_task, LOW_PRIORITY
 from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
+from zope.component.hooks import getSite
 
 
 LOG = logging.getLogger(__name__)
@@ -1474,53 +1475,84 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
         provdata.data = graph.serialize(format="turtle")
 
+    def start_trait_exp(self, algorithm, species, generate_convexhull):
+        # get utility to execute this experiment
+        method = queryUtility(
+            IComputeMethod,
+            name=ISpeciesTraitsExperiment.__identifier__
+        )
+        if method is None:
+            return (
+                'error',
+                u"Can't find method to run Species Traits Experiment")
+        # create result object:
+        # TODO: refactor this out into helper method
+        title = u'{} - {} {}'.format(
+            self.context.title, algorithm.id,
+            datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+        result = createContentInContainer(self.context,
+                                          'Folder',
+                                          title=title)
+
+        # Build job_params store them on result and submit job
+        result.job_params = {
+            'algorithm': algorithm.id,
+            'species': species,
+            'traits_dataset': self.context.species_traits_dataset,
+            'traits_dataset_params': self.context.species_traits_dataset_params,
+            'environmental_datasets': self.context.environmental_datasets,
+            'modelling_region': self.context.modelling_region,
+            'generate_convexhull': generate_convexhull
+        }
+
+        # Exploration plot does not have algorithm parameter.
+        if algorithm.id != 'exploration_plot':
+            # add toolkit params:
+            result.job_params.update(
+                self.context.parameters[algorithm.UID])
+            # update provenance
+            self._createProvenance(result)
+        # submit job
+        LOG.info("Submit JOB %s to queue", algorithm.id)
+        method(result, algorithm.getObject())
+        resultjt = IJobTracker(result)
+        resultjt.new_job('TODO: generate id',
+                         'generate taskname: traits experiment',
+                         type=self.context.portal_type,
+                         function=algorithm.id,
+                         toolkit=algorithm.UID)
+
+        resultjt.set_progress('PENDING',
+                              u'{} pending'.format(algorithm.id))
+
+
+
     def start_job(self, request):
         if not self.is_active():
+            # Only generate convex-hull if specified.
+            generate_convexhull = False
+            if self.context.modelling_region and self.context.modelling_region.data:
+                constraint_region = json.loads(self.context.modelling_region.data)
+                generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
+
+            # Start a job to do exploration plot for each species
+            expplot_id = 'exploration_plot'
+            catalog = getToolByName(getSite(), 'portal_catalog')
+            algorithm = catalog.searchResults({
+                'object_provides': 'org.bccvl.site.content.function.IFunction',
+                'path': '/'.join(getSite()[defaults.FUNCTIONS_FOLDER_ID].getPhysicalPath()),
+                'id': expplot_id,
+                })[0]
+
+            for species in self.context.species_list:
+                self.start_trait_exp(algorithm, species, generate_convexhull)
+
+            # start species trait experiment for each algorithm per species
             for algorithm in (uuidToCatalogBrain(f) for f in chain(self.context.algorithms_species,
                                                                    self.context.algorithms_diff)):
-                # get utility to execute this experiment
-                method = queryUtility(
-                    IComputeMethod,
-                    name=ISpeciesTraitsExperiment.__identifier__
-                )
-                if method is None:
-                    return (
-                        'error',
-                        u"Can't find method to run Species Traits Experiment")
-                # create result object:
-                # TODO: refactor this out into helper method
-                title = u'{} - {} {}'.format(
-                    self.context.title, algorithm.id,
-                    datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
-                result = createContentInContainer(self.context,
-                                                  'Folder',
-                                                  title=title)
+                for species in self.context.species_list:
+                    self.start_trait_exp(algorithm, species, generate_convexhull)
 
-                # Build job_params store them on result and submit job
-                result.job_params = {
-                    'algorithm': algorithm.id,
-                    'traits_dataset': self.context.species_traits_dataset,
-                    'traits_dataset_params': self.context.species_traits_dataset_params,
-                    'environmental_datasets': self.context.environmental_datasets,
-                    'modelling_region': self.context.modelling_region,
-                }
-                # add toolkit params:
-                result.job_params.update(
-                    self.context.parameters[algorithm.UID])
-                # update provenance
-                self._createProvenance(result)
-                # submit job
-                LOG.info("Submit JOB %s to queue", algorithm.id)
-                method(result, algorithm.getObject())
-                resultjt = IJobTracker(result)
-                resultjt.new_job('TODO: generate id',
-                                 'generate taskname: traits experiment',
-                                 type=self.context.portal_type,
-                                 function=algorithm.id,
-                                 toolkit=algorithm.UID)
-
-                resultjt.set_progress('PENDING',
-                                      u'{} pending'.format(algorithm.id))
             # reindex to update experiment status
             self.context.reindexObject()
             return 'info', u'Job submitted {0} - {1}'.format(

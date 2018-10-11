@@ -266,6 +266,12 @@ class ExperimentService(BaseService):
         # string)
         # TODO: validate dataset and layer id's existence if possible
         props = {}
+        if params.get('species_list', None):
+            props['species_list'] = params['species_list']
+        else:
+            self.record_error('Bad Request', 400, 'Missing parameter speciesList',
+                              {'parameter': 'speciesList'})
+
         if not params.get('title', None):
             self.record_error('Bad Request', 400, 'Missing parameter title',
                               {'parameter': 'title'})
