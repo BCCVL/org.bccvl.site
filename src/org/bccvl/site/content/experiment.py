@@ -3,7 +3,7 @@ from zope.interface import implementer
 # BBB: backwards compatible import
 from .interfaces import (
     ISDMExperiment, IMSDMExperiment, IMMExperiment, IProjectionExperiment, IBiodiverseExperiment,
-    IEnsembleExperiment, ISpeciesTraitsExperiment)
+    IEnsembleExperiment, ISpeciesTraitsExperiment, ISpeciesTraitsTemporalExperiment)
 
 
 @implementer(ISDMExperiment)
@@ -44,5 +44,11 @@ class EnsembleExperiment(Container):
 
 @implementer(ISpeciesTraitsExperiment)
 class SpeciesTraitsExperiment(Container):
+
+    pass
+
+
+@implementer(ISpeciesTraitsTemporalExperiment)
+class SpeciesTraitsTemporalExperiment(Container):
 
     pass
