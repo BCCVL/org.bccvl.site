@@ -506,7 +506,7 @@ class ISpeciesTraitsTemporalExperiment(IExperiment):
                       multiple='multiple')
     algorithms_species = List(
         title=u'Algorithm',
-        value_type=Choice(vocabulary='traits_functions_species_source'),
+        value_type=Choice(vocabulary='traits_functions_species_temporal_source'),
         required=False,
         default=None,
     )

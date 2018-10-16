@@ -878,10 +878,10 @@ class SpeciesTraitsAdd(MultiParamGroupMixin, Add):
 
 class SpeciesTraitsTemporalView(MultiParamGroupMixin, View):
     """
-    View SDM (Temporal) Experiment
+    View STM (Temporal) Experiment
     """
     # Parameters for ParamGroupMixin
-    func_vocab_name = ('traits_functions_species_source',
+    func_vocab_name = ('traits_functions_species_temporal_source',
                        'traits_functions_diff_source')
     func_select_field = ('algorithms_species', 'algorithms_diff')
 
@@ -892,10 +892,10 @@ class SpeciesTraitsTemporalView(MultiParamGroupMixin, View):
 
 class SpeciesTraitsTemporalEdit(MultiParamGroupMixin, Edit):
     """
-    Edit SDM (Temporal) Experiment
+    Edit STM (Temporal) Experiment
     """
     # Parameters for ParamGroupMixin
-    func_vocab_name = ('traits_functions_species_source',
+    func_vocab_name = ('traits_functions_species_temporal_source',
                        'traits_functions_diff_source')
     func_select_field = ('algorithms_species', 'algorithms_diff')
 
@@ -908,7 +908,7 @@ class SpeciesTraitsTemporalAdd(MultiParamGroupMixin, Add):
     portal_type = "org.bccvl.content.speciestraitstemporalexperiment"
 
     # Parameters for ParamGroupMixin
-    func_vocab_name = ('traits_functions_species_source',
+    func_vocab_name = ('traits_functions_species_temporal_source',
                        'traits_functions_diff_source')
     func_select_field = ('algorithms_species', 'algorithms_diff')
 
