@@ -87,8 +87,6 @@ class ExperimentTools(BrowserView):
             details = ensemble_listing_details(expbrain)
         elif expbrain.portal_type == 'org.bccvl.content.speciestraitsexperiment':
             details = speciestraits_listing_details(expbrain)
-        elif expbrain.portal_type == 'org.bccvl.content.speciestraitstemporalexperiment':
-            details = speciestraitstemporal_listing_details(expbrain)
         return details
 
 
@@ -105,16 +103,13 @@ class ExperimentsListingView(FolderView):
         super(ExperimentsListingView, self).__init__(context, request)
 
     def new_experiment_actions(self):
-        experimenttypes = (
-            'org.bccvl.content.sdmexperiment',
-            'org.bccvl.content.msdmexperiment',
-            'org.bccvl.content.mmexperiment',
-            'org.bccvl.content.projectionexperiment',
-            'org.bccvl.content.ensemble',
-            'org.bccvl.content.biodiverseexperiment',
-            'org.bccvl.content.speciestraitsexperiment',
-            'org.bccvl.content.speciestraitstemporalexperiment',
-        )
+        experimenttypes = ('org.bccvl.content.sdmexperiment',
+                           'org.bccvl.content.msdmexperiment',
+                           'org.bccvl.content.mmexperiment',
+                           'org.bccvl.content.projectionexperiment',
+                           'org.bccvl.content.ensemble',
+                           'org.bccvl.content.biodiverseexperiment',
+                           'org.bccvl.content.speciestraitsexperiment')
         ftool = getMultiAdapter((self.context, self.request),
                                 name='folder_factories')
         actions = ftool.addable_types(experimenttypes)
@@ -309,39 +304,6 @@ def ensemble_listing_details(expbrain):
 
 
 def speciestraits_listing_details(expbrain):
-    # FIXME: implement this
-    exp = expbrain.getObject()
-    species_occ = get_title_from_uuid(exp.species_traits_dataset,
-                                      u'(Unavailable)') if exp.species_traits_dataset else ''
-
-    toolkits_species = exp.algorithms_species or []
-    toolkits_diff = exp.algorithms_diff or []
-    toolkits = ', '.join(get_title_from_uuid(uuid, u'(Unavailable)') for uuid in
-                         chain(toolkits_species, toolkits_diff) if uuid)
-
-    envds = exp.environmental_datasets or {}
-    envlayers = []
-    for envuuid, layers in sorted(envds.items()):
-        envbrain = uuidToCatalogBrain(envuuid)
-        envtitle = envbrain.Title if envbrain else u'Missing dataset'
-        envlayers.append({
-            'title': envtitle,
-            'layers': sorted(layers)
-        })
-
-    details = {}
-    details.update({
-        'type': 'STM',
-        'functions': toolkits,
-        'species_occurrence': species_occ,
-        'species_absence': '',
-        'environmental_layers': envlayers,
-        'traits_dataset_params': exp.species_traits_dataset_params.items()
-    })
-    return details
-
-
-def speciestraitstemporal_listing_details(expbrain):
     # FIXME: implement this
     exp = expbrain.getObject()
     species_occ = get_title_from_uuid(exp.species_traits_dataset,

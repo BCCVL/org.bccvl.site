@@ -42,7 +42,6 @@ class ResultDownloadView(BrowserView):
                                             'org.bccvl.content.projectionexperiment',
                                             'org.bccvl.content.biodiverseexperiment',
                                             'org.bccvl.content.speciestraitsexperiment',
-                                            'org.bccvl.content.speciestraitstemporalexperiment',
                                             'org.bccvl.content.ensemble'):
                 for eid, eitem in self.context.contentItems():
                     self._download_results(eitem, zfile)

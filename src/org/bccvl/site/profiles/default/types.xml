@@ -9,7 +9,6 @@
   <object name="org.bccvl.content.biodiverseexperiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.ensemble" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.speciestraitsexperiment" meta_type="Dexterity FTI"/>
-  <object name="org.bccvl.content.speciestraitstemporalexperiment" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.function" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.knowledgebaseitem" meta_type="Dexterity FTI"/>
   <object name="org.bccvl.content.collection" meta_type="Dexterity FTI"/>  

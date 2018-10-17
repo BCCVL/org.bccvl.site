@@ -66,7 +66,6 @@ class StatisticsView(BrowserView):
                          'org.bccvl.content.biodiverseexperiment',
                          'org.bccvl.content.ensemble',
                          'org.bccvl.content.speciestraitsexperiment',
-                         'org.bccvl.content.speciestraitstemporalexperiment',
                          'org.bccvl.content.mmexperiment',
                          'org.bccvl.content.msdmexperiment',
                          ]:

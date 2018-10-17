@@ -158,21 +158,6 @@ traits_functions_species_source = CatalogVocabularyFactory(
     },
 )
 
-# Functions vocabulary for the Species Trait (Temporal) experiment
-traits_functions_species_temporal_source = CatalogVocabularyFactory(
-    'traits_functions_species_temporal_source',
-    query={
-        # TODO: could use a path restriction to toolkits folder
-        # 'path': {
-        #     'query': '/'.join([self.site_physical_path, defaults.FUNCTIONS_FOLDER_ID])
-        # },
-        'object_provides': 'org.bccvl.site.content.function.IFunction',
-        # FIXME: find another way to separate SDM and traits "functions"
-        'id': ['speciestrait_glmm'],
-        'sort_on': 'sortable_title',
-    },
-)
-
 traits_functions_diff_source = CatalogVocabularyFactory(
     'traits_functions_diff_source',
     query={
@@ -201,9 +186,7 @@ experiment_type_vocabulary = SimpleVocabulary([
     SimpleTerm("org.bccvl.content.biodiverseexperiment",
                "org.bccvl.content.biodiverseexperiment", u"Biodiverse Experiment"),
     SimpleTerm("org.bccvl.content.speciestraitsexperiment",
-               "org.bccvl.content.speciestraitsexperiment", u"Species Trait (Spatial) Modelling Experiment"),
-    SimpleTerm("org.bccvl.content.speciestraitstemporalexperiment",
-               "org.bccvl.content.speciestraitstemporalexperiment", u"Species Trait (Temporal) Modelling Experiment"),
+               "org.bccvl.content.speciestraitsexperiment", u"Species Trait Modelling Experiment"),
     SimpleTerm("org.bccvl.content.ensemble",
                "org.bccvl.content.ensemble", u"Ensemble Analysis"),
     SimpleTerm(None, "None", u"Unknown")

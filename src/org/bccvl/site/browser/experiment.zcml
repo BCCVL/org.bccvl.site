@@ -153,25 +153,6 @@
         permission="zope2.View"/>
 
     <browser:page
-        name="newSpeciesTraitsTemporal"
-        for="Products.CMFCore.interfaces.IFolderish"
-        class=".experiment.SpeciesTraitsTemporalAdd"
-        permission="org.bccvl.AddExperiment"
-        />
-
-    <browser:page
-        name="edit"
-        for="..content.experiment.ISpeciesTraitsTemporalExperiment"
-        class=".experiment.SpeciesTraitsTemporalEdit"
-        permission="cmf.ModifyPortalContent"/>
-
-    <browser:page
-        name="view"
-        for="..content.interfaces.ISpeciesTraitsTemporalExperiment"
-        class=".experiment.SpeciesTraitsTemporalView"
-        permission="zope2.View"/>
-
-    <browser:page
         name="resultdownload"
         for="*"
         class=".result_download.ResultDownloadView"
