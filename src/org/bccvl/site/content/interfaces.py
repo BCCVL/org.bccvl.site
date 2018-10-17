@@ -511,16 +511,6 @@ class ISpeciesTraitsTemporalExperiment(IExperiment):
         default=None,
     )
 
-    directives.widget('algorithms_diff',
-                      FunctionsFieldWidget,
-                      multiple='multiple')
-    algorithms_diff = List(
-        title=u'Algorithm',
-        value_type=Choice(vocabulary='traits_functions_diff_source'),
-        required=False,
-        default=None,
-    )
-
     directives.mode(species_list=HIDDEN_MODE)
     species_list = List(
       title=u'Species',

@@ -1761,8 +1761,7 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
                 self.start_trait_exp(algorithm, species, generate_convexhull)
 
             # start species trait experiment for each algorithm per species
-            for algorithm in (uuidToCatalogBrain(f) for f in chain(self.context.algorithms_species,
-                                                                   self.context.algorithms_diff)):
+            for algorithm in (uuidToCatalogBrain(f) for f in chain(self.context.algorithms_species)):
                 for species in self.context.species_list:
                     self.start_trait_exp(algorithm, species, generate_convexhull)
 

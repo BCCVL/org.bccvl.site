@@ -881,9 +881,8 @@ class SpeciesTraitsTemporalView(MultiParamGroupMixin, View):
     View STM (Temporal) Experiment
     """
     # Parameters for ParamGroupMixin
-    func_vocab_name = ('traits_functions_species_temporal_source',
-                       'traits_functions_diff_source')
-    func_select_field = ('algorithms_species', 'algorithms_diff')
+    func_vocab_name = ('traits_functions_species_temporal_source',)
+    func_select_field = ('algorithms_species',)
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
@@ -895,9 +894,8 @@ class SpeciesTraitsTemporalEdit(MultiParamGroupMixin, Edit):
     Edit STM (Temporal) Experiment
     """
     # Parameters for ParamGroupMixin
-    func_vocab_name = ('traits_functions_species_temporal_source',
-                       'traits_functions_diff_source')
-    func_select_field = ('algorithms_species', 'algorithms_diff')
+    func_vocab_name = ('traits_functions_species_temporal_source',)
+    func_select_field = ('algorithms_species',)
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
@@ -908,9 +906,8 @@ class SpeciesTraitsTemporalAdd(MultiParamGroupMixin, Add):
     portal_type = "org.bccvl.content.speciestraitstemporalexperiment"
 
     # Parameters for ParamGroupMixin
-    func_vocab_name = ('traits_functions_species_temporal_source',
-                       'traits_functions_diff_source')
-    func_select_field = ('algorithms_species', 'algorithms_diff')
+    func_vocab_name = ('traits_functions_species_temporal_source',)
+    func_select_field = ('algorithms_species',)
 
     # override is_toolkit_selected
     def is_toolkit_selected(self, tid, data):
