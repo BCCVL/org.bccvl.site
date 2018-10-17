@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<object name="org.bccvl.content.speciestraitsexperiment"
+<object name="org.bccvl.content.speciestraitstemporalexperiment"
    meta_type="Dexterity FTI"
    i18n:domain="org.bccvl" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Basic metadata -->
-  <property name="title" i18n:translate="">Species Trait (Spatial) Modelling Experiment</property>
+  <property name="title" i18n:translate="">Species Trait (Temporal) Modelling Experiment</property>
   <property name="description"
-    i18n:translate="">Species Trait (Spatial) Modelling Experiment</property>
+    i18n:translate="">Species Trait (Temporal) Modelling Experiment</property>
   <property name="icon_expr">string:${portal_url}/++resource++experiment.png</property>
-  <property name="add_view_expr">string:${folder_url}/newSpeciesTraits</property>
+  <property name="add_view_expr">string:${folder_url}/newSpeciesTraitsTemporal</property>
   <property name="global_allow">True</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
@@ -17,10 +17,10 @@
   </property>
   <property name="allow_discussion">False</property>
 
- <property name="schema">org.bccvl.site.content.interfaces.ISpeciesTraitsExperiment</property>
+ <property name="schema">org.bccvl.site.content.interfaces.ISpeciesTraitsTemporalExperiment</property>
 
  <!-- class used for content items -->
- <property name="klass">org.bccvl.site.content.experiment.SpeciesTraitsExperiment</property>
+ <property name="klass">org.bccvl.site.content.experiment.SpeciesTraitsTemporalExperiment</property>
  <property name="add_permission">org.bccvl.AddExperiment</property>
  <property name="behaviors">
      <element value="plone.app.dexterity.behaviors.metadata.IDublinCore" />

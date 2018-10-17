@@ -272,6 +272,11 @@
       />
 
   <utility
+      component=".vocabularies.traits_functions_species_temporal_source"
+      name="traits_functions_species_temporal_source"
+      />
+
+  <utility
       component=".vocabularies.traits_functions_diff_source"
       name="traits_functions_diff_source"
       />
