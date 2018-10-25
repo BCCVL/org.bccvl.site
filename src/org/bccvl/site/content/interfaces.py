@@ -479,17 +479,13 @@ class ISpeciesTraitsTemporalExperiment(IExperiment):
         required=False
     )
 
-    directives.widget('environmental_datasets',
-                      DatasetDictFieldWidget,
-                      multiple='multiple',
-                      genre=['DataGenreCC', 'DataGenreE'],
-                      filters=['text', 'source', 'layer', 'resolution'],
-                      errmsg=u"Please select at least 1 layer.")
-    environmental_datasets = Dict(
-        title=u'Climate & Environmental Datasets',
-        key_type=TextLine(),
-        value_type=Set(value_type=TextLine()),
+    # a list of temporal environmental data layers
+    directives.mode(environmental_datasets=HIDDEN_MODE)
+    environmental_datasets = List(
+        title=u'Temporal Environmental Datasets',
+        value_type=TextLine(),
         required=False,
+        default=[]
     )
 
     directives.mode(modelling_region=HIDDEN_MODE)

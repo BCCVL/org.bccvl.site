@@ -1527,7 +1527,6 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                               u'{} pending'.format(algorithm.id))
 
 
-
     def start_job(self, request):
         if not self.is_active():
             # Only generate convex-hull if specified.
@@ -1561,10 +1560,40 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
         else:
             return 'error', u'Current Job is still running'
 
-
 @adapter(ISpeciesTraitsTemporalExperiment)
 class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
 
+    TEMPORAL_ENV_DATA_LAYERS = {
+        'daily_rainfall': {
+        'layer'
+            'layer': 'lwe_thickness_of_precipitation_amount',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-0_rainfall_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        },
+        'daily_min_temp': {
+            'layer': 'daily_min_temp',
+            'varname': 'air_temperature',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-min_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        }
+        'daily_max_temp': {
+            'layer': 'daily_max_temp'
+            'varname': 'air_temperature',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-max_daily_0-01deg_1970-2014,
+            'type': 'continuous'
+        }
+        'daily_mean_temp': {
+            'layer': 'daily_mean_temp',
+            'varname': 'air_temperature',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-0_rainfall_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        }
+        'daily_vapour_pressure': {
+            'layer': 'lwe_thickness_of_precipitation_amount',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_vapour-pressure_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        }
+    }
     def _createProvenance(self, result):
         provdata = IProvenanceData(result)
         from rdflib import URIRef, Literal, Namespace, Graph
@@ -1713,13 +1742,14 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
             'species': species,
             'traits_dataset': self.context.species_traits_dataset,
             'traits_dataset_params': self.context.species_traits_dataset_params,
-            'environmental_datasets': self.context.environmental_datasets,
+            'environmental_datasets': [ v for k, v in self.TEMPORAL_ENV_DATA_LAYERS.items() if k in self.context.environmental_datasets],
             'modelling_region': self.context.modelling_region,
-            'generate_convexhull': generate_convexhull
+            'generate_convexhull': generate_convexhull,
+            'temporal_env': 'True'
         }
 
         # Exploration plot does not have algorithm parameter.
-        if algorithm.id != 'exploration_plot':
+        if algorithm.id != 'exploration_plot_temporal':
             # add toolkit params:
             result.job_params.update(
                 self.context.parameters[algorithm.UID])
@@ -1738,8 +1768,6 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
         resultjt.set_progress('PENDING',
                               u'{} pending'.format(algorithm.id))
 
-
-
     def start_job(self, request):
         if not self.is_active():
             # Only generate convex-hull if specified.
@@ -1749,7 +1777,7 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
                 generate_convexhull = constraint_region.get('properties', {}).get('constraint_method', {}).get('id', '') == 'use_convex_hull'
 
             # Start a job to do exploration plot for each species
-            expplot_id = 'exploration_plot'
+            expplot_id = 'exploration_plot_temporal'
             catalog = getToolByName(getSite(), 'portal_catalog')
             algorithm = catalog.searchResults({
                 'object_provides': 'org.bccvl.site.content.function.IFunction',
