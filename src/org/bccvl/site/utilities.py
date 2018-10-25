@@ -1565,8 +1565,8 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
 
     TEMPORAL_ENV_DATA_LAYERS = {
         'daily_rainfall': {
-        'layer'
-            'layer': 'lwe_thickness_of_precipitation_amount',
+            'layer': 'daily_rainfall',
+            'varname': 'lwe_thickness_of_precipitation_amount',
             'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-0_rainfall_daily_0-01deg_1970-2014',
             'type': 'continuous'
         },
@@ -1575,25 +1575,27 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
             'varname': 'air_temperature',
             'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-min_daily_0-01deg_1970-2014',
             'type': 'continuous'
-        }
+        },
         'daily_max_temp': {
-            'layer': 'daily_max_temp'
+            'layer': 'daily_max_temp',
             'varname': 'air_temperature',
-            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-max_daily_0-01deg_1970-2014,
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-max_daily_0-01deg_1970-2014',
             'type': 'continuous'
-        }
+        },
         'daily_mean_temp': {
             'layer': 'daily_mean_temp',
             'varname': 'air_temperature',
-            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-0_rainfall_daily_0-01deg_1970-2014',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature_daily_0-01deg_1970-2014',
             'type': 'continuous'
-        }
+        },
         'daily_vapour_pressure': {
-            'layer': 'lwe_thickness_of_precipitation_amount',
+            'layer': 'daily_vapour_pressure',
+            'varname': 'vapour_pressure',
             'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_vapour-pressure_daily_0-01deg_1970-2014',
             'type': 'continuous'
         }
     }
+
     def _createProvenance(self, result):
         provdata = IProvenanceData(result)
         from rdflib import URIRef, Literal, Namespace, Graph
