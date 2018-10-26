@@ -40,6 +40,39 @@ class ExperimentService(BaseService):
     title = u'Experiment API v1'
     description = u'Manage experiments'
 
+    TEMPORAL_ENV_DATA_LAYERS = {
+        'daily_rainfall': {
+            'layer': 'daily_rainfall',
+            'varname': 'lwe_thickness_of_precipitation_amount',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-0_rainfall_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        },
+        'daily_min_temp': {
+            'layer': 'daily_min_temp',
+            'varname': 'air_temperature',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-min_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        },
+        'daily_max_temp': {
+            'layer': 'daily_max_temp',
+            'varname': 'air_temperature',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-max_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        },
+        'daily_mean_temp': {
+            'layer': 'daily_mean_temp',
+            'varname': 'air_temperature',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        },
+        'daily_vapour_pressure': {
+            'layer': 'daily_vapour_pressure',
+            'varname': 'vapour_pressure',
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_vapour-pressure_daily_0-01deg_1970-2014',
+            'type': 'continuous'
+        }
+    }
+
     def submitsdm(self):
         # TODO: catch UNAuthorized correctly and return json error
         if self.request.get('REQUEST_METHOD', 'GET').upper() != 'POST':
@@ -301,6 +334,7 @@ class ExperimentService(BaseService):
                               {'parameter': 'columns'})
 
         props['scale_down'] = params.get('scale_down', False)
+
         # env data is optional
         props['environmental_datasets'] = params.get('environmental_data', None)
         if not (props['environmental_datasets']
@@ -309,6 +343,10 @@ class ExperimentService(BaseService):
             self.record_error('Bad Request', 400,
                               'No Environmental data selected',
                               {'parameter': 'environmental_datasets'})
+
+        # For temporal STM, env datasets are temporal dataset from NCI
+        if params.get('temporal_STM', False):
+            props['environmental_datasets'] = [ v for k, v in self.TEMPORAL_ENV_DATA_LAYERS.items() if k in params.get('environmental_data', [])]
 
         if params.get('modelling_region', ''):
             props['modelling_region'] = NamedBlobFile(
@@ -363,8 +401,8 @@ class ExperimentService(BaseService):
         # create experiment with data as form would do
         # TODO: make sure self.context is 'experiments' folder?
         from plone.dexterity.utils import createContent, addContentToContainer
-        experiment = createContent(
-            "org.bccvl.content.speciestraitsexperiment", **props)
+        exp_type = "org.bccvl.content.speciestraitsexperiment" if not params.get('temporal_STM', False) else "org.bccvl.content.speciestraitstemporalexperiment"
+        experiment = createContent(exp_type, **props)
         experiment = addContentToContainer(context, experiment)
         experiment.parameters = dict(props['algorithms_species'])
         experiment.parameters.update(dict(props['algorithms_diff']))

@@ -1562,40 +1562,6 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
 
 @adapter(ISpeciesTraitsTemporalExperiment)
 class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
-
-    TEMPORAL_ENV_DATA_LAYERS = {
-        'daily_rainfall': {
-            'layer': 'daily_rainfall',
-            'varname': 'lwe_thickness_of_precipitation_amount',
-            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-0_rainfall_daily_0-01deg_1970-2014',
-            'type': 'continuous'
-        },
-        'daily_min_temp': {
-            'layer': 'daily_min_temp',
-            'varname': 'air_temperature',
-            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-min_daily_0-01deg_1970-2014',
-            'type': 'continuous'
-        },
-        'daily_max_temp': {
-            'layer': 'daily_max_temp',
-            'varname': 'air_temperature',
-            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-max_daily_0-01deg_1970-2014',
-            'type': 'continuous'
-        },
-        'daily_mean_temp': {
-            'layer': 'daily_mean_temp',
-            'varname': 'air_temperature',
-            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature_daily_0-01deg_1970-2014',
-            'type': 'continuous'
-        },
-        'daily_vapour_pressure': {
-            'layer': 'daily_vapour_pressure',
-            'varname': 'vapour_pressure',
-            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_vapour-pressure_daily_0-01deg_1970-2014',
-            'type': 'continuous'
-        }
-    }
-
     def _createProvenance(self, result):
         provdata = IProvenanceData(result)
         from rdflib import URIRef, Literal, Namespace, Graph
@@ -1744,7 +1710,7 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
             'species': species,
             'traits_dataset': self.context.species_traits_dataset,
             'traits_dataset_params': self.context.species_traits_dataset_params,
-            'environmental_datasets': [ v for k, v in self.TEMPORAL_ENV_DATA_LAYERS.items() if k in self.context.environmental_datasets],
+            'environmental_datasets': self.context.environmental_datasets,
             'modelling_region': self.context.modelling_region,
             'generate_convexhull': generate_convexhull,
             'temporal_env': 'True'
