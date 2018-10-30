@@ -345,7 +345,7 @@ class ExperimentService(BaseService):
                               {'parameter': 'environmental_datasets'})
 
         # For temporal STM, env datasets are temporal dataset from NCI
-        if params.get('temporal_STM', False):
+        if params.get('temporal_stm', False):
             props['environmental_datasets'] = [ v for k, v in self.TEMPORAL_ENV_DATA_LAYERS.items() if k in params.get('environmental_data', [])]
 
         if params.get('modelling_region', ''):
@@ -401,7 +401,7 @@ class ExperimentService(BaseService):
         # create experiment with data as form would do
         # TODO: make sure self.context is 'experiments' folder?
         from plone.dexterity.utils import createContent, addContentToContainer
-        exp_type = "org.bccvl.content.speciestraitsexperiment" if not params.get('temporal_STM', False) else "org.bccvl.content.speciestraitstemporalexperiment"
+        exp_type = "org.bccvl.content.speciestraitsexperiment" if not params.get('temporal_stm', False) else "org.bccvl.content.speciestraitstemporalexperiment"
         experiment = createContent(exp_type, **props)
         experiment = addContentToContainer(context, experiment)
         experiment.parameters = dict(props['algorithms_species'])

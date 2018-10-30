@@ -222,6 +222,8 @@
 
   <adapter factory=".utilities.SpeciesTraitsJobTracker"/>
 
+  <adapter factory=".utilities.SpeciesTraitsTemporalJobTracker"/>
+
   <adapter factory=".utilities.EnsembleJobTracker"/>
 
   <adapter factory=".utilities.ALAJobTracker"/>
