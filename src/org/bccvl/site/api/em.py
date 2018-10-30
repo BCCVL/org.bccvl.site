@@ -337,6 +337,10 @@ class ExperimentService(BaseService):
 
         # env data is optional
         props['environmental_datasets'] = params.get('environmental_data', None)
+        # For temporal STM, env datasets are temporal dataset from NCI
+        if params.get('temporal_stm', False):
+            props['environmental_datasets'] = [ v for k, v in self.TEMPORAL_ENV_DATA_LAYERS.items() if k in params.get('environmental_data', [])]
+
         if not (props['environmental_datasets']
                 or 'env_var_con' not in props['species_traits_dataset_params'].values()
                 or 'env_var_cat' not in props['species_traits_dataset_params'].values()):
@@ -344,9 +348,6 @@ class ExperimentService(BaseService):
                               'No Environmental data selected',
                               {'parameter': 'environmental_datasets'})
 
-        # For temporal STM, env datasets are temporal dataset from NCI
-        if params.get('temporal_stm', False):
-            props['environmental_datasets'] = [ v for k, v in self.TEMPORAL_ENV_DATA_LAYERS.items() if k in params.get('environmental_data', [])]
 
         if params.get('modelling_region', ''):
             props['modelling_region'] = NamedBlobFile(
@@ -361,8 +362,12 @@ class ExperimentService(BaseService):
         else:
             props['algorithms_species'] = {}
             props['algorithms_diff'] = {}
+
+            traits_functions_species_source = 'traits_functions_species_source'
+            if params.get('temporal_stm', False):
+                traits_functions_species_source = 'traits_functions_species_temporal_source'
             funcs_env = getUtility(
-                IVocabularyFactory, 'traits_functions_species_source')(context)
+                IVocabularyFactory, traits_functions_species_source)(context)
             funcs_species = getUtility(
                 IVocabularyFactory, 'traits_functions_diff_source')(context)
             # FIXME: make sure we get the default values from our func object

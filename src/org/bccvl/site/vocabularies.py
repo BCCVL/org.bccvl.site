@@ -168,7 +168,7 @@ traits_functions_species_temporal_source = CatalogVocabularyFactory(
         # },
         'object_provides': 'org.bccvl.site.content.function.IFunction',
         # FIXME: find another way to separate SDM and traits "functions"
-        'id': ['speciestrait_glmm'],
+        'id': ['speciestraittemporal_glmm'],
         'sort_on': 'sortable_title',
     },
 )
