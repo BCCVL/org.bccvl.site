@@ -1619,11 +1619,9 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
                 # values are a set of selected layers
                 if not value:
                     continue
-                for uuid, layers in value.items():
-                    param.add(BCCVL['value'], LOCAL[uuid])
-                    for layer in layers:
-                        # TODO: maybe URIRef?
-                        param.add(BCCVL['layer'], LOCAL[layer])
+                for layer in value:  # a list of temporal env data layers
+                    # TODO: maybe URIRef?
+                    param.add(BCCVL['layer'], LOCAL[layer])
             else:
                 param.add(BCCVL['value'], Literal(value))
         # iterate over all input datasets and add them as entities
@@ -1659,26 +1657,17 @@ class SpeciesTraitsTemporalJobTracker(MultiJobTracker):
             # link with activity
             activity.add(PROV['used'], dsprov)
 
-        envds = result.job_params.get('environmental_datasets') or {}
-        for uuid, layers in envds.items():
+        envds = result.job_params.get('environmental_datasets') or []
+        for layer in envds:
             key = 'environmental_datasets'
-            ds = uuidToObject(uuid)
             dsprov = Resource(graph, LOCAL[key])
             dsprov.add(RDF['type'], PROV['Entity'])
-            dsprov.add(DCTERMS['creator'], Literal(ds.Creator()))
-            dsprov.add(DCTERMS['title'], Literal(ds.title))
-            dsprov.add(DCTERMS['description'], Literal(ds.description))
-            dsprov.add(DCTERMS['rights'], Literal(ds.rights))
-            if ((ds.portal_type == 'org.bccvl.content.dataset' and ds.file is not None)
-                    or
-                    (ds.portal_type == 'org.bccvl.content.remotedataset' and ds.remoteUrl)):
-                dsprov.add(DCTERMS['format'], Literal(ds.format))
+            dsprov.add(DCTERMS['creator'], Literal(layer.get('creator')))
+            dsprov.add(DCTERMS['title'], Literal(layer.get('title')))
+            dsprov.add(DCTERMS['description'], Literal(layer.get('description')))
+            dsprov.add(DCTERMS['rights'], Literal(layer.get('rights')))
             # TODO: genre ...
-            for layer in layers:
-                dsprov.add(BCCVL['layer'], LOCAL[layer])
-            # location / source
-            # layers selected + layer metadata
-            # ... raster data, .. layers
+            dsprov.add(BCCVL['layer'], LOCAL[layer])
 
             # link with activity
             activity.add(PROV['used'], dsprov)

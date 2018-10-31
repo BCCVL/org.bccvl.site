@@ -45,31 +45,51 @@ class ExperimentService(BaseService):
             'layer': 'daily_rainfall',
             'varname': 'lwe_thickness_of_precipitation_amount',
             'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-0_rainfall_daily_0-01deg_1970-2014',
-            'type': 'continuous'
+            'type': 'continuous',
+            'creator': 'Prof. Michael Hutchinson (Professor), Australian National University',
+            'title': 'Daily total precipitation: ANUClimate 1.0, 0.01 degree, Australian Coverage, 1970-2014',
+            'description': 'Daily total precipitation for Australian continent between 1970-2014.',
+            'rights': 'Subject to the CCBY 4.0 licence'
         },
         'daily_min_temp': {
             'layer': 'daily_min_temp',
             'varname': 'air_temperature',
             'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-min_daily_0-01deg_1970-2014',
-            'type': 'continuous'
+            'type': 'continuous',
+            'creator': 'Prof. Michael Hutchinson (Professor), Australian National University',
+            'title': 'Daily minimum temperature: ANUClimate 1.1, 0.01 degree, Australian Coverage, 1970-2014',
+            'description': 'Daily minimum for the Australian continent between 1970-2014.',
+            'rights': 'Subject to the CCBY 4.0 licence'
         },
         'daily_max_temp': {
             'layer': 'daily_max_temp',
             'varname': 'air_temperature',
             'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-max_daily_0-01deg_1970-2014',
-            'type': 'continuous'
+            'type': 'continuous',
+            'creator': 'Prof. Michael Hutchinson (Professor), Australian National University',
+            'title': 'Daily maximum temperature: ANUClimate 1.1, 0.01 degree, Australian Coverage, 1970-2014',
+            'description': 'Daily maximum temperature for the Australian continent between 1970-2014.',
+            'rights': 'Subject to the CCBY 4.0 licence'
         },
         'daily_mean_temp': {
             'layer': 'daily_mean_temp',
             'varname': 'air_temperature',
-            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature_daily_0-01deg_1970-2014',
-            'type': 'continuous'
+            'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_temperature-max_daily_0-01deg_1970-2014',
+            'type': 'continuous',
+            'creator': 'Prof. Michael Hutchinson (Professor), Australian National University',
+            'title': 'Daily maximum temperature: ANUClimate 1.1, 0.01 degree, Australian Coverage, 1970-2014',
+            'description': 'Daily maximum temperature for the Australian continent between 1970-2014.',
+            'rights': 'Subject to the CCBY 4.0 licence'
         },
         'daily_vapour_pressure': {
             'layer': 'daily_vapour_pressure',
             'varname': 'vapour_pressure',
             'downloadurl': 'http://dapds00.nci.org.au/thredds/dodsC/rr9/eMAST_data/ANUClimate/ANUClimate_v1-1_vapour-pressure_daily_0-01deg_1970-2014',
-            'type': 'continuous'
+            'type': 'continuous',
+            'creator': 'Prof. Michael Hutchinson (Professor), Australian National University',
+            'title': 'Daily mean vapour pressure: ANUClimate 1.1, 0.01 degree, Australian Coverage, 1970-2014',
+            'description': 'Mean daily vapour pressure for the Australian continent between 1970-2014.',
+            'rights': 'Subject to the CCBY 4.0 licence'
         }
     }
 
@@ -323,7 +343,7 @@ class ExperimentService(BaseService):
 
         props['species_traits_dataset_params'] = {}
         for col_name, col_val in params.get("columns", {}).items():
-            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'date'
+            if col_val not in ('lat', 'lon', 'species', 'trait_con', 'date',
                                'trait_ord', 'trait_nom', 'env_var_con',
                                'env_var_cat', 'random_con', 'random_cat'):
                 continue
@@ -340,10 +360,11 @@ class ExperimentService(BaseService):
         # For temporal STM, env datasets are temporal dataset from NCI
         if params.get('temporal_stm', False):
             props['environmental_datasets'] = [ v for k, v in self.TEMPORAL_ENV_DATA_LAYERS.items() if k in params.get('environmental_data', [])]
+            #props['environmental_datasets'] = [self.TEMPORAL_ENV_DATA_LAYERS['daily_rainfall']]
 
         if not (props['environmental_datasets']
-                or 'env_var_con' not in props['species_traits_dataset_params'].values()
-                or 'env_var_cat' not in props['species_traits_dataset_params'].values()):
+                or 'env_var_con' in props['species_traits_dataset_params'].values()
+                or 'env_var_cat' in props['species_traits_dataset_params'].values()):
             self.record_error('Bad Request', 400,
                               'No Environmental data selected',
                               {'parameter': 'environmental_datasets'})

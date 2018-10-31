@@ -354,12 +354,11 @@ def speciestraitstemporal_listing_details(expbrain):
 
     envds = exp.environmental_datasets or {}
     envlayers = []
-    for envuuid, layers in sorted(envds.items()):
-        envbrain = uuidToCatalogBrain(envuuid)
-        envtitle = envbrain.Title if envbrain else u'Missing dataset'
+    for layer in envds:
+        envtitle = layer.get('title') or layer.get('layer')
         envlayers.append({
             'title': envtitle,
-            'layers': sorted(layers)
+            'layers': [layer]
         })
 
     details = {}
