@@ -300,6 +300,10 @@ class ExperimentService(BaseService):
                               'Invalid values  for columns',
                               {'parameter': 'columns'})
 
+        # Check for species-level trait data i.e. species is not specified
+        if 'species' not in props['species_traits_dataset_params'].values():
+            props['species_list'] = []
+            
         props['scale_down'] = params.get('scale_down', False)
         # env data is optional
         props['environmental_datasets'] = params.get('environmental_data', None)

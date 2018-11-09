@@ -1544,14 +1544,29 @@ class SpeciesTraitsJobTracker(MultiJobTracker):
                 'id': expplot_id,
                 })[0]
 
-            for species in self.context.species_list:
-                self.start_trait_exp(algorithm, species, generate_convexhull)
-
-            # start species trait experiment for each algorithm per species
-            for algorithm in (uuidToCatalogBrain(f) for f in chain(self.context.algorithms_species,
-                                                                   self.context.algorithms_diff)):
+            if self.context.species_list:
+                # run analysis per species
                 for species in self.context.species_list:
                     self.start_trait_exp(algorithm, species, generate_convexhull)
+
+                # start species trait experiment for each algorithm per species
+                for algorithm in (uuidToCatalogBrain(f) for f in self.context.algorithms_species):
+                    for species in self.context.species_list:
+                        self.start_trait_exp(algorithm, species, generate_convexhull)
+            else:
+                # run analysis on whole dataset with one set of results across all species
+                species = None
+                # start exploration plot job
+                self.start_trait_exp(algorithm, species, generate_convexhull)
+
+                # start job per algorithm across all species
+                for algorithm in (uuidToCatalogBrain(f) for f in self.context.algorithms_species):
+                    self.start_trait_exp(algorithm, species, generate_convexhull)
+
+            # Run trait-diff algorthm across all species
+            species = None
+            for algorithm in (uuidToCatalogBrain(f) for f in self.context.algorithms_diff):
+                self.start_trait_exp(algorithm, species, generate_convexhull)
 
             # reindex to update experiment status
             self.context.reindexObject()
