@@ -41,6 +41,16 @@ def getdsmetadata(ds):
         'filename': dlinfo['filename'],
         'file': dlinfo['url'],
     })
+
+    # This is a hack to extract trait name from the filename.
+    # It assumes that filename is traitname_..., or proj_current_traitname_...
+    # Strip off proj_current 1st if any
+    if 'genre' in md and md.get('genre') in ['DataGenreSTResult', 'DataGenreSTModel']:
+        filename = md.get('title', None)
+        if filename:
+            if filename.strip().startswith("proj_current_"):
+                filename = filename.replace("proj_current_", "", 1)
+            md['trait'] = filename.split("_")[0]
     return md
 
 
