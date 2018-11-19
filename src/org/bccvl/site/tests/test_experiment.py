@@ -506,9 +506,13 @@ class ExperimentSpeciesTraitsAddTest(unittest.TestCase):
         self.assertEqual(exp.algorithms_species,
                          [unicode(self.form.algorithm.UID())])
         # FIXME: submitting with an empty model list doesn't cause form to fail
-        # get result container: (there is only one)
-        self.assertEqual(len(exp.objectIds()), 1)
+        # get result container: (2 results, one for STM and another for exploration plot)
+        self.assertEqual(len(exp.objectIds()), 2)
+        # the 1st experiment is exploration plot
         result = exp.objectValues()[0]
+        self.assertEqual(result.job_params[
+                         'algorithm'], 'exploration_plot')
+        result = exp.objectValues()[1]
         # FIXME: test result.job_params
         self.assertEqual(result.job_params[
                          'algorithm'], self.form.algorithm.getId())
