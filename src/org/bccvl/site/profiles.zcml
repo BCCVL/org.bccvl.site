@@ -310,4 +310,17 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="360"
+      destination="370"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 370"
+        description="Update STM with exploration plots, trait projection map and species-level trait data handling"
+        handler=".setuphandlers.upgrade_360_370_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
 </configure>
