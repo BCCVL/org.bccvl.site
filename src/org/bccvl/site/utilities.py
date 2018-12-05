@@ -1634,9 +1634,19 @@ class ALAJobTracker(MultiJobTracker):
         # TODO: this assumes we have an lsid in the metadata
         #       should check for it
         if md['genre'] == 'DataGenreTraits':
-            traits_import_task = build_traits_import_task(
-                self.context, self.context.REQUEST)
-            after_commit_task(traits_import_task)
+            if hasattr(self.context, 'import_params'):
+                # import trait data from ALA spartial portal
+                traits_import_task = build_ala_import_qid_task(
+                    self.context.import_params, self.context,
+                    self.context.REQUEST)
+                # update provenance
+                self._createProvenance(self.context)
+                after_commit_task(traits_import_task)
+
+            else:
+                traits_import_task = build_traits_import_task(
+                    self.context, self.context.REQUEST)
+                after_commit_task(traits_import_task)
             # FIXME: we don't have a backend task id here as it will be started
             #        after commit, when we shouldn't write anything to the db
             #        maybe add another callback to set task_id?

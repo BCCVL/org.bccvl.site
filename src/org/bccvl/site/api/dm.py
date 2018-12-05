@@ -378,9 +378,11 @@ class DMService(BaseService):
             if res.get('facetResults'):  # do we have some results at all?
                 for guid in res['facetResults'][0]['fieldResult']:
                     species.add(guid['label'])
-        if len(species) > 1:
-            portal_type = 'org.bccvl.content.multispeciesdataset'
 
+        # Check of it is trait-data
+        isTrait = params[0].get('trait', 0)
+        if isTrait != 1 and len(species) > 1:
+            portal_type = 'org.bccvl.content.multispeciesdataset'
         else:
             portal_type = 'org.bccvl.content.dataset'
             swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
@@ -397,9 +399,14 @@ class DMService(BaseService):
             md['genre'] = 'DataGenreSpeciesCollection'
             md['categories'] = ['multispecies']
         else:
-            # species dataset
-            md['genre'] = 'DataGenreSpeciesOccurrence'
-            md['categories'] = ['occurrence']
+            if isTrait == 1:
+                # Trait dataset
+                 md['genre'] = 'DataGenreTraits'
+                md['categories'] = ['traits']
+            else:
+                # species dataset
+                md['genre'] = 'DataGenreSpeciesOccurrence'
+                md['categories'] = ['occurrence']
         # TODO: populate this correctly as well
         md['species'] = [{
             'scientificName': 'qid',
