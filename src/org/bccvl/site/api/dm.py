@@ -401,7 +401,7 @@ class DMService(BaseService):
         else:
             if isTrait == 1:
                 # Trait dataset
-                 md['genre'] = 'DataGenreTraits'
+                md['genre'] = 'DataGenreTraits'
                 md['categories'] = ['traits']
             else:
                 # species dataset
