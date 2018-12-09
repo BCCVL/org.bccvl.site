@@ -380,8 +380,8 @@ class DMService(BaseService):
                     species.add(guid['label'])
 
         # Check of it is trait-data
-        isTrait = params[0].get('trait', 0)
-        if isTrait != 1 and len(species) > 1:
+        isTrait = any([p.get('trait', 0) for p in params])
+        if not isTrait and len(species) > 1:
             portal_type = 'org.bccvl.content.multispeciesdataset'
         else:
             portal_type = 'org.bccvl.content.dataset'
@@ -399,7 +399,7 @@ class DMService(BaseService):
             md['genre'] = 'DataGenreSpeciesCollection'
             md['categories'] = ['multispecies']
         else:
-            if isTrait == 1:
+            if isTrait:
                 # Trait dataset
                 md['genre'] = 'DataGenreTraits'
                 md['categories'] = ['traits']
