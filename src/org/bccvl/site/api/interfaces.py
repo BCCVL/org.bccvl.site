@@ -89,6 +89,9 @@ class IExperimentService(Interface):
         """Fetch metadata about experiment and results.
         """
 
+    def constraintregion(uuid):
+        """Fetch constraint region for a specified experiment.
+        """
 
 class ISiteService(Interface):
     """

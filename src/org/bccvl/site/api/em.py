@@ -438,6 +438,22 @@ class ExperimentService(BaseService):
             })
         return retval
 
+    def constraintregion(self):
+        uuid = self.request.form.get('uuid')
+        exp = uuidToObject(uuid)
+        if not exp:
+            self.record_error('Not Found', 404,
+                              'Experiment not found',
+                              {'parameter': 'uuid'})
+            raise NotFound(self, 'constraintregion', self.request)
+
+        constraint_region = {}
+        if hasattr(exp, 'modelling_region'):
+            constraint_region = exp.modelling_region.data if exp.modelling_region is not None else {}
+        if hasattr(exp, 'projection_region'):
+            constraint_region = exp.projection_region.data if exp.projection_region is not None else {}
+        return constraint_region
+
     def status(self):
         # redundant? ... see metadata
         uuid = self.request.form.get('uuid')
