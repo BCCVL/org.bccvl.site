@@ -237,6 +237,23 @@
             }
         },
         {
+            "title": "constraintregion",
+            "description": "Retrieve constraint region for an experiment. Returned data is encoding according to xml-rpc specification.",
+            "rel": "constraintregion",
+            "href": "{id}/constraintregion",
+            "method": "GET",
+            "encType": "application/x-www-form-urlencoded",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "title": "Experiment uuid"
+                    }
+                }
+            }
+        },
+        {
             "title": "status",
             "description": "Retrieve status for an experiment",
             "rel": "status",
