@@ -138,13 +138,38 @@ class DataMover(BrowserView):
         if common:
             title.append(u"({})".format(common))
 
-        # TODO: move content creation into IALAJobTracker?
-        # remotedataset?
-        swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
-        if swiftsettings.storage_url:
-            portal_type = 'org.bccvl.content.remotedataset'
+
+        # determine dataset type
+        # 1. test if it is a multi species import
+       params = [{
+            'query': 'lsid:{}'.format(lsid),
+            'url': 'http://biocache.ala.org.au/ws'
+        }]
+        import requests
+        species = set()
+        for query in params:
+            biocache_url = '{}/occurrences/search'.format(query['url'])
+            query = {
+                'q': query['query'],
+                'pageSize': 0,
+                'limit': 2,
+                'facets': 'species_guid',
+                'fq': 'species_guid:*'    # skip results without species guid
+            }
+            res = requests.get(biocache_url, params=query)
+            res = res.json()
+            if res.get('facetResults'):  # do we have some results at all?
+                for guid in res['facetResults'][0]['fieldResult']:
+                    species.add(guid['label'])
+
+        if not isTrait and len(species) > 1:
+            portal_type = 'org.bccvl.content.multispeciesdataset'
         else:
-            portal_type = 'org.bccvl.content.dataset'
+            swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
+            if swiftsettings.storage_url:
+                portal_type = 'org.bccvl.content.remotedataset'
+            else:
+                portal_type = 'org.bccvl.content.dataset'
 
         # TODO: make sure we get a better content id that dataset-x
         title = u' '.join(title)
@@ -158,10 +183,15 @@ class DataMover(BrowserView):
         md = IBCCVLMetadata(ds)
         # TODO: provenance ... import url?
         # FIXME: verify input parameters before adding to graph
-        md['genre'] = 'DataGenreSpeciesOccurrence'
-        md['species'] = {
-            'scientificName': taxon,
-            'taxonID': lsid,
+        if IMultiSpeciesDataset.providedBy(ds):
+            md['genre'] = 'DataGenreSpeciesCollection'
+            md['categories'] = ['multispecies']
+        else:
+            md['genre'] = 'DataGenreSpeciesOccurrence'
+            md['categories'] = ['occurrence']
+            md['species'] = {
+                'scientificName': taxon,
+                'taxonID': lsid,
         }
         if common:
             md['species']['vernacularName'] = common

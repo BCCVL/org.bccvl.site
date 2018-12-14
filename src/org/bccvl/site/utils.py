@@ -126,46 +126,6 @@ def get_results_dir(result, request, childSpecies=False):
     return results_dir
 
 
-def build_ala_import_task(lsid, dataset, request):
-    # creates task chain to import ala dataset
-    """
-    lsid .. species id
-    context ... a dictionary with keys:
-      - context: path to context object
-      - userid: zope userid
-    """
-    # we need site-path, context-path and lsid for this job
-    dataset_path = '/'.join(dataset.getPhysicalPath())
-    member = api.user.get_current()
-    context = {
-        'context': dataset_path,
-        'dataSource': dataset.dataSource,
-        'user': {
-            'id': member.getUserName(),
-            'email': member.getProperty('email'),
-            'fullname': member.getProperty('fullname')
-        }
-    }
-
-    results_dir = get_results_dir(dataset, request)
-    if dataset.dataSource == 'gbif':
-        return datamover.pull_occurrences_from_gbif.si(lsid,
-                                                       results_dir, context)
-    elif dataset.dataSource == 'aekos':
-        return datamover.pull_occurrences_from_aekos.si(lsid,
-                                                        results_dir, context)
-    elif dataset.dataSource == 'obis':
-        return datamover.pull_occurrences_from_obis.si(lsid,
-                                                        results_dir, context)
-    else:
-        params = [{
-            'query': 'lsid:{}'.format(lsid),
-            'url': 'http://biocache.ala.org.au/ws'
-        }]
-        return datamover.pull_occurrences_from_ala.si(params,
-                                                      results_dir, context, {})
-
-
 def build_traits_import_task(dataset, request):
     # creates task chain to import ala dataset
     """
@@ -202,6 +162,61 @@ def build_traits_import_task(dataset, request):
             src_url=md['dataurl'],
             dest_url=results_dir,
             context=context)
+
+
+def build_ala_import_task(lsid, dataset, request):
+    # creates task chain to import ala dataset
+    """
+    lsid .. species id
+    context ... a dictionary with keys:
+      - context: path to context object
+      - userid: zope userid
+    """
+    # we need site-path, context-path and lsid for this job
+    dataset_path = '/'.join(dataset.getPhysicalPath())
+    member = api.user.get_current()
+    context = {
+        'context': dataset_path,
+        'dataSource': dataset.dataSource,
+        'user': {
+            'id': member.getUserName(),
+            'email': member.getProperty('email'),
+            'fullname': member.getProperty('fullname')
+        }
+    }
+
+    results_dir = get_results_dir(dataset, request)
+    if dataset.dataSource == 'gbif':
+        return datamover.pull_occurrences_from_gbif.si(lsid,
+                                                       results_dir, context)
+    elif dataset.dataSource == 'aekos':
+        return datamover.pull_occurrences_from_aekos.si(lsid,
+                                                        results_dir, context)
+    elif dataset.dataSource == 'obis':
+        return datamover.pull_occurrences_from_obis.si(lsid,
+                                                        results_dir, context)
+    else:
+        params = [{
+            'query': 'lsid:{}'.format(lsid),
+            'url': 'http://biocache.ala.org.au/ws'
+        }]
+        import_multispecies_params = {}
+        if IMultiSpeciesDataset.providedBy(dataset):
+            container = aq_parent(aq_inner(dataset))
+            import_multispecies_params = {
+                'results_dir': get_results_dir(dataset, request, childSpecies=True),
+                'import_context': {
+                    'context': '/'.join(container.getPhysicalPath()),
+                    'user': {
+                        'id': member.getUserName(),
+                        'email': member.getProperty('email'),
+                        'fullname': member.getProperty('fullname')
+                    }
+                }
+            }
+        return datamover.pull_occurrences_from_ala.si(params,
+                                                      results_dir, context, 
+                                                      import_multispecies_params)
 
 
 def build_ala_import_qid_task(params, dataset, request):
