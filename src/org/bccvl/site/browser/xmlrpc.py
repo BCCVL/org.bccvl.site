@@ -18,6 +18,7 @@ from org.bccvl.site.interfaces import (
 #from org.bccvl.site.stats.interfaces import IStatsUtility
 from org.bccvl.site.swift.interfaces import ISwiftSettings
 from org.bccvl.site.utils import decimal_encoder
+from org.bccvl.site.content.interfaces import IMultiSpeciesDataset
 
 
 LOG = logging.getLogger(__name__)
@@ -138,10 +139,9 @@ class DataMover(BrowserView):
         if common:
             title.append(u"({})".format(common))
 
-
         # determine dataset type
         # 1. test if it is a multi species import
-       params = [{
+        params = [{
             'query': 'lsid:{}'.format(lsid),
             'url': 'http://biocache.ala.org.au/ws'
         }]
@@ -162,7 +162,7 @@ class DataMover(BrowserView):
                 for guid in res['facetResults'][0]['fieldResult']:
                     species.add(guid['label'])
 
-        if not isTrait and len(species) > 1:
+        if len(species) > 1:
             portal_type = 'org.bccvl.content.multispeciesdataset'
         else:
             swiftsettings = getUtility(IRegistry).forInterface(ISwiftSettings)
@@ -189,9 +189,9 @@ class DataMover(BrowserView):
         else:
             md['genre'] = 'DataGenreSpeciesOccurrence'
             md['categories'] = ['occurrence']
-            md['species'] = {
-                'scientificName': taxon,
-                'taxonID': lsid,
+        md['species'] = {
+            'scientificName': taxon,
+            'taxonID': lsid,
         }
         if common:
             md['species']['vernacularName'] = common
