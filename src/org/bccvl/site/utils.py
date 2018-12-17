@@ -186,9 +186,25 @@ def build_ala_import_task(lsid, dataset, request):
     }
 
     results_dir = get_results_dir(dataset, request)
+    import_multispecies_params = {}
+    if IMultiSpeciesDataset.providedBy(dataset) and dataset.dataSource in ('ala', 'gbif', 'obis'):
+        container = aq_parent(aq_inner(dataset))
+        import_multispecies_params = {
+            'results_dir': get_results_dir(dataset, request, childSpecies=True),
+            'import_context': {
+                'context': '/'.join(container.getPhysicalPath()),
+                'user': {
+                    'id': member.getUserName(),
+                    'email': member.getProperty('email'),
+                    'fullname': member.getProperty('fullname')
+                }
+            }
+        }
+
     if dataset.dataSource == 'gbif':
         return datamover.pull_occurrences_from_gbif.si(lsid,
-                                                       results_dir, context)
+                                                       results_dir, context,
+                                                       import_multispecies_params)
     elif dataset.dataSource == 'aekos':
         return datamover.pull_occurrences_from_aekos.si(lsid,
                                                         results_dir, context)
@@ -200,20 +216,6 @@ def build_ala_import_task(lsid, dataset, request):
             'query': 'lsid:{}'.format(lsid),
             'url': 'http://biocache.ala.org.au/ws'
         }]
-        import_multispecies_params = {}
-        if IMultiSpeciesDataset.providedBy(dataset):
-            container = aq_parent(aq_inner(dataset))
-            import_multispecies_params = {
-                'results_dir': get_results_dir(dataset, request, childSpecies=True),
-                'import_context': {
-                    'context': '/'.join(container.getPhysicalPath()),
-                    'user': {
-                        'id': member.getUserName(),
-                        'email': member.getProperty('email'),
-                        'fullname': member.getProperty('fullname')
-                    }
-                }
-            }
         return datamover.pull_occurrences_from_ala.si(params,
                                                       results_dir, context, 
                                                       import_multispecies_params)

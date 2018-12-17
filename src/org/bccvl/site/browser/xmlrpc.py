@@ -1,5 +1,6 @@
 import json
 import logging
+import requests
 
 from decorator import decorator
 from Products.CMFCore.utils import getToolByName
@@ -141,26 +142,35 @@ class DataMover(BrowserView):
 
         # determine dataset type
         # 1. test if it is a multi species import
-        params = [{
-            'query': 'lsid:{}'.format(lsid),
-            'url': 'http://biocache.ala.org.au/ws'
-        }]
-        import requests
         species = set()
-        for query in params:
-            biocache_url = '{}/occurrences/search'.format(query['url'])
-            query = {
-                'q': query['query'],
-                'pageSize': 0,
-                'limit': 2,
-                'facets': 'species_guid',
-                'fq': 'species_guid:*'    # skip results without species guid
-            }
-            res = requests.get(biocache_url, params=query)
+        if dataSrc == 'ala':
+            params = [{
+                'query': 'lsid:{}'.format(lsid),
+                'url': 'http://biocache.ala.org.au/ws'
+            }]
+            for query in params:
+                biocache_url = '{}/occurrences/search'.format(query['url'])
+                query = {
+                    'q': query['query'],
+                    'pageSize': 0,
+                    'limit': 2,
+                    'facets': 'species_guid',
+                    'fq': 'species_guid:*'    # skip results without species guid
+                }
+                res = requests.get(biocache_url, params=query)
+                res = res.json()
+                if res.get('facetResults'):  # do we have some results at all?
+                    for guid in res['facetResults'][0]['fieldResult']:
+                        species.add(guid['label'])
+        elif dataSrc == 'gbif':
+            genusChildren_url = 'https://api.gbif.org/v1/species/{}/children?offset=0&limit=40'.format(lsid)
+            res = requests.get(genusChildren_url)
             res = res.json()
-            if res.get('facetResults'):  # do we have some results at all?
-                for guid in res['facetResults'][0]['fieldResult']:
-                    species.add(guid['label'])
+            if res.get('results'):
+                for sp in res.get('results'):
+                    if sp.get('speciesKey'):
+                        species.add(sp['speciesKey'])
+
 
         if len(species) > 1:
             portal_type = 'org.bccvl.content.multispeciesdataset'
