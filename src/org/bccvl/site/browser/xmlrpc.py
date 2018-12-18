@@ -170,7 +170,15 @@ class DataMover(BrowserView):
                 for sp in res.get('results'):
                     if sp.get('speciesKey'):
                         species.add(sp['speciesKey'])
-
+        elif dataSrc == 'obis':
+            genusChildren_url = 'https://backend.iobis.org/children/{}'.format(lsid)
+            res = requests.get(genusChildren_url)
+            res = res.json()
+            for sp in res:
+                if sp.get('rank_name', '') != 'Species':
+                    continue
+                if sp.get('valid_id'):
+                    species.add(sp['valid_id'])
 
         if len(species) > 1:
             portal_type = 'org.bccvl.content.multispeciesdataset'

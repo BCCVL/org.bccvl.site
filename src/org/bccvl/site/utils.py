@@ -210,7 +210,8 @@ def build_ala_import_task(lsid, dataset, request):
                                                         results_dir, context)
     elif dataset.dataSource == 'obis':
         return datamover.pull_occurrences_from_obis.si(lsid,
-                                                        results_dir, context)
+                                                        results_dir, context,
+                                                        import_multispecies_params)
     else:
         params = [{
             'query': 'lsid:{}'.format(lsid),
