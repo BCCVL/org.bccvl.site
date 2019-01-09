@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "CliMond climate data",
-    "description": "A set of 35 bioclimatic variables, calculated according to the WorldClim method.",
+    "description": "Global current and future climate data\nGeographic extent: Global\nYear range: 1961-1990, 2030, 2050, 2070, 2090, 2100\nResolution: 10 arcmin (~20 km)\nData layers: B01-35",
     "rights": "AU CC BY 3.0",
     "external_description": "See <a href=\"https://www.climond.org/ClimateData.aspx\">CliMond Climate Data</a>",
     "attribution": ["Kriticos, D.J., B.L. Webber, A. Leriche, N. Ota, I. Macadam, J. Bathols & J.K. Scott.  2012.  CliMond: global high-resolution historical and future scenario climate surfaces for bioclimatic modelling.  Methods in Ecology & Evolution, 3(1), 53 - 64."],

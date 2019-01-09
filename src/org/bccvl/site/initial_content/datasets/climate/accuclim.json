@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "ACCUclim climate data",
-    "description": "A set of 7 temperature variables for the Queensland Wet Tropics Area in north-east Australia. The layers are generated using a Boosted Regression Tree statistical downscaling approach to transform existing coarse weather layers to fine-scale weather layers corrected for biotic and abiotic factors.",
+    "description": "A set of 7 temperature variables for the Wet Tropics area in north-east Australia\nGeographic extent: Wet Tropics,Australia\nYear range: 1950-2015\nResolution: 9 arcsec (~250 m)\nData layers: B01-07",
     "rights": "CC BY Attribution 3.0 AU",
     "external_description": "TBA - Most likely Tropical Data Hub w/ exposure via MediaFlux WebDev",
     "attribution": ["Storlie, C.J., Phillips, B.L., VanDerWal, J.J., and Williams, S.E. (2013) Improved spatial estimates of climate predict patchier species distributions. Diversity and Distributions, 19 (9). pp. 1106-1113."],

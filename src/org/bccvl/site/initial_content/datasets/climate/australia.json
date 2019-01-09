@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Australia current and future climate data",
-    "description": "Australia-wide bioclimatic variable spatial layers. This collection includes a baseline current climate as well as future climate scenarios. In summary, 19 climate surfaces for each of 1297 projections (current + 9 emissions scenarios x 18 GCMs * 8 time points).",
+    "description": "Current and future climate data for the Australian continent\nGeographic extent: Australia\nYear range: 1976-2005,2015-2085\nResolution: 30 arcsec (~1 km), 2.5 arcmin (~5 km)\nData layers: B01-19",
     "rights": "CC-BY Attribution 3.0",
     "external_description": "See <a href=\"https://research.jcu.edu.au/researchdata/default/detail/a06a78f553e1452bcf007231f6204f04/\">https://research.jcu.edu.au/researchdata/default/detail/a06a78f553e1452bcf007231f6204f04/</a>",
     "attribution": ["Vanderwal, Jeremy. (2012). All future climate layers for Australia - 5km resolution. James Cook University."],
