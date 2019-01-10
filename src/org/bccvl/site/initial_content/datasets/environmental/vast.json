@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "National Scale Vegetation Assets, States and Transitions",
-    "description": "The Vegetation Assets, States and Transitions (VAST) classification orders vegetation by degree of anthropogenic modification as a series of classes, from a residual or benchmark condition through to total removal. VAST is being developed to explicitly link land management and vegetation condition, to provide a mechanism to describe the effects of land management on vegetation condition and to contribute to the analysis of ecosystems services provided by vegetation.",
+    "description": "Classification of vegetation according to its degree of anthropogenic modification from a natural state\nGeographic extent: Australia\nYear range: 2008\nResolution: 30 arcsec (~1 km)\nData layers: VAST classification",
     "attribution": [
         "Access is unrestricted. Users of the data set are asked to acknowledge, in any visual or published material, that it was derived and compiled by Bureau of Rural Sciences (BRS) and to make known to BRS any errors, omissions or suggestions for improvement.",
         "Lesslie, R and Thackway, R and Smith, J 2010, A national-level Vegetation Assets, States and Transitions (VAST) dataset for Australia (version 2), Bureau of Rural Sciences, Canberra."

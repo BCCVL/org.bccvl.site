@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Australian Stream and Catchment Climate Data",
-    "description": "A suite of climate layers calculated based on the Australian Hydrological Geospatial Fabric (‘Geofabric’) network that represents stream segments and their catchments.",
+    "description": "A suite of climate layers calculated based on the Australian Hydrological Geospatial Fabric ('Geofabric') network that represents stream segments and their catchments\nGeographic extent: Australia\nYear range: 1921-1995\nResolution: 9 arcsec (~250 m)\nData layers: B01, 05, 06, 08, 09, 11, 12, 16-20, Growth index, Growth index seasonality, Rainfall erosivity",
     "rights": "CC-BY Share Alike Attribution 3.0 and Creative Commons Attribution 4.0 International Licence",
     "attribution": ["Stein JL, Hutchinson MF, Stein JA (2014) A new stream and nested catchment framework for Australia. Hydrology and Earth System Sciences, 18(5), 1917-1933."
     ],

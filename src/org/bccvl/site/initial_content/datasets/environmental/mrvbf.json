@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Multi-resolution Valley Bottom Flatness",
-    "description": "A topographic index designed to identify areas of deposited material at a range of scales based on the observations that valley bottoms are low and flat relative to their surroundings and that large valley bottoms are flatter than smaller ones. Zero values indicate erosional terrain with values 1 and larger indicating progressively larger areas of deposition.",
+    "description": "A topographic index designed to identify areas of deposited material\nGeographic extent: Australia\nYear range: 2000\nResolution: 3 arcsec (~90 m)\nData layers: Multi-resolution Valley Bottom Flatness",
     "attribution": [
         "John Gallant; Trevor Dowling; Jenet Austin (2012): Multi-resolution Valley Bottom Flatness (MrVBF, 3\" resolution). v2. CSIRO. Data Collection. 10.4225/08/512EF27AC3888"
     ],
