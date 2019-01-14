@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Gross Primary Product",
-    "description": "Gross Primary Productivity measures\nGeographic extent: Australia\nYear range: 2000-2007\nResolution: 30 arcsec (~1 km)\nData layers: Annual mean, minimum and maximum Gross Primary Productivity, long-term average and CoV",
+    "description": "Gross Primary Productivity measures\n\nGeographic extent: Australia\nYear range: 2000-2007\nResolution: 30 arcsec (~1 km)\nData layers: Annual mean, minimum and maximum Gross Primary Productivity, long-term average and CoV",
     "rights": "CC-BY Attribution 3.0",
     "categories": ["environmental"],
     "BCCDataGenre": ["DataGenreE"],

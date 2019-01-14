@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Australian Stream and Catchment Environmental Data",
-    "description": "A suite of environmental layers calculated based on the Australian Hydrological Geospatial Fabric ('Geofabric') network that represents stream segments and their catchments\nGeographic extent: Australia\nYear range: N/A\nResolution: 9 arcsec (~250 m)\nData layers: 176 layers across 14 datasets, including vegetation, river disturbance, landuse and population",
+    "description": "A suite of environmental layers calculated based on the Australian Hydrological Geospatial Fabric ('Geofabric') network that represents stream segments and their catchments\n\nGeographic extent: Australia\nYear range: N/A\nResolution: 9 arcsec (~250 m)\nData layers: 176 layers across 14 datasets, including vegetation, river disturbance, landuse and population",
     "rights": "CC-BY Share Alike Attribution 3.0 and Creative Commons Attribution 4.0 International Licence",
     "attribution": ["Stein JL, Hutchinson MF, Stein JA (2014) A new stream and nested catchment framework for Australia. Hydrology and Earth System Sciences, 18(5), 1917-1933."
     ],

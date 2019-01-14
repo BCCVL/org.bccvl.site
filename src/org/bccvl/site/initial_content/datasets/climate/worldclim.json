@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Worldclim current and future climate data",
-    "description": "Global current and future climate data\nGeographic extent: Global\nYear range: 1950-2000, 2050, 2070\nResolution: 2.5 arcmin (~5 km), 5 arcmin (~10 km), 10 arcmin (~20 km)\nData layers: B01-19 (long-term), Min, Max, Mean Temperature and Precipitation (monthly)",
+    "description": "Global current and future climate data\n\nGeographic extent: Global\nYear range: 1950-2000, 2050, 2070\nResolution: 2.5 arcmin (~5 km), 5 arcmin (~10 km), 10 arcmin (~20 km)\nData layers: B01-19 (long-term), Min, Max, Mean Temperature and Precipitation (monthly)",
     "rights": "CC-BY Attribution 3.0",
     "attribution": ["Hijmans, R.J., S.E. Cameron, J.L. Parra, P.G. Jones and A. Jarvis, 2005. <a href=\"http://www.worldclim.org/worldclim_IJC.pdf\">Very high resolution interpolated climate surfaces for global land areas</a>. International Journal of Climatology 25: 1965-1978."],
     "external_description": "See <a href=\"http://www.worldclim.org/methods\">http://www.worldclim.org/methods</a>",

@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Global Marine Environmental Data",
-    "description": "A suite of geophysical, biotic and environmental data layers for global ocean surface waters\nGeographic extent: Global\nYear range: 2000-2014\nResolution: 5 arcmin (~10 km)\nData layers: 280 layers across 26 datasets, including water temperature, salinity, currents velocity and chlorophyll A concentration",
+    "description": "A suite of geophysical, biotic and environmental data layers for global ocean surface waters\n\nGeographic extent: Global\nYear range: 2000-2014\nResolution: 5 arcmin (~10 km)\nData layers: 280 layers across 26 datasets, including water temperature, salinity, currents velocity and chlorophyll A concentration",
     "attribution": [
         "Tyberghein L., Verbruggen H., Pauly K., Troupin C., Mineur F., De Clerck O. (2012) Bio-ORACLE: A global environmental dataset for marine species distribution modelling. Global Ecology and Biogeography, 21, 272–281.",
         "Assis J., Tyberghein L., Bosh S., Verbruggen H., Serrão E. A., De Clerck O. (2017) Bio-ORACLE v2.0: Extending marine data layers for bioclimatic modelling. Global Ecology and Biogeography. <a href=\"https://doi.org/10.1111/geb.12693\" target=\"_blank\">https://doi.org/10.1111/geb.12693</a>"

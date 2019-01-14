@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Global Marine Environmental Data - MARSPEC",
-    "description": "Global ocean bathymetry data\nGeographic extent: Global\nYear range: 1955-2010\nResolution: 5 arcmin (~10 km)\nData layers: Bathymetry",
+    "description": "Global ocean bathymetry data\n\nGeographic extent: Global\nYear range: 1955-2010\nResolution: 5 arcmin (~10 km)\nData layers: Bathymetry",
     "attribution": [
         "Sbrocco, E. J. and Barber, P. H. (2013) MARSPEC: Ocean climate layers for marine spatial ecology. Ecology 94:979. <a href=\"http://dx.doi.org/10.1890/12-1358.1\" target=\"_blank\">http://dx.doi.org/10.1890/12-1358.1</a>"
     ],

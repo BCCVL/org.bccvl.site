@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Fraction of Photosynthetically Active Radiation (fPAR)",
-    "description": "Indicator for the portion of PAR used by photosynthesising organisms\nGeographic extent: Australia\nYear range: 2000-2014\nResolution: 9 arcsec (~250 m)\nData layers: Fraction of Photosynthetically Active Radiation (fPAR)",
+    "description": "Indicator for the portion of PAR used by photosynthesising organisms\n\nGeographic extent: Australia\nYear range: 2000-2014\nResolution: 9 arcsec (~250 m)\nData layers: Fraction of Photosynthetically Active Radiation (fPAR)",
     "rights": "CC-BY Attribution 3.0",
     "attribution": ["We welcome collaborations with researchers in applying our continental fPAR time series to environmental problems on the basis that the research results in co-authored publications and the data are not forwarded on to a third party. Credit: Mackey, Brendan., Berry, Sandy., Porfirio, Luciana., Hugh, Sonia."],
     "categories": ["environmental"],
