@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Australia Land Cover data",
-    "description": "Comprehensive land cover data\nGeographic extent: Australia\nYear range: 2000-2008\nResolution: 9 arcsec (~250 m)\nData layers: Dynamic Land Cover and Enhanced Vegetation Index (min, max, mean)",
+    "description": "Comprehensive land cover data\n\nGeographic extent: Australia\nYear range: 2000-2008\nResolution: 9 arcsec (~250 m)\nData layers: Dynamic Land Cover and Enhanced Vegetation Index (min, max, mean)",
     "attribution": [
         "Lymburner L, Tan P., Mueller N., Thackway R., Lewis A., Thankappan M., Randall L., Islam A., and Senarath U., (2010), 250 metre Dynamic Land Cover Dataset of Australia (1st Edition), Geoscience Australia, Canberra."
     ],

@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Climate Futures Tasmania (CFT) climate data",
-    "description": "Fine-scale current and future climate data for Tasmania\nGeographic extent: Tasmania (Australia)\nYear range: 1965-2100\nResolution: 6 arcmin (~12 km)\nData layers: B01-19",
+    "description": "Fine-scale current and future climate data for Tasmania\n\nGeographic extent: Tasmania (Australia)\nYear range: 1965-2100\nResolution: 6 arcmin (~12 km)\nData layers: B01-19",
     "rights": "AU CC BY 3.0",
     "external_description": "See <a href=\"http://www.dpac.tas.gov.au/__data/assets/pdf_file/0016/151126/CFT_-_Climate_Modelling_Summary.pdf\">Climate Futures for Tasmania: climate modelling. Antarctic Climate and Ecosystems Cooperative Research Centre, Hobart, Tasmania</a>",
     "attribution": ["Corney, S. P., J. J. Katzfey, J. L. McGregor, M. R. Grose, J. C. Bennett, C. J. White, G. K. Holz, S. Gaynor, and N. L. Bindoff, 2010: Climate Futures for Tasmania: climate modelling. Antarctic Climate and Ecosystems Cooperative Research Centre, Hobart, Tasmania."],

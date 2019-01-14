@@ -1,7 +1,7 @@
 {
     "_type": "org.bccvl.content.collection",
     "title": "Australian Water availability project",
-    "description": "Annual data about the state and trend of the terrestrial water balance\nGeographic extent: Australia\nYear range: 1900-2010 (annual layers)\nResolution: 30 arcsec (~1 km)\nData layers: 36 layers including runoff, evaporation, soilmoisture and heat flux",
+    "description": "Annual data about the state and trend of the terrestrial water balance\n\nGeographic extent: Australia\nYear range: 1900-2010 (annual layers)\nResolution: 30 arcsec (~1 km)\nData layers: 36 layers including runoff, evaporation, soilmoisture and heat flux",
     "rights": "CC-BY Share Alike Attribution 3.0",
     "attribution": [
         "When referring to this dataset in publications, please cite both:",
