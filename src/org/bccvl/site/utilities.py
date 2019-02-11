@@ -1324,9 +1324,29 @@ class EnsembleJobTracker(MultiJobTracker):
             #        datasets is dict with expkey and list of datasets...
             #           can probably get resolution from exp or ds
             dsid = self.context.datasets.values()[0][0]
-            dsmd = IBCCVLMetadata(uuidToObject(dsid))
+            dsObj = uuidToObject(dsid)
+            dsmd = IBCCVLMetadata(dsObj)
+            expObj = dsObj.__parent__
+            current_datasets = list(chain.from_iterable(self.context.datasets.values()))
+            pre_datasets = []
+            thresholds =[]
+            if expObj.job_params.get('sdm_projections'):
+                for uuid in current_datasets:
+                    # Make sure the SDM projection exists as it may be deleted
+                    resultParams = uuidToObject(uuid).job_params
+                    if uuidToCatalogBrain(resultParams.get('sdm_projections')):
+                        pre_datasets.append(resultParams.get('sdm_projections'))
+                        thresholds.append(resultParams.get('threshold'))
+                    else:
+                        # Incomplete information, cannot do species range-change.
+                        pre_datasets =[]
+                        thresholds=[]
+
             result.job_params = {
-                'datasets': list(chain.from_iterable(self.context.datasets.values())),
+                'title': self.context.title,
+                'datasets': current_datasets,
+                'sdm_projections': pre_datasets,
+                'thresholds': thresholds,
                 'resolution': dsmd['resolution']
             }
             # update provenance
