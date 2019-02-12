@@ -1334,8 +1334,8 @@ class EnsembleJobTracker(MultiJobTracker):
                 for uuid in current_datasets:
                     # Make sure the SDM projection exists as it may be deleted
                     resultParams = uuidToObject(uuid).job_params
-                    if uuidToCatalogBrain(resultParams.get('sdm_projections')):
-                        pre_datasets.append(resultParams.get('sdm_projections'))
+                    if uuidToCatalogBrain(resultParams.get('sdm_projections')[0]):
+                        pre_datasets.append(resultParams.get('sdm_projections')[0])
                         thresholds.append(resultParams.get('threshold'))
                     else:
                         # Incomplete information, cannot do species range-change.
