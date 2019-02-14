@@ -1813,6 +1813,24 @@
         <element key="tooltip">This value describes whether a species is present in a given location.</element>
       </element>
       <element>
+        <element key="value">mean_sdm_projection_probability</element>
+        <element key="title">SDM mean probability</element>
+        <element key="unit"> </element>
+        <element key="unitfull">Probability</element>
+        <element key="legend">suitability</element>
+        <element key="type">projection</element>
+        <element key="tooltip">This value describes the probability of a species occurring in a given location.</element>
+      </element>
+      <element>
+        <element key="value">mean_ensemble_projection_probability</element>
+        <element key="title">Ensemble mean probability</element>
+        <element key="unit"> </element>
+        <element key="unitfull">Probability</element>
+        <element key="legend">suitability</element>
+        <element key="type">projection</element>
+        <element key="tooltip">This value describes the probability of a species occurring in a given location.</element>
+      </element>
+      <element>
         <element key="value">clamping_mask</element>
         <element key="title">Clamping Mask</element>
         <element key="unit">Count</element>
