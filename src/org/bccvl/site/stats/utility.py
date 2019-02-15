@@ -206,7 +206,7 @@ def init_stats():
     """
     portal = api.portal.get()
     annotations = IAnnotations(portal)
-    annotations.pop('org.bccvl.site.stats', None)
+    #annotations.pop('org.bccvl.site.stats', None)
     if 'org.bccvl.site.stats' not in annotations:
         stats = PersistentDict()
         # per user stats
