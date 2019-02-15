@@ -328,15 +328,22 @@
       destination="380"
       profile="org.bccvl.site:default">
 
-  <genericsetup:upgradeStep
-      title="Upgrade profile to version 380"
-      description="Fix out-of-disk space caused by region constraint, export trait data from BCCVL, and various bug fixes"
-      handler=".setuphandlers.upgrade_370_380_1"
-      />
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 380"
+        description="Fix out-of-disk space caused by region constraint, export trait data from BCCVL, and various bug fixes"
+        handler=".setuphandlers.upgrade_370_380_1"
+        />
 
-  <genericsetup:upgradeStep
+  </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="380"
+      destination="390"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
       title="Upgrade profile to version 390"
-      description="Add projection probability change and species range change maps to ensemble result, and fix stats reset issue"
+      description="Add projection probability and species range change maps to ensemble results, and fix stats reset issue"
       handler=".setuphandlers.upgrade_380_390_1"
       />
 
