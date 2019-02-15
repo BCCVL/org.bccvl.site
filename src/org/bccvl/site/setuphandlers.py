@@ -1377,7 +1377,7 @@ def upgrade_370_380_1(context, logger=None):
     transaction.commit()
     trcounter = 0
 
-def upgrade_380_390(context, logger=None):
+def upgrade_380_390_1(context, logger=None):
     if logger is None:
         logger = LOG
 
