@@ -27,7 +27,7 @@
    <property name="title">Sort on</property>
    <property name="vocabulary"></property>
    <property name="default">modified(reverse)</property>
-   <property name="position">right</property>
+   <property name="position">left</property>
    <property name="section">default</property>
    <property name="hidden">False</property>
   </criterion>
