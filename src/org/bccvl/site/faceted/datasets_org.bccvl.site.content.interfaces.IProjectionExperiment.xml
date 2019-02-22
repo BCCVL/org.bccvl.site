@@ -31,7 +31,7 @@
    <property name="default">effective(reverse)</property>
    <property name="position">right</property>
    <property name="section">default</property>
-   <property name="hidden">True</property>
+   <property name="hidden">False</property>
   </criterion>
   <criterion name="c1">
    <property name="widget">select</property>
