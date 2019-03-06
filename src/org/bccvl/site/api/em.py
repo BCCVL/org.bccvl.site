@@ -420,20 +420,12 @@ class ExperimentService(BaseService):
         # add info about parameters?
         # add info about results
         for result in exp.values():
-            # Get the content of blob file for modelling_region/projection_region
-            job_params = dict(**result.job_params)
-            if 'modelling_region' in result.job_params:
-                job_params['modelling_region'] = result.job_params['modelling_region'].data
-            if 'projection_region' in result.job_params:
-                job_params['projection_region'] = result.job_params['projection_region'].data
-
             retval['results'].append({
                 'id': result.id,
                 'uuid': IUUID(result),
                 'title': result.title,
                 'description': result.description,
                 'job_state': IJobTracker(result).state,
-                'params': job_params,
                 'url': result.absolute_url()
             })
         return retval
