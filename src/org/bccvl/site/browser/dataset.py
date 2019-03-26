@@ -20,6 +20,7 @@ from zope.interface import implementer
 from zope.lifecycleevent import modified
 from zope.publisher.interfaces import IPublishTraverse, NotFound
 from zope.security import checkPermission
+from org.bccvl.site.content.interfaces import IExperiment, IProjectionExperiment
 from org.bccvl.site.interfaces import IBCCVLMetadata
 # from zope.browserpage.viewpagetemplatefile import Viewpagetemplatefile
 from org.bccvl.site.job.interfaces import IJobTracker
@@ -180,6 +181,109 @@ class DatasetDownload(Download):
         if not self.check_allowed():
             raise Unauthorized("You may not download this object")
         return super(DatasetDownload, self).__call__()
+
+    def HEAD(self):
+        # we wan't to redirect here as well
+        return self.__call__()
+
+
+
+@implementer(IPublishTraverse)
+class ConstraintRegionDownload(BrowserView):
+
+    def __init__(self, context, request):
+        super(ConstraintRegionDownload, self).__init__(context, request)
+        self.filename = None
+
+    def publishTraverse(self, request, name):
+        # allow filename in url, so that it is possible to parse the url
+        if self.filename is None:  # ../@@download/filename
+            self.filename = name
+        elif name == 'HEAD':
+            return self
+        else:
+            raise NotFound(self, name, request)
+        return self
+
+    def check_allowed(self):
+        # check if content is protected
+        if getattr(self.context, 'downloadable', False):
+            # open for download
+            return True
+        # check if current user has general download permission
+        #    this permission overrides the downloadable flag on the context
+        if checkPermission('org.bccvl.DownloadDataset', self.context):
+            return True
+        # check if current user ticket has required token
+        # TODO: maybe use local roles? http://docs.plone.org/develop/plone/security/dynamic_roles.html
+        # assumes, that the cookie name is __ac and that it has already been
+        # verified by PAS
+        ticket = binascii.a2b_base64(self.request.get('__ac', '')).strip()
+        try:
+            (digest, userid, tokens, user_data, timestamp) = splitTicket(ticket)
+            if 'org.bccvl.DownloadDataset' in tokens:
+                return True
+        except ValueError:
+            # ignore token parse errors
+            pass
+        # nothing allows acces, so we deny it
+        return False
+
+    def __call__(self):
+        # respect field level security as defined in plone.autoform
+        # check if attribute access would be allowed!
+        # url = guarded_getattr(self.context, 'remoteUrl', None)
+
+        exp = self.context
+        if IProjectionExperiment.providedBy(exp):
+            if exp.projection_region:
+                return exp.projection_region.data
+            if not exp.species_distribution_models:
+                raise NotFound(self, 'species_distribution_models', self.request)
+            # Return the SDM's modelling region
+            sdmuuid = exp.species_distribution_models.keys()[0]
+            sdmobj = uuidToObject(sdmuuid)
+            if sdmobj and sdmobj.modelling_region:
+                return sdmobj.modelling_region.data
+        elif IExperiment.providedBy(exp):
+            if exp.modelling_region:
+                return exp.modelling_region.data
+        else:
+            # Move one level up if this is an exp result file
+            if not IExperiment.providedBy(exp.__parent__):
+                exp = exp.__parent__
+        if IExperiment.providedBy(exp.__parent__):
+            # this is the result folder
+            if IProjectionExperiment.providedBy(exp.__parent__):
+                if exp.job_params['projection_region']:
+                    return exp.job_params['projection_region'].data
+                # Get constraint from SDM experiment result file. 
+                # Use the modelling_region.json file in the sdm result if available.
+                if not 'species_distribution_models' in exp.job_params:
+                    raise NotFound(self, 'species_distribution_models', self.request)
+                sdmuuid = exp.job_params['species_distribution_models']
+                sdmobj = uuidToObject(sdmuuid).__parent__
+            else:
+                sdmobj = exp
+
+            # Return the modelling_region attribute only if no modelling_region.json file
+            if not 'modelling_region.json' in sdmobj.keys():
+                return sdmobj.modelling_region.data
+
+            # Redirect to download the modelling_region.json
+            constraint_region = sdmobj.get('modelling_region.json')
+            remoteUrl = getattr(constraint_region, 'remoteUrl', None)
+            if remoteUrl is None:
+                raise NotFound(self, 'remoteUrl', self.request)
+            # Generate temp url
+            tool = getUtility(ISwiftUtility)
+            try:
+                url = tool.generate_temp_url(url=remoteUrl)
+            except:
+                url = remoteUrl
+            return self.request.RESPONSE.redirect(url.encode('utf-8'))
+        else:
+            raise NotFound(self, 'constraint_region', self.request)
 
     def HEAD(self):
         # we wan't to redirect here as well

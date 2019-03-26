@@ -4,7 +4,9 @@ import json
 import re
 from copy import deepcopy
 from decimal import Decimal
+from plone.uuid.interfaces import IUUID
 from plone.app.uuid.utils import uuidToObject, uuidToCatalogBrain
+from zope.component.hooks import getSite
 from zope.interface import implementer
 from zope.component import adapter, getUtility
 from zope.schema.interfaces import IVocabularyFactory
@@ -116,6 +118,8 @@ class ExperimentParameter(object):
             if key in ('modelling_region', 'projection_region'):
                 if val:
                     val = params[key].data
+                else: 
+                    val = '{0}/API/em/v1/constraintregion?uuid={1}'.format(getSite().absolute_url(), IUUID(self.context))
 
             if key in ('species_occurrence_dataset', 'species_absence_dataset'):
                 if val:

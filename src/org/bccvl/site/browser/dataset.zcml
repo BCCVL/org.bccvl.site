@@ -43,6 +43,13 @@
         />
     
     <browser:page
+        name="download"
+        for="OFS.interfaces.IFolder"
+        class=".dataset.ConstraintRegionDownload"
+        permission="zope2.View"
+        />
+
+    <browser:page
         for="..content.interfaces.IDataset"
         name="remove"
         class=".dataset.DatasetRemoveView"

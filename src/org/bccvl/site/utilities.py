@@ -991,8 +991,6 @@ class ProjectionJobTracker(MultiJobTracker):
                     sdmdsuuid, threshold = sdm_threshold
                     sdmdsObj = uuidToCatalogBrain(sdmdsuuid).getObject()
                     environmental_datasets = sdmdsObj.__parent__.job_params['environmental_datasets']
-                    if not self.context.projection_region:
-                        self.context.projection_region = sdmdsObj.__parent__.job_params['modelling_region']
                     for ds, dslayerset in environmental_datasets.items():
                         dslayerset = set(dslayerset)
                         # add matching layers

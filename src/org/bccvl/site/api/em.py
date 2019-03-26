@@ -23,11 +23,12 @@ from org.bccvl.site import defaults
 from org.bccvl.site.api.base import BaseService
 from org.bccvl.site.api.decorators import api
 from org.bccvl.site.api.interfaces import IExperimentService
+from org.bccvl.site.content.interfaces import IExperiment, IProjectionExperiment
 from org.bccvl.site.interfaces import (
     IBCCVLMetadata, IDownloadInfo, IExperimentJobTracker)
 from org.bccvl.site.job.interfaces import IJobUtility, IJobTracker
 from org.bccvl.site.stats.interfaces import IStatsUtility
-from org.bccvl.site.swift.interfaces import ISwiftSettings
+from org.bccvl.site.swift.interfaces import ISwiftSettings, ISwiftUtility
 
 
 LOG = logging.getLogger(__name__)
@@ -439,12 +440,53 @@ class ExperimentService(BaseService):
                               {'parameter': 'uuid'})
             raise NotFound(self, 'constraintregion', self.request)
 
-        constraint_region = {}
-        if hasattr(exp, 'modelling_region'):
-            constraint_region = exp.modelling_region.data if exp.modelling_region is not None else {}
-        if hasattr(exp, 'projection_region'):
-            constraint_region = exp.projection_region.data if exp.projection_region is not None else {}
-        return constraint_region
+        downloadurl = None
+        if IExperiment.providedBy(exp):
+            downloadurl = '{}/@@download/modelling_region.json'.format(exp.absolute_url())
+        elif not IExperiment.providedBy(exp.__parent__):
+            # this is an exp result file, so get exp folder
+            exp = exp.__parent__
+
+        if IExperiment.providedBy(exp.__parent__):
+            # This is an exp result folder
+            if IProjectionExperiment.providedBy(exp.__parent__):
+                if exp.job_params['projection_region']:
+                    downloadurl = '{}/@@download/modelling_region.json'.format(exp.absolute_url())
+                else:
+                    # Get constraint from SDM experiment result file. 
+                    # Use the modelling_region.json file in the sdm result if available.
+                    if not 'species_distribution_models' in exp.job_params:
+                        self.record_error('NotFound', 404, 
+                                          'SDM model not found',
+                                          {'parameter': 'species_distribution_models'})
+                        raise NotFound(self, 'species_distribution_models', self.request)
+                    sdmuuid = exp.job_params['species_distribution_models']
+                    sdmobj = uuidToObject(sdmuuid).__parent__
+
+                     # Return the modelling_region attribute only if no modelling_region.json file
+                    if not 'modelling_region.json' in sdmobj.keys():
+                        downloadurl = '{}/@@download/modelling_region.json'.format(sdmobj.absolute_url())
+                    else:
+                        # Redirect to download the modelling_region.json
+                        constraint_region = sdmobj.get('modelling_region.json')
+                        remoteUrl = getattr(constraint_region, 'remoteUrl', None)
+                        if remoteUrl is None:
+                            raise NotFound(self, 'remoteUrl', self.request)
+                        # Generate temp url
+                        tool = getUtility(ISwiftUtility)
+                        try:
+                            downloadurl = tool.generate_temp_url(url=remoteUrl)
+                        except:
+                            downloadurl = remoteUrl
+            else:
+                downloadurl = '{}/@@download/modelling_region.json'.format(exp.absolute_url())
+
+        if downloadurl is None:
+            self.record_error('Not Found', 404,
+                              'Constraint region not found',
+                              {'parameter': 'uuid'})
+            raise NotFound(self, 'constraintregion', self.request)
+        return self.request.RESPONSE.redirect(downloadurl.encode('utf-8'))
 
     def status(self):
         # redundant? ... see metadata
