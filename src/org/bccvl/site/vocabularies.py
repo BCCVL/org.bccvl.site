@@ -389,6 +389,8 @@ genre_vocabulary = SimpleVocabulary([
                "Species Distribution Model Evaluation"),
     SimpleTerm("DataGenreSDMModel", "DataGenreSDMModel",
                "Species Distribution Model"),
+    SimpleTerm("DataGenreSDMModellingRegion", "DataGenreSDMModellingRegion",
+               "Modelling Region"),
     SimpleTerm("DataGenreClampingMask",
                "DataGenreClampingMask", "Clamping Mask"),
     SimpleTerm("DataGenreSTModel", "DataGenreSTModel", "Species Traits Model"),
