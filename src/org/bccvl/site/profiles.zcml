@@ -347,6 +347,12 @@
       handler=".setuphandlers.upgrade_380_390_1"
       />
 
+    <genericsetup:upgradeStep
+      title="Upgrade profile to version 390"
+      description="Save modelling region per species as experiment result for MSDM, and use it for CC experiment."
+      handler=".setuphandlers.upgrade_380_390_2"
+      />
+
   </genericsetup:upgradeSteps>
 
 </configure>
