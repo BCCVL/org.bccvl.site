@@ -85,7 +85,7 @@ class DatasetsImportView(BrowserView):
             if item.get('guid'):
                 # TODO: uri path encode guid
                 result['actions'][
-                    'viz'] = 'http://bie.ala.org.au/species/' + item['guid']
+                    'viz'] = 'https://bie-ws.ala.org.au/species/' + item['guid']
                 params = urlencode({
                     'lsid': item['guid'],
                     'taxon': item['name'],

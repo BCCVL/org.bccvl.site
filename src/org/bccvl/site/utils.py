@@ -215,7 +215,7 @@ def build_ala_import_task(lsid, dataset, request):
     else:
         params = [{
             'query': 'lsid:{}'.format(lsid),
-            'url': 'http://biocache.ala.org.au/ws'
+            'url': 'https://biocache-ws.ala.org.au/ws'
         }]
         return datamover.pull_occurrences_from_ala.si(params,
                                                       results_dir, context, 

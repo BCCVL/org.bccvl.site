@@ -22,7 +22,7 @@ class IALAService(Interface):
     """
     A component to talk to ALA's web services
 
-    see: http://bie.ala.org.au/bie-service/
+    see: https://bie-ws.ala.org.au/bie-service/
     """
 
     def autojson(q, geoOnly=None, idxType=None, limit=None, callback=None):
@@ -65,7 +65,7 @@ class IGBIFService(Interface):
 @implementer(IALAService)
 class ALAService(object):
 
-    baseurl = u'http://bie.ala.org.au/ws/'
+    baseurl = u'https://bie-ws.ala.org.au/ws/'
 
     def __init__(self):
         pass

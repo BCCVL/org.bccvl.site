@@ -146,7 +146,7 @@ class DataMover(BrowserView):
         if dataSrc == 'ala':
             params = [{
                 'query': 'lsid:{}'.format(lsid),
-                'url': 'http://biocache.ala.org.au/ws'
+                'url': 'https://biocache-ws.ala.org.au/ws'
             }]
             for query in params:
                 biocache_url = '{}/occurrences/search'.format(query['url'])

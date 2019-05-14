@@ -199,7 +199,7 @@ class TestDatasetImport(unittest.TestCase):
             __name__, 'mock_data/ala_search.json')
         result = list(view.searchResults())
         mock_urlopen.assert_called_with(
-            u'http://bie.ala.org.au/ws/search.json?q=Koala&fq=rank%3Aspecies')
+            u'https://bie-ws.ala.org.au/ws/search.json?q=Koala&fq=rank%3Aspecies')
 
         self.assertGreater(len(result), 0)
         for item in result:
@@ -258,7 +258,7 @@ class TestDatasetImport(unittest.TestCase):
         transaction.commit()
 
         # verify call
-        ala_call = "ala://ala?url=http://biocache.ala.org.au/ws/occurrences/index/download&query=lsid:urn:lsid:biodiversity.org.au:afd.taxon:0f02f7b5-d9a1-4b2a-924e-ffeaf122e69c&filter=zeroCoordinates,badlyFormedBasisOfRecord,detectedOutlier,decimalLatLongCalculationFromEastingNorthingFailed,missingBasisOfRecord,decimalLatLongCalculationFromVerbatimFailed,coordinatesCentreOfCountry,geospatialIssue,coordinatesOutOfRange,speciesOutsideExpertRange,userVerified,processingError,decimalLatLongConverionFailed,coordinatesCentreOfStateProvince,habitatMismatch&email="
+        ala_call = "ala://ala?url=https://biocache-ws.ala.org.au/ws/occurrences/index/download&query=lsid:urn:lsid:biodiversity.org.au:afd.taxon:0f02f7b5-d9a1-4b2a-924e-ffeaf122e69c&filter=zeroCoordinates,badlyFormedBasisOfRecord,detectedOutlier,decimalLatLongCalculationFromEastingNorthingFailed,missingBasisOfRecord,decimalLatLongCalculationFromVerbatimFailed,coordinatesCentreOfCountry,geospatialIssue,coordinatesOutOfRange,speciesOutsideExpertRange,userVerified,processingError,decimalLatLongConverionFailed,coordinatesCentreOfStateProvince,habitatMismatch&email="
         self.assertEqual(mock_move.call_args_list[0][0][0][
                          'url'], ala_call)
         # celery should run in eager mode so our job state should be up to date
