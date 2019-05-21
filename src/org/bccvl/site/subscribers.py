@@ -12,12 +12,18 @@ def logged_in_handler(event):
         # when doing unit testing / calling scripts from command line
         return
 
-    # Go straight to Dashboard regardless of the originating page
-    # As part of this, we must clear out the `came_from` parameter as other
-    # handlers in the chain may pick up on it and change our redirect
-    if request.get('came_from', None):
+    # Check for came from url for redirecvtion.
+    # If empty, then return to gashboard.
+    came_from = request.get('came_from', None)
+    site_url = getSite().absolute_url()
+    if came_from:
+        if came_from.rstrip('/') != site_url:
+            # return to continue normal login redirect behaviour
+            return
+
+        # check if came_from is not empty, then clear it up, otherwise further  
+        # Plone scripts will override our redirect
         request['came_from'] = ''
         request.form['came_from'] = ''
 
-    site_url = getSite().absolute_url()
     request.RESPONSE.redirect('{0}/dashboard'.format(site_url))
