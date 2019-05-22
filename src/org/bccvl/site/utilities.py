@@ -163,6 +163,13 @@ class MultiJobTracker(object):
 @adapter(ISDMExperiment)
 class SDMJobTracker(MultiJobTracker):
 
+    def __has_freshwater(self, datasets):
+        for uuid in datasets.keys():
+            dsbrain = uuidToCatalogBrain(uuid)
+            if 'Freshwater datasets' in dsbrain.Subject:
+                return True
+        return False
+
     def _create_result_container(self, title):
         result = createContentInContainer(
             self.context, 'Folder', title=title)
@@ -324,6 +331,8 @@ class SDMJobTracker(MultiJobTracker):
                     'modelling_region': self.context.modelling_region,
                     # TO DO: This shall be input from user??
                     'generate_convexhull': False,
+                    # Do not generate unconstraint if any freshwater dataset is used 
+                    'unconstraint_map': not self.__has_freshwater(self.context.environmental_datasets),
                 }
                 # add toolkit params:
                 result.job_params.update(self.context.parameters[IUUID(func)])
@@ -498,6 +507,13 @@ class MSDMJobTracker(MultiJobTracker):
                     return dsuuid
         return None
 
+    def __has_freshwater(self, datasets):
+        for uuid in datasets.keys():
+            dsbrain = uuidToCatalogBrain(uuid)
+            if 'Freshwater datasets' in dsbrain.Subject:
+                return True
+        return False
+
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and multiple species input datasets
@@ -537,6 +553,8 @@ class MSDMJobTracker(MultiJobTracker):
                         'modelling_region': self.context.modelling_region,
                         # TO DO: This shall be input from user??
                         'generate_convexhull': generate_convexhull,
+                        # Do not generate unconstraint if any freshwater dataset is used
+                        'unconstraint_map': !self.__has_freshwater(self.context.environmental_datasets),
                     }
 
                     # add toolkit params:
