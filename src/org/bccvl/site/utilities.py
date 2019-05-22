@@ -331,7 +331,7 @@ class SDMJobTracker(MultiJobTracker):
                     'modelling_region': self.context.modelling_region,
                     # TO DO: This shall be input from user??
                     'generate_convexhull': False,
-                    # Do not generate unconstraint if any freshwater dataset is used 
+                    # Do not generate unconstraint projection map if any freshwater dataset is used
                     'unconstraint_map': not self.__has_freshwater(self.context.environmental_datasets),
                 }
                 # add toolkit params:
@@ -553,8 +553,8 @@ class MSDMJobTracker(MultiJobTracker):
                         'modelling_region': self.context.modelling_region,
                         # TO DO: This shall be input from user??
                         'generate_convexhull': generate_convexhull,
-                        # Do not generate unconstraint if any freshwater dataset is used
-                        'unconstraint_map': !self.__has_freshwater(self.context.environmental_datasets),
+                        # Do not generate unconstraint projection map if any freshwater dataset is used
+                        'unconstraint_map': not self.__has_freshwater(self.context.environmental_datasets),
                     }
 
                     # add toolkit params:
@@ -741,6 +741,13 @@ class MMJobTracker(MultiJobTracker):
                 resolution_idx = idx
         return res_vocab._terms[resolution_idx].value
 
+    def __has_freshwater(self, datasets):
+        for uuid in datasets.keys():
+            dsbrain = uuidToCatalogBrain(uuid)
+            if 'Freshwater datasets' in dsbrain.Subject:
+                return True
+        return False
+
     def start_job(self, request):
         # split sdm jobs across multiple algorithms,
         # and across multiple subset of species according to months
@@ -782,6 +789,8 @@ class MMJobTracker(MultiJobTracker):
                     'modelling_region': self.context.modelling_region,
                     # TO DO: This shall be input from user??
                     'generate_convexhull': generate_convexhull,
+                    # Do not generate unconstraint projection map if any freshwater dataset is used
+                    'unconstraint_map': not self.__has_freshwater(environmental_datasets),
                 }
 
                 # add toolkit params:
