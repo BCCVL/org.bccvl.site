@@ -214,7 +214,7 @@ def build_ala_import_task(lsid, dataset, request):
                                                         import_multispecies_params)
     else:
         params = [{
-            'query': 'taxon_concept_lsid:{}'.format(lsid),
+            'query': 'lsid:{}'.format(lsid),
             'url': 'https://biocache-ws.ala.org.au/ws'
         }]
         return datamover.pull_occurrences_from_ala.si(params,
