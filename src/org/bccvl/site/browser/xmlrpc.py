@@ -145,7 +145,7 @@ class DataMover(BrowserView):
         species = set()
         if dataSrc == 'ala':
             params = [{
-                'query': 'taxon_concept_lsid:{}'.format(lsid),
+                'query': 'lsid:{}'.format(lsid),
                 'url': 'https://biocache-ws.ala.org.au/ws'
             }]
             for query in params:
