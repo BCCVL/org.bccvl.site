@@ -355,4 +355,18 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      source="390"
+      destination="400"
+      profile="org.bccvl.site:default">
+
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 340"
+        description="Update ALA endpoints, run projection with only constraint region, and various bug fixes"
+        handler=".setuphandlers.upgrade_390_400_1"
+        />
+
+  </genericsetup:upgradeSteps>
+
+
 </configure>
