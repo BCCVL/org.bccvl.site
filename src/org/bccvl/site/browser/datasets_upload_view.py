@@ -221,8 +221,11 @@ class BCCVLUploadForm(DefaultAddForm):
                         'os_auth_url': swiftopts.get('os_auth_url'),
                         'os_username': swiftopts.get('os_username'),
                         'os_password': swiftopts.get('os_password'),
-                        'os_tenant_name': swiftopts.get('os_tenant_name'),
-                        'os_storage_url': swiftopts.get('os_storage_url')
+                        'os_project_name': swiftopts.get('os_project_name'),
+                        'os_storage_url': swiftopts.get('os_storage_url'),
+                        'os_user_domain_name': swiftopts.get('os_user_domain_name'),
+                        'os_project_domain_name': swiftopts.get('os_project_domain_name'),
+                        'auth_version': swiftopts.get('auth_version')
                     }}
                 )
 
