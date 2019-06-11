@@ -1442,3 +1442,25 @@ def upgrade_390_400_1(context, logger=None):
     # Add new time-period tag for existing user upload datasets
     transaction.commit()
     trcounter = 0
+
+def upgrade_390_400_2(context, logger=None):
+    if logger is None:
+        logger = LOG
+
+    # Run GS steps
+    portal = api.portal.get()
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'jsregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'cssregistry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.content')
+    setup.runImportStepFromProfile(PROFILE_ID, 'plone.app.registry')
+    setup.runImportStepFromProfile(PROFILE_ID, 'org.bccvl.site.facet')
+
+    pc = getToolByName(context, 'portal_catalog')
+
+    # setup stats tool
+    import transaction
+
+    # Add new time-period tag for existing user upload datasets
+    transaction.commit()
+    trcounter = 0   

@@ -366,6 +366,12 @@
         handler=".setuphandlers.upgrade_390_400_1"
         />
 
+    <genericsetup:upgradeStep
+        title="Upgrade profile to version 340"
+        description="Update to use Keystone version 3 API for nectar object store, and fix shapefile issue"
+        handler=".setuphandlers.upgrade_390_400_2"
+        />
+
   </genericsetup:upgradeSteps>
 
 
