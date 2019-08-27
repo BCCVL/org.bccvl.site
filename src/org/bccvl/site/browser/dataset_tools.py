@@ -256,6 +256,12 @@ class DatasetTools(BrowserView):
                 IVocabularyFactory, 'emsc_source')(self.context)
         return self._emsc_vocab
 
+    def emsc_title(self, emsc):
+        try:
+            return self.emsc_vocab.getTerm(emsc).title
+        except:
+            return emsc
+
     def emsc_list(self):
         selected = self.request.get('datasets.filter.emsc', ())
         for genre in self.emsc_vocab:
@@ -272,6 +278,12 @@ class DatasetTools(BrowserView):
             self._gcm_vocab = getUtility(
                 IVocabularyFactory, 'gcm_source')(self.context)
         return self._gcm_vocab
+
+    def gcm_title(self, gcm):
+        try:
+            return self.gcm_vocab.getTerm(gcm).title
+        except:
+            return gcm
 
     def gcm_list(self):
         selected = self.request.get('datasets.filter.gcm', ())
