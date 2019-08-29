@@ -1370,7 +1370,7 @@ class EnsembleJobTracker(MultiJobTracker):
                         thresholds=[]
 
             result.job_params = {
-                'title': self.context.title.replace(' ', '_'),
+                'title': self.context.title.replace(' ', '_').replace('/', '-'),
                 'datasets': current_datasets,
                 'sdm_projections': pre_datasets,
                 'thresholds': thresholds,
