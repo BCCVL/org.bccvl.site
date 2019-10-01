@@ -94,7 +94,7 @@
                                         login_url);">
           <a i18n:translate="description_log_in_here"
              tal:attributes="href login_url"  class="aaf-logo-link btn btn-success">
-            Login with AAF <i class="icon-share-alt icon-white"></i>
+            Login with AAF / eduGAIN <i class="icon-share-alt icon-white"></i>
           </a>
           
     </div>
