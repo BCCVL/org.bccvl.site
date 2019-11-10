@@ -45,6 +45,9 @@ class SwiftUtility(object):
         sig = hmac.new(key.encode('utf-8'),
                        hmac_body.encode('utf-8'),
                        hashlib.sha1).hexdigest()
+        # remove legacy port number in swift-url
+        if url.port:
+           url = url._replace(netloc=url.hostname)
         temp_url = u"{url}?temp_url_sig={sig}&temp_url_expires={expires}".format(
             url=url.geturl(), sig=sig, expires=expires)
         return temp_url
